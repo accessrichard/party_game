@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { joinGame } from './gameSlice';
 
+import { joinGame } from './gameSlice';
 
 function Join() {
 
@@ -24,9 +24,19 @@ function Join() {
                 <h3>Buzz Games</h3>
                 <div className="form">
                     <form onSubmit={(e) => e.preventDefault()}>
-                        <input type="text" required placeholder="Name" value={username} onChange={(event) => setUsername(event.target.value)} />
-                        <input type="text"  ref={gameCodeInput} required placeholder="Game Code" value={gameCode} onChange={(event) => setGameCode(event.target.value)} />
-                        <input type="submit" value="Join Game" onClick={() => dispatch(joinGame({username, gameCode}))} />
+                        <input type="text" 
+                               required 
+                               placeholder="Name" 
+                               value={username} 
+                               onChange={(event) => setUsername(event.target.value)} />
+                        <input type="text"  ref={gameCodeInput} 
+                               required 
+                               placeholder="Game Code" 
+                               value={gameCode} 
+                               onChange={(event) => setGameCode(event.target.value)} />
+                        <input type="submit" 
+                               value="Join Game" 
+                               onClick={() => dispatch(joinGame({username, gameCode}))} />
                     </form>
                 </div>
             </header>

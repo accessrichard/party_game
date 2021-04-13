@@ -35,7 +35,7 @@ export default function Lobby() {
 
     const gameCode = useSelector(state => state.game.gameCode);
     const gameOwner = useSelector(state => state.game.roomOwner);
-    const isGameStarted = useSelector(state => state.game.isGameStarted);    
+    const isGameStarted = useSelector(state => state.game.isGameStarted);
 
 
     useEffect(() => {
@@ -87,24 +87,22 @@ export default function Lobby() {
             <div className="App-dark lg-12">
                 <header className="App-header1">
                     <h3>Lobby</h3>
-                    {gameOwner === player ?
-                        <div className="typography-lg-text">Provide this game code to other players: <span className="typography-emphasize">{gameCode}</span></div>
-                        :
-                        <div className="typography-lg-text">Waiting for game owner to start game.</div>
+                    {gameOwner === player 
+                        ?  <div className="typography-lg-text">
+                                Provide this game code to other players:
+                                <span className="typography-emphasize">{gameCode}</span>
+                            </div>
+                        :   <div className="typography-lg-text">Waiting for game owner to start game.</div>
                     }
-                    <span className="typography-md-text"> <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer></span>
+                    <span className="typography-md-text">
+                        <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
+                    </span>
 
                     {gameOwner === player &&
                         <React.Fragment>
-
                             <form className="pd-0 lg-6" onSubmit={(e) => e.preventDefault()}>
-
-                                <input
-                                    type="submit"
-                                    value="Start"
-                                    onClick={startGameClick} />
+                                <input type="submit" value="Start" onClick={startGameClick} />
                             </form>
-
                         </React.Fragment>}
 
                 </header>
@@ -122,7 +120,6 @@ export default function Lobby() {
                         </div>
                     </div>
                 </div>
-
             </div>
         </React.Fragment >
     );

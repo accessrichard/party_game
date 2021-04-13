@@ -43,8 +43,17 @@ const sendEvent = (topic, channelData, action) => (
 export default function Game() {
 
     const dispatch = useDispatch();
-    const { isRoundStarted, playerName, gameCode, question, answers, flash, isOver } = useSelector(state => state.game);
-    const gameOwner = useSelector(state => state.game.roomOwner);
+    const { 
+        isRoundStarted, 
+        playerName, 
+        gameCode, 
+        roomOwner, 
+        question, 
+        answers, 
+        flash, 
+        isOver 
+    } = useSelector(state => state.game);
+
     const [answer, setAnswer] = useState("");
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
@@ -55,7 +64,7 @@ export default function Game() {
 
     if (!gameCode) {
         dispatch(push('/'));
-    }   
+    }
 
     const topic = `buzzer:${gameCode}`;
 
@@ -66,11 +75,11 @@ export default function Game() {
     }, [isRoundStarted]);
 
     useEffect(() => {
-        dispatch(channelJoin({ topic, data: {name: playerName} }));
+        dispatch(channelJoin({ topic, data: { name: playerName } }));
         return () => dispatch(channelLeave({ topic }));
     }, [dispatch, topic, playerName]);
 
-    useEffect(() => {        
+    useEffect(() => {
         onEvents(topic).forEach((e) => dispatch(channelOn(e)));
         return () => onEvents(topic).forEach((e) => dispatch(channelOff(e)));
     }, [dispatch, topic]);
@@ -82,7 +91,7 @@ export default function Game() {
 
         return () => { setIsTimerActive(false); };
     }, [isRoundStarted, isTimerActive]);
-    
+
 
     function startClick() {
         dispatch(channelPush(sendEvent(topic, { name: playerName }, "start")));
@@ -154,7 +163,7 @@ export default function Game() {
                 </div>
                 <div className="flex-container">
                     <form onSubmit={(e) => e.preventDefault()}>
-                        {gameOwner === playerName &&
+                        {roomOwner === playerName &&
                             <input className="pd-5 md-5"
                                 disabled={isRoundStarted ? "disabled" : ""}
                                 type="submit"
@@ -162,7 +171,9 @@ export default function Game() {
                                 value="Start" />}
 
                         <input className="pd-5 md-5"
-                            disabled={isRoundStarted && !isQuestionAnswered && radioChecked !== -1 ? "" : "disabled"}
+                            disabled={isRoundStarted && !isQuestionAnswered && radioChecked !== -1 
+                                        ? "" 
+                                        : "disabled"}
                             type="submit"
                             onClick={buzzClick}
                             value="Buzz!!!" />
