@@ -75,7 +75,7 @@ const apiState = {
 };
 
 const initialState = {
-    configuration: { questionTime: 5, nextQuestionTime: 3, wrongAnswerTimeout: 2 },
+    configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 2 },
     round: 0,
     isGameStarted: false,
     isPaused: false,
@@ -83,6 +83,8 @@ const initialState = {
     isRoundStarted: false,
     isOver: false,
     question: null,
+    correct: '',
+    isWrong: false,
     flash: {},
     answers: null,
     events: [],
@@ -131,6 +133,9 @@ export const gameSlice = createSlice({
                 gameOwner: state.gameOwner});
             Object.assign(state, resetState)
         },
+        clearWrongAnswer: (state) => {
+            state.isWrong = false;
+        },
         startRound: (state, action) => {
             state.isGameStarted = true;
             state.isRoundStarted = true;
@@ -139,6 +144,8 @@ export const gameSlice = createSlice({
             state.answers = action.payload.data.answers;
             state.flash = {};
             state.startCountdown = false;
+            state.correct = '';
+            state.isWrong = false;
             state.isOver = action.payload.data.isOver;
         },
         startGame: (state) => {
@@ -147,11 +154,14 @@ export const gameSlice = createSlice({
             state.round = 0;
             state.rounds = [];
             state.flash = {};
-            state.startCountdown = true;
+            state.startCountdown = false;
+            state.correct = '';
+            state.isWrong = false;
         },
         stopGame: (state) => {
             state.isGameStarted = false;
             state.startCountdown = false;
+            state.isWrong = false;
         },
         setFlash: (state, action) => {
             state.flash = action.payload
@@ -161,12 +171,14 @@ export const gameSlice = createSlice({
         },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
-                state.flash = {text: action.payload.status};    
+                state.flash = {text: action.payload.status};
+                state.isWrong = true;
             }
             
         },
         stopRound(state, action) {
             state.isRoundStarted = false;
+            state.isWrong = false;
             if (action.payload.event) {
                 addStopRoundEvent(state, action);
             }
@@ -177,6 +189,8 @@ export const gameSlice = createSlice({
                 answer: action.payload.data.answer,
                 className: 'correct'
             }
+
+            state.correct = action.payload.data.answer;
             
             state.isOver = action.payload.data.isOver;
             if (!state.isOver && !state.isPaused) {
@@ -242,6 +256,7 @@ export const {
     stopRound,
     startGame,
     startRound,
+    clearWrongAnswer,
     syncGameState,
     addPlayer,
     phxReply,

@@ -8,7 +8,7 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Emphasize from '../common/Emphasize';
+import Emphasize from '../common/EmphasizeDark';
 import SmallText from '../common/SmallText';
 import { message } from './chatSlice';
 

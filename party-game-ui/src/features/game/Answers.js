@@ -1,35 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function Answers(props) {
 
-    const [radioChecked, setRadioChecked] = useState(null);
     const { isDisabled, answers, correct } = props;
 
-    function onAnswerChangeClick(e, key) {
-        setRadioChecked(key);
-        props.onAnswerChangeClick(e, e.target.value);
+    function onAnswerClick(e, key) {        
+        props.onAnswerClick(e, e.target.value);
     }
 
+    
     return (
         <React.Fragment>
-            <ul className="ul-nostyle align-left">
-                {(answers || []).map((ans, key) =>
-                    <li key={key} className={"pd-5"}>
-                        <span className={correct === ans ? "correct" : ""}>
-                            <label className="typography-lg-text">
-                                <input type="radio"
-                                    name="group1"
-                                    disabled={isDisabled ? "disabled" : ""}
-                                    value={ans}
-                                    autoComplete="off"
-                                    onChange={e => onAnswerChangeClick(e, key)}
-                                    checked={radioChecked === key}></input>
-                                {ans}
-                            </label>
-                        </span>
-                    </li>
+            <div className="answer-wrapper">
+                {(answers || []).map((ans, key) => 
+                    <div className="answer" key={key}>                                                          
+                            <input 
+                                type="submit"
+                                name="group1"
+                                className={`fill-space ${correct == ans ? "correct" : ""}`}
+                                disabled={isDisabled ? "disabled" : ""}
+                                value={ans}
+                                autoComplete="off"
+                                onClick={e => onAnswerClick(e, key)}
+                            ></input>
+
+                </div>
                 )}
-            </ul>
+            </div>
         </React.Fragment>
     );
 }

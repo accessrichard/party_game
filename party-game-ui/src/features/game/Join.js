@@ -13,7 +13,7 @@ function Join() {
     const gameCodeError = useSelector(state => state.game.api.join.error);
 
     useEffect(() => {
-        if (gameCodeError){
+        if (gameCodeError) {
             gameCodeInput.current.setCustomValidity(gameCodeError);
         }
     });
@@ -21,23 +21,25 @@ function Join() {
     return (
         <div className="App">
             <header className="App-header">
-                <h3>Buzz Games</h3>
-                <div className="form">
-                    <form onSubmit={(e) => e.preventDefault()}>
-                        <input type="text" 
-                               required 
-                               placeholder="Name" 
-                               value={username} 
-                               onChange={(event) => setUsername(event.target.value)} />
-                        <input type="text"  ref={gameCodeInput} 
-                               required 
-                               placeholder="Game Code" 
-                               value={gameCode} 
-                               onChange={(event) => setGameCode(event.target.value)} />
-                        <input type="submit" 
-                               value="Join Game" 
-                               onClick={() => dispatch(joinGame({username, gameCode}))} />
-                    </form>
+                <div className="offset-bottom">
+                    <h3>Buzz Games</h3>
+                    <div className="form">
+                        <form onSubmit={(e) => e.preventDefault()}>
+                            <input type="text"
+                                required
+                                placeholder="Name"
+                                value={username}
+                                onChange={(event) => setUsername(event.target.value)} />
+                            <input type="text" ref={gameCodeInput}
+                                required
+                                placeholder="Game Code"
+                                value={gameCode}
+                                onChange={(event) => setGameCode(event.target.value)} />
+                            <input type="submit"
+                                value="Join Game"
+                                onClick={() => dispatch(joinGame({ username, gameCode }))} />
+                        </form>
+                    </div>
                 </div>
             </header>
         </div>

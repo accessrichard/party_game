@@ -6,17 +6,13 @@ const Players = () => {
 
     return (
         <React.Fragment>
-            <div className="card card-50vh flex-container scroll-flex">
-                <div className="full-height full-width">
-                    <ul className="ul-nostyle card typography-dark typography-large-text card-50vh players reset-pm">
-                        {players.map((val, key) =>
-                            <li key={key}>
-                                {val}
-                            </li>
-                        )}
-                    </ul>
-                </div>
-            </div>
+            <ul className="ul-nostyle players reset-pm">
+                {players.map((val, key) =>
+                    <li key={key}>
+                        {val}
+                    </li>
+                )}
+            </ul>
         </React.Fragment>
     );
 }

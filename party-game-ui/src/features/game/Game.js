@@ -6,12 +6,12 @@ import {
     channelOn,
     channelPush,
 } from '../phoenix/phoenixMiddleware';
-import { phxReply, setFlash, startRound, stopRound } from './gameSlice';
+import { clearWrongAnswer, phxReply, setFlash, startRound, stopRound } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Answers from './Answers';
+import Faces from '../common/Faces';
 import Flash from '../common/Flash';
-import { Redirect } from 'react-router'
 import Timer from './Timer';
 import { push } from 'connected-react-router'
 
@@ -53,13 +53,14 @@ export default function Game() {
         question,
         answers,
         flash,
+        isWrong,
         round,
         isOver,
+        correct,
         configuration,
         startCountdown,
     } = useSelector(state => state.game);
 
-    const [answer, setAnswer] = useState("");
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
@@ -83,7 +84,7 @@ export default function Game() {
 
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, configuration.nextQuestionTime]);
-
+  
     useEffect(() => {
         dispatch(channelJoin({ topic, data: { name: playerName } }));
         return () => dispatch(channelLeave({ topic }));
@@ -103,40 +104,60 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [isRoundStarted, isTimerActive, configuration.questionTime]);
 
+    useEffect(() => {
+        setTimeout(() => {
+            if (isWrong) {
+                dispatch(clearWrongAnswer());
+            }            
+        }, 1000);
+        
+    }, [dispatch, isWrong]);
 
+    
     function startClick(e, action) {
         setIsQuestionAnswered(false);
         dispatch(channelPush(sendEvent(topic, { name: playerName }, action || "start")));
-    }
-
-    function buzzClick() {
-        setIsQuestionAnswered(true);
-        const data = { answer, name: playerName };
-        dispatch(channelPush(sendEvent(topic, data, "buzz")));
-        pauseOnWrongAnswer();
     }
 
     function pauseOnWrongAnswer() {
         setTimeout(() => {
             setIsQuestionAnswered(false);
             if (startedRef.current && roundRef.current === round) {
-                dispatch(setFlash({ text: "Try Again" }))
+                dispatch(setFlash({ text: "Try Again" }))                
             }
         }, configuration.pauseOnWrongAnswer * 1000)
-    }
+    }    
 
     function timerDone() {
         setIsTimerActive(false);
-        startClick(null, question === null ? "start" : "next");
+        startClick(null, correct ? "start" : "next");
     }
 
-    function onAnswerChangeClick(e, answer) {
-        setAnswer(answer);
-        dispatch(setFlash({}));
+    function onAnswerClick(e, answer) {
+        setIsQuestionAnswered(true);
+        const data = { answer, name: playerName };
+        dispatch(channelPush(sendEvent(topic, data, "buzz")));
+        pauseOnWrongAnswer();
     }
+
+    useEffect(() => {
+        setIsTimerActive(false);
+        startClick(null, "start");
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (isWrong) {
+                dispatch(clearWrongAnswer());
+            }            
+        }, 1000);
+        
+    }, [dispatch, isWrong]);
 
     if (isOver) {
-        return <Redirect to="/score" />
+        setTimeout(()=>{
+            dispatch(push('/score'));
+        }, 1000);
     }
 
     return (
@@ -144,38 +165,26 @@ export default function Game() {
             <div className="App-dark lg-12">
                 <header className="App-header1">
                     <h3>Buzzer Game</h3>
+                    {correct !== "" &&  <Faces isHappy={true}/>}
+                    {isWrong &&  <Faces key={isWrong} isHappy={false}/>}
                 </header>
-                <div>
+                <div className="question">
                     {question}
                 </div>
 
-                <div>
-                    <Answers onAnswerChangeClick={onAnswerChangeClick}
-                        isDisabled={!isRoundStarted && isQuestionAnswered}
-                        answers={answers}
-                        correct={flash.answer}>
-                    </Answers>
-                </div>
+
+                <Answers onAnswerClick={onAnswerClick}
+                    isDisabled={!isRoundStarted && isQuestionAnswered}
+                    answers={answers}
+                    correct={correct}>
+                </Answers>
+
                 <div>
                     <Flash flash={flash}></Flash>
                 </div>
                 <div className="flex-container">
-                    <form onSubmit={(e) => e.preventDefault()}>
-                        {gameOwner === playerName &&
-                            <input className="pd-5 md-5"
-                                disabled={isRoundStarted ? "disabled" : ""}
-                                type="submit"
-                                onClick={startClick}
-                                value="Start" />}
-
-                        <input className="pd-5 md-5"
-                            disabled={isRoundStarted && !isQuestionAnswered && answer
-                                ? ""
-                                : "disabled"}
-                            type="submit"
-                            onClick={buzzClick}
-                            value="Buzz!!!" />
-                    </form>
+                    {gameOwner === playerName && !isRoundStarted &&
+                        <a className="App-link" onClick={startClick}>Next</a>}
                 </div>
                 <div>
                     <span className="typography-md-text">

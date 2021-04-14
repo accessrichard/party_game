@@ -10,6 +10,8 @@ function Create() {
     return (
         <div className="App">
             <header className="App-header">
+            <div className="offset-bottom">
+
                 <h3>Buzz Games</h3>
                 <div className="form">
                     <form onSubmit={(e) => e.preventDefault()}>
@@ -20,12 +22,15 @@ function Create() {
                             value={username}
                             onChange={(event) => setUsername(event.target.value)} />
                         <input
+                            className="bouncy"                       
                             type="submit"
                             value="Create Game"
                             onClick={() => dispatch(createGame(username))} />
                     </form>
                 </div>
+                </div>
             </header>
+          
         </div>
     );
 }

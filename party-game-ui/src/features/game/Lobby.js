@@ -37,10 +37,6 @@ export default function Lobby() {
     const gameOwner = useSelector(state => state.game.gameOwner);
     const isGameStarted = useSelector(state => state.game.isGameStarted);
 
-
-   
-
-
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
@@ -90,12 +86,12 @@ export default function Lobby() {
             <div className="App-dark lg-12">
                 <header className="App-header1">
                     <h3>Lobby</h3>
-                    {gameOwner === player 
-                        ?  <div className="typography-lg-text">
-                                Provide this game code to other players:
+                    {gameOwner === player
+                        ? <div className="typography-lg-text">
+                            Provide this game code to other players:
                                 &nbsp;<span className="typography-emphasize">{gameCode}</span>
-                            </div>
-                        :   <div className="typography-lg-text">Waiting for game owner to start game.</div>
+                        </div>
+                        : <div className="typography-lg-text">Waiting for game owner to start game.</div>
                     }
                     <span className="typography-md-text">
                         <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
@@ -109,20 +105,9 @@ export default function Lobby() {
                         </React.Fragment>}
 
                 </header>
-                <div className="flex-container lg-12 flex-1 pd-5 flex-center">
-                    <div className="flex-item lg-3  flex-row">
-                        <div className="flex-1 flex-container flex-column md-5 pd-5">
-                            <span className="subtitle pd-5 md-5">Players</span>
-                            <Players></Players>
-                        </div>
-                    </div>
-                    <div className="flex-item lg-3  flex-row">
-                        <div className="flex-1 flex-container flex-column md-5 pd-5">
-                            <span className="subtitle pd-5 md-5">Chat</span>
-                            <Chat></Chat>
-                        </div>
-                    </div>
-                </div>
+                <div className="subtitle">Players</div>
+                <Players></Players>
+              
             </div>
         </React.Fragment >
     );
