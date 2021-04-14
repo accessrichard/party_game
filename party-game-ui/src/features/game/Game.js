@@ -9,6 +9,7 @@ import {
 import { phxReply, setFlash, startRound, stopRound } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Answers from './Answers';
 import { Redirect } from 'react-router'
 import Timer from './Timer';
 import { push } from 'connected-react-router'
@@ -61,7 +62,6 @@ export default function Game() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
-    const [radioChecked, setRadioChecked] = useState(null);
 
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
@@ -73,13 +73,6 @@ export default function Game() {
     }
 
     const topic = `buzzer:${gameCode}`;
-
-    useEffect(() => {
-        if (!isRoundStarted) {
-            setRadioChecked(-1);
-        }
-        
-    }, [isRoundStarted]);
 
 
     useEffect(() => {
@@ -132,15 +125,16 @@ export default function Game() {
         }, configuration.pauseOnWrongAnswer * 1000)
     }
 
-    function handleOptionChange(e, key) {
-        setAnswer(e.target.value);
-        setRadioChecked(key);
-        dispatch(setFlash({}));
-    }
-
     function timerDone() {        
         setIsTimerActive(false);       
         startClick(null, question === null ? "start" : "next");
+    }
+
+    function onAnswerChangeClick(e, answer) {
+        console.log(answer);
+        setAnswer(answer);
+        console.log(answer);
+        dispatch(setFlash({}));
     }
 
     if (isOver) {
@@ -156,40 +150,9 @@ export default function Game() {
                 <div>
                     {question}
                 </div>
+                
                 <div>
-                    <span className="typography-md-text">
-                      {startCountdown && "Game starts in "}  
-                      {!startCountdown && isRoundStarted && "Round ends in "}
-                      
-                      <Timer key={isTimerActive + timerSeconds}
-                               isActive={isTimerActive} 
-                               timeIncrement={-1} 
-                               timerDone={timerDone}
-                               timeFormat={"seconds"}
-                               startSeconds={timerSeconds}>
-                        </Timer>
-                    </span>
-                </div>
-                <div>
-                    <ul className="ul-nostyle align-left">
-                        {(answers || []).map((ans, key) =>
-                            <li key={key} className={"pd-5"}>
-                                <span className={flash.answer === ans ? "correct" : ""}>
-                                    <label className="typography-lg-text">
-                                        <input type="radio"
-                                            name="group1"
-                                            disabled={isRoundStarted && !isQuestionAnswered
-                                                ? "" : "disabled"}
-                                            value={ans}
-                                            autoComplete="off"
-                                            onChange={e => handleOptionChange(e, key)}
-                                            checked={radioChecked === key}></input>
-                                        {ans}
-                                    </label>
-                                </span>
-                            </li>
-                        )}
-                    </ul>
+                    <Answers onAnswerChangeClick={onAnswerChangeClick} isDisabled={!isRoundStarted && isQuestionAnswered} answers={answers} correct={flash.answer}></Answers>
                 </div>
                 <div>
                     <span className={`typography-md-text ${flash.className ? flash.className : "typography-emphasize"}`}>{flash.text}</span>
@@ -204,13 +167,27 @@ export default function Game() {
                                 value="Start" />}
 
                         <input className="pd-5 md-5"
-                            disabled={isRoundStarted && !isQuestionAnswered && radioChecked !== -1 
+                            disabled={isRoundStarted && !isQuestionAnswered && answer 
                                         ? "" 
                                         : "disabled"}
                             type="submit"
                             onClick={buzzClick}
                             value="Buzz!!!" />
                     </form>
+                </div>
+                <div>
+                    <span className="typography-md-text">
+                      {startCountdown && "Game starts in "}  
+                      {!startCountdown && isRoundStarted && "Round ends in "}
+                      
+                      <Timer key={isTimerActive + timerSeconds}
+                               isActive={isTimerActive} 
+                               timeIncrement={-1} 
+                               timerDone={timerDone}
+                               timeFormat={"seconds"}
+                               startSeconds={timerSeconds}>
+                        </Timer>
+                    </span>
                 </div>
             </div>
         </React.Fragment>
