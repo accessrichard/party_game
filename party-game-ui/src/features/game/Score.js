@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import { Redirect } from 'react-router-dom';
 import { getScores } from './gameSlice';
 import { push } from 'connected-react-router'
@@ -12,18 +11,16 @@ function Score() {
     const rounds = useSelector(state => state.game.rounds);
     const scores = useSelector(getScores);
 
-    if (!rounds) {
-        <Redirect to="/"></Redirect>
+    if (rounds.length === 0) {
+        return <Redirect to="/" />
     }
-
-    useEffect(() => {
-        dispatch(resetState());
-    }, [dispatch])
 
     function playAgain(e) {
         e.preventDefault();
-        dispatch(resetState());
-        dispatch(push('/lobby'));
+        //dispatch(resetState());        
+        //TODO: reset game questions on server
+        //dispatch(push('/lobby'));
+        dispatch(push('/'));
     }
 
     return (

@@ -11,7 +11,7 @@ defmodule PartyGameWeb.GameController do
   def create(conn, %{"player_name" => player_name}) do
     with %Game{} = game <- Game.add_player(Game.new(), player_name) do
       game = Game.gen_room_name(game)
-      game = Game.add_questions(game, States.new(10), "States")
+      game = Game.add_questions(game, BasicMath.new(2), "States")
 
       Server.start(game)
 

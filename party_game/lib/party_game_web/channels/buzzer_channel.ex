@@ -76,11 +76,11 @@ defmodule PartyGameWeb.BuzzerChannel do
     payload = start(payload)
 
     question =
-      if length(game.questions) > 1 do
+      if length(game.questions) >= 1 do
         [question | _] = game.questions
         question
       else
-        %{}
+        %{question: "", answers: []}
       end
 
     broadcast(
@@ -94,7 +94,8 @@ defmodule PartyGameWeb.BuzzerChannel do
           answer: "",
           winner: "",
           isOver: game.is_over,
-          question: question
+          question: question.question,
+          answers: question.answers
         }
       )
     )

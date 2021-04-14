@@ -75,7 +75,7 @@ const apiState = {
 };
 
 const initialState = {
-    configuration: { questionTime: 15, nextQuestionTime: 3, wrongAnswerTimeout: 2 },
+    configuration: { questionTime: 5, nextQuestionTime: 3, wrongAnswerTimeout: 2 },
     round: 0,
     isGameStarted: false,
     isPaused: false,
@@ -134,13 +134,12 @@ export const gameSlice = createSlice({
         startRound: (state, action) => {
             state.isGameStarted = true;
             state.isRoundStarted = true;
-            state.round += 1;
+            state.round += 1;            
             state.question = action.payload.data.question;
             state.answers = action.payload.data.answers;
             state.flash = {};
             state.startCountdown = false;
             state.isOver = action.payload.data.isOver;
-            console.log(action)
         },
         startGame: (state) => {
             state.isGameStarted = true;

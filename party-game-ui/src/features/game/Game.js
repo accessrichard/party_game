@@ -112,7 +112,7 @@ export default function Game() {
 
 
     function startClick(e, action) {
-        setIsQuestionAnswered(false);        
+        setIsQuestionAnswered(false);
         dispatch(channelPush(sendEvent(topic, { name: playerName }, action || "start")));        
     }
 
@@ -140,7 +140,7 @@ export default function Game() {
 
     function timerDone() {        
         setIsTimerActive(false);       
-        //startClick(null, "next");
+        startClick(null, "next");
     }
 
     if (isOver) {
