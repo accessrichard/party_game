@@ -140,7 +140,7 @@ export default function Game() {
 
     function timerDone() {        
         setIsTimerActive(false);       
-        startClick(null, "next");
+        startClick(null, question === null ? "start" : "next");
     }
 
     if (isOver) {

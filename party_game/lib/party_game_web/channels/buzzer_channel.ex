@@ -106,7 +106,6 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp buzz(socket, payload) do
     game = Server.get_game(game_code(socket.topic))
     answer = Map.get(payload, "answer")
-
     case Game.buzz(game, socket.assigns.name, answer) do
       {:win, game} ->
         broadcast(
