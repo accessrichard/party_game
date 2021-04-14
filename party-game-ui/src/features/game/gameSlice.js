@@ -75,9 +75,11 @@ const apiState = {
 };
 
 const initialState = {
-    configuration: { seconds: 30 },
+    configuration: { questionTime: 15, nextQuestionTime: 3, wrongAnswerTimeout: 2 },
     round: 0,
     isGameStarted: false,
+    isPaused: false,
+    startCountdown: true,
     isRoundStarted: false,
     isOver: false,
     question: null,
@@ -89,7 +91,7 @@ const initialState = {
     gameName: null,
     gameCode: null,
     players: [],
-    roomOwner: null,
+    gameOwner: null,    
     api: {
         create: { ...apiState },
         join: { ...apiState },
@@ -111,14 +113,22 @@ export const gameSlice = createSlice({
     initialState: initialState,
     reducers: {
         resetState: (state) => {
-            Object.assign(state, initialState);
+            const newState = Object.assign(initialState, {
+                playerName: state.playerName,
+                gameName: state.gameName,
+                gameCode: state.gameCode,
+                players: state.players,
+                gameOwner: state.gameOwner
+            });
+            
+            Object.assign(state, newState);
         },
         startOver: (state, action) => {                        
            const resetState = Object.assign(initialState, {
                 playerName: state.playerName,
                 gameCode: state.gameCode,
                 players: state.players,
-                roomOwner: state.roomOwner});
+                gameOwner: state.gameOwner});
             Object.assign(state, resetState)
         },
         startRound: (state, action) => {
@@ -128,6 +138,9 @@ export const gameSlice = createSlice({
             state.question = action.payload.data.question;
             state.answers = action.payload.data.answers;
             state.flash = {};
+            state.startCountdown = false;
+            state.isOver = action.payload.data.isOver;
+            console.log(action)
         },
         startGame: (state) => {
             state.isGameStarted = true;
@@ -135,9 +148,11 @@ export const gameSlice = createSlice({
             state.round = 0;
             state.rounds = [];
             state.flash = {};
+            state.startCountdown = true;
         },
         stopGame: (state) => {
             state.isGameStarted = false;
+            state.startCountdown = false;
         },
         setFlash: (state, action) => {
             state.flash = action.payload
@@ -159,17 +174,21 @@ export const gameSlice = createSlice({
 
             state.rounds = action.payload.data.rounds;
             state.flash = {
-                text: `${action.payload.data.winner} won!`,
-                answer: action.payload.data.answer
+                text: `${action.payload.data.winner} answered correct!`,
+                answer: action.payload.data.answer,
+                className: 'correct'
             }
             
             state.isOver = action.payload.data.isOver;
+            if (!state.isOver && !state.isPaused) {
+                state.startCountdown = true;
+            }
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
             state.gameCode = action.payload.room_name;
             state.players = action.payload.players;
-            state.roomOwner = action.payload.room_owner;
+            state.gameOwner = action.payload.room_owner;
             state.gameName = action.payload.game;
         },
         addPlayer(state, action) {

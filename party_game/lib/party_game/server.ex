@@ -13,7 +13,7 @@ defmodule PartyGame.Server do
       game: game,
       name: {:via, Registry, {@registry, game.room_name}}
     ]
-    IO.inspect(game.room_name, label: "Starting Game")
+
     DynamicSupervisor.start_child(@supervisor, {__MODULE__, opts})
   end
 

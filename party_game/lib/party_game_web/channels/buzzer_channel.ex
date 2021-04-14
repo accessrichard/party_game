@@ -43,7 +43,12 @@ defmodule PartyGameWeb.BuzzerChannel do
   end
 
   defp action("start", socket, payload), do: start(socket, payload)
+  defp action("next", socket, payload), do: next(socket, payload)
   defp action("stop", socket, payload), do: broadcast_action(socket, stop(payload), "startstop")
+
+  defp action("countdown", socket, payload),
+    do: broadcast_action(socket, countdown(payload), "countdown")
+
   defp action("buzz", socket, payload), do: buzz(socket, payload)
   defp action("join", socket, _), do: {:reply, {:ok, "Not Implemented"}, socket}
   defp action("quit", socket, _), do: {:reply, {:ok, "Not Implemented"}, socket}
@@ -61,6 +66,42 @@ defmodule PartyGameWeb.BuzzerChannel do
     {:noreply, socket}
   end
 
+  defp next(socket, payload) do
+    game =
+      Server.get_game(game_code(socket.topic))
+      |> Game.next_question()
+      |> Game.start_round()
+      |> Server.update_game()
+
+    payload = start(payload)
+
+    question =
+      if length(game.questions) > 1 do
+        [question | _] = game.questions
+        question
+      else
+        %{}
+      end
+
+    broadcast(
+      socket,
+      "startstop",
+      assigns_payload(
+        socket,
+        payload,
+        %{
+          rounds: game.rounds,
+          answer: "",
+          winner: "",
+          isOver: game.is_over,
+          question: question
+        }
+      )
+    )
+
+    {:noreply, socket}
+  end
+
   defp buzz(socket, payload) do
     game = Server.get_game(game_code(socket.topic))
     answer = Map.get(payload, "answer")
@@ -70,11 +111,12 @@ defmodule PartyGameWeb.BuzzerChannel do
         broadcast(
           socket,
           "buzz",
-          assigns_payload(
-            socket,
-            payload,
-            %{rounds: game.rounds, answer: answer, winner: socket.assigns.name, isOver: game.is_over}
-          )
+          assigns_payload(socket, payload, %{
+            rounds: game.rounds,
+            answer: answer,
+            winner: socket.assigns.name,
+            isOver: game.is_over
+          })
         )
 
         Server.update_game(game)
@@ -82,7 +124,7 @@ defmodule PartyGameWeb.BuzzerChannel do
 
       _ ->
         {:reply, :wrong, socket}
-      end
+    end
   end
 
   defp broadcast_action(socket, payload, action) do
@@ -96,6 +138,10 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   defp stop(payload) do
     Map.put(payload, "action", "stop")
+  end
+
+  defp countdown(payload) do
+    Map.put(payload, "action", "countdown")
   end
 
   defp assigns_payload(socket, payload, data \\ nil) do

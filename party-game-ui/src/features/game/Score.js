@@ -1,23 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
+import { Redirect } from 'react-router-dom';
 import { getScores } from './gameSlice';
 import { push } from 'connected-react-router'
+import { resetState } from './gameSlice';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 
 function Score() {
-    const rounds = useSelector(state => state.game.rounds);
     const dispatch = useDispatch();
+    const rounds = useSelector(state => state.game.rounds);
     const scores = useSelector(getScores);
 
-
     if (!rounds) {
-        dispatch(push('/'));
+        <Redirect to="/"></Redirect>
     }
+
+    useEffect(() => {
+        dispatch(resetState());
+    }, [dispatch])
 
     function playAgain(e) {
         e.preventDefault();
-        //dispatch(startOver());
-        dispatch(push('/'));
+        dispatch(resetState());
+        dispatch(push('/lobby'));
     }
 
     return (

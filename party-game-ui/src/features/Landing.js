@@ -1,5 +1,7 @@
 import '../App.css';
 
+import React, {useEffect} from 'react';
+
 import { NavLink } from 'react-router-dom';
 import logo from '../buzzer.svg';
 import { useDispatch } from 'react-redux';
@@ -7,7 +9,9 @@ import { useDispatch } from 'react-redux';
 function Landing() {
     const dispatch = useDispatch();
 
-    dispatch({ type: 'logout/logout' });
+    useEffect(() => {
+        dispatch({ type: 'logout/logout' });
+    }, [dispatch])
 
     return (
         <div className="App">

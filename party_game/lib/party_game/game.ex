@@ -83,6 +83,12 @@ defmodule PartyGame.Game do
     end
   end
 
+  def next_question(%Game{} = game) do
+    [question | questions] = game.questions
+    round = %Round{question: question, winner: "None", answer: question.correct}
+    %{game | round_started: false, rounds: [round | game.rounds], questions: questions, is_over: questions == []}
+  end
+
   def name_taken(%Game{} = game, player_name) do
     case player_exists?(game, player_name) do
       false -> {:ok, player_name}

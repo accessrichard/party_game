@@ -34,8 +34,11 @@ export default function Lobby() {
     const player = useSelector(state => state.game.playerName);
 
     const gameCode = useSelector(state => state.game.gameCode);
-    const gameOwner = useSelector(state => state.game.roomOwner);
+    const gameOwner = useSelector(state => state.game.gameOwner);
     const isGameStarted = useSelector(state => state.game.isGameStarted);
+
+
+   
 
 
     useEffect(() => {
@@ -90,7 +93,7 @@ export default function Lobby() {
                     {gameOwner === player 
                         ?  <div className="typography-lg-text">
                                 Provide this game code to other players:
-                                <span className="typography-emphasize">{gameCode}</span>
+                                &nbsp;<span className="typography-emphasize">{gameCode}</span>
                             </div>
                         :   <div className="typography-lg-text">Waiting for game owner to start game.</div>
                     }

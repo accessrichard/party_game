@@ -4,13 +4,14 @@ defmodule PartyGameWeb.GameController do
   alias PartyGame.Game
   alias PartyGame.Server
   alias PartyGame.Games.States
+  alias PartyGame.Games.BasicMath
 
   action_fallback PartyGameWeb.FallbackController
 
   def create(conn, %{"player_name" => player_name}) do
     with %Game{} = game <- Game.add_player(Game.new(), player_name) do
       game = Game.gen_room_name(game)
-      game = Game.add_questions(game, States.new(1), "States")
+      game = Game.add_questions(game, States.new(10), "States")
 
       Server.start(game)
 

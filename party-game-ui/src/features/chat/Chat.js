@@ -99,10 +99,7 @@ const Chat = () => {
             />
           </form>
         </div>
-
-
       </div>
-
     </React.Fragment>
   );
 }

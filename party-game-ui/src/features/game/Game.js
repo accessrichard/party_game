@@ -47,20 +47,26 @@ export default function Game() {
         isRoundStarted, 
         playerName, 
         gameCode, 
-        roomOwner, 
+        gameOwner, 
         question, 
         answers, 
-        flash, 
-        isOver 
+        flash,
+        round,
+        isOver,
+        configuration,
+        startCountdown,
     } = useSelector(state => state.game);
 
     const [answer, setAnswer] = useState("");
     const [isTimerActive, setIsTimerActive] = useState(false);
+    const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
     const [radioChecked, setRadioChecked] = useState(null);
 
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
+    const roundRef = useRef(round);
+    roundRef.current = round;
 
     if (!gameCode) {
         dispatch(push('/'));
@@ -72,7 +78,18 @@ export default function Game() {
         if (!isRoundStarted) {
             setRadioChecked(-1);
         }
+        
     }, [isRoundStarted]);
+
+
+    useEffect(() => {
+        if (startCountdown) {
+            setTimerSeconds(configuration.nextQuestionTime);
+            setIsTimerActive(true);
+        }
+
+        return () => { setIsTimerActive(false); };
+    }, [startCountdown, isTimerActive, configuration.nextQuestionTime]);
 
     useEffect(() => {
         dispatch(channelJoin({ topic, data: { name: playerName } }));
@@ -86,15 +103,17 @@ export default function Game() {
 
     useEffect(() => {
         if (isRoundStarted) {
+            setTimerSeconds(configuration.questionTime);
             setIsTimerActive(true);
         }
 
         return () => { setIsTimerActive(false); };
-    }, [isRoundStarted, isTimerActive]);
+    }, [isRoundStarted, isTimerActive, configuration.questionTime]);
 
 
-    function startClick() {
-        dispatch(channelPush(sendEvent(topic, { name: playerName }, "start")));
+    function startClick(e, action) {
+        setIsQuestionAnswered(false);        
+        dispatch(channelPush(sendEvent(topic, { name: playerName }, action || "start")));        
     }
 
     function buzzClick() {
@@ -104,19 +123,24 @@ export default function Game() {
         pauseOnWrongAnswer();
     }
 
-    function pauseOnWrongAnswer() {
+    function pauseOnWrongAnswer() {        
         setTimeout(() => {
             setIsQuestionAnswered(false);
-            if (startedRef.current) {
+            if (startedRef.current && roundRef.current === round) {
                 dispatch(setFlash({ text: "Try Again" }))
             }
-        }, 2000)
+        }, configuration.pauseOnWrongAnswer * 1000)
     }
 
     function handleOptionChange(e, key) {
         setAnswer(e.target.value);
         setRadioChecked(key);
         dispatch(setFlash({}));
+    }
+
+    function timerDone() {        
+        setIsTimerActive(false);       
+        //startClick(null, "next");
     }
 
     if (isOver) {
@@ -134,14 +158,23 @@ export default function Game() {
                 </div>
                 <div>
                     <span className="typography-md-text">
-                        <Timer isActive={isTimerActive} timeIncrement={-1} startSeconds={30}></Timer>
+                      {startCountdown && "Game starts in "}  
+                      {!startCountdown && isRoundStarted && "Round ends in "}
+                      
+                      <Timer key={isTimerActive + timerSeconds}
+                               isActive={isTimerActive} 
+                               timeIncrement={-1} 
+                               timerDone={timerDone}
+                               timeFormat={"seconds"}
+                               startSeconds={timerSeconds}>
+                        </Timer>
                     </span>
                 </div>
                 <div>
                     <ul className="ul-nostyle align-left">
                         {(answers || []).map((ans, key) =>
                             <li key={key} className={"pd-5"}>
-                                <span className={flash.answer === ans ? "typography-emphasize" : ""}>
+                                <span className={flash.answer === ans ? "correct" : ""}>
                                     <label className="typography-lg-text">
                                         <input type="radio"
                                             name="group1"
@@ -159,11 +192,11 @@ export default function Game() {
                     </ul>
                 </div>
                 <div>
-                    <span className="typography-md-text typography-emphasize">{flash.text}</span>
+                    <span className={`typography-md-text ${flash.className ? flash.className : "typography-emphasize"}`}>{flash.text}</span>
                 </div>
                 <div className="flex-container">
                     <form onSubmit={(e) => e.preventDefault()}>
-                        {roomOwner === playerName &&
+                        {gameOwner === playerName &&
                             <input className="pd-5 md-5"
                                 disabled={isRoundStarted ? "disabled" : ""}
                                 type="submit"

@@ -252,6 +252,11 @@ input:invalid {
   font-weight: bolder;
 }
 
+.correct {
+  color: rgb(28, 236, 90);
+  font-weight: bolder;
+}
+
 .align-left {
   text-align: left;
 }
