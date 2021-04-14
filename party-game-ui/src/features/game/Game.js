@@ -10,6 +10,7 @@ import { phxReply, setFlash, startRound, stopRound } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Answers from './Answers';
+import Flash from '../common/Flash';
 import { Redirect } from 'react-router'
 import Timer from './Timer';
 import { push } from 'connected-react-router'
@@ -44,13 +45,13 @@ const sendEvent = (topic, channelData, action) => (
 export default function Game() {
 
     const dispatch = useDispatch();
-    const { 
-        isRoundStarted, 
-        playerName, 
-        gameCode, 
-        gameOwner, 
-        question, 
-        answers, 
+    const {
+        isRoundStarted,
+        playerName,
+        gameCode,
+        gameOwner,
+        question,
+        answers,
         flash,
         round,
         isOver,
@@ -73,7 +74,6 @@ export default function Game() {
     }
 
     const topic = `buzzer:${gameCode}`;
-
 
     useEffect(() => {
         if (startCountdown) {
@@ -106,7 +106,7 @@ export default function Game() {
 
     function startClick(e, action) {
         setIsQuestionAnswered(false);
-        dispatch(channelPush(sendEvent(topic, { name: playerName }, action || "start")));        
+        dispatch(channelPush(sendEvent(topic, { name: playerName }, action || "start")));
     }
 
     function buzzClick() {
@@ -116,7 +116,7 @@ export default function Game() {
         pauseOnWrongAnswer();
     }
 
-    function pauseOnWrongAnswer() {        
+    function pauseOnWrongAnswer() {
         setTimeout(() => {
             setIsQuestionAnswered(false);
             if (startedRef.current && roundRef.current === round) {
@@ -125,15 +125,13 @@ export default function Game() {
         }, configuration.pauseOnWrongAnswer * 1000)
     }
 
-    function timerDone() {        
-        setIsTimerActive(false);       
+    function timerDone() {
+        setIsTimerActive(false);
         startClick(null, question === null ? "start" : "next");
     }
 
     function onAnswerChangeClick(e, answer) {
-        console.log(answer);
         setAnswer(answer);
-        console.log(answer);
         dispatch(setFlash({}));
     }
 
@@ -150,12 +148,16 @@ export default function Game() {
                 <div>
                     {question}
                 </div>
-                
+
                 <div>
-                    <Answers onAnswerChangeClick={onAnswerChangeClick} isDisabled={!isRoundStarted && isQuestionAnswered} answers={answers} correct={flash.answer}></Answers>
+                    <Answers onAnswerChangeClick={onAnswerChangeClick}
+                        isDisabled={!isRoundStarted && isQuestionAnswered}
+                        answers={answers}
+                        correct={flash.answer}>
+                    </Answers>
                 </div>
                 <div>
-                    <span className={`typography-md-text ${flash.className ? flash.className : "typography-emphasize"}`}>{flash.text}</span>
+                    <Flash flash={flash}></Flash>
                 </div>
                 <div className="flex-container">
                     <form onSubmit={(e) => e.preventDefault()}>
@@ -167,9 +169,9 @@ export default function Game() {
                                 value="Start" />}
 
                         <input className="pd-5 md-5"
-                            disabled={isRoundStarted && !isQuestionAnswered && answer 
-                                        ? "" 
-                                        : "disabled"}
+                            disabled={isRoundStarted && !isQuestionAnswered && answer
+                                ? ""
+                                : "disabled"}
                             type="submit"
                             onClick={buzzClick}
                             value="Buzz!!!" />
@@ -177,15 +179,15 @@ export default function Game() {
                 </div>
                 <div>
                     <span className="typography-md-text">
-                      {startCountdown && "Game starts in "}  
-                      {!startCountdown && isRoundStarted && "Round ends in "}
-                      
-                      <Timer key={isTimerActive + timerSeconds}
-                               isActive={isTimerActive} 
-                               timeIncrement={-1} 
-                               timerDone={timerDone}
-                               timeFormat={"seconds"}
-                               startSeconds={timerSeconds}>
+                        {startCountdown && "Game starts in "}
+                        {!startCountdown && isRoundStarted && "Round ends in "}
+
+                        <Timer key={isTimerActive + timerSeconds}
+                            isActive={isTimerActive}
+                            timeIncrement={-1}
+                            timerDone={timerDone}
+                            timeFormat={"seconds"}
+                            startSeconds={timerSeconds}>
                         </Timer>
                     </span>
                 </div>
