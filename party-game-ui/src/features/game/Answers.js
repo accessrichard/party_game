@@ -8,7 +8,6 @@ export default function Answers(props) {
         props.onAnswerClick(e, e.target.value);
     }
 
-    
     return (
         <React.Fragment>
             <div className="answer-wrapper">

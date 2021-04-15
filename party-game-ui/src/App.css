@@ -45,6 +45,11 @@ body {
   cursor: pointer;
 }
 
+.light-link a {
+  color: white;
+  cursor: pointer;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -58,6 +63,19 @@ body {
   display: block;
   font-size: 1.3em;
   font-weight: bold;
+}
+
+.time {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.small-title {
+  display: block;
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 8px;
 }
 
 .large-title {
@@ -132,7 +150,6 @@ input[type="submit"] {
     margin-left: 100%;
     width: 300%;
   }
-
   to {
     margin-left: 0%;
     width: 100%;
@@ -149,13 +166,11 @@ input[type="submit"] {
     margin-top: 100%;
     width: 300%;
   }
-
   to {
     margin-top: 0%;
     width: 100%;
   }
 }
-
 
 .slidein-left {
   animation-duration: 1s;
@@ -167,14 +182,11 @@ input[type="submit"] {
     margin-right: 100%;
     width: 300%;
   }
-
   to {
     margin-righ: 0%;
     width: 100%;
   }
 }
-
-
 
 .bouncy {
   animation: bouncy 5s infinite linear;
@@ -333,6 +345,10 @@ input:invalid {
   padding: 5px;
 }
 
+.pd-25 {
+  padding: 25px;
+}
+
 .md-5 {
   margin: 5px;
 }
@@ -350,14 +366,21 @@ input:invalid {
   width: 100%;
 }
 
-.card {
+.players-wrapper {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
+  border: 1px solid whitesmoke;
+  padding: 10px;
+  height: 30vh;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  width: 25%;  
 }
 
-.card-50vh {
-  height: 50vh;
-  overflow: auto;
+.ul-numbered {
+  list-style-type: decimal;
+  list-style-position: inside;
 }
 
 .ul-nostyle {
@@ -384,6 +407,10 @@ input:invalid {
 
 .typography-md-text {
   font-size: 14px;
+}
+
+.typography-md-text2 {
+  font-size: calc(10px + 2vmin);
 }
 
 .typography-lg-text {
@@ -432,14 +459,12 @@ input[type="text"].chat-input {
 .players {
   margin: 0px;
   padding: 0px;
-  text-align: center;
-  
+  text-align: left;
 }
 
 input.correct[type="submit"] {
   background-color: rgb(28, 236, 90);
 }
-
 
 input.correct[type="submit"]:hover:not([disabled]) {
   text-shadow: 0 0 2em rgba(255, 255, 255, 1);

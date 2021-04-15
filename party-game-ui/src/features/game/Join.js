@@ -2,16 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { joinGame } from './gameSlice';
+import { useParams } from "react-router-dom";
 
-function Join() {
+function Join(props) {
+
+    let { id } = useParams();
 
     const dispatch = useDispatch();
     const gameCodeInput = useRef(null);
 
     const [username, setUsername] = useState("");
-    const [gameCode, setGameCode] = useState("");
+    const [gameCode, setGameCode] = useState(id || "");
     const gameCodeError = useSelector(state => state.game.api.join.error);
 
+    
     useEffect(() => {
         if (gameCodeError) {
             gameCodeInput.current.setCustomValidity(gameCodeError);

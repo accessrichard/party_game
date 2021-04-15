@@ -11,6 +11,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 import Chat from './../chat/Chat';
+import GameCodeLink from '../common/GameCodeLink';
 import Players from './Players';
 import Timer from './Timer';
 import { push } from 'connected-react-router';
@@ -83,31 +84,36 @@ export default function Lobby() {
 
     return (
         <React.Fragment>
-            <div className="App-dark lg-12">
-                <header className="App-header1">
-                    <h3>Lobby</h3>
-                    {gameOwner === player
-                        ? <div className="typography-lg-text">
-                            Provide this game code to other players:
-                                &nbsp;<span className="typography-emphasize">{gameCode}</span>
-                        </div>
-                        : <div className="typography-lg-text">Waiting for game owner to start game.</div>
-                    }
-                    <span className="typography-md-text">
-                        <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
-                    </span>
 
+            <div className="App">
+
+                <div className="App-dark App-header lg-12">
+                    <header className="App-header1">
+                        <div class="small-title pd-25">Lobby</div>
+                        <span className="typography-md-text time">
+                            <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
+                        </span>
+
+                        {gameOwner === player
+                            ? <div className="typography-lg-text">
+                                Provide this link to other players:
+                            <div className="light-link typography-md-text2 pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                            </div>
+                            : <div className="typography-lg-text">Waiting for game owner to start game.</div>
+                        }
+                    </header>
+                    <div className="small-title pd-25">Players</div>
+                    <div className="players-wrapper scroll-flex">
+                        <Players></Players>
+                    </div>
                     {gameOwner === player &&
                         <React.Fragment>
-                            <form className="pd-0 lg-6" onSubmit={(e) => e.preventDefault()}>
-                                <input type="submit" value="Start" onClick={startGameClick} />
+                            <form className="pd-5" onSubmit={(e) => e.preventDefault()}>
+                                <input className="md-5" type="submit" value="Start" onClick={startGameClick} />
                             </form>
                         </React.Fragment>}
 
-                </header>
-                <div className="subtitle">Players</div>
-                <Players></Players>
-              
+                </div>
             </div>
         </React.Fragment >
     );

@@ -172,7 +172,6 @@ export default function Game() {
                     {question}
                 </div>
 
-
                 <Answers onAnswerClick={onAnswerClick}
                     isDisabled={!isRoundStarted && isQuestionAnswered}
                     answers={answers}

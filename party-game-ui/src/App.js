@@ -21,7 +21,7 @@ function App() {
       <Switch>
         <Route exact path="/" component={Landing} />
         <Route exact path="/create" component={Create} />
-        <Route exact path="/join" component={Join} />
+        <Route path="/join/:id?" component={Join} />
         <Route exact path="/lobby" component={Lobby} />
         <Route exact path="/game" component={Game} />
         <Route exact path="/score" component={Score} />

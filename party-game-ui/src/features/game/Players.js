@@ -6,7 +6,7 @@ const Players = () => {
 
     return (
         <React.Fragment>
-            <ul className="ul-nostyle players reset-pm">
+            <ul className="ul-numbered players reset-pm">
                 {players.map((val, key) =>
                     <li key={key}>
                         {val}
