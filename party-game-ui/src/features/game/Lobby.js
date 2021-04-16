@@ -93,27 +93,27 @@ export default function Lobby() {
 
             <div className="App">
 
-                <div className="app-light app-header lg-12">
+                <div className="app-light lg-12">
                     <header className="app-header1">
-                        <Logo logoClass="small-logo bouncy" title="Lobby" titleClass="small-title"></Logo>
+                        <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
                         <span className="typography-md-text time">
                             <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
                         </span>
-
-                        {gameOwner === playerName
-                            ? <div className="typography-lg-text">
-                                To play with others, send them this link or tell them this code: {gameCode}
-                                <div className="light-link typography-md-text2 pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
-                            </div>
-                            : <div className="typography-lg-text">Waiting for game owner to start game.</div>
-                        }
                     </header>
-                    <div className="small-title pd-25">Players</div>
                     <div className="players-wrapper scroll-flex">
                         <Players></Players>
                     </div>
+                    {gameOwner === playerName
+                            ? <div className="typography-lg-text">
+                                Share this link to play with friends:
+                                <div className="light-link pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                            </div>
+                            : <div className="typography-lg-text">Waiting for game owner to start game.</div>
+                        }
+
                     {gameOwner === playerName &&
                         <React.Fragment>
+
                             <form className="pd-5" onSubmit={(e) => e.preventDefault()}>
 
                                 <GameList defaultValue={games && games[0]} onGameChange={onGameChange} games={games} />
