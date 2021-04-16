@@ -63,6 +63,7 @@ export default function Game() {
         startCountdown,
     } = useSelector(state => state.game);
 
+    const gameList = useSelector(state => state.game.api.list.data);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
@@ -150,8 +151,8 @@ export default function Game() {
 
     useEffect(() => {
         setIsTimerActive(false);
-        //TODO: bug with default select
-        startClickCallback("new", { game: game || "Basic Math", rounds: 5 });
+        
+        startClickCallback("new", { game: game || (gameList && gameList[0]), rounds: 5 });
     }, [game, startClickCallback]);
 
     useEffect(() => {

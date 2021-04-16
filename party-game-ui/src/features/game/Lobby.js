@@ -35,6 +35,7 @@ export default function Lobby() {
     const dispatch = useDispatch();
     const { playerName, gameCode, gameOwner, isGameStarted } = useSelector(state => state.game);
     const games = useSelector(state => state.game.api.list.data);
+    const gameListLoading = useSelector(state => state.game.api.list.loading);
 
     useEffect(() => {
         if (!gameCode) {
@@ -90,9 +91,7 @@ export default function Lobby() {
 
     return (
         <React.Fragment>
-
             <div className="App">
-
                 <div className="app-light lg-12">
                     <header className="app-header1">
                         <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
@@ -115,12 +114,10 @@ export default function Lobby() {
                         <React.Fragment>
 
                             <form className="pd-5" onSubmit={(e) => e.preventDefault()}>
-
                                 <GameList defaultValue={games && games[0]} onGameChange={onGameChange} games={games} />
-                                <input className="md-5" type="submit" value="Start" onClick={startGameClick} />
+                                <input className="md-5" disabled={gameListLoading === 'pending'} type="submit" value="Start" onClick={startGameClick} />
                             </form>
                         </React.Fragment>}
-
                 </div>
             </div>
         </React.Fragment >
