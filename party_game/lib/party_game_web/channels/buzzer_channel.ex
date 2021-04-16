@@ -3,6 +3,7 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   alias PartyGame.Server
   alias PartyGame.Game
+  alias PartyGame.Games.Games
 
   @impl true
   def join("buzzer:" <> _room_name, payload, socket) do
@@ -43,6 +44,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   end
 
   defp action("start", socket, payload), do: start(socket, payload)
+  defp action("new", socket, payload), do: new(socket, payload)
   defp action("next", socket, payload), do: next(socket, payload)
   defp action("stop", socket, payload), do: broadcast_action(socket, stop(payload), "startstop")
 
@@ -54,12 +56,30 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp action("quit", socket, _), do: {:reply, {:ok, "Not Implemented"}, socket}
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
 
+  defp new(socket, payload) do
+    game_name = Map.get(payload, "game", "States")
+    rounds = Map.get(payload, "rounds", 10)
+    questions = Games.new(game_name, rounds)
+
+    game =
+      Server.get_game(game_code(socket.topic))
+      |> Game.start_round()
+      |> Game.add_questions(questions, game_name)
+      |> Server.update_game()
+
+    reply_with_questions(socket, game, payload)
+  end
+
   defp start(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
       |> Game.start_round()
       |> Server.update_game()
 
+    reply_with_questions(socket, game, payload)
+  end
+
+  defp reply_with_questions(socket, game, payload) do
     [question | _] = game.questions
     payload = start(payload)
     broadcast(socket, "startstop", assigns_payload(socket, payload, question))
@@ -106,6 +126,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp buzz(socket, payload) do
     game = Server.get_game(game_code(socket.topic))
     answer = Map.get(payload, "answer")
+
     case Game.buzz(game, socket.assigns.name, answer) do
       {:win, game} ->
         broadcast(

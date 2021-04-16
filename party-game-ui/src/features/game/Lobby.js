@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { addPlayer, startGame } from './gameSlice';
+import { addPlayer, changeGame, listGames, startGame } from './gameSlice';
 import {
     channelJoin,
     channelLeave,
@@ -10,8 +10,9 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Chat from './../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
+import GameList from '../common/GameList';
+import Logo from '../common/Logo';
 import Players from './Players';
 import Timer from './Timer';
 import { push } from 'connected-react-router';
@@ -32,11 +33,8 @@ const onEvents = (topic) => [
 export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const dispatch = useDispatch();
-    const player = useSelector(state => state.game.playerName);
-
-    const gameCode = useSelector(state => state.game.gameCode);
-    const gameOwner = useSelector(state => state.game.gameOwner);
-    const isGameStarted = useSelector(state => state.game.isGameStarted);
+    const { playerName, gameCode, gameOwner, isGameStarted } = useSelector(state => state.game);
+    const games = useSelector(state => state.game.api.list.data);
 
     useEffect(() => {
         if (!gameCode) {
@@ -59,6 +57,10 @@ export default function Lobby() {
     }
 
     useEffect(() => {
+        dispatch(listGames());
+    }, [dispatch]);
+
+    useEffect(() => {
         dispatch(socketConnect({
             host: 'ws://localhost:4000/socket',
             params: {}
@@ -66,11 +68,11 @@ export default function Lobby() {
 
         dispatch(channelJoin({
             topic,
-            data: { name: player }
+            data: { name: playerName }
         }));
 
         return () => dispatch(channelLeave({ topic }));
-    }, [dispatch, topic, player]);
+    }, [dispatch, topic, playerName]);
 
     useEffect(() => {
         onEvents(topic).forEach((e) => dispatch(channelOn(e)));
@@ -82,22 +84,26 @@ export default function Lobby() {
         return () => { setIsTimerActive(false); };
     }, []);
 
+    function onGameChange(e) {
+        dispatch(changeGame(e));
+    }
+
     return (
         <React.Fragment>
 
             <div className="App">
 
-                <div className="App-dark App-header lg-12">
-                    <header className="App-header1">
-                        <div class="small-title pd-25">Lobby</div>
+                <div className="app-light app-header lg-12">
+                    <header className="app-header1">
+                        <Logo logoClass="small-logo bouncy" title="Lobby" titleClass="small-title"></Logo>
                         <span className="typography-md-text time">
                             <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
                         </span>
 
-                        {gameOwner === player
+                        {gameOwner === playerName
                             ? <div className="typography-lg-text">
-                                Provide this link to other players:
-                            <div className="light-link typography-md-text2 pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                                To play with others, send them this link or tell them this code: {gameCode}
+                                <div className="light-link typography-md-text2 pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
                             </div>
                             : <div className="typography-lg-text">Waiting for game owner to start game.</div>
                         }
@@ -106,9 +112,11 @@ export default function Lobby() {
                     <div className="players-wrapper scroll-flex">
                         <Players></Players>
                     </div>
-                    {gameOwner === player &&
+                    {gameOwner === playerName &&
                         <React.Fragment>
                             <form className="pd-5" onSubmit={(e) => e.preventDefault()}>
+
+                                <GameList defaultValue={games && games[0]} onGameChange={onGameChange} games={games} />
                                 <input className="md-5" type="submit" value="Start" onClick={startGameClick} />
                             </form>
                         </React.Fragment>}

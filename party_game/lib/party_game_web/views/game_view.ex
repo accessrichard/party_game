@@ -9,6 +9,10 @@ defmodule PartyGameWeb.GameView do
     %{data: Map.from_struct(game)}
   end
 
+  def render("games.json",  %{games: games}) do
+    %{data: games}
+  end
+
   def render("stop.json", room_name) do
     %{status: "stopped", room_name: room_name}
   end

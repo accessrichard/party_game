@@ -18,7 +18,12 @@ body {
   pointer-events: none;
 }
 
-.App-dark {
+.small-logo {
+  height: 20vmin;
+  pointer-events: none;
+}
+
+.app-light {
   background-color: #4572cc;
   min-height: 100vh;
   display: flex;
@@ -29,7 +34,7 @@ body {
   color: rgb(238, 238, 238);
 }
 
-.App-header {
+.app-header {
   background-color: #4572cc;
   min-height: 100vh;
   display: flex;
@@ -40,7 +45,7 @@ body {
   color: white;
 }
 
-.App-link {
+.app-link {
   color: #61dafb;
   cursor: pointer;
 }
@@ -48,6 +53,11 @@ body {
 .light-link a {
   color: white;
   cursor: pointer;
+}
+
+.spin {
+  animation-duration: 1s;
+  animation-name: App-logo-spin;
 }
 
 @keyframes App-logo-spin {
@@ -59,16 +69,11 @@ body {
   }
 }
 
-.title {
-  display: block;
-  font-size: 1.3em;
-  font-weight: bold;
-}
-
 .time {
   position: absolute;
   bottom: 10px;
   right: 10px;
+
 }
 
 .small-title {
@@ -83,21 +88,6 @@ body {
   font-size: 4em;
   font-weight: bold;
   margin: .5vm;
-}
-
-.subtitle {
-  display: block;
-  font-size: .9em;
-  font-weight: bold;
-}
-
-#triangle {
-  width: 0;
-  border-top: 12x solid transparent;
-  border-right: 12px solid transparent;
-  border-bottom: 12px solid #1abc9c;
-  border-left: 12px solid transparent;
-  margin: 0 auto;
 }
 
 form {
@@ -133,11 +123,58 @@ input[type="email"], input[type="password"], input[type="text"], input[type="sub
   text-decoration: inherit;
 }
 
+.bold-select {
+  font-weight: bold;
+  width: 50%;
+  text-align-last: center;
+}
+
+label {
+  display: block;
+}
+
+select {
+  border: 2px solid #464646;
+  background: #fff;
+  margin-bottom: 4%;
+  border: 0;
+  border: 2px solid #464646;
+  border-radius: 5px;
+  padding: 4%;
+  font-size: 95%;
+  color: #555;
+  font-style: normal;
+  font-weight: normal;
+  text-decoration: inherit;
+}
+
 input[type="submit"] {
   width: 50%;
   border: 2px solid #464646;
   font-weight: bold;
   cursor: pointer;
+}
+
+input[type="submit"] {
+  background-color: white;
+}
+
+input[type="submit"]:hover {
+  text-shadow: 0 0 2em rgba(255, 255, 255, 1);
+  border-color: #474747;
+}
+
+input[type="submit"]:hover:not([disabled]) {
+  background: #cfcfcf;
+}
+
+input[type="submit"]:disabled {
+  background: #8a7777a1;
+  color: #0000006c;
+}
+
+input:invalid {
+  border: 2px solid #464646;
 }
 
 .slidein-right {
@@ -156,6 +193,22 @@ input[type="submit"] {
   }
 }
 
+.slidein-left {
+  animation-duration: 1s;
+  animation-name: slidein-left;
+}
+
+@keyframes slidein-left {
+  from {
+    margin-right: 100%;
+    width: 300%;
+  }
+  to {
+    margin-right: 0%;
+    width: 100%;
+  }
+}
+
 .slidein-top {
   animation-duration: 1s;
   animation-name: slidein-top;
@@ -168,22 +221,6 @@ input[type="submit"] {
   }
   to {
     margin-top: 0%;
-    width: 100%;
-  }
-}
-
-.slidein-left {
-  animation-duration: 1s;
-  animation-name: slidein-left;
-}
-
-@keyframes slidein-left {
-  from {
-    margin-right: 100%;
-    width: 300%;
-  }
-  to {
-    margin-righ: 0%;
     width: 100%;
   }
 }
@@ -217,28 +254,6 @@ input[type="submit"] {
   }
 }
 
-input[type="submit"] {
-  background-color: white;
-}
-
-input[type="submit"]:hover {
-  text-shadow: 0 0 2em rgba(255, 255, 255, 1);
-  border-color: #474747;
-}
-
-input[type="submit"]:hover:not([disabled]) {
-  background: #cfcfcf;
-}
-
-input[type="submit"]:disabled {
-  background: #8a7777a1;
-  color: #0000006c;
-}
-
-input:invalid {
-  border: 2px solid #464646;
-}
-
 .flex-container {
   display: flex;
 }
@@ -253,18 +268,6 @@ input:invalid {
 
 .flex-column {
   flex-direction: column;
-}
-
-.flex-nowrap {
-  flex-wrap: nowrap;
-}
-
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
-.flex-item {
-  padding: 5px;
 }
 
 .question {
@@ -367,11 +370,8 @@ input:invalid {
 }
 
 .players-wrapper {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border: 1px solid whitesmoke;
   padding: 10px;
-  height: 30vh;
+  height: 25vh;
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
@@ -393,10 +393,6 @@ input:invalid {
   color: rgb(44, 44, 44);
 }
 
-.typography-light {
-  color: whitesmoke;
-}
-
 .typography-dark {
   color: rgb(90, 90, 90);
 }
@@ -413,6 +409,10 @@ input:invalid {
   font-size: calc(10px + 2vmin);
 }
 
+.typography-sm-text2 {
+  font-size: calc(10px + 1.1vmin);
+}
+
 .typography-lg-text {
   font-size: 16px;
 }
@@ -425,14 +425,6 @@ input:invalid {
 .typography-emphasize-dark {
   color: rgb(0, 55, 143);
   font-weight: bolder;
-}
-
-.align-left {
-  text-align: left;
-}
-
-.align-right {
-  text-align: right;
 }
 
 .chat-container {
@@ -450,10 +442,6 @@ input[type="text"].chat-input {
 
 .typography-left-align {
   text-align: left;
-}
-
-.flex-center {
-  justify-content: center;
 }
 
 .players {

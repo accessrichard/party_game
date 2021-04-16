@@ -3,6 +3,13 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import api from '../game/gameApi';
 import { push } from 'connected-react-router';
 
+export const listGames = createAsyncThunk(
+    'game/listGames',
+    async () => {
+        return await api.list();
+    }
+)
+
 export const createGame = createAsyncThunk(
     'game/createGame',
     async (playerName, thunkAPI) => {
@@ -84,20 +91,22 @@ const initialState = {
     isOver: false,
     question: null,
     correct: '',
+    roundWinner: '',
     isWrong: false,
     flash: {},
     answers: null,
     events: [],
     rounds: [],
     playerName: null,
-    gameName: null,
+    game: null,
     gameCode: null,
     players: [],
-    gameOwner: null,    
+    gameOwner: null,
     api: {
         create: { ...apiState },
         join: { ...apiState },
-        stop: { ...apiState }
+        stop: { ...apiState },
+        list: { ...apiState }        
     }
 };
 
@@ -117,20 +126,21 @@ export const gameSlice = createSlice({
         resetState: (state) => {
             const newState = Object.assign(initialState, {
                 playerName: state.playerName,
-                gameName: state.gameName,
+                game: state.game,
                 gameCode: state.gameCode,
                 players: state.players,
                 gameOwner: state.gameOwner
             });
-            
+
             Object.assign(state, newState);
         },
-        startOver: (state, action) => {                        
-           const resetState = Object.assign(initialState, {
+        startOver: (state, action) => {
+            const resetState = Object.assign(initialState, {
                 playerName: state.playerName,
                 gameCode: state.gameCode,
                 players: state.players,
-                gameOwner: state.gameOwner});
+                gameOwner: state.gameOwner
+            });
             Object.assign(state, resetState)
         },
         clearWrongAnswer: (state) => {
@@ -139,12 +149,13 @@ export const gameSlice = createSlice({
         startRound: (state, action) => {
             state.isGameStarted = true;
             state.isRoundStarted = true;
-            state.round += 1;            
+            state.round += 1;
             state.question = action.payload.data.question;
             state.answers = action.payload.data.answers;
             state.flash = {};
             state.startCountdown = false;
             state.correct = '';
+            state.roundWinner = '';
             state.isWrong = false;
             state.isOver = action.payload.data.isOver;
         },
@@ -156,6 +167,7 @@ export const gameSlice = createSlice({
             state.flash = {};
             state.startCountdown = false;
             state.correct = '';
+            state.roundWinner = '';
             state.isWrong = false;
         },
         stopGame: (state) => {
@@ -171,10 +183,9 @@ export const gameSlice = createSlice({
         },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
-                state.flash = {text: action.payload.status};
+                state.flash = { text: action.payload.status };
                 state.isWrong = true;
             }
-            
         },
         stopRound(state, action) {
             state.isRoundStarted = false;
@@ -190,19 +201,23 @@ export const gameSlice = createSlice({
                 className: 'correct'
             }
 
+            state.roundWinner = action.payload.data.winner;
             state.correct = action.payload.data.answer;
-            
+
             state.isOver = action.payload.data.isOver;
             if (!state.isOver && !state.isPaused) {
                 state.startCountdown = true;
             }
+        },
+        changeGame: (state, action) => {
+            state.game = action.payload;
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
             state.gameCode = action.payload.room_name;
             state.players = action.payload.players;
             state.gameOwner = action.payload.room_owner;
-            state.gameName = action.payload.game;
+            state.game = action.payload.game;
         },
         addPlayer(state, action) {
             state.players.push(action.payload.player);
@@ -217,7 +232,10 @@ export const gameSlice = createSlice({
         [joinGame.rejected]: (state, action) => { rejected(state.api.join, action) },
         [stopGame.pending]: (state, action) => { pending(state.api.stop, action) },
         [stopGame.fulfilled]: (state, action) => { fulfilled(state.api.stop, action) },
-        [stopGame.rejected]: (state, action) => { rejected(state.api.stop, action) }
+        [stopGame.rejected]: (state, action) => { rejected(state.api.stop, action) },
+        [listGames.pending]: (state, action) => { pending(state.api.list, action) },
+        [listGames.fulfilled]: (state, action) => { fulfilled(state.api.list, action) },
+        [listGames.rejected]: (state, action) => { rejected(state.api.list, action) }
     }
 });
 
@@ -246,7 +264,7 @@ const getWinners = (rounds, players) => {
 
 export const getScores = createSelector([rounds, gamePlayers], getWinners);
 
-export const { 
+export const {
     startOver,
     start,
     stop,
@@ -256,10 +274,12 @@ export const {
     stopRound,
     startGame,
     startRound,
+    changeGame,
+    updateGameList,
     clearWrongAnswer,
     syncGameState,
     addPlayer,
     phxReply,
     setFlash } = gameSlice.actions;
-    
+
 export default gameSlice.reducer;

@@ -31,5 +31,6 @@ defmodule PartyGameWeb.Router do
     post "/game", GameController, :create
     post "/game/join", GameController, :join
     post "/game/stop", GameController, :stop
+    get "/game/list", GameController, :list
   end
 end

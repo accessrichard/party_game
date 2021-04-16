@@ -3,15 +3,12 @@ defmodule PartyGameWeb.GameController do
 
   alias PartyGame.Game
   alias PartyGame.Server
-  alias PartyGame.Games.States
-  alias PartyGame.Games.BasicMath
 
   action_fallback PartyGameWeb.FallbackController
 
   def create(conn, %{"player_name" => player_name}) do
     with %Game{} = game <- Game.add_player(Game.new(), player_name) do
       game = Game.gen_room_name(game)
-      game = Game.add_questions(game, BasicMath.new(10), "States")
 
       Server.start(game)
 
@@ -41,6 +38,10 @@ defmodule PartyGameWeb.GameController do
         |> put_status(:ok)
         |> render("error.json", error: reason)
     end
+  end
+
+  def list(conn, _) do
+    render(conn, "games.json", games: PartyGame.Games.Games.keys)
   end
 
   def stop(conn, %{"room_name" => room_name}) do

@@ -1,4 +1,4 @@
-import { post } from '../fetchClient';
+import { get, post } from '../fetchClient';
 
 const gameApi = {
 
@@ -12,6 +12,10 @@ const gameApi = {
 
     stop(room_name) {
         return post('api/game/stop', { room_name });
+    },
+
+    list() {
+        return get('api/game/list');
     }
 }
 

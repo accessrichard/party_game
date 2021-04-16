@@ -1,10 +1,12 @@
+import { useDispatch, useSelector } from 'react-redux';
+
+import Faces from '../common/Faces';
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import Scores from '../common/Scores';
 import { getScores } from './gameSlice';
 import { push } from 'connected-react-router'
 import { resetState } from './gameSlice';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
 
 function Score() {
     const dispatch = useDispatch();
@@ -17,37 +19,18 @@ function Score() {
 
     function playAgain(e) {
         e.preventDefault();
-        //dispatch(resetState());        
+        dispatch(resetState());        
         //TODO: reset game questions on server
-        //dispatch(push('/lobby'));
-        dispatch(push('/'));
+        dispatch(push('/lobby'));
+        //dispatch(push('/'));
     }
 
     return (
-        <div className="App App-dark">
-            <h3>Winner</h3>
-            <div>{scores && scores[0] && scores[0].name}</div>
-
-            <a href="/" onClick={playAgain}>Play Again</a>
-            <h3>Score</h3>
-            <ul className="ul-nostyle typography-left-align">
-                {scores.map((score, key) =>
-                    <li key={key} className="pd-5">
-                        <div>Player: {score && score.name}</div>
-                        <div>Score: {score && score.score}</div>
-                    </li>
-                )}
-            </ul>
-            <h3>Rounds</h3>
-            <ul className="ul-nostyle typography-left-align">
-                {rounds.map((round, key) =>
-                    <li key={key} className="pd-5">
-                        <div>Round Winner: {round && round.winner}</div>
-                        <div>Question: {round && round.question.question}</div>
-                        <div>Answer: {round && round.answer}</div>
-                    </li>
-                )}
-            </ul>
+        <div className="App app-light">
+            <div className="pd-25 md-5 large-title">{scores && scores[0] && scores[0].name + " won!"}</div>
+            <Faces isHappy={true} imgClass="small-logo spin" />
+            <Scores scores={scores} />
+            <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
         </div>
 
     );

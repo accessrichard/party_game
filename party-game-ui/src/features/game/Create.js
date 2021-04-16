@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import Logo from '../common/Logo';
 import { createGame } from './gameSlice';
 import { useDispatch } from 'react-redux';
 
@@ -9,10 +10,10 @@ function Create() {
 
     return (
         <div className="App">
-            <header className="App-header">
+            <header className="app-header">
             <div className="offset-bottom">
+            <Logo logoClass="small-logo bouncy" titleClass="small-title"></Logo>
 
-                <h3>Buzz Games</h3>
                 <div className="form">
                     <form onSubmit={(e) => e.preventDefault()}>
                         <input
@@ -21,8 +22,7 @@ function Create() {
                             placeholder="Name"
                             value={username}
                             onChange={(event) => setUsername(event.target.value)} />
-                        <input
-                            className="bouncy"                       
+                        <input                            
                             type="submit"
                             value="Create Game"
                             onClick={() => dispatch(createGame(username))} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     channelJoin,
     channelLeave,
@@ -55,8 +55,10 @@ export default function Game() {
         flash,
         isWrong,
         round,
+        game,
         isOver,
         correct,
+        roundWinner,
         configuration,
         startCountdown,
     } = useSelector(state => state.game);
@@ -67,6 +69,7 @@ export default function Game() {
 
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
+    
     const roundRef = useRef(round);
     roundRef.current = round;
 
@@ -84,7 +87,7 @@ export default function Game() {
 
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, configuration.nextQuestionTime]);
-  
+
     useEffect(() => {
         dispatch(channelJoin({ topic, data: { name: playerName } }));
         return () => dispatch(channelLeave({ topic }));
@@ -108,29 +111,28 @@ export default function Game() {
         setTimeout(() => {
             if (isWrong) {
                 dispatch(clearWrongAnswer());
-            }            
+            }
         }, 1000);
-        
+
     }, [dispatch, isWrong]);
 
-    
-    function startClick(e, action) {
-        setIsQuestionAnswered(false);
-        dispatch(channelPush(sendEvent(topic, { name: playerName }, action || "start")));
+    function startClick(e, action, payload = {}) {
+        e && e.preventDefault();
+        startClickCallback(action, payload);
     }
 
     function pauseOnWrongAnswer() {
         setTimeout(() => {
             setIsQuestionAnswered(false);
             if (startedRef.current && roundRef.current === round) {
-                dispatch(setFlash({ text: "Try Again" }))                
+                dispatch(setFlash({ text: "Try Again" }))
             }
         }, configuration.pauseOnWrongAnswer * 1000)
-    }    
+    }
 
     function timerDone() {
         setIsTimerActive(false);
-        startClick(null, correct ? "start" : "next");
+        startClickCallback(correct ? "start" : "next");
     }
 
     function onAnswerClick(e, answer) {
@@ -140,40 +142,47 @@ export default function Game() {
         pauseOnWrongAnswer();
     }
 
+    const startClickCallback = useCallback((action, payload = {}) => {
+        setIsQuestionAnswered(false);
+        const data = { name: playerName, ...payload };
+        dispatch(channelPush(sendEvent(topic, data, action || "start")));
+      }, [topic, dispatch, playerName])
+
     useEffect(() => {
         setIsTimerActive(false);
-        startClick(null, "start");
-    }, []);
+        //TODO: bug with default select
+        startClickCallback("new", { game: game || "Basic Math", rounds: 5 });
+    }, [game, startClickCallback]);
 
     useEffect(() => {
         setTimeout(() => {
             if (isWrong) {
                 dispatch(clearWrongAnswer());
-            }            
+            }
         }, 1000);
-        
+
     }, [dispatch, isWrong]);
 
     if (isOver) {
-        setTimeout(()=>{
+        setTimeout(() => {
             dispatch(push('/score'));
         }, 1000);
     }
 
     return (
         <React.Fragment>
-            <div className="App-dark lg-12">
-                <header className="App-header1">
-                    <h3>Buzzer Game</h3>
-                    {correct !== "" &&  <Faces isHappy={true}/>}
-                    {isWrong &&  <Faces key={isWrong} isHappy={false}/>}
+            <div className="app-light lg-12">
+                <header className="app-header1">
+                    <h3>Buzz Game</h3>
+                    {roundWinner === playerName && correct !== "" && <Faces isHappy={true} />}
+                    {isWrong && <Faces key={isWrong} isHappy={false} />}
                 </header>
                 <div className="question">
                     {question}
                 </div>
 
                 <Answers onAnswerClick={onAnswerClick}
-                    isDisabled={!isRoundStarted && isQuestionAnswered}
+                    isDisabled={(!isRoundStarted && isQuestionAnswered) || (correct !== "" || isWrong)}
                     answers={answers}
                     correct={correct}>
                 </Answers>
@@ -183,7 +192,7 @@ export default function Game() {
                 </div>
                 <div className="flex-container">
                     {gameOwner === playerName && !isRoundStarted &&
-                        <a className="App-link" onClick={startClick}>Next</a>}
+                        <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                 </div>
                 <div>
                     <span className="typography-md-text">

@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Logo from '../common/Logo';
 import { joinGame } from './gameSlice';
 import { useParams } from "react-router-dom";
 
-function Join(props) {
+function Join() {
 
     let { id } = useParams();
 
@@ -24,9 +25,9 @@ function Join(props) {
 
     return (
         <div className="App">
-            <header className="App-header">
+            <header className="app-header">
                 <div className="offset-bottom">
-                    <h3>Buzz Games</h3>
+                <Logo logoClass="small-logo bouncy" titleClass="small-title"></Logo>
                     <div className="form">
                         <form onSubmit={(e) => e.preventDefault()}>
                             <input type="text"
