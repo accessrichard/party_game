@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../balloons-party-svgrepo-com.svg';
+import logo from '../../img/balloons-party-svgrepo-com.svg';
 
 const Logo = (props) => {
     const { logoClass, titleClass, title } = props;
