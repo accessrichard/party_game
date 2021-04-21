@@ -153,7 +153,7 @@ export default function Game() {
         setIsTimerActive(false);
         
         startClickCallback("new", { game: game || (gameList && gameList[0]), rounds: 5 });
-    }, [game, startClickCallback]);
+    }, [game, startClickCallback, gameList]);
 
     useEffect(() => {
         setTimeout(() => {

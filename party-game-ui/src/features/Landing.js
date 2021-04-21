@@ -17,7 +17,7 @@ function Landing() {
         <div className="App">
          
             <header className="app-header">
-                <Logo logoClass="App-logo bouncy" titleClass="large-title slidein-right" />
+                <Logo logoClass="app-logo bouncy" showSubtitle={true} titleClass="large-title slidein-right" />
                 <p className="slidein-left">
                     Create&nbsp;
                     <NavLink className="app-link" to="/create">New</NavLink>

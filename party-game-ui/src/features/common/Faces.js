@@ -26,7 +26,7 @@ const Faces = (props) => {
     const { isHappy, imgClass } = props;
     return (
         <React.Fragment>
-            <img src={randomFace(isHappy)} className={imgClass || "App-logo"} alt="logo" />
+            <img src={randomFace(isHappy)} className={imgClass || "app-logo"} alt="logo" />
         </React.Fragment >
     );
 }

@@ -13,7 +13,7 @@ body {
   text-align: center;
 }
 
-.App-logo {
+.app-logo {
   height: 30vmin;
   pointer-events: none;
 }
@@ -46,7 +46,12 @@ body {
 }
 
 .app-link {
-  color: #61dafb;
+  color: white;
+  cursor: pointer;
+}
+
+.app-link:visited {
+  color: white;
   cursor: pointer;
 }
 
@@ -57,10 +62,10 @@ body {
 
 .spin {
   animation-duration: 1s;
-  animation-name: App-logo-spin;
+  animation-name: app-logo-spin;
 }
 
-@keyframes App-logo-spin {
+@keyframes app-logo-spin {
   from {
     transform: rotate(0deg);
   }
@@ -69,11 +74,37 @@ body {
   }
 }
 
+.fade-in {
+	opacity: 1;
+	animation-name: fadeInOpacity;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 2s;
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 .time {
   position: absolute;
   bottom: 10px;
   right: 10px;
 
+}
+.tiny-title {
+  display: block;
+  font-size: .5em;
+  padding: 0;
+}
+
+.right-align {
+  text-align: right;
 }
 
 .small-title {
@@ -97,8 +128,7 @@ form {
   -moz-border-radius: 5px;
   width: 400px;
   margin: 0 auto;
-  margin-top: 8px;
-  margin-bottom: 2%;
+  margin-top: 8px;  
   transition: opacity 1s;
   -webkit-transition: opacity 1s;
   -moz-transition: opacity 1s;
@@ -110,10 +140,9 @@ input:focus {
 
 input[type="email"], input[type="password"], input[type="text"], input[type="submit"] {
   width: 87%;
-  background: #fff;
-  margin-bottom: 4%;
+  background: #fff;  
   border: 0;
-  border: 1px solid rgb(121, 121, 121);
+  border: 2px solid #464646;
   border-radius: 5px;
   padding: 4%;
   font-size: 95%;
@@ -121,6 +150,8 @@ input[type="email"], input[type="password"], input[type="text"], input[type="sub
   font-style: normal;
   font-weight: normal;
   text-decoration: inherit;
+  margin: 1%;
+
 }
 
 .bold-select {
@@ -153,6 +184,11 @@ input[type="submit"] {
   border: 2px solid #464646;
   font-weight: bold;
   cursor: pointer;
+  margin: 1%;
+}
+
+.input-seperator {
+  margin-top: 4%;
 }
 
 input[type="submit"] {
@@ -173,8 +209,45 @@ input[type="submit"]:disabled {
   color: #0000006c;
 }
 
-input:invalid {
-  border: 2px solid #464646;
+input:not(:focus):not(:placeholder-shown):invalid {
+  border: 2px solid red;
+}
+
+input:not(:focus):required:invalid {
+  border: 2px solid red;
+}
+
+.input-error {
+  border: 2px solid red;
+}
+
+.input-error-text {
+  text-align: left;
+  padding: 1% 0 1% 2%;
+  font-size: .5em;
+}
+
+.shake {
+  animation-duration: 1s;
+  animation-name: shake;
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 .slidein-right {
@@ -313,6 +386,10 @@ input:invalid {
   transition: background .3s;
   -webkit-transition: background .3s;
   -moz-transition: background .3s;
+}
+
+.answer input {
+  margin: 0;
 }
 
 .fill-space {
