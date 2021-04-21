@@ -21,14 +21,14 @@ function Create() {
                 value: form.username
             }]);
 
-        if (result.length === 0) {
-            dispatch(createGame(form.username));
-        } else {
+        if (result.length) {
             const fieldNames = getFieldErrors(result);
             setForm(prevState => ({
                 ...prevState,
                 ...fieldNames
             }));
+        } else {
+            dispatch(createGame(form.username));
         }
     }
 

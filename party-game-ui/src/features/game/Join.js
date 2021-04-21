@@ -44,14 +44,14 @@ function Join() {
                 value: form.gameCode
             }]);
 
-        if (result.length === 0) {
-            dispatch(joinGame({ username: form.username, gameCode: form.gameCode }));
-        } else {
+        if (result.length) {
             const fieldNames = getFieldErrors(result);
             setForm(prevState => ({
                 ...prevState,
                 ...fieldNames
             }));
+        } else {
+            dispatch(joinGame({ username: form.username, gameCode: form.gameCode }));
         }
     }
 
