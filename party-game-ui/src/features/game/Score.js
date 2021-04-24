@@ -20,9 +20,7 @@ function Score() {
     function playAgain(e) {
         e.preventDefault();
         dispatch(resetState());        
-        //TODO: reset game questions on server
         dispatch(push('/lobby'));
-        //dispatch(push('/'));
     }
 
     return (

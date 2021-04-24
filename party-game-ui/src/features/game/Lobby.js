@@ -7,6 +7,8 @@ import {
     channelOn,
     channelPush,
     socketConnect,
+    SOCKET_CONNECTED,
+    SOCKET_CONNECTING
 } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -34,6 +36,7 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const dispatch = useDispatch();
     const { playerName, gameCode, gameOwner, isGameStarted } = useSelector(state => state.game);
+    const socketStatus = useSelector(state => state.phoenix.socket.status);
     const games = useSelector(state => state.game.api.list.data);
     const gameListLoading = useSelector(state => state.game.api.list.loading);
 
@@ -62,11 +65,16 @@ export default function Lobby() {
     }, [dispatch]);
 
     useEffect(() => {
-        dispatch(socketConnect({
-            host: 'ws://localhost:4000/socket',
-            params: {}
-        }));
+        if (socketStatus !== SOCKET_CONNECTED 
+           && socketConnect !== SOCKET_CONNECTING){
+            dispatch(socketConnect({
+                host: 'ws://localhost:4000/socket',
+                params: {}
+            }));
+        }
+    }, [socketStatus, dispatch]);
 
+    useEffect(() => {        
         dispatch(channelJoin({
             topic,
             data: { name: playerName }
@@ -103,12 +111,12 @@ export default function Lobby() {
                         <Players></Players>
                     </div>
                     {gameOwner === playerName
-                            ? <div className="typography-lg-text">
-                                Share this link to play with friends:
+                        ? <div className="typography-lg-text">
+                            Share this link to play with friends:
                                 <div className="light-link pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
-                            </div>
-                            : <div className="typography-lg-text">Waiting for game owner to start game.</div>
-                        }
+                        </div>
+                        : <div className="typography-lg-text">Waiting for game owner to start game.</div>
+                    }
 
                     {gameOwner === playerName &&
                         <React.Fragment>

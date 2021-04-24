@@ -106,7 +106,7 @@ const initialState = {
         create: { ...apiState },
         join: { ...apiState },
         stop: { ...apiState },
-        list: { ...apiState }        
+        list: { ...apiState }
     }
 };
 
@@ -124,15 +124,15 @@ export const gameSlice = createSlice({
     initialState: initialState,
     reducers: {
         resetState: (state) => {
-            const newState = Object.assign(initialState, {
+            const savedState = {
                 playerName: state.playerName,
                 game: state.game,
                 gameCode: state.gameCode,
                 players: state.players,
                 gameOwner: state.gameOwner
-            });
+            };
 
-            Object.assign(state, newState);
+            Object.assign(state, { ...initialState, ...savedState });
         },
         startOver: (state, action) => {
             const resetState = Object.assign(initialState, {
@@ -220,7 +220,9 @@ export const gameSlice = createSlice({
             state.game = action.payload.game;
         },
         addPlayer(state, action) {
-            state.players.push(action.payload.player);
+            if (!state.players.includes(action.payload.player)) {
+                state.players.push(action.payload.player);
+            }
         },
     },
     extraReducers: {
