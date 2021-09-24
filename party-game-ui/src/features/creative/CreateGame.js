@@ -1,0 +1,206 @@
+import { MULTIPLE_CHOICE, TRUE_FALSE } from '../common/questionTypes';
+import React, { useEffect, useState } from 'react';
+import { errors, game, question, questionErrors } from './game';
+
+import ImportGame from './ImportGame';
+import InputField from '../common/InputField';
+import QuestionForm from './QuestionForm';
+import createApi from './createApi';
+
+function removeIndexFromName(name) {
+    if (name && name.indexOf("-!-") !== -1) {
+        return name.substr(0, name.indexOf("-!-"));
+    }
+
+    return name;
+}
+
+function updateQuestion(newQuestion, field, defaultVal, index) {
+    if (typeof newQuestion[index] === 'undefined') {
+        newQuestion[index] = { ...defaultVal };
+    }
+
+    newQuestion[index] = { ...newQuestion[index], ...field };
+}
+
+function mapToTrueFalseQuestion(question) {
+    question.answers = ["True", "False"];
+    question.correct = (question.correct.toString() === "1" && "True") || "False";
+}
+
+function mapToMultipleChoiceQuestion(question) {
+    question.correct = question["answer" + question.correct] || question.answer1;
+    question.answers = Object.entries(question)
+        .filter(([key, value]) => value !== ""
+            && key.startsWith("answer"))
+        .map(val => val[1]);
+}
+
+function toFieldObject(e) {
+    var name = removeIndexFromName(e.target.name);
+    const obj = {};
+    obj[name] = e.target.value;
+    return obj;
+}
+
+function toErrorObject(e) {
+    var name = removeIndexFromName(e.target.name);
+    const obj = {};
+    obj[name] = e.target.validationMessage;
+    return obj;
+}
+
+function getGame(props, game) {
+    if (props.game) {
+        return props.game;
+    }
+
+    return game;
+}
+
+export default function CreateGame(props) {
+
+    const [jsonGame, setJsonGame] = useState();
+    const [form, setForm] = useState({
+        ...getGame(props, game),
+        errors: errors
+    });
+
+    useEffect(() => {
+
+        if (props.game) {
+            setForm(props.game);
+        }
+
+    }, [props.game])
+
+    function handleChanges(e, index) {
+        console.log(index, e.target)
+        let newForm = { ...form };
+        if (index !== undefined) {
+            updateQuestion(newForm.questions, toFieldObject(e), question, index);
+            updateQuestion(newForm.errors.questions, toErrorObject(e), questionErrors, index);
+        } else {
+            newForm = { ...newForm, ...toFieldObject(e) };
+            newForm.errors[e.target.name] = e.target.validationMessage;
+        }
+
+        setForm(newForm);
+    }
+
+    function addQuestion(e) {
+        e.preventDefault();
+        setForm({ ...form, questions: [...form.questions, question] });
+    }
+
+    function removeQuestion(index) {
+        let newForm = { ...form };
+        newForm.questions.splice(index, 1);
+        newForm.errors.questions.splice(index, 1);
+        setForm(newForm);
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        if (e.target.reportValidity()) {
+            downloadGame(e);
+        } else {
+            setJsonGame("");
+            setForm(form);
+        }
+    }
+
+    async function downloadGame(e) {
+        const jsonForm = JSON.parse(JSON.stringify(form));
+        delete jsonForm.errors;
+
+        jsonForm.questions.forEach((q) => {
+            if (q.type === TRUE_FALSE) {
+                mapToTrueFalseQuestion(q);
+            } else {
+                mapToMultipleChoiceQuestion(q);
+            }
+
+            Object.keys(q).filter((key) => key.startsWith("answer") && key !== "answers")
+                .forEach((key) => {
+                    delete q[key];
+                });
+        });
+
+        const isValid = await createApi.isValid(jsonForm).catch((err) => console.log(err))
+        if (isValid) {
+            setJsonGame(JSON.stringify(jsonForm, null, 2));
+        }
+        
+        
+    }
+
+    function getType(index) {
+        return (form
+            && form.questions
+            && typeof form.questions[index] !== 'undefined'
+            && form.questions[index].type)
+            || MULTIPLE_CHOICE;
+    }
+
+    return (
+        <React.Fragment>
+            <form noValidate onSubmit={handleSubmit} className="flex-grid flex-column  md-5 form center-65">
+                <div className="empty-space">
+                    <div className="flex-row">
+                        <div className="flex-column md-5">
+                            <InputField
+                                label="Game Name"
+                                id="name"
+                                required
+                                name="name"
+                                value={form.name}
+                                onInvalid={handleChanges}
+                                onChange={handleChanges}
+                                onBlur={handleChanges}
+                                errors={[(form.errors && form.errors.name) || ""]}>
+                            </InputField>
+                        </div>
+                    </div>
+                </div>
+                {form.questions.map((elem, index) => (
+                    <div key={index} className={index % 2 === 0 ? "empty-space list-odd" : "empty-space even list-even"}>
+                        <QuestionForm
+                            errors={form.errors}
+                            index={index}
+                            type={getType(index)}
+                            value={form.questions[index]}
+                            onInvalid={(e) => handleChanges(e, index)}
+                            onBlur={(e) => handleChanges(e, index)}
+                            onChange={(e) => handleChanges(e, index)}>
+                        </QuestionForm>
+
+                        {(index !== 0 && index === form.questions.length - 1) && <div className="flex-row">
+                            <div className="flex-column md-5 flex-right small-font ">
+                                <input type="submit" value={"Delete Question " + (index + 1)} onClick={() => removeQuestion(index)} />
+                            </div>
+                        </div>}
+
+                    </div>
+                ))}
+
+                <div className="flex-row">
+                    <div className="flex-column md-5">
+                        <input type="submit" className="bordered-input" value="Add Question" onClick={addQuestion} />
+                    </div>
+                </div>
+
+                <div className="flex-row">
+                    <div className="flex-column md-5">
+                        <input type="submit" className="bordered-input" value="Download Game" />
+                    </div>
+                </div>
+
+                {jsonGame && <ImportGame
+                    text="Copy the following and save it on your computer:"
+                    hideSubmit={true}
+                    game={jsonGame}></ImportGame>}
+            </form>
+        </React.Fragment>
+    );
+}

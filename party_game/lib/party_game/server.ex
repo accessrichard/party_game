@@ -1,6 +1,7 @@
 defmodule PartyGame.Server do
   use GenServer, restart: :transient
-  alias PartyGame.Game
+  alias PartyGame.Game.Game
+  alias PartyGame.GameRoom
 
   @registry PartyGame.Game.Registry
 
@@ -86,7 +87,7 @@ defmodule PartyGame.Server do
 
   @impl true
   def handle_call({:buzz, name, answer}, _from, game) do
-    with {:win, game} <- Game.buzz(game, name, answer) do
+    with {:win, game} <- GameRoom.buzz(game, name, answer) do
       {:reply, {:win, game}, game, @timeout}
     else
       {:lose, game} -> {:reply, {:lose, game}, game, @timeout}

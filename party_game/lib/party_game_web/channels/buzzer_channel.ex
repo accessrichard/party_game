@@ -2,7 +2,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   use PartyGameWeb, :channel
 
   alias PartyGame.Server
-  alias PartyGame.Game
+  alias PartyGame.GameRoom
   alias PartyGame.Games.Games
 
   @impl true
@@ -31,7 +31,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   @impl true
   def terminate(_reason, socket) do
     Server.get_game(game_code(socket.topic))
-    |> Game.remove_player(socket.assigns.name)
+    |> GameRoom.remove_player(socket.assigns.name)
     |> Server.update_game()
 
     :ok
@@ -63,8 +63,8 @@ defmodule PartyGameWeb.BuzzerChannel do
 
     game =
       Server.get_game(game_code(socket.topic))
-      |> Game.start_round()
-      |> Game.add_questions(questions, game_name)
+      |> GameRoom.start_round()
+      |> GameRoom.add_questions(questions, game_name)
       |> Server.update_game()
 
     reply_with_questions(socket, game, payload)
@@ -73,7 +73,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp start(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
-      |> Game.start_round()
+      |> GameRoom.start_round()
       |> Server.update_game()
 
     reply_with_questions(socket, game, payload)
@@ -89,8 +89,8 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp next(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
-      |> Game.next_question()
-      |> Game.start_round()
+      |> GameRoom.next_question()
+      |> GameRoom.start_round()
       |> Server.update_game()
 
     payload = start(payload)
@@ -127,7 +127,7 @@ defmodule PartyGameWeb.BuzzerChannel do
     game = Server.get_game(game_code(socket.topic))
     answer = Map.get(payload, "answer")
 
-    case Game.buzz(game, socket.assigns.name, answer) do
+    case GameRoom.buzz(game, socket.assigns.name, answer) do
       {:win, game} ->
         broadcast(
           socket,

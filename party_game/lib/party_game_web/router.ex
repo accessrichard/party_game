@@ -2,6 +2,7 @@ defmodule PartyGameWeb.Router do
   use PartyGameWeb, :router
 
   alias PartyGameWeb.GameController
+  alias PartyGameWeb.CreateController
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -29,6 +30,7 @@ defmodule PartyGameWeb.Router do
 
   scope "/api" do
     post "/game", GameController, :create
+    post "/create/validate", CreateController, :validate
     post "/game/join", GameController, :join
     post "/game/stop", GameController, :stop
     get "/game/list", GameController, :list

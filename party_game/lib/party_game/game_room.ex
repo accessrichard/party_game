@@ -1,19 +1,9 @@
-defmodule PartyGame.Game do
+defmodule PartyGame.GameRoom do
+
   alias PartyGame.Game
-  alias PartyGame.Round
+  alias PartyGame.Game.Round
   alias PartyGame.Server
-
-  defstruct players: [],
-            rounds: [],
-            started: false,
-            round_started: false,
-            room_name: nil,
-            room_owner: nil,
-            game: nil,
-            is_over: false,
-            questions: []
-
-  def new(fields \\ []), do: __struct__(fields)
+  alias PartyGame.Game.Game
 
   def gen_room_name(%Game{} = game) do
     %{game | room_name: Server.room_name()}
@@ -38,7 +28,7 @@ defmodule PartyGame.Game do
   end
 
   def add_questions(%Game{} = game, questions, name \\ "Game") do
-    %{game | questions: questions, game: name}
+    %{game | questions: questions, name: name}
   end
 
   def remove_player(%Game{} = game, player_name) do

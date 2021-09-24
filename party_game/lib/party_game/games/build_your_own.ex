@@ -1,5 +1,5 @@
 defmodule PartyGame.Games.BuildYourOwn do
-  alias PartyGame.Question
+  alias PartyGame.Game.Question
 
   def new(number_questions \\ 10) do
   end

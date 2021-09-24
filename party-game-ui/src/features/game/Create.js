@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { getFieldErrors, validate } from '../common/validator';
 
+import InputField from '../common/InputField';
 import Logo from '../common/Logo';
 import { createGame } from './gameSlice';
 import { useDispatch } from 'react-redux';
@@ -9,67 +9,58 @@ function Create() {
     const dispatch = useDispatch();
     const [form, setForm] = useState({
         username: "",
-        usernameError: ""
+        errors: {
+            username: ""
+        }
     });
 
-    function handleSubmit() {
-        const result = validate([
-            {
-                validators: ['required'],
-                name: "User Name",
-                field: "username",
-                value: form.username
-            }]);
-
-        if (result.length) {
-            const fieldNames = getFieldErrors(result);
-            setForm(prevState => ({
-                ...prevState,
-                ...fieldNames
-            }));
-        } else {
+    function handleSubmit(e) {
+        if (e.target.reportValidity()) {
             dispatch(createGame(form.username));
         }
+        e.preventDefault();
     }
 
-    function handleChange(e) {
-        const { name, value } = e.target;
+    function handleChanges(e) {
+        const { name, value, validationMessage } = e.target;
 
-
-        setForm(prevState => ({
-            ...prevState,
+        let newForm = {
+            ...form,
             [name]: value,
-            [name + 'Error']: ''
-        }));
-    };
+        };
 
+        newForm.errors = { ...newForm.errors, [name]: validationMessage };
+        setForm(newForm);
+    }
 
     return (
-        <div className="App">
-            <header className="app-header">
-                <div className="offset-bottom">
-                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
+        <div className="offset-bottom">
+            <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
 
-                    <div className="form">
-                        <form onSubmit={(e) => e.preventDefault()} noValidate>
-                            <input
-                                type="text"
-                                required
-                                autoComplete="off"
-                                className={form.usernameError && "input-error"}
-                                placeholder="Name"
-                                value={form.username}
-                                name="username"
-                                onChange={handleChange} />
-                            {form.usernameError && <div class="input-error-text shake">{form.usernameError}</div>}
-                            <input
-                                type="submit"
-                                value="Create Game"
-                                onClick={handleSubmit} />
-                        </form>
-                    </div>
+            <form className="flex-grid flex-column form fill-space" onSubmit={handleSubmit} noValidate>
+                <div className="empty-space margin-bottom-5">
+                    <InputField
+                        placeholder="User Name"
+                        id="username"
+                        required
+                        name="username"
+                        autoComplete="off"
+                        className="bordered-input line-hieght-medium"
+                        onInvalid={handleChanges}
+                        onChange={handleChanges}
+                        labelClass="align-left typography-emphasize"
+                        onBlur={handleChanges}
+                        errorClassName="input-error-text shake"
+                        errors={[(form.errors && form.errors.username) || ""]}>
+                    </InputField>
                 </div>
-            </header>
+
+                <input
+                    type="submit"
+                    value="Create Game"
+                    className="fill-space line-hieght-medium"
+                />
+            </form>
         </div>
     );
 }

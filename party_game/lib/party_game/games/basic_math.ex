@@ -1,5 +1,5 @@
 defmodule PartyGame.Games.BasicMath do
-  alias PartyGame.Question
+  alias PartyGame.Game.Question
 
   def new(number_questions \\ 10) do
     percentage_of_each = ceil(number_questions / 3)

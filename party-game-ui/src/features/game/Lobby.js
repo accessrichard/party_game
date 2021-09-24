@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { addPlayer, changeGame, listGames, startGame } from './gameSlice';
 import {
+    SOCKET_CONNECTED,
+    SOCKET_CONNECTING,
     channelJoin,
     channelLeave,
     channelOff,
     channelOn,
     channelPush,
-    socketConnect,
-    SOCKET_CONNECTED,
-    SOCKET_CONNECTING
+    socketConnect
 } from '../phoenix/phoenixMiddleware';
+import { addPlayer, changeGame, listGames, startGame } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameCodeLink from '../common/GameCodeLink';
@@ -52,12 +52,16 @@ export default function Lobby() {
 
     const topic = `lobby:${gameCode}`
 
-    function startGameClick() {
-        dispatch(channelPush({
-            topic: topic,
-            event: topic,
-            data: { action: 'start' }
-        }));
+
+    function handleSubmit(e) {
+        if (e.target.reportValidity()) {
+            dispatch(channelPush({
+                topic: topic,
+                event: topic,
+                data: { action: 'start' }
+            }));
+        }
+        e.preventDefault();
     }
 
     useEffect(() => {
@@ -65,8 +69,8 @@ export default function Lobby() {
     }, [dispatch]);
 
     useEffect(() => {
-        if (socketStatus !== SOCKET_CONNECTED 
-           && socketConnect !== SOCKET_CONNECTING){
+        if (socketStatus !== SOCKET_CONNECTED
+            && socketConnect !== SOCKET_CONNECTING) {
             dispatch(socketConnect({
                 host: 'ws://localhost:4000/socket',
                 params: {}
@@ -74,7 +78,7 @@ export default function Lobby() {
         }
     }, [socketStatus, dispatch]);
 
-    useEffect(() => {        
+    useEffect(() => {
         dispatch(channelJoin({
             topic,
             data: { name: playerName }
@@ -99,8 +103,7 @@ export default function Lobby() {
 
     return (
         <React.Fragment>
-            <div className="App">
-                <div className="app-light lg-12">
+          
                     <header className="app-header1">
                         <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
                         <span className="typography-md-text time">
@@ -121,13 +124,20 @@ export default function Lobby() {
                     {gameOwner === playerName &&
                         <React.Fragment>
 
-                            <form className="pd-5" onSubmit={(e) => e.preventDefault()}>
-                                <GameList defaultValue={games && games[0]} onGameChange={onGameChange} games={games} />
-                                <input className="md-5" disabled={gameListLoading === 'pending'} type="submit" value="Start" onClick={startGameClick} />
+                            <form className="flex-grid flex-column md-5 form lg-2" noValidate onSubmit={handleSubmit}>
+                                <div className="flex-row">
+                                    <div className="flex-column margin-bottom-5">
+                                        <GameList defaultValue={games && games[0]} onGameChange={onGameChange} games={games} />
+                                    </div>
+                                </div>
+                                <div className="flex-row">
+                                    <div className="flex-column margin-bottom-5">
+                                        <input className="line-hieght-medium" disabled={gameListLoading === 'pending'} type="submit" value="Start" />
+                                    </div>
+                                </div>
                             </form>
                         </React.Fragment>}
-                </div>
-            </div>
+               
         </React.Fragment >
     );
 }

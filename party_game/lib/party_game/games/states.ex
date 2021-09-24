@@ -1,5 +1,5 @@
 defmodule PartyGame.Games.States do
-  alias PartyGame.Question
+  alias PartyGame.Game.Question
 
   def new(number_questions \\ 10) do
     states = Enum.take_random(state_capitals(), number_questions)

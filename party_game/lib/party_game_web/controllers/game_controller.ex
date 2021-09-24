@@ -1,14 +1,15 @@
 defmodule PartyGameWeb.GameController do
   use PartyGameWeb, :controller
 
-  alias PartyGame.Game
+  alias PartyGame.GameRoom
+  alias PartyGame.Game.Game
   alias PartyGame.Server
 
   action_fallback PartyGameWeb.FallbackController
 
   def create(conn, %{"player_name" => player_name}) do
-    with %Game{} = game <- Game.add_player(Game.new(), player_name) do
-      game = Game.gen_room_name(game)
+    with %Game{} = game <- GameRoom.add_player(Game.new(), player_name) do
+      game = GameRoom.gen_room_name(game)
 
       Server.start(game)
 
@@ -26,7 +27,7 @@ defmodule PartyGameWeb.GameController do
   def join(conn, %{"player_name" => player_name, "room_name" => room_name}) do
     with {:ok, pid} <- Server.lookup(room_name),
          game = GenServer.call(pid, :game),
-         %Game{} = game <- Game.add_player(game, player_name) do
+         %Game{} = game <- GameRoom.add_player(game, player_name) do
       Server.update_game(room_name, game)
 
       conn

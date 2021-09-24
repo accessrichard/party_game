@@ -35,6 +35,7 @@ defmodule PartyGame.MixProject do
     [
       {:phoenix, "~> 1.5.7"},
       {:phoenix_live_dashboard, "~> 0.4"},
+      {:ecto_sql, "~> 3.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},

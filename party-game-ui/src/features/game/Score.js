@@ -19,18 +19,17 @@ function Score() {
 
     function playAgain(e) {
         e.preventDefault();
-        dispatch(resetState());        
+        dispatch(resetState());
         dispatch(push('/lobby'));
     }
 
     return (
-        <div className="App app-light">
+        <React.Fragment>
             <div className="pd-25 md-5 large-title">{scores && scores[0] && scores[0].name + " won!"}</div>
             <Faces isHappy={true} imgClass="small-logo spin" />
             <Scores scores={scores} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
-        </div>
-
+        </React.Fragment>
     );
 }
 

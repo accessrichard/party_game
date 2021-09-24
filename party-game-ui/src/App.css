@@ -75,20 +75,20 @@ body {
 }
 
 .fade-in {
-	opacity: 1;
-	animation-name: fadeInOpacity;
-	animation-iteration-count: 1;
-	animation-timing-function: ease-in;
-	animation-duration: 2s;
+    opacity: 1;
+    animation-name: fadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 2s;
 }
 
 @keyframes fadeInOpacity {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 .time {
@@ -121,7 +121,7 @@ body {
   margin: .5vm;
 }
 
-form {
+form.medium-width {
   padding: 6% 4%;
   border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -134,29 +134,49 @@ form {
   -moz-transition: opacity 1s;
 }
 
+.align-left {
+  text-align: left;
+}
+
+.flex-right {
+  align-items: flex-end;
+}
+
+label {
+  color: whitesmoke;
+  margin-bottom: 1%;
+  text-align: left;
+  font-size: .7em;
+}
+
 input:focus {
   outline-width: 0px;
 }
 
+.header-bolder {
+  font-weight: bolder;  
+}
+
+input[type="submit"].bordered-input, input[type="text"].bordered-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid rgb(185, 185, 185);
+}
+
 input[type="email"], input[type="password"], input[type="text"], input[type="submit"] {
-  width: 87%;
   background: #fff;  
   border: 0;
   border: 2px solid #464646;
   border-radius: 5px;
-  padding: 4%;
   font-size: 95%;
   color: #555;
   font-style: normal;
   font-weight: normal;
   text-decoration: inherit;
-  margin: 1%;
-
 }
 
 .bold-select {
   font-weight: bold;
-  width: 50%;
   text-align-last: center;
 }
 
@@ -167,11 +187,9 @@ label {
 select {
   border: 2px solid #464646;
   background: #fff;
-  margin-bottom: 4%;
   border: 0;
   border: 2px solid #464646;
   border-radius: 5px;
-  padding: 4%;
   font-size: 95%;
   color: #555;
   font-style: normal;
@@ -180,11 +198,10 @@ select {
 }
 
 input[type="submit"] {
-  width: 50%;
+  
   border: 2px solid #464646;
   font-weight: bold;
-  cursor: pointer;
-  margin: 1%;
+  cursor: pointer;  
 }
 
 .input-seperator {
@@ -217,14 +234,26 @@ input:not(:focus):required:invalid {
   border: 2px solid red;
 }
 
+.line-hieght-medium {
+  line-height: 2;
+}
+
+.error-color {
+  color: whitesmoke;
+}
+
 .input-error {
-  border: 2px solid red;
+  border: 2px solid whitesmoke;
 }
 
 .input-error-text {
   text-align: left;
-  padding: 1% 0 1% 2%;
-  font-size: .5em;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.small-font {
+  font-size: .7em;  
 }
 
 .shake {
@@ -337,10 +366,23 @@ input:not(:focus):required:invalid {
 
 .flex-row {
   flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  display: flex;
 }
 
 .flex-column {
   flex-direction: column;
+  display:flex;
+  flex-basis: 0;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+
+@media (max-width: 800px) {
+  .flex-column {
+    flex: 100%;
+  }
 }
 
 .question {
@@ -352,18 +394,39 @@ input:not(:focus):required:invalid {
   padding-bottom: 15%;
 }
 
+.light-background {
+  background: whitesmoke;
+}
+
+.empty-space {
+  margin-bottom: 5%;
+}
+
+.margin-bottom-5 {
+  margin-bottom: 5px;
+}
+
 .answer {
   width: 40%;
-  border: 1px solid rgb(70, 70, 70);
   border-radius: 0%;
-  background: whitesmoke;
   color: rgb(70, 70, 70);
   min-height: 100px;
+}
+
+.center-65 {
+  width: 65%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .answer-wrapper {
   justify-content: center;
   width: 65%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.flex-grid {
   display: flex;
   flex-wrap: wrap;
 }
@@ -406,11 +469,15 @@ input:not(:focus):required:invalid {
 }
 
 .lg-4 {
-  width: 25%;
+  width: 33%;
 }
 
 .lg-3 {
-  width: 33%;
+  width: 25%;
+}
+
+.lg-2 {
+  width: 16.66%;
 }
 
 .pd-0 {
@@ -492,6 +559,10 @@ input:not(:focus):required:invalid {
 
 .typography-lg-text {
   font-size: 16px;
+}
+
+.select-height-tall {
+  height: 45px;
 }
 
 .typography-emphasize {

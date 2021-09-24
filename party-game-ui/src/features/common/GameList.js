@@ -9,8 +9,13 @@ export default function GameList(props) {
 
     return (
         <React.Fragment>
-            <label htmlFor="game-list">Select Game:</label>
-            <select defaultValue={defaultValue} id="game-list" name="games" className="bold-select" onChange={onGameChange}>
+            <label htmlFor="game-list" className="typography-emphasize">Select Game:</label>
+            <select defaultValue={defaultValue} 
+                    id="game-list" 
+                    name="games" 
+                    className="bold-select select-height-tall header-bolder lighter-label" 
+                    onChange={onGameChange}>
+                        
                 {(games || []).map((val, key) =>
                     <option key={key} value={val}>{val}</option>
                 )}
