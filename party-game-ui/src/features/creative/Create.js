@@ -1,11 +1,25 @@
 import { MULTIPLE_CHOICE, TRUE_FALSE } from '../common/questionTypes';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { errors, game, question, questionErrors } from './game';
 
-import ImportGame from './ImportGame';
 import InputField from '../common/InputField';
 import QuestionForm from './QuestionForm';
-import createApi from './createApi';
+import { createGame } from './creativeSlice';
+import { useDispatch } from 'react-redux';
+
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+}
+
 
 function removeIndexFromName(name) {
     if (name && name.indexOf("-!-") !== -1) {
@@ -36,6 +50,26 @@ function mapToMultipleChoiceQuestion(question) {
         .map(val => val[1]);
 }
 
+function toServerSideGame(form) {
+    const exportForm = JSON.parse(JSON.stringify(form));
+    delete exportForm.errors;
+
+    exportForm.questions.forEach((q) => {
+        if (q.type === TRUE_FALSE) {
+            mapToTrueFalseQuestion(q);
+        } else {
+            mapToMultipleChoiceQuestion(q);
+        }
+
+        Object.keys(q).filter((key) => key.startsWith("answer") && key !== "answers")
+            .forEach((key) => {
+                delete q[key];
+            });
+    });
+
+    return exportForm;
+}
+
 function toFieldObject(e) {
     var name = removeIndexFromName(e.target.name);
     const obj = {};
@@ -50,33 +84,30 @@ function toErrorObject(e) {
     return obj;
 }
 
-function getGame(props, game) {
-    if (props.game) {
-        return props.game;
-    }
-
-    return game;
+const defaultState = {
+    ...{...game, questions: [question]},
+    errors: errors
 }
 
-export default function CreateGame(props) {
+export default function Create(props) {
 
-    const [jsonGame, setJsonGame] = useState();
-    const [form, setForm] = useState({
-        ...getGame(props, game),
-        errors: errors
-    });
+    const dispatch = useDispatch();
+    const formRef = useRef(null);
+
+    const [form, setForm] = useState(defaultState);
 
     useEffect(() => {
-
         if (props.game) {
             setForm(props.game);
+        } else {
+            setForm(defaultState);
         }
+    }, [props.game]);
 
-    }, [props.game])
 
     function handleChanges(e, index) {
-        console.log(index, e.target)
-        let newForm = { ...form };
+        console.log("QUETION", defaultState)
+        let newForm = { ...form, ...{questions: [...form.questions]} };        
         if (index !== undefined) {
             updateQuestion(newForm.questions, toFieldObject(e), question, index);
             updateQuestion(newForm.errors.questions, toErrorObject(e), questionErrors, index);
@@ -90,7 +121,9 @@ export default function CreateGame(props) {
 
     function addQuestion(e) {
         e.preventDefault();
-        setForm({ ...form, questions: [...form.questions, question] });
+        if (formRef.current.reportValidity()) {
+            setForm({ ...form, questions: [...form.questions, question] });
+        }
     }
 
     function removeQuestion(index) {
@@ -98,41 +131,25 @@ export default function CreateGame(props) {
         newForm.questions.splice(index, 1);
         newForm.errors.questions.splice(index, 1);
         setForm(newForm);
-    }
+    }  
 
-    function handleSubmit(e) {
+    function downloadGame(e) {
         e.preventDefault();
-        if (e.target.reportValidity()) {
-            downloadGame(e);
-        } else {
-            setJsonGame("");
-            setForm(form);
+        if (!formRef.current.reportValidity()) {
+            return;
         }
+        const serverSideGame = toServerSideGame(form);
+        dispatch(createGame({ game: serverSideGame, redirect: false }));
+        download("Buzztastic Game " + form.name, JSON.stringify(serverSideGame, 2));
     }
 
-    async function downloadGame(e) {
-        const jsonForm = JSON.parse(JSON.stringify(form));
-        delete jsonForm.errors;
-
-        jsonForm.questions.forEach((q) => {
-            if (q.type === TRUE_FALSE) {
-                mapToTrueFalseQuestion(q);
-            } else {
-                mapToMultipleChoiceQuestion(q);
-            }
-
-            Object.keys(q).filter((key) => key.startsWith("answer") && key !== "answers")
-                .forEach((key) => {
-                    delete q[key];
-                });
-        });
-
-        const isValid = await createApi.isValid(jsonForm).catch((err) => console.log(err))
-        if (isValid) {
-            setJsonGame(JSON.stringify(jsonForm, null, 2));
+    function play(e) {
+        e.preventDefault();
+        if (!formRef.current.reportValidity()) {
+            return;
         }
-        
-        
+        const serverSideGame = toServerSideGame(form);        
+        dispatch(createGame({ game: serverSideGame, redirect: true }));
     }
 
     function getType(index) {
@@ -145,7 +162,7 @@ export default function CreateGame(props) {
 
     return (
         <React.Fragment>
-            <form noValidate onSubmit={handleSubmit} className="flex-grid flex-column  md-5 form center-65">
+            <form noValidate ref={formRef} className="flex-grid flex-column  md-5 form center-65">
                 <div className="empty-space">
                     <div className="flex-row">
                         <div className="flex-column md-5">
@@ -184,22 +201,11 @@ export default function CreateGame(props) {
                     </div>
                 ))}
 
-                <div className="flex-row">
-                    <div className="flex-column md-5">
-                        <input type="submit" className="bordered-input" value="Add Question" onClick={addQuestion} />
-                    </div>
+                <div className="flex-row flex-center">
+                    <input type="submit" className="bordered-input md-5" value="Add Question" onClick={addQuestion} />
+                    <input type="submit" className="bordered-input md-5" value="Download Game" onClick={downloadGame} />
+                    <input type="submit" className="bordered-input md-5" value="Play" onClick={play} />
                 </div>
-
-                <div className="flex-row">
-                    <div className="flex-column md-5">
-                        <input type="submit" className="bordered-input" value="Download Game" />
-                    </div>
-                </div>
-
-                {jsonGame && <ImportGame
-                    text="Copy the following and save it on your computer:"
-                    hideSubmit={true}
-                    game={jsonGame}></ImportGame>}
             </form>
         </React.Fragment>
     );

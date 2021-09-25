@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { gameValidators, questionValidators } from './gameValidator';
 import { getErrors, validate } from '../common/validator';
 
-import CreateGame from './CreateGame';
+import Create from './Create';
 import { errors as initialErrors } from './game';
 
 function mergeErrors(gameErrors, questionErrors) {
@@ -60,7 +60,7 @@ function removeUnwantedJson(gameObj) {
     return cleanGame;
 }
 
-export default function ImportGame(props) {
+export default function Import(props) {
 
     const [game, setGame] = useState(props.game || "");
     const [errors, setErrors] = useState([]);
@@ -146,13 +146,13 @@ export default function ImportGame(props) {
                     </ul>
                     {!props.hideSubmit && <div className="flex-row">
                         <div className="flex-column md-5">
-                            <input type="submit" className="bordered-input" value="Import" onClick={importGame} />
+                            <input type="submit" className="bordered-input max-width" value="Import" onClick={importGame} />
                         </div>
                     </div>
                     }
                 </div>
             }
-            {gameForm && <CreateGame game={gameForm}></CreateGame>}
+            {gameForm && <Create game={gameForm}></Create>}
 
         </React.Fragment>
     );

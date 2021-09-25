@@ -67,7 +67,7 @@ function Join() {
                         required
                         name="username"
                         autoComplete="off"
-                        className="bordered-input line-hieght-medium"
+                        className="bordered-input max-width line-hieght-medium"
                         onInvalid={handleChanges}
                         onChange={handleChanges}
                         labelClass="align-left typography-emphasize"
@@ -85,7 +85,7 @@ function Join() {
                         required
                         name="gameCode"
                         autoComplete="off"
-                        className="bordered-input line-hieght-medium "
+                        className="bordered-input max-width line-hieght-medium "
                         onInvalid={handleChanges}
                         onChange={handleChanges}
                         labelClass="align-left typography-emphasize"

@@ -19,7 +19,7 @@ function Landing() {
             <Logo logoClass="app-logo bouncy" showSubtitle={true} titleClass="large-title slidein-right" />
             <p className="slidein-left">
                 Create&nbsp;
-                    <NavLink className="app-link" to="/create">New</NavLink>
+                    <NavLink className="app-link" to="/start">New</NavLink>
                     &nbsp;or&nbsp;
                     <NavLink className="app-link" to="/join">Join Game</NavLink>
             </p>

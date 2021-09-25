@@ -6,7 +6,6 @@ defmodule PartyGameWeb.CreateController do
   action_fallback PartyGameWeb.FallbackController
 
   def validate(conn, game_params) do
-    IO.inspect(game_params)
     changeset = Game.create_game_changeset(%Game{}, game_params)
 
     case changeset.valid? do

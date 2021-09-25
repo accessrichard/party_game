@@ -1,10 +1,10 @@
 import { post } from '../fetchClient';
 
-const createApi = {
+const creativeApi = {
 
-    isValid(game) {
+    validate(game) {
         return post('api/create/validate', game);
     }
 }
 
-export default createApi;
+export default creativeApi;

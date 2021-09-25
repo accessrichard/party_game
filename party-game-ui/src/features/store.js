@@ -4,6 +4,7 @@ import createPhoenixMiddleware, { reducer as channelReducer } from './phoenix/ph
 import chatReducer from './chat/chatSlice';
 import { connectRouter } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
+import creativeReducer from './creative/creativeSlice';
 import gameReducer from './game/gameSlice';
 import { routerMiddleware } from 'connected-react-router';
 
@@ -13,7 +14,8 @@ const reducers = {
   router: connectRouter(history),
   phoenix: channelReducer,
   chat: chatReducer,
-  game: gameReducer
+  game: gameReducer,
+  creative: creativeReducer
 };
 
 const combinedReducer = combineReducers(reducers);

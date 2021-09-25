@@ -1,3 +1,4 @@
+import { apiState, fulfilled, pending, rejected } from '../common/thunkApiResponse';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import api from '../game/gameApi';
@@ -10,10 +11,9 @@ export const listGames = createAsyncThunk(
     }
 )
 
-export const createGame = createAsyncThunk(
-    'game/createGame',
-    async (playerName, thunkAPI) => {
-        //        await schema.validate({ username: playerName });
+export const startNewGame = createAsyncThunk(
+    'game/startNewGame',
+    async (playerName, thunkAPI) => {        
         const response = await api.create(playerName);
         if (!response.error) {
             thunkAPI.dispatch(syncGameState({ playerName: playerName, ...response.data }));
@@ -44,42 +44,11 @@ export const stopGame = createAsyncThunk(
         const response = await api.stop(roomName);
         if (!response.error) {
             thunkAPI.dispatch(redirect());
-            thunkAPI.dispatch(redirect());
         }
 
         return response;
     }
 )
-
-const pending = (state) => {
-    if (state.loading === 'idle') {
-        state.loading = 'pending';
-        state.error = null;
-        state.data = null;
-    }
-}
-
-const fulfilled = (state, action) => {
-    if (state.loading === 'pending') {
-        state.data = action.payload.data;
-        state.error = action.payload.error;
-        state.loading = 'idle';
-    }
-}
-
-const rejected = (state, action) => {
-    if (state.loading === 'pending') {
-        state.loading = 'idle';
-        state.data = {};
-        state.error = action.error.message
-    }
-}
-
-const apiState = {
-    loading: 'idle',
-    data: null,
-    error: null
-};
 
 const initialState = {
     configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 2 },
@@ -103,7 +72,7 @@ const initialState = {
     players: [],
     gameOwner: null,
     api: {
-        create: { ...apiState },
+        start: { ...apiState },
         join: { ...apiState },
         stop: { ...apiState },
         list: { ...apiState }
@@ -226,9 +195,9 @@ export const gameSlice = createSlice({
         },
     },
     extraReducers: {
-        [createGame.pending]: (state, action) => { pending(state.api.create, action) },
-        [createGame.fulfilled]: (state, action) => { fulfilled(state.api.create, action) },
-        [createGame.rejected]: (state, action) => { rejected(state.api.create, action) },
+        [startNewGame.pending]: (state, action) => { pending(state.api.start, action) },
+        [startNewGame.fulfilled]: (state, action) => { fulfilled(state.api.start, action) },
+        [startNewGame.rejected]: (state, action) => { rejected(state.api.start, action) },
         [joinGame.pending]: (state, action) => { pending(state.api.join, action) },
         [joinGame.fulfilled]: (state, action) => { fulfilled(state.api.join, action) },
         [joinGame.rejected]: (state, action) => { rejected(state.api.join, action) },

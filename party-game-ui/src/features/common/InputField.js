@@ -41,7 +41,7 @@ export default function InputField(props) {
                     disabled={props.disabled || ""}
                     placeholder={props.placeholder || ""}
                     autoComplete={props.autoComplete || "off"}
-                    className={props.className || "bordered-input"}                    
+                    className={props.className || "bordered-input max-width"}                    
                     onChange={onChange}
                     onInvalid={onInvalid}
                     value={props.value}

@@ -21,7 +21,7 @@ export default function AnswerInput(props) {
                         label="Answer"
                         name="answer1"
                         required
-                        className="bordered-input"
+                        className="bordered-input max-width"
                         id={"answer1" + props.index}
                         value={props.value.answer1}
                         onBlur={handleChange}
@@ -38,7 +38,7 @@ export default function AnswerInput(props) {
                         label="Answer"
                         name="answer2"
                         required
-                        className="bordered-input"
+                        className="bordered-input max-width"
                         id={"answer2" + props.index}
                         value={props.value.answer2}
                         onBlur={handleChange}
@@ -60,7 +60,7 @@ export default function AnswerInput(props) {
                             label="Answer"
                             name="answer3"
                             required={(props.value.type && props.value.type === MULTIPLE_CHOICE) || false}
-                            className="bordered-input"
+                            className="bordered-input max-width"
                             id={"answer3" + props.index}
                             value={props.value.answer3}
                             onBlur={handleChange}
@@ -78,7 +78,7 @@ export default function AnswerInput(props) {
                             label="Answer"
                             name="answer4"
                             required={(props.value.type && props.value.type === MULTIPLE_CHOICE) || false}
-                            className="bordered-input"
+                            className="bordered-input max-width"
                             id={"answer4" + props.index}
                             value={props.value.answer4}
                             onBlur={handleChange}

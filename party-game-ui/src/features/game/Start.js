@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import InputField from '../common/InputField';
 import Logo from '../common/Logo';
-import { createGame } from './gameSlice';
+import { startNewGame } from './gameSlice';
 import { useDispatch } from 'react-redux';
 
 function Create() {
@@ -16,7 +16,7 @@ function Create() {
 
     function handleSubmit(e) {
         if (e.target.reportValidity()) {
-            dispatch(createGame(form.username));
+            dispatch(startNewGame(form.username));
         }
         e.preventDefault();
     }
@@ -45,7 +45,7 @@ function Create() {
                         required
                         name="username"
                         autoComplete="off"
-                        className="bordered-input line-hieght-medium"
+                        className="bordered-input max-width line-hieght-medium"
                         onInvalid={handleChanges}
                         onChange={handleChanges}
                         labelClass="align-left typography-emphasize"
@@ -57,7 +57,7 @@ function Create() {
 
                 <input
                     type="submit"
-                    value="Create Game"
+                    value="Start Game"
                     className="fill-space line-hieght-medium"
                 />
             </form>
