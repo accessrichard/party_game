@@ -5,7 +5,6 @@ export default function TrueFalse(props) {
     function handleChange(e) {
         props.onChange && props.onChange(e);
     };
-    console.log("TRUEFALSE", props.value);
 
     return (
         <React.Fragment>            
@@ -14,7 +13,7 @@ export default function TrueFalse(props) {
                     <input type="radio"
                         name={"correct-!-" + props.index}
                         value="1"
-                        checked={props.value.toString() === "1"}
+                        checked={props.value.toString() !== "2"}
                         onChange={handleChange} />
 
                     <span>True</span></label>

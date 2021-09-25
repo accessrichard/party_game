@@ -69,7 +69,6 @@ export default function Import(props) {
     useEffect(() => setGame(props.game), [props.game]);
 
     function handleChange(e) {
-        console.log("HANDLE GAME", e.target.value);
         setGame(e.target.value);
 
         if (errors !== []) {

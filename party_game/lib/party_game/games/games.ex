@@ -1,18 +1,24 @@
 defmodule PartyGame.Games.Games do
   def list() do
-    %{"Basic Math" => PartyGame.Games.BasicMath, "States" => PartyGame.Games.States}
+    [
+      %{"name" => "Basic Math", "module" => PartyGame.Games.BasicMath, "type" => "server"},
+      %{"name" => "States", "module" => PartyGame.Games.States, "type" =>  "server"}
+    ]
   end
 
   def new(name, num) do
-    games = Map.get(PartyGame.Games.Games.list(), name)
+    game = Enum.find(list(), fn (x) ->  x["name"] === name end)
 
-    case games do
+    case game do
       nil -> {:error, "Game does not exist!"}
-      _ ->  games.new(num)
+      _ -> game["module"].new(num)
     end
   end
 
-  def keys() do
-    Map.keys(list())
+  def names() do
+    Enum.map(
+      PartyGame.Games.Games.list(),
+      fn x -> %{:name => x["name"], :type => x["type"]} end
+    )
   end
 end

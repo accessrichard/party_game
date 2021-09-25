@@ -106,7 +106,6 @@ export default function Create(props) {
 
 
     function handleChanges(e, index) {
-        console.log("QUETION", defaultState)
         let newForm = { ...form, ...{questions: [...form.questions]} };        
         if (index !== undefined) {
             updateQuestion(newForm.questions, toFieldObject(e), question, index);

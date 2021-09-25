@@ -34,11 +34,19 @@ const onEvents = (topic) => [
 
 export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
+    const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
     const { playerName, gameCode, gameOwner, isGameStarted } = useSelector(state => state.game);
+    
+    const creativeGames = useSelector(state => state.creative.games);
+    const serverGames = useSelector(state => state.game.api.list.data);
+    const serverGamesLoading = useSelector(state => state.game.api.list.loading);
+    const [defaultGame, setDefaultGame] = useState(null);
+
+
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    const games = useSelector(state => state.game.api.list.data);
-    const gameListLoading = useSelector(state => state.game.api.list.loading);
+    
+    
 
     useEffect(() => {
         if (!gameCode) {
@@ -51,7 +59,6 @@ export default function Lobby() {
     });
 
     const topic = `lobby:${gameCode}`
-
 
     function handleSubmit(e) {
         if (e.target.reportValidity()) {
@@ -67,6 +74,29 @@ export default function Lobby() {
     useEffect(() => {
         dispatch(listGames());
     }, [dispatch]);
+
+    useEffect(() => {
+        let list = [];
+        if (serverGames) {
+            list = [...serverGames];
+        }
+
+        if (creativeGames) {
+            const mapped = creativeGames.map((x) => ({
+                name: x.game.name,
+                type: "client"
+            }));
+
+            list = list.concat([...mapped]);
+        }
+
+        setGameList(list);
+        if (list && list.length > 0) {
+            setDefaultGame(list[list.length - 1].name);
+        }
+
+    }, [creativeGames, serverGames, setGameList, setDefaultGame]);
+
 
     useEffect(() => {
         if (socketStatus !== SOCKET_CONNECTED
@@ -127,12 +157,12 @@ export default function Lobby() {
                             <form className="flex-grid flex-column md-5 form lg-2" noValidate onSubmit={handleSubmit}>
                                 <div className="flex-row">
                                     <div className="flex-column margin-bottom-5">
-                                        <GameList defaultValue={games && games[0]} onGameChange={onGameChange} games={games} />
+                                        <GameList defaultValue={defaultGame} onGameChange={onGameChange} games={gameList} />
                                     </div>
                                 </div>
                                 <div className="flex-row">
                                     <div className="flex-column margin-bottom-5">
-                                        <input className="line-hieght-medium" disabled={gameListLoading === 'pending'} type="submit" value="Start" />
+                                        <input className="line-hieght-medium" disabled={serverGamesLoading === 'pending'} type="submit" value="Start" />
                                     </div>
                                 </div>
                             </form>

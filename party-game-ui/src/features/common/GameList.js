@@ -15,14 +15,14 @@ export default function GameList(props) {
                     &nbsp;or&nbsp;
             <NavLink className="app-link" to="/create">Create Your Own</NavLink>
              </label>
-            <select defaultValue={defaultValue} 
+            <select 
                     id="game-list" 
                     name="games" 
                     className="bold-select select-height-tall header-bolder lighter-label" 
                     onChange={onGameChange}>
                         
-                {(games || []).map((val, key) =>
-                    <option key={key} value={val}>{val}</option>
+                {(games || []).map((val) =>
+                    <option key={val.name} value={val.name} selected={defaultValue === val.name}>{val.name}</option>
                 )}
             </select>
         </React.Fragment>

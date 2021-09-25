@@ -15,7 +15,7 @@ export const questionErrors = {
 export const question = {
     ...questionErrors,
     type: MULTIPLE_CHOICE,
-    correct: ""
+    correct: "1"
 }
 
 export const game = {
