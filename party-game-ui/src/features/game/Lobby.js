@@ -145,9 +145,9 @@ export default function Lobby() {
             {gameOwner === playerName &&
                 <React.Fragment>
 
-                    <form className="flex-grid flex-column md-5 form lg-2" noValidate onSubmit={handleSubmit}>
+                    <form className="flex-grid flex-column md-5 form lg-6" noValidate onSubmit={handleSubmit}>
                         <div className="flex-row">
-                            <div className="flex-column margin-bottom-5">
+                            <div className="flex-column margin-bottom-5 flex-center">
                                 <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />
                             </div>
                         </div>
