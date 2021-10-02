@@ -42,11 +42,7 @@ export default function Lobby() {
     const serverGames = useSelector(state => state.game.api.list.data);
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
 
-
-
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-
-
 
     useEffect(() => {
         if (!gameCode) {

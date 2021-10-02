@@ -70,7 +70,6 @@ export default function Game() {
     const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
 
-
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
 

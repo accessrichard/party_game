@@ -8,14 +8,14 @@ defmodule PartyGame.Game.Game do
   @primary_key false
   schema "games" do
     field(:players, :map, default: [])
-    embeds_many(:rounds, Round)
+    embeds_many(:rounds, Round, on_replace: :delete)
     field(:started, :boolean, default: false)
     field(:round_started, :boolean, default: false)
     field(:room_name, :string, default: nil)
     field(:room_owner, :string, default: nil)
     field(:name, :string, default: nil)
     field(:is_over, :boolean, default: false)
-    embeds_many(:questions, Question)
+    embeds_many(:questions, Question, on_replace: :delete)
   end
 
   def create_game_changeset(game, params \\ %{}) do
