@@ -4,7 +4,7 @@ defmodule PartyGame.Game.Question do
 
   @primary_key false
   @derive {Jason.Encoder, only: [:question, :answers]}
-  schema "questions" do
+  embedded_schema do
     field :answers, {:array, :string}, default: []
     field :question, :string
     field :correct, :string

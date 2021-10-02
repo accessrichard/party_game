@@ -6,7 +6,7 @@ import {
     channelOn,
     channelPush,
 } from '../phoenix/phoenixMiddleware';
-import { clearWrongAnswer, phxReply, setFlash, startRound, stopRound } from './gameSlice';
+import { clearWrongAnswer, mergeGameList, phxReply, setFlash, startRound, stopRound } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Answers from './Answers';
@@ -55,7 +55,7 @@ export default function Game() {
         flash,
         isWrong,
         round,
-        game,
+        name,
         isOver,
         correct,
         roundWinner,
@@ -63,14 +63,17 @@ export default function Game() {
         startCountdown,
     } = useSelector(state => state.game);
 
-    const gameList = useSelector(state => state.game.api.list.data);
+    const creativeGames = useSelector(state => state.creative.games);
+    const serverGames = useSelector(state => state.game.api.list.data);
+
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
 
+
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
-    
+
     const roundRef = useRef(round);
     roundRef.current = round;
 
@@ -147,13 +150,24 @@ export default function Game() {
         setIsQuestionAnswered(false);
         const data = { name: playerName, ...payload };
         dispatch(channelPush(sendEvent(topic, data, action || "start")));
-      }, [topic, dispatch, playerName])
+    }, [topic, dispatch, playerName])
 
     useEffect(() => {
+        ////Auto start game from lobby.
         setIsTimerActive(false);
-        
-        startClickCallback("new", { game: game || (gameList && gameList[0]), rounds: 5 });
-    }, [game, startClickCallback, gameList]);
+
+        const list = mergeGameList(serverGames, creativeGames);
+
+        let game = list.find(x => x.name === name);
+
+        if (game && game.type === 'client') {
+            const creativeGame = creativeGames.find(x => x.game.name === name);
+            game = {...game, questions: creativeGame.game.questions}
+        }
+
+        startClickCallback("new", { game: game, rounds: 5 });
+
+    }, [name, startClickCallback, serverGames, creativeGames]);
 
     useEffect(() => {
         setTimeout(() => {

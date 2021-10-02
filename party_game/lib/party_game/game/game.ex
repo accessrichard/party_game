@@ -20,9 +20,9 @@ defmodule PartyGame.Game.Game do
 
   def create_game_changeset(game, params \\ %{}) do
 
-    rounds = EctoHelpers.create_embedded_changeset(params, :rounds, &Round.changeset/1)
+    rounds = EctoHelpers.create_embedded_changeset(params, "rounds", %Round{}, &Round.changeset/2)
 
-    questions = EctoHelpers.create_embedded_changeset(params, :questions, &Round.changeset/1)
+    questions = EctoHelpers.create_embedded_changeset(params, "questions", %Question{}, &Question.changeset/2)
 
     game
     |> Ecto.Changeset.cast(params, [

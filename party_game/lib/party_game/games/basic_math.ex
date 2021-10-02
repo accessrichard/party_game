@@ -1,7 +1,8 @@
 defmodule PartyGame.Games.BasicMath do
   alias PartyGame.Game.Question
 
-  def new(number_questions \\ 10) do
+  def new(game) do
+    number_questions = Map.get(game, :rounds, 10)
     percentage_of_each = ceil(number_questions / 3)
     addition = new_addition(percentage_of_each)
     subtraction = new_subtraction(percentage_of_each)

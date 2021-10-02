@@ -1,8 +1,8 @@
 defmodule PartyGame.EctoHelpers do
 
-  def create_embedded_changeset(params, key, fun) do
+  def create_embedded_changeset(params, key, data, fun) do
     case Map.has_key?(params, key) do
-      true -> for round <- Map.get(params, key, []), do: fun.(round)
+      true -> for item <- Map.get(params, key, []), do: fun.(data, item)
       false -> []
     end
   end

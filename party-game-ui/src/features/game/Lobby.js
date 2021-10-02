@@ -9,7 +9,7 @@ import {
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
-import { addPlayer, changeGame, listGames, startGame } from './gameSlice';
+import { addPlayer, changeGame, listGames, mergeGameList, startGame } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameCodeLink from '../common/GameCodeLink';
@@ -36,17 +36,17 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const { playerName, gameCode, gameOwner, isGameStarted } = useSelector(state => state.game);
-    
+    const { playerName, gameCode, gameOwner, isGameStarted, name } = useSelector(state => state.game);
+
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
-    const [defaultGame, setDefaultGame] = useState(null);
+
 
 
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    
-    
+
+
 
     useEffect(() => {
         if (!gameCode) {
@@ -65,7 +65,7 @@ export default function Lobby() {
             dispatch(channelPush({
                 topic: topic,
                 event: topic,
-                data: { action: 'start' }
+                data: { action: 'start', game: creativeGames.length > 0 && creativeGames[0].game }
             }));
         }
         e.preventDefault();
@@ -76,26 +76,21 @@ export default function Lobby() {
     }, [dispatch]);
 
     useEffect(() => {
-        let list = [];
-        if (serverGames) {
-            list = [...serverGames];
-        }
-
-        if (creativeGames) {
-            const mapped = creativeGames.map((x) => ({
-                name: x.game.name,
-                type: "client"
-            }));
-
-            list = list.concat([...mapped]);
-        }
-
+        const list = mergeGameList(serverGames, creativeGames);
         setGameList(list);
-        if (list && list.length > 0) {
-            setDefaultGame(list[list.length - 1].name);
+    }, [creativeGames, serverGames, setGameList]);
+
+    useEffect(() => {
+        //// Initialize the game to the first game in the list if not selected.
+        if (name) {
+            return;
         }
 
-    }, [creativeGames, serverGames, setGameList, setDefaultGame]);
+        if (gameList && gameList.length > 0) {
+            dispatch(changeGame(gameList[0].name));
+        }
+
+    }, [gameList, dispatch, name]);
 
 
     useEffect(() => {
@@ -128,46 +123,46 @@ export default function Lobby() {
     }, []);
 
     function onGameChange(e) {
-        dispatch(changeGame(e));
+        dispatch(changeGame(e.target.value));
     }
 
     return (
         <React.Fragment>
-          
-                    <header className="app-header1">
-                        <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
-                        <span className="typography-md-text time">
-                            <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
-                        </span>
-                    </header>
-                    <div className="players-wrapper scroll-flex">
-                        <Players></Players>
-                    </div>
-                    {gameOwner === playerName
-                        ? <div className="typography-lg-text">
-                            Share this link to play with friends:
+
+            <header className="app-header1">
+                <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
+                <span className="typography-md-text time">
+                    <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
+                </span>
+            </header>
+            <div className="players-wrapper scroll-flex">
+                <Players></Players>
+            </div>
+            {gameOwner === playerName
+                ? <div className="typography-lg-text">
+                    Share this link to play with friends:
                                 <div className="light-link pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                </div>
+                : <div className="typography-lg-text">Waiting for game owner to start game.</div>
+            }
+
+            {gameOwner === playerName &&
+                <React.Fragment>
+
+                    <form className="flex-grid flex-column md-5 form lg-2" noValidate onSubmit={handleSubmit}>
+                        <div className="flex-row">
+                            <div className="flex-column margin-bottom-5">
+                                <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />
+                            </div>
                         </div>
-                        : <div className="typography-lg-text">Waiting for game owner to start game.</div>
-                    }
+                        <div className="flex-row">
+                            <div className="flex-column margin-bottom-5">
+                                <input className="line-hieght-medium" disabled={serverGamesLoading === 'pending'} type="submit" value="Start" />
+                            </div>
+                        </div>
+                    </form>
+                </React.Fragment>}
 
-                    {gameOwner === playerName &&
-                        <React.Fragment>
-
-                            <form className="flex-grid flex-column md-5 form lg-2" noValidate onSubmit={handleSubmit}>
-                                <div className="flex-row">
-                                    <div className="flex-column margin-bottom-5">
-                                        <GameList defaultValue={defaultGame} onGameChange={onGameChange} games={gameList} />
-                                    </div>
-                                </div>
-                                <div className="flex-row">
-                                    <div className="flex-column margin-bottom-5">
-                                        <input className="line-hieght-medium" disabled={serverGamesLoading === 'pending'} type="submit" value="Start" />
-                                    </div>
-                                </div>
-                            </form>
-                        </React.Fragment>}
-               
         </React.Fragment >
     );
 }

@@ -1,6 +1,7 @@
 defmodule PartyGame.ServerTest do
   alias PartyGame.Server
-  alias PartyGame.Game
+  alias PartyGame.Game.Game
+  alias PartyGame.GameRoom
 
   use ExUnit.Case
 
@@ -8,11 +9,11 @@ defmodule PartyGame.ServerTest do
     test "start/1 starts a game" do
       game =
         Game.new()
-        |> Game.gen_room_name()
-        |> Game.add_player("richard")
+        |> GameRoom.gen_room_name()
+        |> GameRoom.add_player("richard")
 
       Server.start(game)
-      game = Game.add_player(game, "Rick")
+      game = GameRoom.add_player(game, "Rick")
 
       Server.update_game(game.room_name, game)
       game2 = Server.get_game(game.room_name)

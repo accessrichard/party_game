@@ -2,7 +2,6 @@ defmodule PartyGameWeb.LobbyChannel do
   use PartyGameWeb, :channel
 
   alias PartyGame.Server
-  alias PartyGame.Game
 
   @impl true
   def join("lobby:" <> room_name, payload, socket) do

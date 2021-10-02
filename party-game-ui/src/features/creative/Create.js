@@ -4,6 +4,7 @@ import { errors, game, question, questionErrors } from './game';
 
 import InputField from '../common/InputField';
 import QuestionForm from './QuestionForm';
+import { changeGame } from '../game/gameSlice';
 import { createGame } from './creativeSlice';
 import { useDispatch } from 'react-redux';
 
@@ -148,6 +149,7 @@ export default function Create(props) {
             return;
         }
         const serverSideGame = toServerSideGame(form);        
+        dispatch(changeGame(serverSideGame.name));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
     }
 

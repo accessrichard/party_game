@@ -8,7 +8,7 @@ defmodule PartyGameWeb.GameView do
   def render("game.json", %{game: game}) do
     %{
       data: %{
-        game: game.name,
+        name: game.name,
         is_over: game.is_over,
         players: game.players,
         questions: game.questions,

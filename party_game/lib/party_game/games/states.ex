@@ -1,7 +1,9 @@
 defmodule PartyGame.Games.States do
   alias PartyGame.Game.Question
 
-  def new(number_questions \\ 10) do
+  def new(game) do
+    number_questions = Map.get(game, :rounds, 10)
+
     states = Enum.take_random(state_capitals(), number_questions)
     keys = states |> Enum.reduce([], fn {k, _}, acc -> [k | acc] end)
     other_cities = Map.take(state_cities(), keys)

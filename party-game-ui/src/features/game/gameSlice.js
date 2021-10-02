@@ -67,7 +67,7 @@ const initialState = {
     events: [],
     rounds: [],
     playerName: null,
-    game: null,
+    name: null,
     gameCode: null,
     players: [],
     gameOwner: null,
@@ -95,7 +95,7 @@ export const gameSlice = createSlice({
         resetState: (state) => {
             const savedState = {
                 playerName: state.playerName,
-                game: state.game,
+                name: state.name,
                 gameCode: state.gameCode,
                 players: state.players,
                 gameOwner: state.gameOwner
@@ -179,14 +179,14 @@ export const gameSlice = createSlice({
             }
         },
         changeGame: (state, action) => {
-            state.game = action.payload;
+            state.name = action.payload;
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
             state.gameCode = action.payload.room_name;
             state.players = action.payload.players;
             state.gameOwner = action.payload.room_owner;
-            state.game = action.payload.game;
+            state.name = action.payload.name;
         },
         addPlayer(state, action) {
             if (!state.players.includes(action.payload.player)) {
@@ -234,6 +234,25 @@ const getWinners = (rounds, players) => {
 };
 
 export const getScores = createSelector([rounds, gamePlayers], getWinners);
+
+
+export const mergeGameList = (serverGames, clientGames) => {
+    let list = [];
+    if (serverGames && Array.isArray(serverGames)) {
+        list = [...serverGames];
+    }
+
+    if (clientGames) {
+        const mapped = clientGames.map((x) => ({
+            name: x.game.name,
+            type: "client"
+        }));
+
+        return list.concat([...mapped]);
+    }
+
+    return list;
+};
 
 export const {
     startOver,

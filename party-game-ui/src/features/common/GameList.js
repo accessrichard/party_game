@@ -5,7 +5,7 @@ export default function GameList(props) {
     const { games, defaultValue } = props;
 
     function onGameChange(e) {
-        props.onGameChange && props.onGameChange(e.target.value);
+        props.onGameChange && props.onGameChange(e);
     }
 
     return (
@@ -15,14 +15,14 @@ export default function GameList(props) {
                     &nbsp;or&nbsp;
             <NavLink className="app-link" to="/create">Create Your Own</NavLink>
              </label>
-            <select 
+            <select defaultValue={defaultValue}
                     id="game-list" 
                     name="games" 
                     className="bold-select select-height-tall header-bolder lighter-label" 
                     onChange={onGameChange}>
                         
                 {(games || []).map((val) =>
-                    <option key={val.name} value={val.name} selected={defaultValue === val.name}>{val.name}</option>
+                    <option key={val.name} value={val.name}>{val.name}</option>
                 )}
             </select>
         </React.Fragment>
