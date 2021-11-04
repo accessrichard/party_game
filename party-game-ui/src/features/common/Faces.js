@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+
 import happy from '../../img/happy.svg';
 import happy1 from '../../img/happy1.svg';
 import happy2 from '../../img/happy2.svg';
@@ -14,7 +15,7 @@ import sad6 from '../../img/sad6.svg';
 const happyFaces = [happy, happy1, happy2, happy4];
 const sadFaces = [sad, sad1, sad2, sad3, sad4, sad5, sad6];
 
-const randomFace = (isHappy) => {
+const randomFace = (isHappy) => {   
     if (isHappy) {
         return happyFaces[Math.floor(Math.random() * happyFaces.length)];
     }
@@ -23,10 +24,18 @@ const randomFace = (isHappy) => {
 }
 
 const Faces = (props) => {
-    const { isHappy, imgClass } = props;
+
+    const { isHappy, imgClass} = props;
+    const [face, setFace] = useState("");
+
+    useEffect(() => {
+        setFace(randomFace(isHappy));
+        return () => "";
+    }, [isHappy])
+
     return (
         <React.Fragment>
-            <img src={randomFace(isHappy)} className={imgClass || "app-logo"} alt="logo" />
+           {face && <img src={face} className={imgClass || "app-logo"} alt="logo" />}
         </React.Fragment >
     );
 }

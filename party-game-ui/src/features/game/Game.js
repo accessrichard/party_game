@@ -164,7 +164,7 @@ export default function Game() {
             game = {...game, questions: creativeGame.game.questions}
         }
 
-        startClickCallback("new", { game: game, rounds: 5 });
+        startClickCallback("new", { game: game, rounds: 1 });
 
     }, [name, startClickCallback, serverGames, creativeGames]);
 
@@ -183,14 +183,18 @@ export default function Game() {
         }, 1000);
     }
 
+    function isHappy() {
+        return roundWinner === playerName && correct !== "";
+    }
+
     return (
         <React.Fragment>
             <div className="app-light lg-12">
                 <header className="app-header1">
                     <h3>Buzz Game</h3>
-                    {roundWinner === playerName && correct !== "" && <Faces isHappy={true} />}
-                    {isWrong && <Faces key={isWrong} isHappy={false} />}
+                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong}/>}
                 </header>
+                
                 <div className="question">
                     {question}
                 </div>
@@ -200,14 +204,16 @@ export default function Game() {
                     answers={answers}
                     correct={correct}>
                 </Answers>
-
+                
                 <div>
                     <Flash flash={flash}></Flash>
                 </div>
+
                 <div className="flex-container">
                     {gameOwner === playerName && !isRoundStarted &&
                         <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                 </div>
+                
                 <div>
                     <span className="typography-md-text">
                         {startCountdown && "Game starts in "}

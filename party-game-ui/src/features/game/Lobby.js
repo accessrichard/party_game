@@ -56,7 +56,7 @@ export default function Lobby() {
 
     const topic = `lobby:${gameCode}`
 
-    function handleSubmit(e) {
+    function handleCreateGame(e) {
         if (e.target.reportValidity()) {
             dispatch(channelPush({
                 topic: topic,
@@ -126,14 +126,14 @@ export default function Lobby() {
         <React.Fragment>
 
             <header className="app-header1">
+
                 <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
+
                 <span className="typography-md-text time">
                     <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
                 </span>
             </header>
-            <div className="players-wrapper scroll-flex">
-                <Players></Players>
-            </div>
+            
             {gameOwner === playerName
                 ? <div className="typography-lg-text">
                     Share this link to play with friends:
@@ -142,10 +142,15 @@ export default function Lobby() {
                 : <div className="typography-lg-text">Waiting for game owner to start game.</div>
             }
 
+            <div className="players-wrapper scroll-flex">
+                <Players></Players>
+            </div>
+
+
             {gameOwner === playerName &&
                 <React.Fragment>
 
-                    <form className="flex-grid flex-column md-5 form lg-6" noValidate onSubmit={handleSubmit}>
+                    <form className="flex-grid flex-column md-5 form lg-6" noValidate onSubmit={handleCreateGame}>
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
                                 <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />

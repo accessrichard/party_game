@@ -10,7 +10,6 @@ defmodule PartyGameWeb.GameController do
   def create(conn, %{"player_name" => player_name}) do
     with %Game{} = game <- GameRoom.add_player(Game.new(), player_name) do
       game = GameRoom.gen_room_name(game)
-
       Server.start(game)
 
       conn
@@ -28,6 +27,7 @@ defmodule PartyGameWeb.GameController do
     with {:ok, pid} <- Server.lookup(room_name),
          game = GenServer.call(pid, :game),
          %Game{} = game <- GameRoom.add_player(game, player_name) do
+
       Server.update_game(room_name, game)
 
       conn

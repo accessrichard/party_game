@@ -97,7 +97,7 @@ export const gameSlice = createSlice({
                 playerName: state.playerName,
                 name: state.name,
                 gameCode: state.gameCode,
-                players: state.players,
+                players: [], //state.players,
                 gameOwner: state.gameOwner
             };
 

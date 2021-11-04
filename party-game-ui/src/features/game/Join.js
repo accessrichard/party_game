@@ -38,9 +38,6 @@ function Join() {
         e.preventDefault();
     }
 
-
-
-
     function handleChanges(e) {
         const { name, value, validationMessage } = e.target;
 
@@ -51,7 +48,6 @@ function Join() {
 
         newForm.errors = { ...newForm.errors, [name]: validationMessage };
         setForm(newForm);
-        console.log(newForm);
     };
 
     return (
