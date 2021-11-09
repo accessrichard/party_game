@@ -1,14 +1,15 @@
 defmodule PartyGame.Game.Game do
   alias PartyGame.Game.Round
   alias PartyGame.Game.Question
+  alias PartyGame.Game.Player
   alias PartyGame.EctoHelpers
 
   use Ecto.Schema
 
   @primary_key false
   schema "games" do
-    field(:players, :map, default: [])
     embeds_many(:rounds, Round, on_replace: :delete)
+    embeds_many(:players, Player, on_replace: :delete)
     field(:started, :boolean, default: false)
     field(:round_started, :boolean, default: false)
     field(:room_name, :string, default: nil)
@@ -22,11 +23,12 @@ defmodule PartyGame.Game.Game do
 
     rounds = EctoHelpers.create_embedded_changeset(params, "rounds", %Round{}, &Round.changeset/2)
 
+    players = EctoHelpers.create_embedded_changeset(params, "players", %Player{}, &Player.changeset/2)
+
     questions = EctoHelpers.create_embedded_changeset(params, "questions", %Question{}, &Question.changeset/2)
 
     game
     |> Ecto.Changeset.cast(params, [
-      :players,
       :started,
       :round_started,
       :room_name,
@@ -37,7 +39,9 @@ defmodule PartyGame.Game.Game do
     |> EctoHelpers.require_field(:questions)
     |> Ecto.Changeset.put_embed(:rounds, rounds)
     |> Ecto.Changeset.put_embed(:questions, questions)
+    |> Ecto.Changeset.put_embed(:players, players)
     |> Ecto.Changeset.validate_required([:name])
+
   end
 
   def new(fields \\ []), do: __struct__(fields)

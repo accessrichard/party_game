@@ -14,7 +14,7 @@ export const listGames = createAsyncThunk(
 export const startNewGame = createAsyncThunk(
     'game/startNewGame',
     async (playerName, thunkAPI) => {        
-        const response = await api.create(playerName);
+        const response = await api.create(playerName);        
         if (!response.error) {
             thunkAPI.dispatch(syncGameState({ playerName: playerName, ...response.data }));
             thunkAPI.dispatch(push('/lobby'));
@@ -97,7 +97,7 @@ export const gameSlice = createSlice({
                 playerName: state.playerName,
                 name: state.name,
                 gameCode: state.gameCode,
-                players: [], //state.players,
+                players: [],
                 gameOwner: state.gameOwner
             };
 
@@ -183,7 +183,7 @@ export const gameSlice = createSlice({
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
-            state.gameCode = action.payload.room_name;
+            state.gameCode = action.payload.room_name;            
             state.players = action.payload.players;
             state.gameOwner = action.payload.room_owner;
             state.name = action.payload.name;
@@ -220,10 +220,10 @@ const getWinners = (rounds, players) => {
         return total;
     }, {});
 
-    const startingPlayers = players.reduce((total, name) => {
-        total[name] = {
+    const startingPlayers = players.reduce((total, player) => {
+        total[player.name] = {
             score: 0,
-            name: name
+            name: player.name
         };
         return total;
     }, {});

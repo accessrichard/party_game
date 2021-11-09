@@ -7,7 +7,13 @@ const gameApi = {
     },
 
     join(player_name, room_name) {
-        return post('api/game/join', { player_name, room_name });
+        const player = {
+            location: "lobby",
+            status: "online",
+            name: player_name
+        };
+        
+        return post('api/game/join', { room_name, player });
     },
 
     stop(room_name) {

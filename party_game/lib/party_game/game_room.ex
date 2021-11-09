@@ -2,6 +2,7 @@ defmodule PartyGame.GameRoom do
 
   alias PartyGame.Game
   alias PartyGame.Game.Round
+  alias PartyGame.Game.Player
   alias PartyGame.Server
   alias PartyGame.Game.Game
 
@@ -9,11 +10,24 @@ defmodule PartyGame.GameRoom do
     %{game | room_name: Server.room_name()}
   end
 
+  def add_player(%Game{} = game, %{} = player) do
+    player_name = Map.get(player, "name")
+
+    with {:ok, _} <- game_stopped(game),
+         {:ok, _} <- required(player_name, "Player name"),
+         {:ok, _} <- name_taken(game, player_name) do
+      %{game | players: [Player.add_player(player) | game.players], room_owner: game.room_owner || player_name}
+    else
+      error -> error
+    end
+  end
+
+
   def add_player(%Game{} = game, player_name) do
     with {:ok, _} <- game_stopped(game),
          {:ok, _} <- required(player_name, "Player name"),
          {:ok, _} <- name_taken(game, player_name) do
-      %{game | players: [player_name | game.players], room_owner: game.room_owner || player_name}
+      %{game | players: [Player.add_player(player_name) | game.players], room_owner: game.room_owner || player_name}
     else
       error -> error
     end
@@ -24,6 +38,21 @@ defmodule PartyGame.GameRoom do
       game
     else
       error -> raise error
+    end
+  end
+
+  def name_taken(%Game{} = game, player_name) do
+    case player_exists?(game, player_name) do
+      false -> {:ok, player_name}
+      true -> {:error, "Name taken. Choose a different name."}
+    end
+  end
+
+
+  def player_exists?(%Game{} = game, player_name) do
+    case Enum.find(game.players, fn player -> player.name == player_name end) do
+      nil -> false
+      _ -> true
     end
   end
 
@@ -77,20 +106,6 @@ defmodule PartyGame.GameRoom do
     [question | questions] = game.questions
     round = %Round{question: question, winner: "None", answer: question.correct}
     %{game | round_started: false, rounds: [round | game.rounds], questions: questions, is_over: questions == []}
-  end
-
-  def name_taken(%Game{} = game, player_name) do
-    case player_exists?(game, player_name) do
-      false -> {:ok, player_name}
-      true -> {:error, "Name taken. Choose a different name."}
-    end
-  end
-
-  def player_exists?(%Game{} = game, player_name) do
-    case Enum.find(game.players, fn player -> player == player_name end) do
-      nil -> false
-      _ -> true
-    end
   end
 
   defp game_stopped(%{started: true}), do: {:error, "Game is already started."}

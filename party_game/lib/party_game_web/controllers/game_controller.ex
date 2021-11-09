@@ -23,10 +23,10 @@ defmodule PartyGameWeb.GameController do
     end
   end
 
-  def join(conn, %{"player_name" => player_name, "room_name" => room_name}) do
+  def join(conn, %{"player" => player, "room_name" => room_name}) do
     with {:ok, pid} <- Server.lookup(room_name),
          game = GenServer.call(pid, :game),
-         %Game{} = game <- GameRoom.add_player(game, player_name) do
+         %Game{} = game <- GameRoom.add_player(game, player) do
 
       Server.update_game(room_name, game)
 

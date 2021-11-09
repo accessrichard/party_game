@@ -145,6 +145,8 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   defp buzz(socket, payload) do
     game = Server.get_game(game_code(socket.topic))
+    |> IO.inspect
+
     answer = Map.get(payload, "answer")
 
     case GameRoom.buzz(game, socket.assigns.name, answer) do

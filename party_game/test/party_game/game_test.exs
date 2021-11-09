@@ -19,7 +19,7 @@ defmodule PartyGame.GameTest do
     test "add_player/2 adds a player" do
       game = GameRoom.add_player(Game.new(), "richard")
       [head | _] = game.players
-      assert head == "richard"
+      assert head.name == "richard"
     end
 
     test "add_player/2 prevents duplicate players" do

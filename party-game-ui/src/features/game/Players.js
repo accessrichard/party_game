@@ -9,7 +9,7 @@ const Players = () => {
             <ul className="ul-numbered players reset-pm">
                 {players.map((val, key) =>
                     <li key={key}>
-                        {val}
+                        {val.name}
                     </li>
                 )}
             </ul>
