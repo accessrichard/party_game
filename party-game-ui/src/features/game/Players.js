@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import {getPresences} from '../presence/presenceSlice';
 
 const Players = () => {
-    const players = useSelector(state => state.game.players);
+    const players = useSelector(getPresences);
 
     return (
         <React.Fragment>
