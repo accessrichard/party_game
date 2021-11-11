@@ -79,7 +79,7 @@ export default function Lobby() {
     }
 
     useEffect(() => {
-        if (serverGamesLoading === 'idle' && (serverGames == null || serverGames.lenght == 0)) {
+        if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.lenght === 0)) {
             dispatch(listGames());
         }
         

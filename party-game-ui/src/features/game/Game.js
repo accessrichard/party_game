@@ -175,7 +175,7 @@ export default function Game() {
             game = { ...game, questions: creativeGame.game.questions }
         }
 
-        startClickCallback("new", { game: game, rounds: 10 });
+        startClickCallback("new", { game: game, rounds: 2 });
 
     }, [name, startClickCallback, serverGames, creativeGames]);
 

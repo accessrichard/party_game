@@ -25,9 +25,9 @@ function Score() {
 
     return (
         <React.Fragment>
-            <div className="pd-25 md-5 large-title">{scores && scores[0] && scores[0].name + " won!"}</div>
+            <div className="pd-25 md-5 large-title">{scores.winners && scores.winners.length == 1 ?  scores.winners[0].name + "won!" : scores.winners.map(x => x.name).join(" and ")+ " tied!"}</div>
             <Faces isHappy={true} imgClass="small-logo spin" />
-            <Scores scores={scores} />
+            <Scores scores={scores.scores} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
         </React.Fragment>
     );
