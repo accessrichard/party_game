@@ -8,6 +8,7 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { clearWrongAnswer, mergeGameList, phxReply, setFlash, startRound, stopRound } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { syncPresenceState, syncPresenceDiff } from './../presence/presenceSlice';
 
 import Answers from './Answers';
 import Faces from '../common/Faces';
@@ -30,6 +31,16 @@ const onEvents = (topic) => [
         event: 'phx_reply',
         dispatcher: phxReply(),
         topic,
+    },
+    {
+        event: 'presence_state',
+        dispatcher: syncPresenceState(),
+        topic
+    },
+    {
+        event: 'presence_diff',
+        dispatcher: syncPresenceDiff(),
+        topic
     }
 ]
 
@@ -161,10 +172,10 @@ export default function Game() {
 
         if (game && game.type === 'client') {
             const creativeGame = creativeGames.find(x => x.game.name === name);
-            game = {...game, questions: creativeGame.game.questions}
+            game = { ...game, questions: creativeGame.game.questions }
         }
 
-        startClickCallback("new", { game: game, rounds: 1 });
+        startClickCallback("new", { game: game, rounds: 10 });
 
     }, [name, startClickCallback, serverGames, creativeGames]);
 
@@ -192,9 +203,9 @@ export default function Game() {
             <div className="app-light lg-12">
                 <header className="app-header1">
                     <h3>Buzz Game</h3>
-                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong}/>}
+                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong} />}
                 </header>
-                
+
                 <div className="question">
                     {question}
                 </div>
@@ -204,7 +215,7 @@ export default function Game() {
                     answers={answers}
                     correct={correct}>
                 </Answers>
-                
+
                 <div>
                     <Flash flash={flash}></Flash>
                 </div>
@@ -213,7 +224,7 @@ export default function Game() {
                     {gameOwner === playerName && !isRoundStarted &&
                         <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                 </div>
-                
+
                 <div>
                     <span className="typography-md-text">
                         {startCountdown && "Game starts in "}

@@ -29,10 +29,10 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
+  @spec handle_info({:after_join, any}, Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info({:after_join, name}, socket) do
-
     {:ok, _} = Presence.track(socket, name, %{
-      online_at: inspect(System.system_time(:second))
+      online_at: DateTime.utc_now() |> DateTime.to_unix(:second)
     })
 
     push(socket, "presence_state", Presence.list(socket))

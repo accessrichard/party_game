@@ -1,6 +1,7 @@
 defmodule PartyGameWeb.BuzzerChannel do
   use PartyGameWeb, :channel
 
+  alias PartyGameWeb.Presence
   alias PartyGame.Server
   alias PartyGame.GameRoom
   alias PartyGame.Game.Player
@@ -15,6 +16,13 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
+
+    {:ok, _} = Presence.track(socket, socket.assigns.name, %{
+      online_at: DateTime.utc_now() |> DateTime.to_unix(:second)
+    })
+
+    push(socket, "presence_state", Presence.list(socket))
+
     broadcast_from(socket, "join", %{"name" => socket.assigns.name})
     {:noreply, socket}
   end
