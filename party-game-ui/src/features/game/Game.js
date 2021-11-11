@@ -165,7 +165,7 @@ export default function Game() {
     useEffect(() => {
         ////Auto start game from lobby.
         setIsTimerActive(false);
-
+        
         const list = mergeGameList(serverGames, creativeGames);
 
         let game = list.find(x => x.name === name);

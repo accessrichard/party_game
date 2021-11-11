@@ -79,10 +79,13 @@ export default function Lobby() {
     }
 
     useEffect(() => {
-        dispatch(listGames());
-    }, [dispatch]);
+        if (serverGamesLoading === 'idle' && (serverGames == null || serverGames.lenght == 0)) {
+            dispatch(listGames());
+        }
+        
+    }, [dispatch, serverGames, serverGamesLoading]);
 
-    useEffect(() => {
+    useEffect(() => {      
         const list = mergeGameList(serverGames, creativeGames);
         setGameList(list);
     }, [creativeGames, serverGames, setGameList]);
@@ -144,7 +147,7 @@ export default function Lobby() {
                     <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
                 </span>
             </header>
-            
+
             {gameOwner === playerName
                 ? <div className="typography-lg-text">
                     Share this link to play with friends:

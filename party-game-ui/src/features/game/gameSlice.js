@@ -242,13 +242,13 @@ export const mergeGameList = (serverGames, clientGames) => {
         list = [...serverGames];
     }
 
-    if (clientGames) {
+    if (clientGames && Array.isArray(clientGames)) {
         const mapped = clientGames.map((x) => ({
             name: x.game.name,
             type: "client"
         }));
 
-        return list.concat([...mapped]);
+        return mapped.concat([...list]);
     }
 
     return list;
