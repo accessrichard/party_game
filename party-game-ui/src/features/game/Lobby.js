@@ -10,6 +10,8 @@ import {
     socketConnect
 } from '../phoenix/phoenixMiddleware';
 import { addPlayer, changeGame, listGames, mergeGameList, startGame } from './gameSlice';
+import { syncPresenceState, syncPresenceDiff } from './../presence/presenceSlice';
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameCodeLink from '../common/GameCodeLink';
@@ -28,6 +30,16 @@ const onEvents = (topic) => [
     {
         event: 'start',
         dispatcher: startGame(),
+        topic
+    },
+    {
+        event: 'presence_state',
+        dispatcher: syncPresenceState(),
+        topic
+    },
+    {
+        event: 'presence_diff',
+        dispatcher: syncPresenceDiff(),
         topic
     }
 ]

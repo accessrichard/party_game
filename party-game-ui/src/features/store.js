@@ -6,6 +6,8 @@ import { connectRouter } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import creativeReducer from './creative/creativeSlice';
 import gameReducer from './game/gameSlice';
+import presenceReducer from './presence/presenceSlice';
+
 import { routerMiddleware } from 'connected-react-router';
 
 export const history = createBrowserHistory();
@@ -15,7 +17,8 @@ const reducers = {
   phoenix: channelReducer,
   chat: chatReducer,
   game: gameReducer,
-  creative: creativeReducer
+  creative: creativeReducer,
+  presence: presenceReducer
 };
 
 const combinedReducer = combineReducers(reducers);

@@ -3,7 +3,7 @@ defmodule PartyGame.Game.Player do
   use Ecto.Schema
 
   @primary_key false
-  @derive {Jason.Encoder, only: [:name, :status, :location]}
+  @derive {Jason.Encoder, only: [:name, :wins]}
   schema "player" do
     field(:name, :string, default: nil)
     field(:wins, :integer, default: 0)
@@ -21,7 +21,7 @@ defmodule PartyGame.Game.Player do
 
   def add_player(%{} = params) do
     %PartyGame.Game.Player{}
-    |> Ecto.Changeset.cast(params, [:name, :status, :location])
+    |> Ecto.Changeset.cast(params, [:name, :wins])
     |> Ecto.Changeset.apply_changes()
   end
 
