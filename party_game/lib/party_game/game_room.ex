@@ -85,6 +85,14 @@ defmodule PartyGame.GameRoom do
     %{game | round_started: true}
   end
 
+  def update_players(%Game{} =  game, player) do
+    %{game | players: Enum.map(game.players, fn p -> Map.merge(p, player) end)}
+  end
+
+  def update_player(%Game{} =  game, %Player{} = player) do
+    %{game | players: Enum.map(game.players, fn p -> if p.name == player.name, do: Map.merge(p, player), else: p end)}
+  end
+
   def win_round?(%Game{} = game, answer) do
     [question | _] = game.questions
     question.correct == answer and game.round_started
