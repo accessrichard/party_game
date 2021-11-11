@@ -1,5 +1,4 @@
 defmodule PartyGame.GameRoom do
-
   alias PartyGame.Game
   alias PartyGame.Game.Round
   alias PartyGame.Game.Player
@@ -16,25 +15,32 @@ defmodule PartyGame.GameRoom do
     with {:ok, _} <- game_stopped(game),
          {:ok, _} <- required(player_name, "Player name"),
          {:ok, _} <- name_taken(game, player_name) do
-      %{game | players: [Player.add_player(player) | game.players], room_owner: game.room_owner || player_name}
+      %{
+        game
+        | players: [Player.add_player(player) | game.players],
+          room_owner: game.room_owner || player_name
+      }
     else
       error -> error
     end
   end
 
-
   def add_player(%Game{} = game, player_name) do
     with {:ok, _} <- game_stopped(game),
          {:ok, _} <- required(player_name, "Player name"),
          {:ok, _} <- name_taken(game, player_name) do
-      %{game | players: [Player.add_player(player_name) | game.players], room_owner: game.room_owner || player_name}
+      %{
+        game
+        | players: [Player.add_player(player_name) | game.players],
+          room_owner: game.room_owner || player_name
+      }
     else
       error -> error
     end
   end
 
   def add_player!(%Game{} = game, player_name) do
-    with  %Game{} = game <- add_player(game, player_name) do
+    with %Game{} = game <- add_player(game, player_name) do
       game
     else
       error -> raise error
@@ -47,7 +53,6 @@ defmodule PartyGame.GameRoom do
       true -> {:error, "Name taken. Choose a different name."}
     end
   end
-
 
   def player_exists?(%Game{} = game, player_name) do
     case Enum.find(game.players, fn player -> player.name == player_name end) do
@@ -85,12 +90,18 @@ defmodule PartyGame.GameRoom do
     %{game | round_started: true}
   end
 
-  def update_players(%Game{} =  game, player) do
-    %{game | players: Enum.map(game.players, fn p -> Map.merge(p, player) end)}
+  def update_player(%Game{} = game, %Player{} = player) do
+    %{
+      game
+      | players:
+          Enum.map(game.players, fn p ->
+            if p.name == player.name, do: player, else: p
+          end)
+    }
   end
 
-  def update_player(%Game{} =  game, %Player{} = player) do
-    %{game | players: Enum.map(game.players, fn p -> if p.name == player.name, do: Map.merge(p, player), else: p end)}
+  def get_player(%Game{} = game, player) do
+    Enum.find(game.players, &(&1.name == player.name))
   end
 
   def win_round?(%Game{} = game, answer) do
@@ -103,7 +114,15 @@ defmodule PartyGame.GameRoom do
       win_round?(game, answer) ->
         [question | questions] = game.questions
         round = %Round{question: question, winner: player_name, answer: question.correct}
-        {:win, %{game | round_started: false, rounds: [round | game.rounds], questions: questions, is_over: questions == []}}
+
+        {:win,
+         %{
+           game
+           | round_started: false,
+             rounds: [round | game.rounds],
+             questions: questions,
+             is_over: questions == []
+         }}
 
       true ->
         {:lose, game}
@@ -113,7 +132,14 @@ defmodule PartyGame.GameRoom do
   def next_question(%Game{} = game) do
     [question | questions] = game.questions
     round = %Round{question: question, winner: "None", answer: question.correct}
-    %{game | round_started: false, rounds: [round | game.rounds], questions: questions, is_over: questions == []}
+
+    %{
+      game
+      | round_started: false,
+        rounds: [round | game.rounds],
+        questions: questions,
+        is_over: questions == []
+    }
   end
 
   defp game_stopped(%{started: true}), do: {:error, "Game is already started."}

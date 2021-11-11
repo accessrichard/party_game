@@ -3,6 +3,7 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   alias PartyGame.Server
   alias PartyGame.GameRoom
+  alias PartyGame.Game.Player
   alias PartyGame.Games.Games
 
   @impl true
@@ -47,6 +48,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp action("new", socket, payload), do: new(socket, payload)
   defp action("next", socket, payload), do: next(socket, payload)
   defp action("stop", socket, payload), do: broadcast_action(socket, stop(payload), "startstop")
+  defp action("update_player", socket, payload), do: update_player(socket, payload)
 
   defp action("countdown", socket, payload),
     do: broadcast_action(socket, countdown(payload), "countdown")
@@ -106,6 +108,27 @@ defmodule PartyGameWeb.BuzzerChannel do
     {:noreply, socket}
   end
 
+  defp update_player(socket, payload) do
+    payload_player = Map.get(payload, "player")
+
+    game = Server.get_game(game_code(socket.topic))
+    player = GameRoom.get_player(game, payload_player)
+    changeset = Player.changeset(player, payload_player)
+
+    case map_size(changeset.changes) == 0 do
+      true ->
+        updated_player = Ecto.Changeset.apply_changes(changeset)
+        game
+        |> GameRoom.update_player(updated_player)
+        |> Server.update_game()
+
+        broadcast_from(socket, "update_player", %{"name" => socket.assigns.name, "player" => updated_player})
+
+      false ->
+        {:noreply, socket}
+    end
+  end
+
   defp next(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
@@ -145,7 +168,6 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   defp buzz(socket, payload) do
     game = Server.get_game(game_code(socket.topic))
-    |> IO.inspect
 
     answer = Map.get(payload, "answer")
 

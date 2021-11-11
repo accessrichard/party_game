@@ -1,6 +1,7 @@
 defmodule PartyGameWeb.LobbyChannel do
   use PartyGameWeb, :channel
 
+  alias PartyGameWeb.Presence
   alias PartyGame.Server
 
   @impl true
@@ -29,6 +30,12 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_info({:after_join, name}, socket) do
+
+    {:ok, _} = Presence.track(socket, name, %{
+      online_at: inspect(System.system_time(:second))
+    })
+
+    push(socket, "presence_state", Presence.list(socket))
     broadcast_from(socket, "join", %{"player" => name})
     {:noreply, socket}
   end

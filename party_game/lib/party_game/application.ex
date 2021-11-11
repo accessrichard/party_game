@@ -13,6 +13,7 @@ defmodule PartyGame.Application do
       {Phoenix.PubSub, name: PartyGame.PubSub},
       # Start the Endpoint (http/https)
       PartyGameWeb.Endpoint,
+      PartyGameWeb.Presence,
       # Start a worker by calling: PartyGame.Worker.start_link(arg)
       # {PartyGame.Worker, arg}
       {Registry, keys: :unique, name: PartyGame.Game.Registry},

@@ -6,8 +6,7 @@ defmodule PartyGame.Game.Player do
   @derive {Jason.Encoder, only: [:name, :status, :location]}
   schema "player" do
     field(:name, :string, default: nil)
-    field(:status, :string, default: nil)
-    field(:location, :string, default: nil)
+    field(:wins, :integer, default: 0)
   end
 
   def changeset(player, params \\ %{}) do

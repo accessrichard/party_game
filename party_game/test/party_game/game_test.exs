@@ -23,22 +23,12 @@ defmodule PartyGame.GameTest do
       assert head.name == "richard"
     end
 
-    test "update_players/2 updates all players" do
-      game = GameRoom.add_player(Game.new(), "richard")
-      |> GameRoom.add_player("Sue")
-      |> GameRoom.update_players(%{location: "home"})
-
-      all_updated = Enum.filter(game.players, fn x -> x.location == "home" end)
-
-      assert length(all_updated) == 2
-    end
-
     test "update_player/2 update a player" do
       game = GameRoom.add_player(Game.new(), "richard")
       |> GameRoom.add_player("Sue")
-      |> GameRoom.update_player(%Player{name: "Sue", location: "home"})
+      |> GameRoom.update_player(%Player{name: "Sue", wins: 1})
 
-      all_updated = Enum.filter(game.players, fn x -> x.location == "home" end)
+      all_updated = Enum.filter(game.players, fn x -> x.wins == 1 end)
       [player | _] = all_updated
       assert length(all_updated) == 1 && player.name == "Sue"
     end
