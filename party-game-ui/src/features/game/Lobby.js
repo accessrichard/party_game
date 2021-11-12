@@ -107,7 +107,7 @@ export default function Lobby() {
         if (socketStatus !== SOCKET_CONNECTED
             && socketConnect !== SOCKET_CONNECTING) {
             dispatch(socketConnect({
-                host: 'ws://localhost:4000/socket',
+                host: process.env.REACT_APP_SOCKET_URL,
                 params: {}
             }));
         }
