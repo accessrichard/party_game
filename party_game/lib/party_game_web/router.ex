@@ -12,17 +12,13 @@ defmodule PartyGameWeb.Router do
     plug :put_secure_browser_headers
   end
 
-
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-
-
   scope "/api", PartyGameWeb do
     pipe_through :api
   end
-
 
   scope "/api" do
     post "/game", GameController, :create
@@ -31,16 +27,6 @@ defmodule PartyGameWeb.Router do
     post "/game/stop", GameController, :stop
     get "/game/list", GameController, :list
   end
-
-  scope "/" do
-    pipe_through :browser # Use the default browser stack
-
-    # This route declaration MUST be below everything else! Else, it will
-    # override the rest of the routes, even the `/api` routes we've set above.
-    get "/*path", PageController, :index
-  end
-
-
 
   # Enables LiveDashboard only for development
   #
@@ -53,13 +39,18 @@ defmodule PartyGameWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-    #  pipe_through [:fetch_session, :protect_from_forgery]
+      #  pipe_through [:fetch_session, :protect_from_forgery]
       live_dashboard "/dashboard", metrics: PartyGameWeb.Telemetry
-
     end
-
-
   end
 
+  scope "/" do
+    # Use the default browser stack
+    pipe_through :browser
+
+    # This route declaration MUST be below everything else! Else, it will
+    # override the rest of the routes, even the `/api` routes we've set above.
+    get "/*path", PageController, :index
+  end
 
 end
