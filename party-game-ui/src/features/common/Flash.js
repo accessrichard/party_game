@@ -5,7 +5,7 @@ export default function Flash(props) {
 
     return (
         <React.Fragment>
-            <span className={`typography-md-text ${flash.className ? flash.className : "typography-emphasize"}`}>
+            <span className={`small-title ${flash.className ? flash.className : "typography-emphasize"}`}>
                 {flash.text}
             </span>
         </React.Fragment>

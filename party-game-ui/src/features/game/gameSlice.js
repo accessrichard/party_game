@@ -13,8 +13,8 @@ export const listGames = createAsyncThunk(
 
 export const startNewGame = createAsyncThunk(
     'game/startNewGame',
-    async (playerName, thunkAPI) => {        
-        const response = await api.create(playerName);        
+    async (playerName, thunkAPI) => {
+        const response = await api.create(playerName);
         if (!response.error) {
             thunkAPI.dispatch(syncGameState({ playerName: playerName, ...response.data }));
             thunkAPI.dispatch(push('/lobby'));
@@ -51,7 +51,7 @@ export const stopGame = createAsyncThunk(
 )
 
 const initialState = {
-    configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 2 },
+    configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 2, rounds: 10 },
     round: 0,
     isGameStarted: false,
     isPaused: false,
@@ -98,7 +98,10 @@ export const gameSlice = createSlice({
                 name: state.name,
                 gameCode: state.gameCode,
                 players: [],
-                gameOwner: state.gameOwner
+                gameOwner: state.gameOwner,
+                configuration: {
+                    ...state.configuration
+                }
             };
 
             Object.assign(state, { ...initialState, ...savedState });
@@ -147,8 +150,11 @@ export const gameSlice = createSlice({
         setFlash: (state, action) => {
             state.flash = action.payload
         },
+        updateConfig: (state, action) => {
+            state.configuration = { ...state.configurationm, ...action.payload }
+        },
         configure(state, action) {
-            state.configuration = Object.assign(state.configuration, action.configuration);
+            state.configuration = Object.assign(state.configuration, action.payload);
         },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
@@ -183,7 +189,7 @@ export const gameSlice = createSlice({
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
-            state.gameCode = action.payload.room_name;            
+            state.gameCode = action.payload.room_name;
             state.players = action.payload.players;
             state.gameOwner = action.payload.room_owner;
             state.name = action.payload.name;
@@ -229,7 +235,7 @@ const getWinners = (rounds, players) => {
     }, {});
 
     const playerScore = Object.assign(startingPlayers, groupByWinner);
-    const sortedScores =  Object.values(playerScore).sort((x, y) => y.score - x.score)
+    const sortedScores = Object.values(playerScore).sort((x, y) => y.score - x.score)
     const winnersScore = sortedScores.length > 0 ? sortedScores[0].score : 0;
     const winningPlayers = sortedScores.filter(x => x.score === winnersScore);
 
@@ -251,7 +257,8 @@ export const mergeGameList = (serverGames, clientGames) => {
     if (clientGames && Array.isArray(clientGames)) {
         const mapped = clientGames.map((x) => ({
             name: x.game.name,
-            type: "client"
+            location: "client",
+            type: "custom"
         }));
 
         return mapped.concat([...list]);

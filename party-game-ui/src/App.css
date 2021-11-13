@@ -107,6 +107,10 @@ body {
   text-align: right;
 }
 
+.answer input[type="submit"].disabled-answer {
+  background: #c9c9c9;
+}
+
 .small-title {
   display: block;
   font-size: 1.1em;
@@ -191,7 +195,7 @@ label {
   display: block;
 }
 
-select {
+.select {
   border: 2px solid #464646;
   background: #fff;
   border: 0;
@@ -203,6 +207,7 @@ select {
   font-weight: normal;
   text-decoration: inherit;
 }
+
 
 input[type="submit"] {
   

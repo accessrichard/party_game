@@ -74,6 +74,8 @@ export default function Game() {
         startCountdown,
     } = useSelector(state => state.game);
 
+    const rounds = useSelector(state => state.game.configuration.rounds);
+
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
 
@@ -170,14 +172,14 @@ export default function Game() {
 
         let game = list.find(x => x.name === name);
 
-        if (game && game.type === 'client') {
+        if (game && game.location === 'client') {
             const creativeGame = creativeGames.find(x => x.game.name === name);
             game = { ...game, questions: creativeGame.game.questions }
         }
 
-        startClickCallback("new", { game: game, rounds: 2 });
+        startClickCallback("new", { game: game, rounds: rounds });
 
-    }, [name, startClickCallback, serverGames, creativeGames]);
+    }, [name, startClickCallback, serverGames, creativeGames, rounds]);
 
     useEffect(() => {
         setTimeout(() => {

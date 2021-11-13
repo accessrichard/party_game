@@ -1,20 +1,20 @@
 defmodule PartyGame.Games.Games do
   def list() do
     [
-      %{"name" => "Basic Math", "module" => PartyGame.Games.BasicMath, "type" => "server"},
-      %{"name" => "States", "module" => PartyGame.Games.States, "type" => "server"},
-      %{"name" => "", "module" => PartyGame.Games.BuildYourOwn, "type" => "client"}
+      %{"name" => "Basic Math", "module" => PartyGame.Games.BasicMath, "type" => "multi_choice", "location" => "server"},
+      %{"name" => "States", "module" => PartyGame.Games.States, "type" => "multi_choice", "location" => "server"},
+      %{"name" => "", "module" => PartyGame.Games.BuildYourOwn, "type" => "custom", "location" => "client"}
     ]
   end
 
   def new(game) do
     name = Map.get(game, :name)
-    type = Map.get(game, :type)
+    location = Map.get(game, :location)
 
     server_game =
       Enum.find(list(), fn x ->
-        (x["name"] == name and x["type"] == type) or
-          (x["type"] == type and type == "client")
+        (x["name"] == name and x["location"] == location) or
+          (x["location"] == location and location == "client")
       end)
 
     case server_game do
@@ -28,7 +28,7 @@ defmodule PartyGame.Games.Games do
 
     Enum.map(
       non_empty,
-      fn x -> %{:name => x["name"], :type => x["type"]} end
+      fn x -> %{:name => x["name"], :location => x["location"], :type => x["type"]} end
     )
   end
 end

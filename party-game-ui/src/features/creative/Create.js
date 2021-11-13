@@ -149,8 +149,9 @@ export default function Create(props) {
             return;
         }
         const serverSideGame = toServerSideGame(form);        
-        dispatch(changeGame(serverSideGame.name));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
+        dispatch(changeGame(serverSideGame.name));
+
     }
 
     function getType(index) {

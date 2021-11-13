@@ -68,15 +68,16 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   defp new(socket, payload) do
     requested_game = Map.get(payload, "game")
+
     game_name = Map.get(requested_game, "name")
 
-    game_type = Map.get(requested_game, "type")
+    game_location = Map.get(requested_game, "location")
 
     rounds = Map.get(payload, "rounds", 10)
     server_game = Server.get_game(game_code(socket.topic))
 
     game =
-      if game_type == "client" do
+      if game_location == "client" do
         PartyGame.Game.Game.create_game_changeset(server_game, requested_game)
         |> Ecto.Changeset.apply_changes()
       else
@@ -87,7 +88,7 @@ defmodule PartyGameWeb.BuzzerChannel do
       Games.new(%{
         name: game_name,
         rounds: rounds,
-        type: game_type,
+        location: game_location,
         game: game
       })
 

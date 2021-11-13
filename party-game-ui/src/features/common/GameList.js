@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import React from 'react';
 
 export default function GameList(props) {
-    const { games, defaultValue } = props;
+    const { games, value } = props;
 
     function onGameChange(e) {
         props.onGameChange && props.onGameChange(e);
@@ -18,10 +18,11 @@ export default function GameList(props) {
             <NavLink className="app-link" to="/create">Create Your Own</NavLink>
                 </label>
             </div>
-            <select defaultValue={defaultValue}
+            <select 
                 id="game-list"
                 name="games"
-                className="bold-select select-height-tall header-bolder lighter-label"
+                value={value}
+                className="select bold-select select-height-tall header-bolder lighter-label"
                 onChange={onGameChange}>
 
                 {(games || []).map((val) =>
