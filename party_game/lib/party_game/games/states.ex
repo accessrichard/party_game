@@ -1,7 +1,7 @@
 defmodule PartyGame.Games.States do
   alias PartyGame.Game.Question
 
-  def new(game) do
+  def new(game, _) do
     number_questions = Map.get(game, :rounds, 10)
 
     states = Enum.take_random(state_capitals(), number_questions)

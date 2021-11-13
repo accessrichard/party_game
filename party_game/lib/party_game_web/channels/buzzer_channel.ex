@@ -16,10 +16,10 @@ defmodule PartyGameWeb.BuzzerChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
-
-    {:ok, _} = Presence.track(socket, socket.assigns.name, %{
-      online_at: DateTime.utc_now() |> DateTime.to_unix(:second)
-    })
+    {:ok, _} =
+      Presence.track(socket, socket.assigns.name, %{
+        online_at: DateTime.utc_now() |> DateTime.to_unix(:second)
+      })
 
     push(socket, "presence_state", Presence.list(socket))
 
@@ -92,6 +92,13 @@ defmodule PartyGameWeb.BuzzerChannel do
         game: game
       })
 
+    questions = if game_location == "client" do
+        Games.shuffle_questions(questions)
+        |> Games.shuffle_question_answers
+    else
+      questions
+    end
+
     game =
       game
       |> GameRoom.start_round()
@@ -127,11 +134,15 @@ defmodule PartyGameWeb.BuzzerChannel do
     case map_size(changeset.changes) == 0 do
       true ->
         updated_player = Ecto.Changeset.apply_changes(changeset)
+
         game
         |> GameRoom.update_player(updated_player)
         |> Server.update_game()
 
-        broadcast_from(socket, "update_player", %{"name" => socket.assigns.name, "player" => updated_player})
+        broadcast_from(socket, "update_player", %{
+          "name" => socket.assigns.name,
+          "player" => updated_player
+        })
 
       false ->
         {:noreply, socket}

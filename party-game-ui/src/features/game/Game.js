@@ -75,6 +75,7 @@ export default function Game() {
     } = useSelector(state => state.game);
 
     const rounds = useSelector(state => state.game.configuration.rounds);
+    const wrongAnswerTimeout = useSelector(state => state.game.configuration.wrongAnswerTimeout);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -123,28 +124,13 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [isRoundStarted, isTimerActive, configuration.questionTime]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            if (isWrong) {
-                dispatch(clearWrongAnswer());
-            }
-        }, 1000);
 
-    }, [dispatch, isWrong]);
 
     function startClick(e, action, payload = {}) {
         e && e.preventDefault();
         startClickCallback(action, payload);
     }
 
-    function pauseOnWrongAnswer() {
-        setTimeout(() => {
-            setIsQuestionAnswered(false);
-            if (startedRef.current && roundRef.current === round) {
-                dispatch(setFlash({ text: "Try Again" }))
-            }
-        }, configuration.pauseOnWrongAnswer * 1000)
-    }
 
     function timerDone() {
         setIsTimerActive(false);
@@ -155,7 +141,6 @@ export default function Game() {
         setIsQuestionAnswered(true);
         const data = { answer, name: playerName };
         dispatch(channelPush(sendEvent(topic, data, "buzz")));
-        pauseOnWrongAnswer();
     }
 
     const startClickCallback = useCallback((action, payload = {}) => {
@@ -167,7 +152,7 @@ export default function Game() {
     useEffect(() => {
         ////Auto start game from lobby.
         setIsTimerActive(false);
-        
+
         const list = mergeGameList(serverGames, creativeGames);
 
         let game = list.find(x => x.name === name);
@@ -183,12 +168,16 @@ export default function Game() {
 
     useEffect(() => {
         setTimeout(() => {
+            //In case round ends before timer is reset - 
+            //if (startedRef.current && roundRef.current === round) {
             if (isWrong) {
                 dispatch(clearWrongAnswer());
+                setIsQuestionAnswered(false);
+                dispatch(setFlash({ text: "" }))
             }
-        }, 1000);
+        }, wrongAnswerTimeout * 1000);
 
-    }, [dispatch, isWrong]);
+    }, [dispatch, isWrong, wrongAnswerTimeout]);
 
     if (isOver) {
         setTimeout(() => {
@@ -220,10 +209,22 @@ export default function Game() {
 
                 <div>
                     <Flash flash={flash}></Flash>
+                    {isWrong && configuration.wrongAnswerTimeout > 1 && 
+                    //Bug: Round ends before wrong timeout 
+                        <span> Wrong, Try again in&nbsp;
+                        <Timer key={isWrong + configuration.wrongAnswerTimeout}
+                                isActive={isWrong}
+                                timeIncrement={-1}
+                                timeFormat={"seconds"}
+                                startSeconds={configuration.wrongAnswerTimeout}>
+                            </Timer>
+                        &nbsp;seconds
+                        </span>
+                    }
                 </div>
 
                 <div className="flex-container">
-                    {gameOwner === playerName && !isRoundStarted &&
+                    {gameOwner === playerName && !isRoundStarted && configuration.nextQuestionTime > 2 && 
                         <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                 </div>
 

@@ -141,7 +141,6 @@ defmodule PartyGame.GameRoom do
         is_over: questions == []
     }
   end
-
   defp game_stopped(%{started: true}), do: {:error, "Game is already started."}
   defp game_stopped(%{started: false}), do: {:ok, false}
 

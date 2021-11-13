@@ -9,7 +9,7 @@ import {
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
-import { addPlayer, changeGame, listGames, mergeGameList, startGame, configure } from './gameSlice';
+import { addPlayer, changeGame, listGames, mergeGameList, startGame } from './gameSlice';
 import { syncPresenceState, syncPresenceDiff } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -19,6 +19,7 @@ import Logo from '../common/Logo';
 import Players from './Players';
 import Timer from './Timer';
 import { push } from 'connected-react-router';
+import { Link  } from "react-router-dom";
 
 const onEvents = (topic) => [
     {
@@ -48,7 +49,6 @@ export default function Lobby() {
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
     const { playerName, gameCode, gameOwner, isGameStarted, name } = useSelector(state => state.game);
-    const rounds = useSelector(state => state.game.configuration.rounds);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -77,10 +77,6 @@ export default function Lobby() {
             }));
         }
         e.preventDefault();
-    }
-
-    function onRoundChange(e) {
-        dispatch(configure({rounds: parseInt(e.target.value, 10)}));
     }
 
     useEffect(() => {
@@ -148,7 +144,7 @@ export default function Lobby() {
 
                 <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
 
-                <span className="typography-md-text time">
+                <span className="typography-md-text">
                     <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
                 </span>
             </header>
@@ -171,13 +167,12 @@ export default function Lobby() {
                     <form className="flex-grid flex-column md-5 form lg-6" noValidate onSubmit={handleCreateGame}>
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
-                                <GameList value={name} onGameChange={onGameChange} games={gameList} />            
+                                <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />            
                             </div>
                         </div>
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
-                                <label htmlFor="rounds">Number Of Rounds:</label>
-                                <input className="select select-height-tall bordered-input max-width" name="rounds" type="number" min="1" max="25" value={rounds} onChange={onRoundChange}/>           
+                                <Link to="/settings" className="app-link">Settings</Link>
                             </div>
                         </div>
                         <div className="flex-row">

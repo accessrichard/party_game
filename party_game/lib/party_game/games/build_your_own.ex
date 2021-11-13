@@ -1,7 +1,6 @@
 defmodule PartyGame.Games.BuildYourOwn do
 
-  def new(game) do
-    game.game.questions
+  def new(game, _) do
+      game.game.questions
   end
-
 end

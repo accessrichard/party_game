@@ -40,6 +40,7 @@ function Create() {
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
 
             <form className="flex-grid flex-column form fill-space" onSubmit={handleSubmit} noValidate>
+                
                 <div className="empty-space margin-bottom-5">
 
                     <label className="align-left typography-emphasize" htmlFor="username"></label>

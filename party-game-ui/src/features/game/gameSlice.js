@@ -51,7 +51,7 @@ export const stopGame = createAsyncThunk(
 )
 
 const initialState = {
-    configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 2, rounds: 10 },
+    configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 1, rounds: 10 },
     round: 0,
     isGameStarted: false,
     isPaused: false,
@@ -158,7 +158,6 @@ export const gameSlice = createSlice({
         },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
-                state.flash = { text: action.payload.status };
                 state.isWrong = true;
             }
         },
