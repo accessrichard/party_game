@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-import InputField from '../common/InputField';
+import InputError from '../common/InputError';
+
 import Logo from '../common/Logo';
 import { startNewGame } from './gameSlice';
 import { useDispatch } from 'react-redux';
@@ -22,6 +23,7 @@ function Create() {
     }
 
     function handleChanges(e) {
+        e.preventDefault();
         const { name, value, validationMessage } = e.target;
 
         let newForm = {
@@ -39,7 +41,9 @@ function Create() {
 
             <form className="flex-grid flex-column form fill-space" onSubmit={handleSubmit} noValidate>
                 <div className="empty-space margin-bottom-5">
-                    <InputField
+
+                    <label className="align-left typography-emphasize" htmlFor="username"></label>
+                    <input
                         placeholder="User Name"
                         id="username"
                         required
@@ -48,11 +52,10 @@ function Create() {
                         className="bordered-input max-width line-hieght-medium"
                         onInvalid={handleChanges}
                         onChange={handleChanges}
-                        labelClass="align-left typography-emphasize"
+
                         onBlur={handleChanges}
-                        errorClassName="input-error-text shake"
-                        errors={[(form.errors && form.errors.username) || ""]}>
-                    </InputField>
+                    />
+                    <InputError className="input-error-text shake" errors={[(form.errors && form.errors.username) || ""]} />
                 </div>
 
                 <input

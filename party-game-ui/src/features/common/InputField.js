@@ -9,8 +9,6 @@ export default function InputField(props) {
     }
 
     function onBlur(e) {
-        const obj = {};
-        obj[name] = e.target.value;
         props.onBlur && props.onBlur(e);
         e.preventDefault();
     }

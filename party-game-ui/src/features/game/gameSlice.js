@@ -199,6 +199,9 @@ export const gameSlice = createSlice({
                 state.players.push(action.payload.player);
             }
         },
+        clearJoinError(state, action) {
+            state.api.join.error = "";
+        }
     },
     extraReducers: {
         [startNewGame.pending]: (state, action) => { pending(state.api.start, action) },
@@ -283,6 +286,7 @@ export const {
     syncGameState,
     addPlayer,
     phxReply,
+    clearJoinError,
     setFlash } = gameSlice.actions;
 
 export default gameSlice.reducer;

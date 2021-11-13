@@ -29,7 +29,7 @@ defmodule PartyGame.Server do
   def lookup(room_name) do
     case Registry.lookup(@registry, room_name) do
       [{pid, _}] -> {:ok, pid}
-      [] -> {:error, "Room name is not found."}
+      [] -> {:error, %{room_name: "Room name is not found."}}
     end
   end
 

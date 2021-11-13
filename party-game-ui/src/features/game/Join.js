@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import InputField from '../common/InputField';
+import InputError from '../common/InputError';
 import Logo from '../common/Logo';
-import { joinGame } from './gameSlice';
+import { joinGame, clearJoinError } from './gameSlice';
 import { useParams } from "react-router-dom";
 
 function Join() {
@@ -22,14 +22,6 @@ function Join() {
         gameCode: id || "",
     });
 
-    useEffect(() => {
-        if (gameCodeError) {
-            let newForm = { ...form };
-            newForm.errors = { ...newForm.errors, "gameCode": gameCodeError };
-            setForm(newForm);
-        }
-    }, [gameCodeError, form]);
-
 
     function handleSubmit(e) {
         if (e.target.reportValidity()) {
@@ -39,6 +31,7 @@ function Join() {
     }
 
     function handleChanges(e) {
+        e.preventDefault();
         const { name, value, validationMessage } = e.target;
 
         let newForm = {
@@ -46,8 +39,12 @@ function Join() {
             [name]: value,
         };
 
-        newForm.errors = { ...newForm.errors, [name]: validationMessage };
+        newForm.errors = { ...newForm.errors, [name]: validationMessage, gameCode: "" };
         setForm(newForm);
+
+        if (gameCodeError) {
+            dispatch(clearJoinError());
+        }
     };
 
     return (
@@ -55,9 +52,12 @@ function Join() {
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
 
             <form className="medium-width" onSubmit={handleSubmit} noValidate>
-                <div className="flex-column margin-bottom-5">
+                
 
-                    <InputField
+
+                <div className="flex-column margin-bottom-5">
+                    <label className="align-left typography-emphasize" htmlFor="username"></label>
+                    <input
                         placeholder="User Name"
                         id="username"
                         required
@@ -66,16 +66,16 @@ function Join() {
                         className="bordered-input max-width line-hieght-medium"
                         onInvalid={handleChanges}
                         onChange={handleChanges}
-                        labelClass="align-left typography-emphasize"
                         onBlur={handleChanges}
-                        errorClassName="input-error-text shake"
                         value={form.username}
-                        errors={[(form.errors && form.errors.username) || ""]}>
-                    </InputField>
+                    >
+                    </input>
+                    <InputError className="input-error-text shake" errors={[gameCodeError && gameCodeError.player_name]} />
+                    <InputError className="input-error-text shake" errors={[(form.errors && form.errors.username) || ""]} />
                 </div>
                 <div className="flex-column margin-bottom-5">
-
-                    <InputField
+                    <label className="align-left typography-emphasize" htmlFor="gameCode"></label>
+                    <input
                         placeholder="Game Code"
                         id="gameCode"
                         required
@@ -84,12 +84,13 @@ function Join() {
                         className="bordered-input max-width line-hieght-medium "
                         onInvalid={handleChanges}
                         onChange={handleChanges}
-                        labelClass="align-left typography-emphasize"
                         onBlur={handleChanges}
-                        errorClassName="input-error-text shake"
                         value={form.gameCode}
-                        errors={[(form.errors && form.errors.gameCode) || ""]}>
-                    </InputField>
+                    >
+                    </input>
+                    <InputError className="input-error-text shake" errors={[gameCodeError && gameCodeError.room_name]} />
+                    <InputError className="input-error-text shake" errors={[(form.errors && form.errors.gameCode) || ""]} />
+
                 </div>
 
 

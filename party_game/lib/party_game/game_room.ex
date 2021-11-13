@@ -50,7 +50,7 @@ defmodule PartyGame.GameRoom do
   def name_taken(%Game{} = game, player_name) do
     case player_exists?(game, player_name) do
       false -> {:ok, player_name}
-      true -> {:error, "Name taken. Choose a different name."}
+      true -> {:error, %{player_name: "Name taken. Choose a different name."}}
     end
   end
 
