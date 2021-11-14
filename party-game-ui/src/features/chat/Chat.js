@@ -87,9 +87,9 @@ const Chat = () => {
               </li>
             )}
           </ul>
-          <form className="medium-width pd-0 md-0 lg-12 " onSubmit={(e) => e.preventDefault()}>
+          <form className="medium-width pd-0 md-0" onSubmit={(e) => e.preventDefault()}>
             <input type="text"
-              className="lg-12 chat-input"
+              className="chat-input"
               label="Type Something"
               autoComplete="off"
               placeholder="Send message"

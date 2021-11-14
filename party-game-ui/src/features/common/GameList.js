@@ -1,4 +1,3 @@
-import { NavLink } from 'react-router-dom';
 import React from 'react';
 
 export default function GameList(props) {
@@ -9,15 +8,8 @@ export default function GameList(props) {
     }
 
     return (
-        <React.Fragment>
-            <div className="flex-center flex-container">
-                <label htmlFor="game-list" className="typography-emphasize ">
-                    <div className="flex-center flex-container">Select Existing Game or</div>
-                    <NavLink className="app-link" to="/import">Import</NavLink>
-                    &nbsp;or&nbsp;
-            <NavLink className="app-link" to="/create">Create Your Own</NavLink>
-                </label>
-            </div>
+        <React.Fragment>        
+            <label htmlFor="game-list" className="typography-emphasize ">Select Game:</label>
             <select 
                 id="game-list"
                 name="games"

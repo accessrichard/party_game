@@ -103,7 +103,7 @@ body {
   padding: 0;
 }
 
-.right-align {
+.text-align-right {
   text-align: right;
 }
 
@@ -138,9 +138,6 @@ form.medium-width {
   -moz-transition: opacity 1s;
 }
 
-.align-left {
-  text-align: left;
-}
 
 .flex-right {
   justify-content: flex-end;
@@ -148,6 +145,14 @@ form.medium-width {
 
 .flex-center {
   justify-content: center;
+}
+
+.align-items-end {
+  align-items: flex-end;
+}
+
+.text-align-left {
+  text-align: left;
 }
 
 label {
@@ -417,12 +422,18 @@ input:not(:focus):required:invalid {
 .margin-bottom-5 {
   margin-bottom: 5px;
 }
+input { margin-bottom: 10px; }
+
 
 .answer {
   width: 40%;
   border-radius: 0%;
   color: rgb(70, 70, 70);
   min-height: 100px;
+}
+
+.width-50 {
+  width: 50%;
 }
 
 .center-65 {
@@ -433,9 +444,9 @@ input:not(:focus):required:invalid {
 
 .answer-wrapper {
   justify-content: center;
-  width: 65%;
   display: flex;
   flex-wrap: wrap;
+  width: 100%
 }
 
 .flex-grid {
@@ -472,25 +483,25 @@ input:not(:focus):required:invalid {
   height: 100%;
 }
 
-.lg-12 {
-  width: 100%;
+@media only screen and (max-width: 768px) {
+  .center-screen {
+    width: 80%;
+  }
 }
 
-.lg-6 {
-  width: 50%;
+@media only screen and (max-width: 576px) {
+  .center-screen {
+    width: 98%;
+  }
 }
 
-.lg-4 {
-  width: 33%;
+@media only screen and (min-width: 768px) {
+  .center-screen {
+    width: 50%;
+  }
 }
 
-.lg-3 {
-  width: 25%;
-}
 
-.lg-2 {
-  width: 16.66%;
-}
 
 .pd-0 {
   padding: 0px;
@@ -531,7 +542,6 @@ input:not(:focus):required:invalid {
   overflow: auto;
   display: flex;
   flex-wrap: wrap;
-  width: 25%;  
 }
 
 .ul-numbered {
@@ -626,3 +636,15 @@ input.wrong[type="submit"] {
 .dark-border {
   border: 1px solid black;
 }
+
+
+.center-with-right-div {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-column-gap: 5px;
+  justify-items: center;
+  padding: 0; margin: 0; list-style: none;
+}
+
+.center-with-right-div span:nth-child(1) { grid-column-start: 2; }
+.center-with-right-div span:nth-child(2) { margin-left: auto; }

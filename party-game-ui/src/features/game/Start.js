@@ -36,21 +36,22 @@ function Create() {
     }
 
     return (
-        <div className="offset-bottom">
+        <div className="offset-bottom  center-screen">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
 
             <form className="flex-grid flex-column form fill-space" onSubmit={handleSubmit} noValidate>
                 
-                <div className="empty-space margin-bottom-5">
+                <div className="margin-bottom-5">
 
-                    <label className="align-left typography-emphasize" htmlFor="username"></label>
+                    <label className="text-align-left typography-emphasize" htmlFor="username">User Name</label>
                     <input
+                        type="text"
                         placeholder="User Name"
                         id="username"
                         required
                         name="username"
                         autoComplete="off"
-                        className="bordered-input max-width line-hieght-medium"
+                        className="bordered-input max-width line-hieght-medium "
                         onInvalid={handleChanges}
                         onChange={handleChanges}
 

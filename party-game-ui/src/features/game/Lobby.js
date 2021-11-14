@@ -19,7 +19,7 @@ import Logo from '../common/Logo';
 import Players from './Players';
 import Timer from './Timer';
 import { push } from 'connected-react-router';
-import { Link  } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 
 const onEvents = (topic) => [
     {
@@ -83,10 +83,10 @@ export default function Lobby() {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.lenght === 0)) {
             dispatch(listGames());
         }
-        
+
     }, [dispatch, serverGames, serverGamesLoading]);
 
-    useEffect(() => {      
+    useEffect(() => {
         const list = mergeGameList(serverGames, creativeGames);
         setGameList(list);
     }, [creativeGames, serverGames, setGameList]);
@@ -140,19 +140,28 @@ export default function Lobby() {
     return (
         <React.Fragment>
 
-            <header className="app-header1">
+            <header className="app-header1 full-width">
+          
+                <div className="center-with-right-div">
+                    <span><Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo></span>
+                    <span>
+                    {gameOwner === playerName &&
+                        <ul className="small-font text-align-right ul-nostyle">
+                            <li><NavLink className="app-link" to="/settings" >Settings</NavLink></li>
+                            <li><NavLink className="app-link" to="/import">Import</NavLink></li>
+                            <li><NavLink className="app-link" to="/create">Create Your Own</NavLink></li>
+                        </ul>}
+                    </span>
+                </div>
 
-                <Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo>
 
-                <span className="typography-md-text">
-                    <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
-                </span>
+
             </header>
 
             {gameOwner === playerName
                 ? <div className="typography-lg-text">
-                    Share this link to play with friends:
-                                <div className="light-link pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                    Share link to play with friends:
+                     <div className="light-link pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
                 </div>
                 : <div className="typography-lg-text">Waiting for game owner to start game.</div>
             }
@@ -164,17 +173,13 @@ export default function Lobby() {
 
             {gameOwner === playerName &&
                 <React.Fragment>
-                    <form className="flex-grid flex-column md-5 form lg-6" noValidate onSubmit={handleCreateGame}>
+                    <form className="flex-grid flex-column md-5 form center-screen" noValidate onSubmit={handleCreateGame}>
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
-                                <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />            
+                                <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />
                             </div>
                         </div>
-                        <div className="flex-row">
-                            <div className="flex-column margin-bottom-5 flex-center">
-                                <Link to="/settings" className="app-link">Settings</Link>
-                            </div>
-                        </div>
+
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5">
                                 <input className="line-hieght-medium" disabled={serverGamesLoading === 'pending'} type="submit" value="Start" />
@@ -182,6 +187,11 @@ export default function Lobby() {
                         </div>
                     </form>
                 </React.Fragment>}
+
+
+            <span className="typography-md-text">
+                <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
+            </span>
 
         </React.Fragment >
     );

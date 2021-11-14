@@ -56,7 +56,7 @@ function Join() {
 
 
                 <div className="flex-column margin-bottom-5">
-                    <label className="align-left typography-emphasize" htmlFor="username"></label>
+                    <label className="text-align-left typography-emphasize" htmlFor="username"></label>
                     <input
                         placeholder="User Name"
                         id="username"
@@ -74,7 +74,7 @@ function Join() {
                     <InputError className="input-error-text shake" errors={[(form.errors && form.errors.username) || ""]} />
                 </div>
                 <div className="flex-column margin-bottom-5">
-                    <label className="align-left typography-emphasize" htmlFor="gameCode"></label>
+                    <label className="text-align-left typography-emphasize" htmlFor="gameCode"></label>
                     <input
                         placeholder="Game Code"
                         id="gameCode"
