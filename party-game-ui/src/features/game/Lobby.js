@@ -141,39 +141,36 @@ export default function Lobby() {
         <React.Fragment>
 
             <header className="app-header1 full-width">
-          
+
                 <div className="center-with-right-div">
                     <span><Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo></span>
                     <span>
-                    {gameOwner === playerName &&
-                        <ul className="small-font text-align-right ul-nostyle">
-                            <li><NavLink className="app-link" to="/settings" >Settings</NavLink></li>
-                            <li><NavLink className="app-link" to="/import">Import</NavLink></li>
-                            <li><NavLink className="app-link" to="/create">Create Your Own</NavLink></li>
-                        </ul>}
+                        {gameOwner === playerName &&
+                            <ul className="small-font text-align-right ul-nostyle">
+                                <li><NavLink className="app-link" to="/settings" >Settings</NavLink></li>
+                                <li><NavLink className="app-link" to="/import">Import</NavLink></li>
+                                <li><NavLink className="app-link" to="/create">Create Your Own</NavLink></li>
+                            </ul>}
                     </span>
                 </div>
-
-
-
             </header>
-
-            {gameOwner === playerName
-                ? <div className="typography-lg-text">
-                    Share link to play with friends:
-                     <div className="light-link pd-5"><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
-                </div>
-                : <div className="typography-lg-text">Waiting for game owner to start game.</div>
-            }
-
             <div className="players-wrapper scroll-flex">
                 <Players></Players>
             </div>
 
-
+            {gameOwner !== playerName &&
+                <div className="typography-lg-text">Waiting for game owner to start game.</div>
+            }
             {gameOwner === playerName &&
                 <React.Fragment>
                     <form className="flex-grid flex-column md-5 form center-screen" noValidate onSubmit={handleCreateGame}>
+
+
+                        <div className="text-align-left small-font typography-emphasize flex-row">
+                            Share link to play with friends:
+                            <div className="light-link pd-5 flex-row "><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                        </div>
+
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
                                 <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />
