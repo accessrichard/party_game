@@ -19,13 +19,24 @@ defmodule PartyGame.Game.Game do
     embeds_many(:questions, Question, on_replace: :delete)
   end
 
-  def create_game_changeset(game, params \\ %{}) do
+  def create_game(game, params \\ %{}) do
+    create_game_changeset(game, params)
+    |> Ecto.Changeset.apply_changes()
+  end
 
+  def create_game_changeset(game, params \\ %{}) do
     rounds = EctoHelpers.create_embedded_changeset(params, "rounds", %Round{}, &Round.changeset/2)
 
-    players = EctoHelpers.create_embedded_changeset(params, "players", %Player{}, &Player.changeset/2)
+    players =
+      EctoHelpers.create_embedded_changeset(params, "players", %Player{}, &Player.changeset/2)
 
-    questions = EctoHelpers.create_embedded_changeset(params, "questions", %Question{}, &Question.changeset/2)
+    questions =
+      EctoHelpers.create_embedded_changeset(
+        params,
+        "questions",
+        %Question{},
+        &Question.changeset/2
+      )
 
     game
     |> Ecto.Changeset.cast(params, [
@@ -41,7 +52,6 @@ defmodule PartyGame.Game.Game do
     |> Ecto.Changeset.put_embed(:questions, questions)
     |> Ecto.Changeset.put_embed(:players, players)
     |> Ecto.Changeset.validate_required([:name])
-
   end
 
   def new(fields \\ []), do: __struct__(fields)

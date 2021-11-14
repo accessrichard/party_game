@@ -42,6 +42,12 @@ defmodule PartyGame.Games.Games do
         "location" => "server"
       },
       %{
+        "name" => "United States Geography Trivia",
+        "module" => PartyGame.Games.BuildYourOwnPrebuilt,
+        "type" => "multi_choice",
+        "location" => "server"
+      },
+      %{
         "name" => "",
         "module" => PartyGame.Games.BuildYourOwn,
         "type" => "custom",
@@ -50,7 +56,7 @@ defmodule PartyGame.Games.Games do
     ]
   end
 
-  def new(game) do
+  def generate_questions(game) do
     name = Map.get(game, :name)
     location = Map.get(game, :location)
 

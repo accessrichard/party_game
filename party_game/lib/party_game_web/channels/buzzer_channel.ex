@@ -68,37 +68,38 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
 
   defp new(socket, payload) do
-    requested_game = Map.get(payload, "game")
+    client_form = Map.get(payload, "game")
 
-    game_name = Map.get(requested_game, "name")
+    game_name = Map.get(client_form, "name")
 
-    game_location = Map.get(requested_game, "location")
+    game_location = Map.get(client_form, "location")
 
     rounds = Map.get(payload, "rounds", 10)
     server_game = Server.get_game(game_code(socket.topic))
 
     game =
       if game_location == "client" do
-        PartyGame.Game.Game.create_game_changeset(server_game, requested_game)
-        |> Ecto.Changeset.apply_changes()
+        PartyGame.Game.Game.create_game(server_game, client_form)
       else
         server_game
       end
 
     questions =
-      Games.new(%{
+      Games.generate_questions(%{
         name: game_name,
         rounds: rounds,
         location: game_location,
         game: game
       })
 
-    questions = if game_location == "client" do
+    # Shuffle questions for client games
+    questions =
+      if game_location == "client" do
         Games.shuffle_questions(questions)
-        |> Games.shuffle_question_answers
-    else
-      questions
-    end
+        |> Games.shuffle_question_answers()
+      else
+        questions
+      end
 
     game =
       game
