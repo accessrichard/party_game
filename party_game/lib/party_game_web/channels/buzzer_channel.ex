@@ -22,8 +22,9 @@ defmodule PartyGameWeb.BuzzerChannel do
       })
 
     push(socket, "presence_state", Presence.list(socket))
+    player = Player.add_player(socket.assigns.name)
 
-    broadcast_from(socket, "join", %{"name" => socket.assigns.name})
+    broadcast_from(socket, "join", player)
     {:noreply, socket}
   end
 

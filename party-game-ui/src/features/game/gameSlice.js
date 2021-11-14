@@ -194,7 +194,7 @@ export const gameSlice = createSlice({
             state.name = action.payload.name;
         },
         addPlayer(state, action) {
-            if (!state.players.includes(action.payload.player)) {
+            if (!state.players.filter(x => x.name === action.payload.player.name)) {
                 state.players.push(action.payload.player);
             }
         },
@@ -237,10 +237,10 @@ const getWinners = (rounds, players) => {
     }, {});
 
     const playerScore = Object.assign(startingPlayers, groupByWinner);
-    const sortedScores = Object.values(playerScore).sort((x, y) => y.score - x.score)
+    const sortedScores = Object.values(playerScore).sort((x, y) => y.score - x.score);
+
     const winnersScore = sortedScores.length > 0 ? sortedScores[0].score : 0;
     const winningPlayers = sortedScores.filter(x => x.score === winnersScore);
-
     return {
         scores: sortedScores,
         winners: winningPlayers

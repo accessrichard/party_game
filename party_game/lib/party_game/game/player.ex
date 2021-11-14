@@ -13,8 +13,7 @@ defmodule PartyGame.Game.Player do
     player
     |> Ecto.Changeset.cast(params, [
       :name,
-      :status,
-      :location
+      :wins
     ])
     |> Ecto.Changeset.validate_required([:name])
   end
