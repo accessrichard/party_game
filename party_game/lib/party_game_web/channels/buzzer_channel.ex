@@ -56,11 +56,8 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp action("start", socket, payload), do: start(socket, payload)
   defp action("new", socket, payload), do: new(socket, payload)
   defp action("next", socket, payload), do: next(socket, payload)
-  defp action("stop", socket, payload), do: broadcast_action(socket, stop(payload), "startstop")
-  defp action("update_player", socket, payload), do: update_player(socket, payload)
 
-  defp action("countdown", socket, payload),
-    do: broadcast_action(socket, countdown(payload), "countdown")
+  defp action("update_settings", socket, payload), do: update_settings(socket, payload)
 
   defp action("buzz", socket, payload), do: buzz(socket, payload)
   defp action("join", socket, _), do: {:reply, {:ok, "Not Implemented"}, socket}
@@ -92,10 +89,9 @@ defmodule PartyGameWeb.BuzzerChannel do
         game: game
       })
 
-
-
     game =
       game
+      |> GameRoom.start_game()
       |> GameRoom.start_round()
       |> GameRoom.add_questions(questions, game_name)
       |> Server.update_game()
@@ -106,6 +102,7 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp start(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
+      |> GameRoom.start_game()
       |> GameRoom.start_round()
       |> Server.update_game()
 
@@ -115,33 +112,19 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp reply_with_questions(socket, game, payload) do
     [question | _] = game.questions
     payload = start(payload)
-    broadcast(socket, "startstop", assigns_payload(socket, payload, question))
+    broadcast(socket, "next_question", assigns_payload(socket, payload, question))
     {:noreply, socket}
   end
 
-  defp update_player(socket, payload) do
-    payload_player = Map.get(payload, "player")
-
+  defp update_settings(socket, payload) do
     game = Server.get_game(game_code(socket.topic))
-    player = GameRoom.get_player(game, payload_player)
-    changeset = Player.changeset(player, payload_player)
+    game = GameRoom.update_settings(game, Map.get(payload, "settings", %{}))
+    Server.update_game(game)
 
-    case map_size(changeset.changes) == 0 do
-      true ->
-        updated_player = Ecto.Changeset.apply_changes(changeset)
-
-        game
-        |> GameRoom.update_player(updated_player)
-        |> Server.update_game()
-
-        broadcast_from(socket, "update_player", %{
-          "name" => socket.assigns.name,
-          "player" => updated_player
-        })
-
-      false ->
-        {:noreply, socket}
-    end
+    broadcast_from(socket, "update_settings", %{
+      "name" => socket.assigns.name,
+      "settings" => game.settings
+    })
   end
 
   defp next(socket, payload) do
@@ -163,7 +146,7 @@ defmodule PartyGameWeb.BuzzerChannel do
 
     broadcast(
       socket,
-      "startstop",
+      "next_question",
       assigns_payload(
         socket,
         payload,
@@ -207,24 +190,11 @@ defmodule PartyGameWeb.BuzzerChannel do
     end
   end
 
-  defp broadcast_action(socket, payload, action) do
-    broadcast(socket, action, assigns_payload(socket, payload))
-    {:noreply, socket}
-  end
-
   defp start(payload) do
     Map.put(payload, "action", "start")
   end
 
-  defp stop(payload) do
-    Map.put(payload, "action", "stop")
-  end
-
-  defp countdown(payload) do
-    Map.put(payload, "action", "countdown")
-  end
-
-  defp assigns_payload(socket, payload, data \\ nil) do
+  defp assigns_payload(socket, payload, data) do
     %{
       event: %{timestamp: DateTime.utc_now(), action: Map.get(payload, "action")},
       player: %{name: socket.assigns.name},

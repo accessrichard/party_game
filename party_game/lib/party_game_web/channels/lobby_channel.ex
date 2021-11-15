@@ -3,6 +3,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   alias PartyGameWeb.Presence
   alias PartyGame.Server
+  alias PartyGame.Game.Settings
 
   @impl true
   def join("lobby:" <> room_name, payload, socket) do
@@ -21,6 +22,8 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   defp action("start", socket, payload), do: broadcast_start(socket, payload)
+  defp action("update_settings", socket, payload), do: update_settings(socket, payload)
+
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
 
   defp broadcast_start(socket, _) do
@@ -37,6 +40,14 @@ defmodule PartyGameWeb.LobbyChannel do
 
     push(socket, "presence_state", Presence.list(socket))
     broadcast_from(socket, "join", %{"player" => name})
+    {:noreply, socket}
+  end
+
+  defp update_settings(socket, payload) do
+    settings = Settings.apply_settings(Settings.new, Map.get(payload, "settings", %{}))
+    broadcast_from(socket, "update_settings", %{
+      "settings" => settings
+    })
     {:noreply, socket}
   end
 end

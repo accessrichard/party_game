@@ -9,7 +9,7 @@ import {
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
-import { addPlayer, changeGame, listGames, mergeGameList, startGame } from './gameSlice';
+import { addPlayer, changeGame, listGames, mergeGameList, startGame, pushSettings } from './gameSlice';
 import { syncPresenceState, syncPresenceDiff } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -41,6 +41,11 @@ const onEvents = (topic) => [
         event: 'presence_diff',
         dispatcher: syncPresenceDiff(),
         topic
+    },
+    {
+        event: 'update_settings',
+        dispatcher: pushSettings(),
+        topic
     }
 ]
 
@@ -48,7 +53,7 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const { playerName, gameCode, gameOwner, isGameStarted, name } = useSelector(state => state.game);
+    const { playerName, gameCode, gameOwner, isGameStarted, name, settings } = useSelector(state => state.game);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -70,6 +75,18 @@ export default function Lobby() {
 
     function handleCreateGame(e) {
         if (e.target.reportValidity()) {
+            console.log(settings)
+            dispatch(channelPush({
+                topic: topic,
+                event: topic,
+                data: { action: 'update_settings', settings: {
+                    question_time: settings.questionTime,
+                    next_question_time: settings.nextQuestionTime,
+                    wrong_answer_timeout: settings.wrongAnswerTimeout,
+                    rounds: settings.rounds
+                 }}
+            }));
+
             dispatch(channelPush({
                 topic: topic,
                 event: topic,

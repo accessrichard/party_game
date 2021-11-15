@@ -38,6 +38,11 @@ defmodule PartyGame.GameTest do
       assert {:error, _} = GameRoom.add_player(game, "richard")
     end
 
+    test "add_settings/2 prevents duplicate players" do
+      game = GameRoom.update_settings(PartyGame.Game.Game.new, %{question_time: 10})
+      assert game.settings !== nil
+    end
+
     test "add_player/2 prevents blank players" do
       assert {:error, _} = GameRoom.add_player(Game.new(), "")
     end

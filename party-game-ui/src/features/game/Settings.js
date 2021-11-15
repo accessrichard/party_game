@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Logo from '../common/Logo';
-import { configure } from './gameSlice';
+import { updateSettings } from './gameSlice';
 import { push } from 'connected-react-router';
 
 function Settings() {
 
     const dispatch = useDispatch();
-    const configuration = useSelector(state => state.game.configuration);
-    const [form, setForm] = useState({ ...configuration });
+    const {settings }  = useSelector(state => state.game);
+    const [form, setForm] = useState({ ...settings });    
 
     function handleSubmit(e) {
-        if (e.target.reportValidity()) {
-            dispatch(configure(form));
-            dispatch(push("/lobby"));
+        if (e.target.reportValidity()) {           
+           dispatch(updateSettings(form));
+           dispatch(push("/lobby"));
         }
         e.preventDefault();
     }

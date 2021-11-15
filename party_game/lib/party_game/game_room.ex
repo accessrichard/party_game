@@ -1,5 +1,6 @@
 defmodule PartyGame.GameRoom do
   alias PartyGame.Game
+  alias PartyGame.Game.Settings
   alias PartyGame.Game.Round
   alias PartyGame.Game.Player
   alias PartyGame.Server
@@ -47,6 +48,10 @@ defmodule PartyGame.GameRoom do
     end
   end
 
+  def update_settings(%Game{} = game, settings) do
+    %{game| settings: Settings.apply_settings(game.settings, settings)}
+  end
+
   def name_taken(%Game{} = game, player_name) do
     case player_exists?(game, player_name) do
       false -> {:ok, player_name}
@@ -70,7 +75,7 @@ defmodule PartyGame.GameRoom do
   end
 
   def start_game(%Game{} = game) do
-    %{game | started: true}
+    %{game | started: true, rounds: []}
   end
 
   def stop_game(%Game{} = game) do

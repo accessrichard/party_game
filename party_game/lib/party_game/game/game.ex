@@ -2,6 +2,7 @@ defmodule PartyGame.Game.Game do
   alias PartyGame.Game.Round
   alias PartyGame.Game.Question
   alias PartyGame.Game.Player
+  alias PartyGame.Game.Settings
   alias PartyGame.EctoHelpers
 
   use Ecto.Schema
@@ -10,6 +11,7 @@ defmodule PartyGame.Game.Game do
   schema "games" do
     embeds_many(:rounds, Round, on_replace: :delete)
     embeds_many(:players, Player, on_replace: :delete)
+    embeds_one(:settings, Settings, on_replace: :delete)
     field(:started, :boolean, default: false)
     field(:round_started, :boolean, default: false)
     field(:room_name, :string, default: nil)
@@ -25,13 +27,16 @@ defmodule PartyGame.Game.Game do
   end
 
   def create_game_changeset(game, params \\ %{}) do
-    rounds = EctoHelpers.create_embedded_changeset(params, "rounds", %Round{}, &Round.changeset/2)
+    rounds =
+      EctoHelpers.create_embedded_changesets(params, "rounds", %Round{}, &Round.changeset/2)
+
+    settings = Settings.apply_settings(Map.get(params, "settings", Settings.new))
 
     players =
-      EctoHelpers.create_embedded_changeset(params, "players", %Player{}, &Player.changeset/2)
+      EctoHelpers.create_embedded_changesets(params, "players", %Player{}, &Player.changeset/2)
 
     questions =
-      EctoHelpers.create_embedded_changeset(
+      EctoHelpers.create_embedded_changesets(
         params,
         "questions",
         %Question{},
@@ -51,8 +56,17 @@ defmodule PartyGame.Game.Game do
     |> Ecto.Changeset.put_embed(:rounds, rounds)
     |> Ecto.Changeset.put_embed(:questions, questions)
     |> Ecto.Changeset.put_embed(:players, players)
+    |> Ecto.Changeset.put_embed(:settings, settings)
+
     |> Ecto.Changeset.validate_required([:name])
   end
 
-  def new(fields \\ []), do: __struct__(fields)
+  def new(fields \\ []) do
+    game = __struct__(fields)
+    if (game.settings === nil) do
+      %{game| settings: Settings.new}
+    else
+      game
+    end
+  end
 end

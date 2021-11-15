@@ -23,7 +23,7 @@ const onEvents = (topic) => [
         topic,
     },
     {
-        event: 'startstop',
+        event: 'next_question',
         dispatcher: startRound(),
         topic,
     },
@@ -70,18 +70,18 @@ export default function Game() {
         isOver,
         correct,
         roundWinner,
-        configuration,
+        settings,
         startCountdown,
     } = useSelector(state => state.game);
 
-    const rounds = useSelector(state => state.game.configuration.rounds);
-    const wrongAnswerTimeout = useSelector(state => state.game.configuration.wrongAnswerTimeout);
+    const rounds = useSelector(state => state.game.settings.rounds);
+    const wrongAnswerTimeout = useSelector(state => state.game.settings.wrongAnswerTimeout);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [timerSeconds, setTimerSeconds] = useState(configuration.nextQuestionTime);
+    const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
 
     const startedRef = useRef(isRoundStarted);
@@ -98,12 +98,12 @@ export default function Game() {
 
     useEffect(() => {
         if (startCountdown) {
-            setTimerSeconds(configuration.nextQuestionTime);
+            setTimerSeconds(settings.nextQuestionTime);
             setIsTimerActive(true);
         }
 
         return () => { setIsTimerActive(false); };
-    }, [startCountdown, isTimerActive, configuration.nextQuestionTime]);
+    }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
 
     useEffect(() => {
         dispatch(channelJoin({ topic, data: { name: playerName } }));
@@ -117,12 +117,12 @@ export default function Game() {
 
     useEffect(() => {
         if (isRoundStarted) {
-            setTimerSeconds(configuration.questionTime);
+            setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
         }
 
         return () => { setIsTimerActive(false); };
-    }, [isRoundStarted, isTimerActive, configuration.questionTime]);
+    }, [isRoundStarted, isTimerActive, settings.questionTime]);
 
 
 
@@ -179,11 +179,15 @@ export default function Game() {
 
     }, [dispatch, isWrong, wrongAnswerTimeout]);
 
-    if (isOver) {
-        setTimeout(() => {
-            dispatch(push('/score'));
-        }, 1000);
-    }
+    useEffect(() => {
+        if (isOver) {
+            setTimeout(() => {
+                dispatch(push('/score'));
+            }, settings.nextQuestionTime * 1000);
+        }
+    }, [isOver, dispatch, settings.nextQuestionTime]);
+
+
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";
@@ -209,14 +213,14 @@ export default function Game() {
 
                 <div>
                     <Flash flash={flash}></Flash>
-                    {isWrong && configuration.wrongAnswerTimeout > 1 && 
-                    //Bug: Round ends before wrong timeout 
+                    {isWrong && settings.wrongAnswerTimeout > 1 &&
+                        //Bug: Round ends before wrong timeout 
                         <span> Wrong, Try again in&nbsp;
-                        <Timer key={isWrong + configuration.wrongAnswerTimeout}
+                        <Timer key={isWrong + settings.wrongAnswerTimeout}
                                 isActive={isWrong}
                                 timeIncrement={-1}
                                 timeFormat={"seconds"}
-                                startSeconds={configuration.wrongAnswerTimeout}>
+                                startSeconds={settings.wrongAnswerTimeout}>
                             </Timer>
                         &nbsp;seconds
                         </span>
@@ -224,7 +228,7 @@ export default function Game() {
                 </div>
 
                 <div className="flex-container">
-                    {gameOwner === playerName && !isRoundStarted && configuration.nextQuestionTime > 2 && 
+                    {gameOwner === playerName && !isRoundStarted && settings.nextQuestionTime > 2 &&
                         <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                 </div>
 

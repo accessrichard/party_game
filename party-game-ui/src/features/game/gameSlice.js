@@ -51,7 +51,7 @@ export const stopGame = createAsyncThunk(
 )
 
 const initialState = {
-    configuration: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 1, rounds: 10 },
+    settings: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 1, rounds: 10 },
     round: 0,
     isGameStarted: false,
     isPaused: false,
@@ -98,9 +98,10 @@ export const gameSlice = createSlice({
                 name: state.name,
                 gameCode: state.gameCode,
                 players: [],
+                rounds: [],
                 gameOwner: state.gameOwner,
-                configuration: {
-                    ...state.configuration
+                settings: {
+                    ...state.settings
                 }
             };
 
@@ -111,7 +112,8 @@ export const gameSlice = createSlice({
                 playerName: state.playerName,
                 gameCode: state.gameCode,
                 players: state.players,
-                gameOwner: state.gameOwner
+                gameOwner: state.gameOwner,
+                rounds: []
             });
             Object.assign(state, resetState)
         },
@@ -150,12 +152,6 @@ export const gameSlice = createSlice({
         setFlash: (state, action) => {
             state.flash = action.payload
         },
-        updateConfig: (state, action) => {
-            state.configuration = { ...state.configurationm, ...action.payload }
-        },
-        configure(state, action) {
-            state.configuration = Object.assign(state.configuration, action.payload);
-        },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
                 state.isWrong = true;
@@ -192,6 +188,27 @@ export const gameSlice = createSlice({
             state.players = action.payload.players;
             state.gameOwner = action.payload.room_owner;
             state.name = action.payload.name;
+        },
+        updateSettings(state, action) {
+            state.settings = Object.assign(state.settings, action.payload);
+        },
+        pushSettings: (state, action) => {
+
+            if (action.payload.settings.question_time) {
+                state.settings.questionTime = action.payload.settings.question_time;
+            }
+
+            if (action.payload.settings.next_question_time) {
+                state.settings.nextQuestionTime = action.payload.settings.next_question_time;
+            }
+
+            if (action.payload.settings.wrong_answer_timeout) {
+                state.settings.wrongAnswerTimeout = action.payload.settings.wrong_answer_timeout;
+            }
+
+            if (action.payload.settings.rounds) {
+                state.settings.rounds = action.payload.settings.rounds;
+            }
         },
         addPlayer(state, action) {
             if (!state.players.filter(x => x.name === action.payload.player.name)) {
@@ -281,6 +298,8 @@ export const {
     startRound,
     changeGame,
     updateGameList,
+    updateSettings,
+    pushSettings,
     clearWrongAnswer,
     syncGameState,
     addPlayer,

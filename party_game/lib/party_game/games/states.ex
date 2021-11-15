@@ -1,6 +1,10 @@
 defmodule PartyGame.Games.States do
   alias PartyGame.Game.Question
 
+  def new(game) do
+    new(game, nil)
+  end
+
   def new(game, _) do
     number_questions = Map.get(game, :rounds, 10)
 
