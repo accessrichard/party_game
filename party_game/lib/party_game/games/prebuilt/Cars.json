@@ -1,0 +1,27 @@
+{
+    "name": "Cars",
+    "questions": [
+        {
+            "question": "What does Volkswagen mean?",
+            "type": "multi",
+            "correct": "The people’s car",
+            "answers": [
+                "The people’s car",
+                "The Luxery Car",
+                "The sleak Car",
+                "Built Tough"
+            ]
+        },
+        {
+            "question": "Which sports car features in the Back To The Future trilogy?",
+            "type": "multi",
+            "correct": "DeLorean",
+            "answers": [
+                "DeLorean",
+                "Mustang",
+                "F150",
+                "Rolls Royce"
+            ]
+        }
+    ]
+}

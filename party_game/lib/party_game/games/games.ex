@@ -1,74 +1,91 @@
 defmodule PartyGame.Games.Games do
+  alias PartyGame.Games
+
   def list() do
-    [
+    games = [
       %{
         "name" => "Basic Math",
-        "module" => PartyGame.Games.BasicMath,
+        "module" => Games.BasicMath,
         "type" => "multi_choice",
         "location" => "server"
       },
       %{
         "name" => "Addition",
-        "module" => PartyGame.Games.BasicMath,
+        "module" => Games.BasicMath,
         "type" => "multi_choice",
         "location" => "server",
         "options" => %{"type" => "addition"}
       },
       %{
         "name" => "Subtraction",
-        "module" => PartyGame.Games.BasicMath,
+        "module" => Games.BasicMath,
         "type" => "multi_choice",
         "location" => "server",
         "options" => %{"type" => "subtraction"}
       },
       %{
         "name" => "Multiplication",
-        "module" => PartyGame.Games.BasicMath,
+        "module" => Games.BasicMath,
         "type" => "multi_choice",
         "location" => "server",
         "options" => %{"type" => "multiplication"}
       },
       %{
         "name" => "Division",
-        "module" => PartyGame.Games.BasicMath,
+        "module" => Games.BasicMath,
         "type" => "multi_choice",
         "location" => "server",
         "options" => %{"type" => "division"}
       },
       %{
         "name" => "States",
-        "module" => PartyGame.Games.States,
-        "type" => "multi_choice",
-        "location" => "server"
-      },
-      %{
-        "name" => "United States Geography Trivia",
-        "module" => PartyGame.Games.BuildYourOwnPrebuilt,
+        "module" => Games.States,
         "type" => "multi_choice",
         "location" => "server"
       },
       %{
         "name" => "",
-        "module" => PartyGame.Games.BuildYourOwn,
+        "module" => Games.BuildYourOwn,
         "type" => "custom",
         "location" => "client"
       }
     ]
+
+    games ++
+      Enum.map(Games.BuildYourOwnPrebuilt.prebuilt_games(), fn x ->
+        %{
+          "name" => x.name,
+          "module" => Games.BuildYourOwnPrebuilt,
+          "type" => "multi_choice",
+          "location" => "server"
+        }
+      end)
   end
 
   def generate_questions(game) do
     name = Map.get(game, :name)
     location = Map.get(game, :location)
 
-    server_game =
+    game_list =
       Enum.find(list(), fn x ->
         (x["name"] == name and x["location"] == location) or
           (x["location"] == location and location == "client")
       end)
 
-    case server_game do
-      nil -> {:error, "Game does not exist!"}
-      _ -> server_game["module"].new(game,  Map.get(server_game, "options", %{}))
+    case game_list do
+      nil ->
+        {:error, "Game does not exist!"}
+
+      _ ->
+        questions = game_list["module"].new(game, Map.get(game_list, "options", %{}))
+
+        # Shuffle questions for client games
+        if location == "client" || game_list["module"] === Games.BuildYourOwnPrebuilt do
+          shuffle_questions(questions)
+          |> shuffle_question_answers()
+        else
+          questions
+        end
     end
   end
 

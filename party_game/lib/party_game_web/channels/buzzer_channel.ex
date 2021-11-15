@@ -92,14 +92,7 @@ defmodule PartyGameWeb.BuzzerChannel do
         game: game
       })
 
-    # Shuffle questions for client games
-    questions =
-      if game_location == "client" do
-        Games.shuffle_questions(questions)
-        |> Games.shuffle_question_answers()
-      else
-        questions
-      end
+
 
     game =
       game
