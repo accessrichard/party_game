@@ -53,7 +53,7 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const { playerName, gameCode, gameOwner, isGameStarted, name, settings } = useSelector(state => state.game);
+    const { playerName, gameCode, isGameOwner, isGameStarted, name, settings } = useSelector(state => state.game);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -75,7 +75,6 @@ export default function Lobby() {
 
     function handleCreateGame(e) {
         if (e.target.reportValidity()) {
-            console.log(settings)
             dispatch(channelPush({
                 topic: topic,
                 event: topic,
@@ -162,7 +161,7 @@ export default function Lobby() {
                 <div className="center-with-right-div">
                     <span><Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo></span>
                     <span>
-                        {gameOwner === playerName &&
+                        {isGameOwner &&
                             <ul className="small-font text-align-right ul-nostyle">
                                 <li><NavLink className="app-link" to="/settings" >Settings</NavLink></li>
                                 <li><NavLink className="app-link" to="/import">Import</NavLink></li>
@@ -175,10 +174,10 @@ export default function Lobby() {
                 <Players></Players>
             </div>
 
-            {gameOwner !== playerName &&
+            {!isGameOwner &&
                 <div className="typography-lg-text">Waiting for game owner to start game.</div>
             }
-            {gameOwner === playerName &&
+            {isGameOwner &&
                 <React.Fragment>
                     <form className="flex-grid flex-column md-5 form center-screen" noValidate onSubmit={handleCreateGame}>
 

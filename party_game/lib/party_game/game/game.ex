@@ -30,7 +30,7 @@ defmodule PartyGame.Game.Game do
     rounds =
       EctoHelpers.create_embedded_changesets(params, "rounds", %Round{}, &Round.changeset/2)
 
-    settings = Settings.apply_settings(Map.get(params, "settings", Settings.new))
+    settings = Settings.apply_settings(Map.get(params, "settings", Settings.new()))
 
     players =
       EctoHelpers.create_embedded_changesets(params, "players", %Player{}, &Player.changeset/2)
@@ -57,14 +57,14 @@ defmodule PartyGame.Game.Game do
     |> Ecto.Changeset.put_embed(:questions, questions)
     |> Ecto.Changeset.put_embed(:players, players)
     |> Ecto.Changeset.put_embed(:settings, settings)
-
     |> Ecto.Changeset.validate_required([:name])
   end
 
   def new(fields \\ []) do
     game = __struct__(fields)
-    if (game.settings === nil) do
-      %{game| settings: Settings.new}
+
+    if game.settings === nil do
+      %{game | settings: Settings.new()}
     else
       game
     end

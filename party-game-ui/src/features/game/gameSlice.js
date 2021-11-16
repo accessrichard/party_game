@@ -70,7 +70,7 @@ const initialState = {
     name: null,
     gameCode: null,
     players: [],
-    gameOwner: null,
+    isGameOwner: false,
     api: {
         start: { ...apiState },
         join: { ...apiState },
@@ -99,23 +99,13 @@ export const gameSlice = createSlice({
                 gameCode: state.gameCode,
                 players: [],
                 rounds: [],
-                gameOwner: state.gameOwner,
+                isGameOwner: state.isGameOwner,
                 settings: {
                     ...state.settings
                 }
             };
 
             Object.assign(state, { ...initialState, ...savedState });
-        },
-        startOver: (state, action) => {
-            const resetState = Object.assign(initialState, {
-                playerName: state.playerName,
-                gameCode: state.gameCode,
-                players: state.players,
-                gameOwner: state.gameOwner,
-                rounds: []
-            });
-            Object.assign(state, resetState)
         },
         clearWrongAnswer: (state) => {
             state.isWrong = false;
@@ -186,7 +176,7 @@ export const gameSlice = createSlice({
             state.playerName = action.payload.playerName;
             state.gameCode = action.payload.room_name;
             state.players = action.payload.players;
-            state.gameOwner = action.payload.room_owner;
+            state.isGameOwner = action.payload.room_owner ===  action.payload.playerName;
             state.name = action.payload.name;
         },
         updateSettings(state, action) {
@@ -287,7 +277,6 @@ export const mergeGameList = (serverGames, clientGames) => {
 };
 
 export const {
-    startOver,
     start,
     stop,
     configure,

@@ -53,18 +53,14 @@ defmodule PartyGameWeb.BuzzerChannel do
     code
   end
 
-  defp action("start", socket, payload), do: start(socket, payload)
-  defp action("new", socket, payload), do: new(socket, payload)
-  defp action("next", socket, payload), do: next(socket, payload)
-
+  defp action("start_round", socket, payload), do: start_round(socket, payload)
+  defp action("new_game", socket, payload), do: new_game(socket, payload)
+  defp action("next_question", socket, payload), do: next_question(socket, payload)
   defp action("update_settings", socket, payload), do: update_settings(socket, payload)
-
   defp action("buzz", socket, payload), do: buzz(socket, payload)
-  defp action("join", socket, _), do: {:reply, {:ok, "Not Implemented"}, socket}
-  defp action("quit", socket, _), do: {:reply, {:ok, "Not Implemented"}, socket}
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
 
-  defp new(socket, payload) do
+  defp new_game(socket, payload) do
     client_form = Map.get(payload, "game")
 
     game_name = Map.get(client_form, "name")
@@ -99,10 +95,9 @@ defmodule PartyGameWeb.BuzzerChannel do
     reply_with_questions(socket, game, payload)
   end
 
-  defp start(socket, payload) do
+  defp start_round(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
-      |> GameRoom.start_game()
       |> GameRoom.start_round()
       |> Server.update_game()
 
@@ -127,7 +122,7 @@ defmodule PartyGameWeb.BuzzerChannel do
     })
   end
 
-  defp next(socket, payload) do
+  defp next_question(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
       |> GameRoom.next_question()

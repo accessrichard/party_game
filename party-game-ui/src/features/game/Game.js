@@ -60,7 +60,7 @@ export default function Game() {
         isRoundStarted,
         playerName,
         gameCode,
-        gameOwner,
+        isGameOwner,
         question,
         answers,
         flash,
@@ -74,14 +74,13 @@ export default function Game() {
         startCountdown,
     } = useSelector(state => state.game);
 
-    const rounds = useSelector(state => state.game.settings.rounds);
-    const wrongAnswerTimeout = useSelector(state => state.game.settings.wrongAnswerTimeout);
+    const { rounds, wrongAnswerTimeout, nextQuestionTime } = useSelector(state => state.game.settings);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
+    const [timerSeconds, setTimerSeconds] = useState(nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
 
     const startedRef = useRef(isRoundStarted);
@@ -131,10 +130,9 @@ export default function Game() {
         startClickCallback(action, payload);
     }
 
-
     function timerDone() {
         setIsTimerActive(false);
-        startClickCallback(correct ? "start" : "next");
+        startClickCallback(correct ? "start_round" : "next_question");
     }
 
     function onAnswerClick(e, answer) {
@@ -146,12 +144,16 @@ export default function Game() {
     const startClickCallback = useCallback((action, payload = {}) => {
         setIsQuestionAnswered(false);
         const data = { name: playerName, ...payload };
-        dispatch(channelPush(sendEvent(topic, data, action || "start")));
+        dispatch(channelPush(sendEvent(topic, data, action || "start_round")));
     }, [topic, dispatch, playerName])
 
     useEffect(() => {
         ////Auto start game from lobby.
         setIsTimerActive(false);
+
+        if (!isGameOwner) {
+            return;
+        }
 
         const list = mergeGameList(serverGames, creativeGames);
 
@@ -162,9 +164,10 @@ export default function Game() {
             game = { ...game, questions: creativeGame.game.questions }
         }
 
-        startClickCallback("new", { game: game, rounds: rounds });
 
-    }, [name, startClickCallback, serverGames, creativeGames, rounds]);
+        startClickCallback("new_game", { game: game });
+
+    }, [name, startClickCallback, serverGames, creativeGames, isGameOwner]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -228,7 +231,7 @@ export default function Game() {
                 </div>
 
                 <div className="flex-container">
-                    {gameOwner === playerName && !isRoundStarted && settings.nextQuestionTime > 2 &&
+                    {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
                         <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                 </div>
 

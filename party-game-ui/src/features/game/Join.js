@@ -19,7 +19,7 @@ function Join() {
             username: "",
             gameCode: ""
         },
-        gameCode: id || "",
+        gameCode: (id || "").toUpperCase(),
     });
 
 
@@ -36,7 +36,7 @@ function Join() {
 
         let newForm = {
             ...form,
-            [name]: value,
+            [name]: name  === "gameCode" ? (value || "").toUpperCase() : value,
         };
 
         newForm.errors = { ...newForm.errors, [name]: validationMessage, gameCode: "" };
