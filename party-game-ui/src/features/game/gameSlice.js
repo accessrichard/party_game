@@ -279,7 +279,6 @@ export const mergeGameList = (serverGames, clientGames) => {
 export const {
     start,
     stop,
-    configure,
     redirect,
     resetState,
     stopRound,

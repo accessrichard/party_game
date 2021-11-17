@@ -74,7 +74,7 @@ export default function Game() {
         startCountdown,
     } = useSelector(state => state.game);
 
-    const { rounds, wrongAnswerTimeout, nextQuestionTime } = useSelector(state => state.game.settings);
+    const { wrongAnswerTimeout, nextQuestionTime } = useSelector(state => state.game.settings);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -216,9 +216,10 @@ export default function Game() {
 
                 <div>
                     <Flash flash={flash}></Flash>
+                    {isWrong && <span>Wrong</span>}
                     {isWrong && settings.wrongAnswerTimeout > 1 &&
                         //Bug: Round ends before wrong timeout 
-                        <span> Wrong, Try again in&nbsp;
+                        <span>, Try again in&nbsp;
                         <Timer key={isWrong + settings.wrongAnswerTimeout}
                                 isActive={isWrong}
                                 timeIncrement={-1}

@@ -454,7 +454,7 @@ input { margin-bottom: 10px; }
   flex-wrap: wrap;
 }
 
-.answer input[type="submit"]:hover:not([disabled]) {
+.answer input[type="submit"]:hover:not([disabled]), input[type=submit]:active {
   background: #d8d8d8;
 }
 
@@ -500,8 +500,6 @@ input { margin-bottom: 10px; }
     width: 50%;
   }
 }
-
-
 
 .pd-0 {
   padding: 0px;
