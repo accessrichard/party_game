@@ -72,6 +72,8 @@ defmodule PartyGame.Games.Games do
           (x["location"] == location and location == "client")
       end)
 
+    num_rounds = Map.get(game, :rounds, 10)
+
     case game_list do
       nil ->
         {:error, "Game does not exist!"}
@@ -83,8 +85,9 @@ defmodule PartyGame.Games.Games do
         if location == "client" || game_list["module"] === Games.BuildYourOwnPrebuilt do
           shuffle_questions(questions)
           |> shuffle_question_answers()
+          |> Enum.take(num_rounds)
         else
-          questions
+          Enum.take(questions, num_rounds)
         end
     end
   end

@@ -74,13 +74,11 @@ export default function Game() {
         startCountdown,
     } = useSelector(state => state.game);
 
-    const { wrongAnswerTimeout, nextQuestionTime } = useSelector(state => state.game.settings);
-
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [timerSeconds, setTimerSeconds] = useState(nextQuestionTime);
+    const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
 
     const startedRef = useRef(isRoundStarted);
@@ -165,9 +163,9 @@ export default function Game() {
         }
 
 
-        startClickCallback("new_game", { game: game });
+        startClickCallback("new_game", { game: game, rounds: settings.rounds });
 
-    }, [name, startClickCallback, serverGames, creativeGames, isGameOwner]);
+    }, [name, startClickCallback, serverGames, isGameOwner, creativeGames, settings]);
 
     useEffect(() => {
         setTimeout(() => {
@@ -178,9 +176,9 @@ export default function Game() {
                 setIsQuestionAnswered(false);
                 dispatch(setFlash({ text: "" }))
             }
-        }, wrongAnswerTimeout * 1000);
+        }, settings.wrongAnswerTimeout * 1000);
 
-    }, [dispatch, isWrong, wrongAnswerTimeout]);
+    }, [dispatch, isWrong, settings.wrongAnswerTimeout]);
 
     useEffect(() => {
         if (isOver) {

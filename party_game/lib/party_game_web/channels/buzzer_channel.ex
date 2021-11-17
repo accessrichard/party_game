@@ -56,7 +56,6 @@ defmodule PartyGameWeb.BuzzerChannel do
   defp action("start_round", socket, payload), do: start_round(socket, payload)
   defp action("new_game", socket, payload), do: new_game(socket, payload)
   defp action("next_question", socket, payload), do: next_question(socket, payload)
-  defp action("update_settings", socket, payload), do: update_settings(socket, payload)
   defp action("buzz", socket, payload), do: buzz(socket, payload)
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
 
@@ -111,16 +110,6 @@ defmodule PartyGameWeb.BuzzerChannel do
     {:noreply, socket}
   end
 
-  defp update_settings(socket, payload) do
-    game = Server.get_game(game_code(socket.topic))
-    game = GameRoom.update_settings(game, Map.get(payload, "settings", %{}))
-    Server.update_game(game)
-
-    broadcast_from(socket, "update_settings", %{
-      "name" => socket.assigns.name,
-      "settings" => game.settings
-    })
-  end
 
   defp next_question(socket, payload) do
     game =

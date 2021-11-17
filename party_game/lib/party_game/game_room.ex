@@ -126,7 +126,8 @@ defmodule PartyGame.GameRoom do
            | round_started: false,
              rounds: [round | game.rounds],
              questions: questions,
-             is_over: questions == []
+             is_over: questions == [],
+             started: game.started && questions != []
          }}
 
       true ->
