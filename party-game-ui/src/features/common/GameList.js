@@ -14,7 +14,7 @@ export default function GameList(props) {
                 id="game-list"
                 name="games"
                 value={value}
-                className="select bold-select select-height-tall header-bolder lighter-label"
+                className="select bold-select select-height-tall header-bolder "
                 onChange={onGameChange}>
 
                 {(games || []).map((val) =>

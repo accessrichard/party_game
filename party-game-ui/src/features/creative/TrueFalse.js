@@ -8,7 +8,7 @@ export default function TrueFalse(props) {
 
     return (
         <React.Fragment>            
-            <span className="small-font label-color lighter-label">&nbsp;&nbsp;Correct Answer: </span>
+            <span className="small-font label-color ">&nbsp;&nbsp;Correct Answer: </span>
                 <label>
                     <input type="radio"
                         name={"correct-!-" + props.index}

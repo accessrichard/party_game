@@ -196,8 +196,8 @@ export default function Game() {
 
     return (
         <React.Fragment>
-            <div className="app-light full-width">
-                <header className="app-header1">
+            <div className="full-width">
+                <header>
                     <h3>Buzz Game</h3>
                     {(isHappy() || isWrong) && <Faces isHappy={!isWrong} />}
                 </header>

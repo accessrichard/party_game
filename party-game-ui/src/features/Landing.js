@@ -15,7 +15,7 @@ function Landing() {
 
     return (
 
-        <div className="app-header">
+        <div>
             <Logo logoClass="app-logo bouncy" showSubtitle={true} titleClass="large-title slidein-right" />
             <p className="slidein-left">
                 Create&nbsp;

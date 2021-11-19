@@ -156,7 +156,7 @@ export default function Lobby() {
     return (
         <React.Fragment>
 
-            <header className="app-header1 full-width">
+            <header className="full-width">
 
                 <div className="center-with-right-div">
                     <span><Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo></span>
@@ -184,7 +184,7 @@ export default function Lobby() {
 
                         <div className="text-align-left small-font typography-emphasize flex-row">
                             Share link to play with friends:
-                            <div className="light-link pd-5 flex-row "><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
+                            <div className="app-link pd-5 flex-row "><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
                         </div>
 
                         <div className="flex-row">

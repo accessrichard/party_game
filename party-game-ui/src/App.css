@@ -9,7 +9,7 @@ body {
   height: 100%;
 }
 
-.App {
+.text-align-center {
   text-align: center;
 }
 
@@ -23,41 +23,68 @@ body {
   pointer-events: none;
 }
 
-.app-light {
-  background-color: #4572cc;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: baseline;
-  font-size: calc(10px + 2vmin);
-  color: rgb(238, 238, 238);
-}
-
-.app-header {
-  background-color: #4572cc;
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
+}
+
+.app-light {
+  background-color: #fff;
+  color: black;
+}
+
+.app-light .app-link {
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+.app-light .app-link:visited {
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+.app-light .app-link a {
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+}
+
+.app-blue {
+  background-color: #4572cc;
+ 
   color: white;
 }
 
-.app-link {
+.app-blue .app-link {
   color: white;
   cursor: pointer;
 }
 
-.app-link:visited {
+.app-blue .app-link:visited {
   color: white;
   cursor: pointer;
 }
 
-.light-link a {
+.app-blue .app-link a {
   color: white;
   cursor: pointer;
+}
+
+.app-blue label {
+  color: whitesmoke;
+}
+
+label {
+  margin-bottom: 1%;
+  text-align: left;
+  font-size: .7em;
+}
+
+.app-blue .error-color {
+  color: whitesmoke;
 }
 
 .spin {
@@ -138,7 +165,6 @@ form.medium-width {
   -moz-transition: opacity 1s;
 }
 
-
 .flex-right {
   justify-content: flex-end;
 }
@@ -153,13 +179,6 @@ form.medium-width {
 
 .text-align-left {
   text-align: left;
-}
-
-label {
-  color: whitesmoke;
-  margin-bottom: 1%;
-  text-align: left;
-  font-size: .7em;
 }
 
 input:focus {
@@ -213,9 +232,7 @@ label {
   text-decoration: inherit;
 }
 
-
 input[type="submit"] {
-  
   border: 2px solid #464646;
   font-weight: bold;
   cursor: pointer;  
@@ -253,10 +270,6 @@ input:not(:focus):required:invalid {
 
 .line-hieght-medium {
   line-height: 2;
-}
-
-.error-color {
-  color: whitesmoke;
 }
 
 .input-error {
@@ -634,7 +647,6 @@ input.wrong[type="submit"] {
 .dark-border {
   border: 1px solid black;
 }
-
 
 .center-with-right-div {
   display: grid;

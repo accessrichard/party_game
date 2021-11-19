@@ -28,7 +28,7 @@ export default function InputField(props) {
     return (
         <React.Fragment>
             
-                {props.label && <label className={props.labelClass || "text-align-left header-bolder lighter-label"}
+                {props.label && <label className={props.labelClass || "text-align-left header-bolder "}
                     htmlFor={id}>{label}
                 </label>}
                 <input
