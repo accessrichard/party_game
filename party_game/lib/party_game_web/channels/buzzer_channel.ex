@@ -1,4 +1,6 @@
 defmodule PartyGameWeb.BuzzerChannel do
+  require Logger
+
   use PartyGameWeb, :channel
 
   alias PartyGameWeb.Presence
@@ -8,7 +10,9 @@ defmodule PartyGameWeb.BuzzerChannel do
   alias PartyGame.Games.Games
 
   @impl true
-  def join("buzzer:" <> _room_name, payload, socket) do
+  def join("buzzer:" <> room_name, payload, socket) do
+    Logger.info "Join buzzer:#{room_name} for: #{Map.get(payload, "name")}"
+
     socket = assign(socket, :name, Map.get(payload, "name"))
     send(self(), {:after_join})
     {:ok, socket}
@@ -29,7 +33,8 @@ defmodule PartyGameWeb.BuzzerChannel do
   end
 
   @impl true
-  def handle_in("buzzer:" <> _room_name, %{"action" => action} = payload, socket) do
+  def handle_in("buzzer:" <> room_name, %{"action" => action} = payload, socket) do
+    Logger.info "handle_in buzzer:#{room_name} for action: #{action}"
     action(action, socket, payload)
   end
 

@@ -1,4 +1,6 @@
 defmodule PartyGameWeb.GameController do
+  require Logger
+
   use PartyGameWeb, :controller
 
   alias PartyGame.GameRoom
@@ -8,6 +10,9 @@ defmodule PartyGameWeb.GameController do
   action_fallback PartyGameWeb.FallbackController
 
   def create(conn, %{"player_name" => player_name}) do
+
+    Logger.info  "Create game for player: #{player_name}"
+
     with %Game{} = game <- GameRoom.add_player(Game.new(), player_name) do
       game = GameRoom.gen_room_name(game)
       Server.start(game)
@@ -24,6 +29,9 @@ defmodule PartyGameWeb.GameController do
   end
 
   def join(conn, %{"player" => player, "room_name" => room_name}) do
+
+    Logger.info  "Player: #{Map.get(player, "name")} joined game room: #{room_name}"
+
     with {:ok, pid} <- Server.lookup(room_name),
          game = GenServer.call(pid, :game),
          %Game{} = game <- GameRoom.add_player(game, player) do

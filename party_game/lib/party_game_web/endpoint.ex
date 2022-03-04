@@ -17,14 +17,14 @@ defmodule PartyGameWeb.Endpoint do
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
 
-  plug Corsica,
-  origins: [
-    "http://localhost:4000",
-    "http://192.168.86.56:4000"
-  ],
-  allow_headers: ["accept", "content-type", "authorization"],
-  allow_credentials: true,
-  log: [rejected: :error, invalid: :warn, accepted: :debug]
+  #plug Corsica,
+  #origins: [
+  #  "http://localhost:4000",
+  #  "http://192.168.86.56:4000"
+  #],
+  #allow_headers: ["accept", "content-type", "authorization"],
+  #allow_credentials: true,
+  #log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   # Serve at "/" the static files from "priv/static" directory.
   #

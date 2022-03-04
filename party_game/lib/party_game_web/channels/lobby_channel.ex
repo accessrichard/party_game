@@ -1,4 +1,6 @@
 defmodule PartyGameWeb.LobbyChannel do
+  require Logger
+
   use PartyGameWeb, :channel
 
   alias PartyGameWeb.Presence
@@ -7,6 +9,8 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def join("lobby:" <> room_name, payload, socket) do
+    Logger.info "Joining lobby:#{room_name}"
+
     socket = assign(socket, :game,  Server.get_game(room_name))
     broadcast_player_join(Map.get(payload, "name"), socket)
   end
@@ -17,7 +21,8 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
-  def handle_in("lobby:" <> _room_name, %{"action" => action} = payload, socket) do
+  def handle_in("lobby:" <> room_name, %{"action" => action} = payload, socket) do
+    Logger.info "Handle in lobby:#{room_name} for action: #{action}"
     action(action, socket, payload)
   end
 
