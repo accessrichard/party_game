@@ -64,7 +64,6 @@ defmodule PartyGame.MixProject do
       "ecto.setup": ["run priv/repo/seeds.exs"],
       "ecto.reset": [],
       test: []
-      #"assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end
