@@ -35,7 +35,7 @@ const Faces = (props) => {
 
     return (
         <React.Fragment>
-           {face && <img src={face} className={imgClass || "app-logo"} alt="logo" />}
+           {face && <img src={face} alt={isHappy ? "happy " : "sad " + "face"} className={imgClass || "app-logo"} alt="logo" />}
         </React.Fragment >
     );
 }
