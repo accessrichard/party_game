@@ -658,3 +658,7 @@ input.wrong[type="submit"] {
 
 .center-with-right-div span:nth-child(1) { grid-column-start: 2; }
 .center-with-right-div span:nth-child(2) { margin-left: auto; }
+
+.hidden {
+  display: none;
+}

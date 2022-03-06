@@ -9,17 +9,19 @@ import {
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
-import { addPlayer, changeGame, listGames, mergeGameList, startGame, pushSettings } from './gameSlice';
-import { syncPresenceState, syncPresenceDiff } from './../presence/presenceSlice';
+import { addPlayer, changeGame, listGames, mergeGameList, pushSettings, startGame } from './gameSlice';
+import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
+import ImagePreloader from '../common/ImagePreloader';
 import Logo from '../common/Logo';
+import { NavLink } from 'react-router-dom';
 import Players from './Players';
 import Timer from './Timer';
+import { allFaces } from '../common/faceList';
 import { push } from 'connected-react-router';
-import { NavLink } from 'react-router-dom';
 
 const onEvents = (topic) => [
     {
@@ -78,12 +80,14 @@ export default function Lobby() {
             dispatch(channelPush({
                 topic: topic,
                 event: topic,
-                data: { action: 'update_settings', settings: {
-                    question_time: settings.questionTime,
-                    next_question_time: settings.nextQuestionTime,
-                    wrong_answer_timeout: settings.wrongAnswerTimeout,
-                    rounds: settings.rounds
-                 }}
+                data: {
+                    action: 'update_settings', settings: {
+                        question_time: settings.questionTime,
+                        next_question_time: settings.nextQuestionTime,
+                        wrong_answer_timeout: settings.wrongAnswerTimeout,
+                        rounds: settings.rounds
+                    }
+                }
             }));
 
             dispatch(channelPush({
@@ -206,6 +210,7 @@ export default function Lobby() {
                 <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
             </span>
 
+            <ImagePreloader images={allFaces}></ImagePreloader>
         </React.Fragment >
     );
 }

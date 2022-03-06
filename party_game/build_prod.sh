@@ -12,6 +12,7 @@ export SECRET_KEY_BASE=`mix phx.gen.secret`
 
 npm run build --prefix ./../party-game-ui/
 mix compile 
+mix phx.digest
 mix phx.gen.release
 mix release --overwrite
 #_build/prod/rel/party_game/bin/party_game start
