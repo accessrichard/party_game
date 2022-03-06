@@ -39,7 +39,7 @@ defmodule PartyGameWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      #  pipe_through [:fetch_session, :protect_from_forgery]
+      pipe_through :browser
       live_dashboard "/dashboard", metrics: PartyGameWeb.Telemetry
     end
   end
@@ -52,5 +52,4 @@ defmodule PartyGameWeb.Router do
     # override the rest of the routes, even the `/api` routes we've set above.
     get "/*path", PageController, :index
   end
-
 end

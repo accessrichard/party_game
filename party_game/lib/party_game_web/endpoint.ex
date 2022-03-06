@@ -11,20 +11,10 @@ defmodule PartyGameWeb.Endpoint do
   ]
 
   socket "/socket", PartyGameWeb.UserSocket,
-    websocket: true,
-    longpoll: false
+  websocket: true,
+  longpoll: false
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
-
-
-  #plug Corsica,
-  #origins: [
-  #  "http://localhost:4000",
-  #  "http://192.168.86.56:4000"
-  #],
-  #allow_headers: ["accept", "content-type", "authorization"],
-  #allow_credentials: true,
-  #log: [rejected: :error, invalid: :warn, accepted: :debug]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -33,11 +23,14 @@ defmodule PartyGameWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :party_game
-    #only: ~w(css fonts images js favicon.ico robots.txt)
+#    gzip: false,
+#    only: ~w(assets fonts images favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
+#    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+#    plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
   end
 
