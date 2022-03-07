@@ -15,12 +15,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
-import ImagePreloader from '../common/ImagePreloader';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import Players from './Players';
 import Timer from './Timer';
-import { allFaces } from '../common/faceList';
 import { push } from 'connected-react-router';
 
 const onEvents = (topic) => [
@@ -208,9 +206,7 @@ export default function Lobby() {
 
             <span className="typography-md-text">
                 <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
-            </span>
-
-            <ImagePreloader images={allFaces}></ImagePreloader>
+            </span>            
         </React.Fragment >
     );
 }

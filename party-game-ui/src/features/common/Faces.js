@@ -1,17 +1,23 @@
-import React, {useEffect, useState} from 'react';
-import { happyFaces, sadFaces } from './faceList';
+import React, { useEffect, useState } from 'react';
 
-const randomFace = (isHappy) => {   
+import sprite from '../../img/face_sprite.svg';
+
+const HAPPY_FACE_SVG_COUNT = 3;
+const SAD_FACE_SVG_COUNT = 6;
+
+const randomFace = (isHappy) => {
     if (isHappy) {
-        return happyFaces[Math.floor(Math.random() * happyFaces.length)];
+        const rand = Math.floor(Math.random() * HAPPY_FACE_SVG_COUNT) + 1;
+        return "happy" + rand;
     }
 
-    return sadFaces[Math.floor(Math.random() * sadFaces.length)];
+    const rand = Math.floor(Math.random() * SAD_FACE_SVG_COUNT) + 1;
+    return "sad" + rand;
 }
 
 const Faces = (props) => {
 
-    const { isHappy, imgClass} = props;
+    const { isHappy, imgClass } = props;
     const [face, setFace] = useState("");
 
     useEffect(() => {
@@ -19,9 +25,16 @@ const Faces = (props) => {
         return () => "";
     }, [isHappy])
 
+    console.log(face);
     return (
-        <React.Fragment>            
-           {face && <img src={face} alt="emoji" className={imgClass || "app-logo"} />}
+        <React.Fragment>
+           
+            {face && <svg className={imgClass || "app-logo"}>
+                <use
+                    href={sprite + "#" + face}>
+                </use>
+            </svg>}
+
         </React.Fragment>
     );
 }
