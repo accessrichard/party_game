@@ -124,8 +124,7 @@ export default function Import(props) {
         answers.forEach((ans, index) => {
             newAnswers["answer" + (index + 1)] = ans;
         });
-
-        console.log("NewAnswres", newAnswers);
+        
         return newAnswers;
     }
 

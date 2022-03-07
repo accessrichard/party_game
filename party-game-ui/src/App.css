@@ -18,6 +18,11 @@ body {
   pointer-events: none;
 }
 
+.faces {
+  height: 5vmin;
+  pointer-events: none;
+}
+
 .small-logo {
   height: 20vmin;
   pointer-events: none;
@@ -134,9 +139,11 @@ label {
   text-align: right;
 }
 
-.answer input[type="submit"].disabled-answer {
-  background: #c9c9c9;
+.answer input[type="submit"]:disabled {
+  background:  #c9c9c9;
 }
+
+
 
 .small-title {
   display: block;
@@ -159,10 +166,7 @@ form.medium-width {
   -moz-border-radius: 5px;
   width: 400px;
   margin: 0 auto;
-  margin-top: 8px;  
-  transition: opacity 1s;
-  -webkit-transition: opacity 1s;
-  -moz-transition: opacity 1s;
+  margin-top: 8px;   
 }
 
 .flex-right {
@@ -386,6 +390,10 @@ input:not(:focus):required:invalid {
   }
 }
 
+.height-offset-60 {
+  height: calc(60vh - 100px);
+}
+
 .flex-container {
   display: flex;
 }
@@ -481,10 +489,7 @@ input { margin-bottom: 10px; }
   color: rgb(70, 70, 70);
   cursor: pointer;
   -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;
-  transition: background .3s;
-  -webkit-transition: background .3s;
-  -moz-transition: background .3s;
+  -moz-border-radius: 0px;  
 }
 
 .answer input {

@@ -17,7 +17,7 @@ const randomFace = (isHappy) => {
 
 const Faces = (props) => {
 
-    const { isHappy, imgClass } = props;
+    const { isHappy, imgClass, className } = props;
     const [face, setFace] = useState("");
 
     useEffect(() => {
@@ -25,11 +25,10 @@ const Faces = (props) => {
         return () => "";
     }, [isHappy])
 
-    console.log(face);
     return (
         <React.Fragment>
            
-            {face && <svg className={imgClass || "app-logo"}>
+            {face && <svg className={className || "app-logo"}>
                 <use
                     href={sprite + "#" + face}>
                 </use>

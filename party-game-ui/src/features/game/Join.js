@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { clearJoinError, joinGame } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';
 import Logo from '../common/Logo';
-import { joinGame, clearJoinError } from './gameSlice';
 import { useParams } from "react-router-dom";
 
 function Join() {

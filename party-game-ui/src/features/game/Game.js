@@ -7,8 +7,8 @@ import {
     channelPush,
 } from '../phoenix/phoenixMiddleware';
 import { clearWrongAnswer, mergeGameList, phxReply, setFlash, startRound, stopRound } from './gameSlice';
+import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { syncPresenceState, syncPresenceDiff } from './../presence/presenceSlice';
 
 import Answers from './Answers';
 import Faces from '../common/Faces';
@@ -196,58 +196,62 @@ export default function Game() {
 
     return (
         <React.Fragment>
-            <div className="full-width">
+            <div className="full-width full-height flex-container flex-column">
                 <header>
-                    <h3>Buzz Game</h3>
-                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong} />}
+                    <h2>Buzz Game</h2>
                 </header>
 
-                <div className="question">
-                    {question}
-                </div>
+                <div className='flex-column'>
+                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="app-logo" />}
 
-                <Answers onAnswerClick={onAnswerClick}
-                    isDisabled={(!isRoundStarted && isQuestionAnswered) || (correct !== "" || isWrong)}
-                    answers={answers}
-                    correct={correct}>
-                </Answers>
-
-                <div>
                     <Flash flash={flash}></Flash>
                     {isWrong && <span>Wrong</span>}
                     {isWrong && settings.wrongAnswerTimeout > 1 &&
                         //Bug: Round ends before wrong timeout 
                         <span>, Try again in&nbsp;
-                        <Timer key={isWrong + settings.wrongAnswerTimeout}
+                            <Timer key={isWrong + settings.wrongAnswerTimeout}
                                 isActive={isWrong}
                                 timeIncrement={-1}
                                 timeFormat={"seconds"}
                                 startSeconds={settings.wrongAnswerTimeout}>
                             </Timer>
-                        &nbsp;seconds
+                            &nbsp;seconds
                         </span>
                     }
                 </div>
 
-                <div className="flex-container">
-                    {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
-                        <a className="app-link" href="/#" onClick={startClick}>Next</a>}
+
+                <div className='flex-coumn offset-bottom'>
+                    <div className="question">
+                        {question}
+                    </div>
+                    <div>
+                        <span className="typography-md-text">
+                            {startCountdown && "Game starts in "}
+                            {!startCountdown && isRoundStarted && "Round ends in "}
+
+                            <Timer key={isTimerActive + timerSeconds}
+                                isActive={isTimerActive}
+                                timeIncrement={-1}
+                                timerDone={timerDone}
+                                timeFormat={"seconds"}
+                                startSeconds={timerSeconds}>
+                            </Timer>
+                        </span>
+                    </div>
+
+                    <Answers onAnswerClick={onAnswerClick}
+                        isDisabled={(!isRoundStarted && isQuestionAnswered) || (correct !== "" || isWrong)}
+                        answers={answers}
+                        correct={correct}>
+                    </Answers>
+
+                    <div className="flex-container">
+                        {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
+                            <a className="app-link" href="/#" onClick={startClick}>Next</a>}
+                    </div>
                 </div>
 
-                <div>
-                    <span className="typography-md-text">
-                        {startCountdown && "Game starts in "}
-                        {!startCountdown && isRoundStarted && "Round ends in "}
-
-                        <Timer key={isTimerActive + timerSeconds}
-                            isActive={isTimerActive}
-                            timeIncrement={-1}
-                            timerDone={timerDone}
-                            timeFormat={"seconds"}
-                            startSeconds={timerSeconds}>
-                        </Timer>
-                    </span>
-                </div>
             </div>
         </React.Fragment>
     );
