@@ -17,7 +17,7 @@ const randomFace = (isHappy) => {
 
 const Faces = (props) => {
 
-    const { isHappy, imgClass, className } = props;
+    const { isHappy, className } = props;
     const [face, setFace] = useState("");
 
     useEffect(() => {

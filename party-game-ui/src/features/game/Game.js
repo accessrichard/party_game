@@ -202,7 +202,7 @@ export default function Game() {
                 </header>
 
                 <div className='flex-column'>
-                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="app-logo" />}
+                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
 
                     <Flash flash={flash}></Flash>
                     {isWrong && <span>Wrong</span>}
@@ -221,7 +221,7 @@ export default function Game() {
                 </div>
 
 
-                <div className='flex-coumn offset-bottom'>
+                <div className='flex-coumn empty-space'>
                     <div className="question">
                         {question}
                     </div>

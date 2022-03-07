@@ -18,8 +18,7 @@ body {
   pointer-events: none;
 }
 
-.faces {
-  height: 5vmin;
+.no-pointer {
   pointer-events: none;
 }
 
@@ -388,10 +387,6 @@ input:not(:focus):required:invalid {
   100% {
     top: 0em;
   }
-}
-
-.height-offset-60 {
-  height: calc(60vh - 100px);
 }
 
 .flex-container {
