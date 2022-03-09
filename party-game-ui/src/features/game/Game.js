@@ -14,7 +14,8 @@ import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
 import Timer from './Timer';
-import { push } from 'connected-react-router'
+import { history } from '../store';
+import { push } from "redux-first-history";
 
 const onEvents = (topic) => [
     {
@@ -91,7 +92,7 @@ export default function Game() {
         dispatch(push('/'));
     }
 
-    const topic = `buzzer:${gameCode}`;
+    const topic = `buzzer:${gameCode}`;    
 
     useEffect(() => {
         if (startCountdown) {
@@ -188,7 +189,27 @@ export default function Game() {
         }
     }, [isOver, dispatch, settings.nextQuestionTime]);
 
+    useEffect(() => {
+        const unblock = history.block((tx) => {
+            if (tx.action === "POP" && tx.location.pathname === "/lobby"){                
+                return false;
+            }
 
+            if (tx.action === "PUSH" && tx.location.pathname === "/") {
+                //// Prevent console error when refresh page.
+                unblock();
+                return true;
+            }
+
+            unblock();
+            tx.retry();
+            return true;
+        });
+
+        return () => {
+            unblock();
+          };
+    }, []);
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";

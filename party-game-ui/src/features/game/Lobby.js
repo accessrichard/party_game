@@ -19,7 +19,7 @@ import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import Players from './Players';
 import Timer from './Timer';
-import { push } from 'connected-react-router';
+import { push } from "redux-first-history";
 
 const onEvents = (topic) => [
     {
@@ -61,12 +61,14 @@ export default function Lobby() {
 
     const socketStatus = useSelector(state => state.phoenix.socket.status);
 
+    
+
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
         }
 
-        if (isGameStarted) {
+        if (isGameStarted) {            
             dispatch(push('/game'));
         }
     });

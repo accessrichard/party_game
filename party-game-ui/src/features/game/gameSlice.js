@@ -2,7 +2,7 @@ import { apiState, fulfilled, pending, rejected } from '../common/thunkApiRespon
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import api from '../game/gameApi';
-import { push } from 'connected-react-router';
+import { push } from "redux-first-history";
 
 export const listGames = createAsyncThunk(
     'game/listGames',

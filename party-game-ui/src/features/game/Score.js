@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 
 import Faces from '../common/Faces';
+import { Navigate } from 'react-router-dom';
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import Scores from '../common/Scores';
 import { getScores } from './gameSlice';
-import { push } from 'connected-react-router'
+import { push } from "redux-first-history";
 import { resetState } from './gameSlice';
 
 function Score() {
@@ -14,7 +14,7 @@ function Score() {
     const scores = useSelector(getScores);
 
     if (rounds.length === 0) {
-        return <Redirect to="/" />
+        return <Navigate to="/" />
     }
 
     function playAgain(e) {

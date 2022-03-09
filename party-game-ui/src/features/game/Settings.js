@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import Logo from '../common/Logo';
+import { push } from "redux-first-history";
 import { updateSettings } from './gameSlice';
-import { push } from 'connected-react-router';
 
 function Settings() {
 

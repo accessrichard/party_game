@@ -2,18 +2,20 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import createPhoenixMiddleware, { reducer as channelReducer } from './phoenix/phoenixMiddleware';
 
 import chatReducer from './chat/chatSlice';
-import { connectRouter } from 'connected-react-router';
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory } from "history";
+import { createReduxHistoryContext } from "redux-first-history";
 import creativeReducer from './creative/creativeSlice';
 import gameReducer from './game/gameSlice';
 import presenceReducer from './presence/presenceSlice';
 
-import { routerMiddleware } from 'connected-react-router';
-
-export const history = createBrowserHistory();
+const {
+  createReduxHistory,
+  routerMiddleware,
+  routerReducer
+} = createReduxHistoryContext({ history: createBrowserHistory() });
 
 const reducers = {
-  router: connectRouter(history),
+  router: routerReducer,
   phoenix: channelReducer,
   chat: chatReducer,
   game: gameReducer,
@@ -33,9 +35,12 @@ const rootReducer = (state, action) => {
 }
 const phoenixMiddleware = createPhoenixMiddleware();
 
-export default configureStore({
+const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware()
-    .concat(routerMiddleware(history))
+    .concat(routerMiddleware)
     .concat(phoenixMiddleware)
 });
+
+export default store;
+export const history = createReduxHistory(store);
