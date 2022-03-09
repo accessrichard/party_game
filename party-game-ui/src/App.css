@@ -160,9 +160,6 @@ label {
 
 form.medium-width {
   padding: 6% 4%;
-  border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
   width: 400px;
   margin: 0 auto;
   margin-top: 8px;   
@@ -205,7 +202,7 @@ input[type="email"], input[type="password"], input[type="text"], input[type="sub
   background: #fff;  
   border: 0;
   border: 2px solid #464646;
-  border-radius: 5px;
+  
   font-size: 95%;
   color: #555;
   font-style: normal;
@@ -227,7 +224,7 @@ label {
   background: #fff;
   border: 0;
   border: 2px solid #464646;
-  border-radius: 5px;
+  
   font-size: 95%;
   color: #555;
   font-style: normal;
@@ -442,8 +439,7 @@ input { margin-bottom: 10px; }
 
 
 .answer {
-  width: 40%;
-  border-radius: 0%;
+  width: 40%;  
   color: rgb(70, 70, 70);
   min-height: 100px;
 }
@@ -483,8 +479,6 @@ input { margin-bottom: 10px; }
   font-size: 100%;
   color: rgb(70, 70, 70);
   cursor: pointer;
-  -webkit-border-radius: 0px;
-  -moz-border-radius: 0px;  
 }
 
 .answer input {
