@@ -5,7 +5,7 @@ import {
   Routes
 } from "react-router-dom";
 
-import  AppBody  from './features/common/AppBody';
+import AppBody from './features/common/AppBody';
 import Create from './features/creative/Create';
 import Game from './features/game/Game';
 import Import from './features/creative/Import';
@@ -21,22 +21,23 @@ import { history } from './features/store';
 function App() {
   return (
     <Router history={history}>
-      <AppBody>
-        <Routes>
-          <Route exact path="/" element={<Landing/>} />
-          <Route exact path="/start" element={<Start/>} />
-          <Route path="/join/:id?" element={<Join/>} />
-          <Route exact path="/lobby" element={<Lobby/>} />
-          <Route exact path="/settings" element={<Settings/>} />
 
-          <Route exact path="/game" element={<Game/>} />
-          <Route exact path="/score" element={<Score/>} />
-          <Route exact path="/create" element={<Create/>} />
-          <Route exact path="/import" element={<Import/>} />
-
-        </Routes>
-      </AppBody>
-  </Router>
+      <Routes>
+        <Route path="/" element={<AppBody />}>
+          <Route index element={<Landing />} />
+          <Route exact path="/start" element={<Start />} />
+          <Route path="/join" element={<Join />}>
+            <Route path="/join/:id" element={<Join />} />
+          </Route>
+          <Route exact path="/lobby" element={<Lobby />} />
+          <Route exact path="/settings" element={<Settings />} />
+          <Route exact path="/score" element={<Score />} />
+          <Route exact path="/create" element={<Create />} />
+          <Route exact path="/import" element={<Import />} />
+          <Route exact path="/game" element={<Game />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
