@@ -92,7 +92,7 @@ export default function Game() {
         dispatch(push('/'));
     }
 
-    const topic = `buzzer:${gameCode}`;    
+    const topic = `game:${gameCode}`;    
 
     useEffect(() => {
         if (startCountdown) {

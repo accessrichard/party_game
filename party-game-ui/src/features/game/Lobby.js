@@ -73,7 +73,7 @@ export default function Lobby() {
         }
     });
 
-    const topic = `lobby:${gameCode}`
+    const topic = `game:${gameCode}`
 
     function handleCreateGame(e) {
         if (e.target.reportValidity()) {

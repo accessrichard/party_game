@@ -201,8 +201,8 @@ export const gameSlice = createSlice({
             }
         },
         addPlayer(state, action) {
-            if (!state.players.filter(x => x.name === action.payload.player.name)) {
-                state.players.push(action.payload.player);
+            if (!state.players.filter(x => x.name === action.payload.name)) {
+                state.players.push(action.payload);
             }
         },
         clearJoinError(state, action) {

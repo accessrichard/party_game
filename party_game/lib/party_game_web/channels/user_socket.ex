@@ -2,8 +2,7 @@ defmodule PartyGameWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "buzzer:*", PartyGameWeb.BuzzerChannel
-  channel "lobby:*", PartyGameWeb.LobbyChannel
+  channel "game:*", PartyGameWeb.GameChannel
   channel "chat:*", PartyGameWeb.ChatChannel
 
   # Socket params are passed from the client and can
