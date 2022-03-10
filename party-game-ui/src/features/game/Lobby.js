@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import {
+    CHANNEL_JOINED,
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
     channelJoin,
-    channelLeave,
     channelOff,
     channelOn,
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
+import React, { useEffect, useState } from 'react';
 import { addPlayer, changeGame, listGames, mergeGameList, pushSettings, startGame } from './gameSlice';
 import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -58,10 +58,10 @@ export default function Lobby() {
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
+    const channels = useSelector(state => state.phoenix.channels);
+
 
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-
-    
 
     useEffect(() => {
         if (!gameCode) {
@@ -135,13 +135,16 @@ export default function Lobby() {
     }, [socketStatus, dispatch]);
 
     useEffect(() => {
+        if (channels.some(x => x.topic === topic && x.status === CHANNEL_JOINED)){
+            return;
+        }
+
         dispatch(channelJoin({
             topic,
             data: { name: playerName }
         }));
 
-        return () => dispatch(channelLeave({ topic }));
-    }, [dispatch, topic, playerName]);
+    }, [dispatch, topic, playerName, channels]);
 
     useEffect(() => {
         onEvents(topic).forEach((e) => dispatch(channelOn(e)));

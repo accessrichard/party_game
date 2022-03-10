@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    channelJoin,
-    channelLeave,
     channelOff,
     channelOn,
     channelPush,
@@ -103,10 +101,10 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
 
-    useEffect(() => {
-        dispatch(channelJoin({ topic, data: { name: playerName } }));
-        return () => dispatch(channelLeave({ topic }));
-    }, [dispatch, topic, playerName]);
+////    useEffect(() => {
+////        dispatch(channelJoin({ topic, data: { name: playerName } }));
+////        return () => dispatch(channelLeave({ topic }));
+////    }, [dispatch, topic, playerName]);
 
     useEffect(() => {
         onEvents(topic).forEach((e) => dispatch(channelOn(e)));
@@ -121,8 +119,6 @@ export default function Game() {
 
         return () => { setIsTimerActive(false); };
     }, [isRoundStarted, isTimerActive, settings.questionTime]);
-
-
 
     function startClick(e, action, payload = {}) {
         e && e.preventDefault();

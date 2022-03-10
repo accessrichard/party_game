@@ -23,12 +23,12 @@ defmodule PartyGameWeb.GameChannel do
 
     socket = assign(socket, :name, name)
 
-    send(self(), {:after_join, name})
+    send(self(), {:after_join})
     {:ok, socket}
   end
 
   @impl true
-  def handle_info({:after_join, name}, socket) do
+  def handle_info({:after_join}, socket) do
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
         online_at: DateTime.utc_now() |> DateTime.to_unix(:second)
@@ -37,14 +37,9 @@ defmodule PartyGameWeb.GameChannel do
     push(socket, "presence_state", Presence.list(socket))
     player = Player.add_player(socket.assigns.name)
 
-    IO.inspect %{"player" => name}
-    IO.inspect player
-
     broadcast_from(socket, "join", player)
     {:noreply, socket}
   end
-
-
 
   @impl true
   def handle_in(@channel_name <> room_name, %{"action" => action} = payload, socket) do
