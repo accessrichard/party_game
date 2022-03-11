@@ -12,7 +12,6 @@ defmodule PartyGameWeb.GameChannel do
 
   @channel_name "game:"
 
-
   @impl true
   def join(@channel_name <> room_name, payload, socket) do
     Logger.info "Join #{@channel_name}#{room_name} for: #{Map.get(payload, "name")}"
@@ -69,6 +68,7 @@ defmodule PartyGameWeb.GameChannel do
 
   defp action("start", socket, payload), do: broadcast_start(socket, payload)
   defp action("update_settings", socket, payload), do: update_settings(socket, payload)
+  defp action("update_location", socket, payload), do: update_location(socket, payload)
   defp action("start_round", socket, payload), do: start_round(socket, payload)
   defp action("new_game", socket, payload), do: new_game(socket, payload)
   defp action("next_question", socket, payload), do: next_question(socket, payload)
@@ -207,6 +207,18 @@ defmodule PartyGameWeb.GameChannel do
       player: %{name: socket.assigns.name},
       data: data
     }
+  end
+
+  defp update_location(socket, payload) do
+
+    metas =
+      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
+      |> List.first()
+      |> Map.merge(%{location: Map.get(payload, "location")})
+
+      Presence.update(self(), socket.topic, socket.assigns.name, metas)
+
+    {:noreply, socket}
   end
 
   defp update_settings(socket, payload) do

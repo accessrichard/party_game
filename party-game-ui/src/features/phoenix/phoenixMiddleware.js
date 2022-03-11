@@ -221,7 +221,7 @@ const phoenixMiddleware = () => {
         }
 
         const channel = getChannel(action.payload.topic);
-        channel.off(action.payload.topic, action.payload.event);
+        channel.off(action.payload.event);
     }
 
     return store => next => action => {

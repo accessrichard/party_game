@@ -69,6 +69,7 @@ const initialState = {
     playerName: null,
     name: null,
     gameCode: null,
+    gameChannel: '',
     players: [],
     isGameOwner: false,
     api: {
@@ -97,6 +98,7 @@ export const gameSlice = createSlice({
                 playerName: state.playerName,
                 name: state.name,
                 gameCode: state.gameCode,
+                gameChannel: state.gameChannel,
                 players: [],
                 rounds: [],
                 isGameOwner: state.isGameOwner,
@@ -165,6 +167,7 @@ export const gameSlice = createSlice({
             state.correct = action.payload.data.answer;
 
             state.isOver = action.payload.data.isOver;
+            state.isGameStarted = !action.payload.data.isOver;
             if (!state.isOver && !state.isPaused) {
                 state.startCountdown = true;
             }
@@ -175,6 +178,7 @@ export const gameSlice = createSlice({
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
             state.gameCode = action.payload.room_name;
+            state.gameChannel = `game:${action.payload.room_name}`;
             state.players = action.payload.players;
             state.isGameOwner = action.payload.room_owner ===  action.payload.playerName;
             state.name = action.payload.name;
@@ -200,10 +204,10 @@ export const gameSlice = createSlice({
                 state.settings.rounds = action.payload.settings.rounds;
             }
         },
-        addPlayer(state, action) {
+        userJoinsRoom(state, action) {
             if (!state.players.filter(x => x.name === action.payload.name)) {
                 state.players.push(action.payload);
-            }
+            }            
         },
         clearJoinError(state, action) {
             state.api.join.error = "";
@@ -289,9 +293,9 @@ export const {
     updateSettings,
     pushSettings,
     clearWrongAnswer,
-    syncGameState,
-    addPlayer,
+    syncGameState,    
     phxReply,
+    userJoinsRoom,
     clearJoinError,
     setFlash } = gameSlice.actions;
 

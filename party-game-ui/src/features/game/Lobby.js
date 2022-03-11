@@ -3,13 +3,12 @@ import {
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
     channelJoin,
-    channelOff,
     channelOn,
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
 import React, { useEffect, useState } from 'react';
-import { addPlayer, changeGame, listGames, mergeGameList, pushSettings, startGame } from './gameSlice';
+import { changeGame, listGames, mergeGameList, pushSettings, startGame, userJoinsRoom } from './gameSlice';
 import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -21,17 +20,12 @@ import Players from './Players';
 import Timer from './Timer';
 import { push } from "redux-first-history";
 
-const onEvents = (topic) => [
+const persistedEvents = (topic) => [
     {
         event: 'join',
-        dispatcher: addPlayer(),
+        dispatcher: userJoinsRoom(),
         topic,
-    },
-    {
-        event: 'start',
-        dispatcher: startGame(),
-        topic
-    },
+    },   
     {
         event: 'presence_state',
         dispatcher: syncPresenceState(),
@@ -40,6 +34,11 @@ const onEvents = (topic) => [
     {
         event: 'presence_diff',
         dispatcher: syncPresenceDiff(),
+        topic
+    },
+    {
+        event: 'start',
+        dispatcher: startGame(),
         topic
     },
     {
@@ -53,7 +52,7 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const { playerName, gameCode, isGameOwner, isGameStarted, name, settings } = useSelector(state => state.game);
+    const { playerName, gameCode, gameChannel, isGameOwner, isGameStarted, name, settings } = useSelector(state => state.game);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -71,15 +70,13 @@ export default function Lobby() {
         if (isGameStarted) {            
             dispatch(push('/game'));
         }
-    });
+    });    
 
-    const topic = `game:${gameCode}`
-
-    function handleCreateGame(e) {
+    function handleCreateGame(e) {        
         if (e.target.reportValidity()) {
             dispatch(channelPush({
-                topic: topic,
-                event: topic,
+                topic: gameChannel,
+                event: gameChannel,
                 data: {
                     action: 'update_settings', settings: {
                         question_time: settings.questionTime,
@@ -91,8 +88,8 @@ export default function Lobby() {
             }));
 
             dispatch(channelPush({
-                topic: topic,
-                event: topic,
+                topic: gameChannel,
+                event: gameChannel,
                 data: { action: 'start' }
             }));
         }
@@ -134,8 +131,10 @@ export default function Lobby() {
         }
     }, [socketStatus, dispatch]);
 
-    useEffect(() => {
-        if (channels.some(x => x.topic === topic && x.status === CHANNEL_JOINED)){
+    useEffect(() => {        
+        const topic = `game:${gameCode}`;
+
+        if (gameCode && channels.some(x => x.topic === topic && x.status === CHANNEL_JOINED)){
             return;
         }
 
@@ -144,12 +143,9 @@ export default function Lobby() {
             data: { name: playerName }
         }));
 
-    }, [dispatch, topic, playerName, channels]);
+        persistedEvents(topic).forEach((e) => dispatch(channelOn(e)));
 
-    useEffect(() => {
-        onEvents(topic).forEach((e) => dispatch(channelOn(e)));
-        return () => onEvents(topic).forEach((e) => dispatch(channelOff(e)));
-    }, [dispatch, topic]);
+    }, [dispatch, gameCode, playerName, channels]);
 
     useEffect(() => {
         setIsTimerActive(true);

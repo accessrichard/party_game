@@ -5,7 +5,6 @@ import {
     channelPush,
 } from '../phoenix/phoenixMiddleware';
 import { clearWrongAnswer, mergeGameList, phxReply, setFlash, startRound, stopRound } from './gameSlice';
-import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Answers from './Answers';
@@ -30,17 +29,7 @@ const onEvents = (topic) => [
         event: 'phx_reply',
         dispatcher: phxReply(),
         topic,
-    },
-    {
-        event: 'presence_state',
-        dispatcher: syncPresenceState(),
-        topic
-    },
-    {
-        event: 'presence_diff',
-        dispatcher: syncPresenceDiff(),
-        topic
-    }
+    }    
 ]
 
 const sendEvent = (topic, channelData, action) => (
@@ -57,8 +46,8 @@ export default function Game() {
     const dispatch = useDispatch();
     const {
         isRoundStarted,
-        playerName,
-        gameCode,
+        playerName,        
+        gameChannel,
         isGameOwner,
         question,
         answers,
@@ -86,11 +75,9 @@ export default function Game() {
     const roundRef = useRef(round);
     roundRef.current = round;
 
-    if (!gameCode) {
+    if (!gameChannel) {
         dispatch(push('/'));
     }
-
-    const topic = `game:${gameCode}`;    
 
     useEffect(() => {
         if (startCountdown) {
@@ -101,15 +88,14 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
 
-////    useEffect(() => {
-////        dispatch(channelJoin({ topic, data: { name: playerName } }));
-////        return () => dispatch(channelLeave({ topic }));
-////    }, [dispatch, topic, playerName]);
-
     useEffect(() => {
-        onEvents(topic).forEach((e) => dispatch(channelOn(e)));
-        return () => onEvents(topic).forEach((e) => dispatch(channelOff(e)));
-    }, [dispatch, topic]);
+        if (!gameChannel) {
+            return;
+        }
+
+        onEvents(gameChannel).forEach((e) => dispatch(channelOn(e)));
+        return () => onEvents(gameChannel).forEach((e) => dispatch(channelOff(e)));
+    }, [dispatch, gameChannel]);
 
     useEffect(() => {
         if (isRoundStarted) {
@@ -133,17 +119,19 @@ export default function Game() {
     function onAnswerClick(e, answer) {
         setIsQuestionAnswered(true);
         const data = { answer, name: playerName };
-        dispatch(channelPush(sendEvent(topic, data, "buzz")));
+        dispatch(channelPush(sendEvent(gameChannel, data, "buzz")));
     }
 
     const startClickCallback = useCallback((action, payload = {}) => {
         setIsQuestionAnswered(false);
         const data = { name: playerName, ...payload };
-        dispatch(channelPush(sendEvent(topic, data, action || "start_round")));
-    }, [topic, dispatch, playerName])
+        dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
+    }, [gameChannel, dispatch, playerName])
 
     useEffect(() => {
-        ////Auto start game from lobby.
+        //// Auto start game from lobby.
+        //// TODO: This is too complex.
+        //// Now that lobby and game are in same channel, can just use: isGameStarted        
         setIsTimerActive(false);
 
         if (!isGameOwner) {
@@ -158,7 +146,6 @@ export default function Game() {
             const creativeGame = creativeGames.find(x => x.game.name === name);
             game = { ...game, questions: creativeGame.game.questions }
         }
-
 
         startClickCallback("new_game", { game: game, rounds: settings.rounds });
 

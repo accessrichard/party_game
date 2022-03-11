@@ -47,13 +47,13 @@ function Join() {
         }
     };
 
+    console.log(gameCodeError)
+
     return (
         <div className="offset-bottom">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
 
             <form className="medium-width" onSubmit={handleSubmit} noValidate>
-                
-
 
                 <div className="flex-column margin-bottom-5">
                     <label className="text-align-left typography-emphasize" htmlFor="username"></label>
@@ -70,7 +70,7 @@ function Join() {
                         value={form.username}
                     >
                     </input>
-                    <InputError className="input-error-text shake" errors={[gameCodeError && gameCodeError.player_name]} />
+                    <InputError className="input-error-text shake" errors={[(gameCodeError && gameCodeError.player_name) || gameCodeError]} />
                     <InputError className="input-error-text shake" errors={[(form.errors && form.errors.username) || ""]} />
                 </div>
                 <div className="flex-column margin-bottom-5">
