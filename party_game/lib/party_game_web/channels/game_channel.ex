@@ -162,7 +162,7 @@ defmodule PartyGameWeb.GameChannel do
           winner: "",
           isOver: game.is_over,
           question: question.question,
-          answers: question.answers
+          answers: question.answers,
         }
       )
     )

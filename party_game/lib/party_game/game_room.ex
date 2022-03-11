@@ -49,7 +49,7 @@ defmodule PartyGame.GameRoom do
   end
 
   def update_settings(%Game{} = game, settings) do
-    %{game| settings: Settings.apply_settings(game.settings, settings)}
+    %{game | settings: Settings.apply_settings(game.settings, settings)}
   end
 
   def name_taken(%Game{} = game, player_name) do
@@ -80,6 +80,10 @@ defmodule PartyGame.GameRoom do
 
   def stop_game(%Game{} = game) do
     %{game | started: false}
+  end
+
+  def end_game(%Game{} = game) do
+    %{game | is_over: true, started: false, round_started: false}
   end
 
   def score(%Game{} = game) do
@@ -136,6 +140,16 @@ defmodule PartyGame.GameRoom do
   end
 
   def next_question(%Game{} = game) do
+    case game.questions == [] do
+      true ->
+        end_game(game)
+
+      false ->
+        take_next_question(game)
+    end
+  end
+
+  defp take_next_question(%Game{} = game) do
     [question | questions] = game.questions
     round = %Round{question: question, winner: "None", answer: question.correct}
 
@@ -148,6 +162,7 @@ defmodule PartyGame.GameRoom do
         started: questions == []
     }
   end
+
   defp game_stopped(%{started: true}), do: {:error, "Game is already started."}
   defp game_stopped(%{started: false}), do: {:ok, false}
 

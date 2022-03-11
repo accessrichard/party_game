@@ -113,7 +113,7 @@ export const gameSlice = createSlice({
             state.isWrong = false;
         },
         startRound: (state, action) => {
-            state.isGameStarted = true;
+            state.isGameStarted = !action.payload.data.isOver;
             state.isRoundStarted = true;
             state.round += 1;
             state.question = action.payload.data.question;
