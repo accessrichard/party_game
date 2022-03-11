@@ -491,6 +491,12 @@ input { margin-bottom: 10px; }
   .center-screen {
     width: 80%;
   }
+  .box{
+    width: 70%;
+  }
+  .popup{
+    width: 70%;
+  }
 }
 
 @media only screen and (max-width: 480px) {
@@ -499,10 +505,16 @@ input { margin-bottom: 10px; }
   }
   .offset-phone-addressbar {
     margin-bottom: 18%;
+  }
+  .box{
+    width: 70%;
+  }
+  .popup{
+    width: 70%;
   }  
 }
 
-@media only screen and (min-width: 480px) and (orientation:landscape) {
+@media only screen and (max-height: 480px) and (orientation:landscape) {
   .center-screen {
     width: 96%;
   }
@@ -667,3 +679,60 @@ input.wrong[type="submit"] {
 
 .center-with-right-div span:nth-child(1) { grid-column-start: 2; }
 .center-with-right-div span:nth-child(2) { margin-left: auto; }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  transition: opacity 500ms;
+  z-index: 1;
+}
+
+.overlay-visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.overlay:target {
+  visibility: visible;
+  opacity: 1;
+}
+
+.popup {
+  margin: 70px auto;
+  padding: 20px;
+  background: #fff;  
+  color: #333;
+  border-radius: 5px;
+  width: 30%;
+  position: relative;
+  transition: all 5s ease-in-out;
+}
+
+.popup h2 {
+  margin-top: 0;
+  font-family: Tahoma, Arial, sans-serif;
+}
+
+.popup .close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  transition: all 200ms;
+  font-size: 30px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.popup .close:hover {
+  color: #6b6b6b;
+}
+
+.popup .content {
+  max-height: 30%;
+  overflow: auto;
+}
+

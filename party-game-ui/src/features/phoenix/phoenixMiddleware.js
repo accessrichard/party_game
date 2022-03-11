@@ -139,7 +139,7 @@ const phoenixMiddleware = () => {
             return;
         }
 
-        if (hasChannel(action.payload.topic)){
+        if (hasChannel(action.payload.topic)) {
             throw Error("Channel is already joined!");
         }
 
@@ -192,7 +192,7 @@ const phoenixMiddleware = () => {
         if (!socket) {
             return;
         }
-        
+
         if (!hasChannel(action.payload.topic)) {
             throw new Error("Invalid ChannelOn event. action.payload.topic is required or topic not found!");
         }
@@ -216,7 +216,7 @@ const phoenixMiddleware = () => {
             throw new Error("Invalid Channel Off: action.payload.topic is required");
         }
 
-        if (!hasChannel(action.payload.topic)) {            
+        if (!hasChannel(action.payload.topic)) {
             return;
         }
 

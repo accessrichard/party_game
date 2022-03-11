@@ -3,6 +3,7 @@ import { getScores, resetState } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Faces from '../common/Faces';
+import IdleTimeout from '../common/IdleTimeout';
 import { Navigate } from 'react-router-dom';
 import Scores from '../common/Scores';
 import {
@@ -41,6 +42,7 @@ function Score() {
 
     return (
         <React.Fragment>
+            <IdleTimeout/>
             <div className="pd-25 md-5 large-title">{scores.winners && scores.winners.length === 1
                 ? scores.winners[0].name + " won!"
                 : scores.winners.map(x => x.name).join(" and ") + " tied!"}</div>

@@ -2,18 +2,31 @@ import {
     CHANNEL_JOINED,
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
+    SOCKET_DISCONNECTED,
     channelJoin,
     channelOn,
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
 import React, { useEffect, useState } from 'react';
-import { changeGame, listGames, mergeGameList, phxReply, pushSettings, startGame, startRound, stopRound, userJoinsRoom } from './gameSlice';
+import {
+    changeGame,
+    idleTimeout,
+    listGames,
+    mergeGameList,
+    phxReply,
+    pushSettings,
+    startGame,
+    startRound,
+    stopRound,
+    userJoinsRoom
+} from './gameSlice';
 import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
+import IdleTimeout from '../common/IdleTimeout';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
@@ -61,6 +74,11 @@ const persistedEvents = (topic) => [
         event: 'phx_reply',
         dispatcher: phxReply(),
         topic,
+    },
+    {
+        event: 'game_server_idle_timeout',
+        dispatcher: idleTimeout(),
+        topic,
     }
 ]
 
@@ -80,7 +98,7 @@ export default function Lobby() {
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
-        }        
+        }
     });
 
     function handleCreateGame(e) {
@@ -113,12 +131,13 @@ export default function Lobby() {
 
         const payload = { game: game, rounds: settings.rounds };
         const data = { name: playerName, ...payload };
-        dispatch(channelPush(  {
+        dispatch(channelPush({
             topic: gameChannel,
             event: gameChannel,
             data: Object.assign(data, {
                 action: "new_game"
-        })}));
+            })
+        }));
 
         e.preventDefault();
     }
@@ -128,7 +147,7 @@ export default function Lobby() {
             dispatch(listGames());
         }
 
-    }, [dispatch, serverGames, serverGamesLoading]);   
+    }, [dispatch, serverGames, serverGamesLoading]);
 
     useEffect(() => {
         const list = mergeGameList(serverGames, creativeGames);
@@ -186,11 +205,15 @@ export default function Lobby() {
         return <Navigate to="/game" />
     }
 
+    if (socketStatus === SOCKET_DISCONNECTED) {
+        return <Navigate to="/" />
+    }
+
     return (
         <React.Fragment>
 
             <header className="full-width">
-
+                <IdleTimeout />
                 <div className="center-with-right-div">
                     <span><Logo logoClass="pd-25 small-logo bouncy landscape-hidden" title="Players" titleClass="small-title landscape-hidden"></Logo></span>
                     <span>
