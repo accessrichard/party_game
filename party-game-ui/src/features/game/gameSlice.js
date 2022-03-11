@@ -135,6 +135,7 @@ export const gameSlice = createSlice({
             state.correct = '';
             state.roundWinner = '';
             state.isWrong = false;
+            state.isOver = false;
         },
         stopGame: (state) => {
             state.isGameStarted = false;

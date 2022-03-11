@@ -47,8 +47,6 @@ function Join() {
         }
     };
 
-    console.log(gameCodeError)
-
     return (
         <div className="offset-bottom">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>

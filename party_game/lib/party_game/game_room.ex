@@ -144,7 +144,8 @@ defmodule PartyGame.GameRoom do
       | round_started: false,
         rounds: [round | game.rounds],
         questions: questions,
-        is_over: questions == []
+        is_over: questions == [],
+        started: questions == []
     }
   end
   defp game_stopped(%{started: true}), do: {:error, "Game is already started."}

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { getScores, resetState } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Faces from '../common/Faces';
@@ -7,17 +8,13 @@ import Scores from '../common/Scores';
 import {
     channelPush
 } from '../phoenix/phoenixMiddleware';
-import { getScores } from './gameSlice';
 import { push } from "redux-first-history";
-import { resetState } from './gameSlice';
 
 function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
 
-    const {isGameStarted, gameChannel }  = useSelector(state => state.game);
-
-
+    const {isGameStarted, gameChannel, isOver }  = useSelector(state => state.game);
     
     useEffect(() => {
         dispatch(channelPush({
@@ -28,7 +25,7 @@ function Score() {
 
     }, [dispatch, gameChannel]);
 
-    if (isGameStarted) {
+    if (isGameStarted && !isOver) {
         return <Navigate to="/game" />
     }
 

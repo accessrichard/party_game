@@ -75,6 +75,7 @@ defmodule PartyGameWeb.GameChannel do
   defp action("buzz", socket, payload), do: buzz(socket, payload)
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
 
+  @deprecated "Action no longer needed, use new_game"
   defp broadcast_start(socket, _) do
     broadcast(socket, "start", %{})
     {:noreply, socket}
@@ -210,7 +211,6 @@ defmodule PartyGameWeb.GameChannel do
   end
 
   defp update_location(socket, payload) do
-
     metas =
       Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
       |> List.first()

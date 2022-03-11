@@ -8,7 +8,7 @@ import {
     socketConnect
 } from '../phoenix/phoenixMiddleware';
 import React, { useEffect, useState } from 'react';
-import { changeGame, listGames, mergeGameList, pushSettings, startGame, userJoinsRoom } from './gameSlice';
+import { changeGame, listGames, mergeGameList, phxReply, pushSettings, startGame, startRound, stopRound, userJoinsRoom } from './gameSlice';
 import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -16,6 +16,7 @@ import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import Players from './Players';
 import Timer from './Timer';
 import { push } from "redux-first-history";
@@ -25,7 +26,7 @@ const persistedEvents = (topic) => [
         event: 'join',
         dispatcher: userJoinsRoom(),
         topic,
-    },   
+    },
     {
         event: 'presence_state',
         dispatcher: syncPresenceState(),
@@ -45,6 +46,21 @@ const persistedEvents = (topic) => [
         event: 'update_settings',
         dispatcher: pushSettings(),
         topic
+    },
+    {
+        event: 'buzz',
+        dispatcher: stopRound(),
+        topic,
+    },
+    {
+        event: 'next_question',
+        dispatcher: startRound(),
+        topic,
+    },
+    {
+        event: 'phx_reply',
+        dispatcher: phxReply(),
+        topic,
     }
 ]
 
@@ -59,40 +75,51 @@ export default function Lobby() {
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
     const channels = useSelector(state => state.phoenix.channels);
 
-
     const socketStatus = useSelector(state => state.phoenix.socket.status);
 
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
+        }        
+    });
+
+    function handleCreateGame(e) {
+        if (!e.target.reportValidity()) {
+            e.preventDefault();
+            return;
         }
 
-        if (isGameStarted) {            
-            dispatch(push('/game'));
-        }
-    });    
-
-    function handleCreateGame(e) {        
-        if (e.target.reportValidity()) {
-            dispatch(channelPush({
-                topic: gameChannel,
-                event: gameChannel,
-                data: {
-                    action: 'update_settings', settings: {
-                        question_time: settings.questionTime,
-                        next_question_time: settings.nextQuestionTime,
-                        wrong_answer_timeout: settings.wrongAnswerTimeout,
-                        rounds: settings.rounds
-                    }
+        dispatch(channelPush({
+            topic: gameChannel,
+            event: gameChannel,
+            data: {
+                action: 'update_settings', settings: {
+                    question_time: settings.questionTime,
+                    next_question_time: settings.nextQuestionTime,
+                    wrong_answer_timeout: settings.wrongAnswerTimeout,
+                    rounds: settings.rounds
                 }
-            }));
+            }
+        }));
 
-            dispatch(channelPush({
-                topic: gameChannel,
-                event: gameChannel,
-                data: { action: 'start' }
-            }));
+        const list = mergeGameList(serverGames, creativeGames);
+
+        let game = list.find(x => x.name === name);
+
+        if (game && game.location === 'client') {
+            const creativeGame = creativeGames.find(x => x.game.name === name);
+            game = { ...game, questions: creativeGame.game.questions }
         }
+
+        const payload = { game: game, rounds: settings.rounds };
+        const data = { name: playerName, ...payload };
+        dispatch(channelPush(  {
+            topic: gameChannel,
+            event: gameChannel,
+            data: Object.assign(data, {
+                action: "new_game"
+        })}));
+
         e.preventDefault();
     }
 
@@ -101,7 +128,7 @@ export default function Lobby() {
             dispatch(listGames());
         }
 
-    }, [dispatch, serverGames, serverGamesLoading]);
+    }, [dispatch, serverGames, serverGamesLoading]);   
 
     useEffect(() => {
         const list = mergeGameList(serverGames, creativeGames);
@@ -120,7 +147,6 @@ export default function Lobby() {
 
     }, [gameList, dispatch, name]);
 
-
     useEffect(() => {
         if (socketStatus !== SOCKET_CONNECTED
             && socketConnect !== SOCKET_CONNECTING) {
@@ -131,10 +157,10 @@ export default function Lobby() {
         }
     }, [socketStatus, dispatch]);
 
-    useEffect(() => {        
+    useEffect(() => {
         const topic = `game:${gameCode}`;
 
-        if (gameCode && channels.some(x => x.topic === topic && x.status === CHANNEL_JOINED)){
+        if (gameCode && channels.some(x => x.topic === topic && x.status === CHANNEL_JOINED)) {
             return;
         }
 
@@ -154,6 +180,10 @@ export default function Lobby() {
 
     function onGameChange(e) {
         dispatch(changeGame(e.target.value));
+    }
+
+    if (isGameStarted) {
+        return <Navigate to="/game" />
     }
 
     return (
@@ -207,7 +237,7 @@ export default function Lobby() {
 
             <span className="typography-md-text">
                 <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
-            </span>            
+            </span>
         </React.Fragment >
     );
 }
