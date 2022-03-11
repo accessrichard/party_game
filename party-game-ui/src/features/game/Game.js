@@ -146,7 +146,7 @@ export default function Game() {
         <React.Fragment>
             <div className="full-width full-height flex-container flex-column">
                 <header>
-                    <h2>Buzz Game</h2>
+                    <h2 class="landscape-hidden">Buzz Game</h2>
                 </header>
 
                 <div className='flex-column'>
@@ -169,7 +169,7 @@ export default function Game() {
                 </div>
 
 
-                <div className='flex-coumn empty-space'>
+                <div className='flex-coumn empty-space offset-phone-addressbar'>
                     <div className="question">
                         {question}
                     </div>

@@ -58,7 +58,6 @@ body {
 
 .app-blue {
   background-color: #4572cc;
- 
   color: white;
 }
 
@@ -141,8 +140,6 @@ label {
 .answer input[type="submit"]:disabled {
   background:  #c9c9c9;
 }
-
-
 
 .small-title {
   display: block;
@@ -495,6 +492,26 @@ input { margin-bottom: 10px; }
     width: 80%;
   }
 }
+
+@media only screen and (max-width: 480px) {
+  .center-screen {
+    width: 96%;
+  }
+  .offset-phone-addressbar {
+    margin-bottom: 10%;
+  }  
+}
+
+@media only screen and (min-width: 480px) and (orientation:landscape) {
+  .center-screen {
+    width: 96%;
+  }
+
+  .landscape-hidden {
+    display: none
+  }
+}
+
 
 @media only screen and (max-width: 576px) {
   .center-screen {

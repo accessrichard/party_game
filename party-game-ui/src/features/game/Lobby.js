@@ -192,7 +192,7 @@ export default function Lobby() {
             <header className="full-width">
 
                 <div className="center-with-right-div">
-                    <span><Logo logoClass="pd-25 small-logo bouncy" title="Players" titleClass="small-title"></Logo></span>
+                    <span><Logo logoClass="pd-25 small-logo bouncy landscape-hidden" title="Players" titleClass="small-title landscape-hidden"></Logo></span>
                     <span>
                         {isGameOwner &&
                             <ul className="small-font text-align-right ul-nostyle">
