@@ -222,7 +222,7 @@ export default function Lobby() {
 
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
-                                <GameList defaultValue={name} onGameChange={onGameChange} games={gameList} />
+                                <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
                             </div>
                         </div>
 

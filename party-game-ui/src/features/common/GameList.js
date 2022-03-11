@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function GameList(props) {
-    const { games, value } = props;
+    const { games, value } = props;    
 
     function onGameChange(e) {
         props.onGameChange && props.onGameChange(e);

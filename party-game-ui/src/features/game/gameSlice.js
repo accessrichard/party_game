@@ -67,7 +67,7 @@ const initialState = {
     events: [],
     rounds: [],
     playerName: null,
-    name: null,
+    name: '',
     gameCode: null,
     gameChannel: '',
     players: [],
@@ -182,7 +182,7 @@ export const gameSlice = createSlice({
             state.gameChannel = `game:${action.payload.room_name}`;
             state.players = action.payload.players;
             state.isGameOwner = action.payload.room_owner ===  action.payload.playerName;
-            state.name = action.payload.name;
+            state.name = action.payload.name || '';
         },
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
