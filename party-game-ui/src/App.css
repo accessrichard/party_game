@@ -498,7 +498,7 @@ input { margin-bottom: 10px; }
     width: 96%;
   }
   .offset-phone-addressbar {
-    margin-bottom: 10%;
+    margin-bottom: 14%;
   }  
 }
 
@@ -511,7 +511,6 @@ input { margin-bottom: 10px; }
     display: none
   }
 }
-
 
 @media only screen and (max-width: 576px) {
   .center-screen {
