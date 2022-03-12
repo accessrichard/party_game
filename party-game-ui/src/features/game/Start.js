@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import InputError from '../common/InputError';
-
 import Logo from '../common/Logo';
 import { startNewGame } from './gameSlice';
 import { useDispatch } from 'react-redux';
@@ -40,9 +39,8 @@ function Create() {
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
 
             <form className="flex-grid flex-column form fill-space" onSubmit={handleSubmit} noValidate>
-                
-                <div className="margin-bottom-5">
 
+                <div className="margin-bottom-5">
                     <label className="text-align-left typography-emphasize" htmlFor="username">User Name</label>
                     <input
                         type="text"
