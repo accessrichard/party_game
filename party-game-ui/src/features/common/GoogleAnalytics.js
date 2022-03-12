@@ -11,10 +11,13 @@ export default function GoogleAnalytics(props) {
     const location = useLocation();
     const [isEnabled, setIsEnabled] = useState(true);
 
-    useEffect(() => {
-        setIsEnabled(!document.location.hostname.includes('localhost') && !!process.env.GA_MEASUREID)
-
+    useEffect(() => {       
         if (!isEnabled) {
+            return;
+        }
+
+        if (document.location.hostname.includes('localhost') || !!process.env.GA_MEASUREID) {
+            setIsEnabled(false);
             return;
         }
 

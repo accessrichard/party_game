@@ -99,7 +99,7 @@ export default function Lobby() {
         if (!gameCode) {
             dispatch(push('/'));
         }
-    });
+    }, [gameCode]);
 
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
@@ -167,6 +167,11 @@ export default function Lobby() {
     }, [gameList, dispatch, name]);
 
     useEffect(() => {
+        if (!gameCode)
+        {
+            return;
+        }
+        
         if (socketStatus !== SOCKET_CONNECTED
             && socketConnect !== SOCKET_CONNECTING) {
             dispatch(socketConnect({
@@ -174,7 +179,7 @@ export default function Lobby() {
                 params: {}
             }));
         }
-    }, [socketStatus, dispatch]);
+    }, [socketStatus, dispatch, gameCode]);
 
     useEffect(() => {
         const topic = `game:${gameCode}`;

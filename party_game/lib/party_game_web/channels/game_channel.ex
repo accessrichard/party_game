@@ -14,16 +14,29 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def join(@channel_name <> room_name, payload, socket) do
-    Logger.info "Join #{@channel_name}#{room_name} for: #{Map.get(payload, "name")}"
+    Logger.info("Join #{@channel_name}#{room_name} for: #{Map.get(payload, "name")}")
 
-    name = Map.get(payload, "name")
+    case Server.lookup(room_name) do
+      {:ok, _} ->
+        name = Map.get(payload, "name")
 
-    socket = assign(socket, :game,  Server.get_game(room_name))
+        socket = assign(socket, :game, Server.get_game(room_name))
 
-    socket = assign(socket, :name, name)
+        socket = assign(socket, :name, name)
 
-    send(self(), {:after_join})
-    {:ok, socket}
+        send(self(), {:after_join})
+        {:ok, socket}
+
+      _ ->
+        send(self(), {:after_join, :game_not_found})
+        {:ok, socket}
+    end
+  end
+
+  @impl true
+  def handle_info({:after_join, :game_not_found}, socket) do
+    broadcast(socket, "game_server_idle_timeout", %{})
+    {:noreply, socket}
   end
 
   @impl true
@@ -42,7 +55,7 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def handle_in(@channel_name <> room_name, %{"action" => action} = payload, socket) do
-    Logger.info "handle_in #{@channel_name}#{room_name} for action: #{action}"
+    Logger.info("handle_in #{@channel_name}#{room_name} for action: #{action}")
     action(action, socket, payload)
   end
 
@@ -53,6 +66,12 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def terminate(_reason, socket) do
+    remove_player(Server.lookup(game_code(socket.topic)), socket)
+  end
+
+  defp remove_player({:error, _}, _), do: :ok
+
+  defp remove_player({:ok, _}, socket) do
     Server.get_game(game_code(socket.topic))
     |> GameRoom.remove_player(socket.assigns.name)
     |> Server.update_game()
@@ -132,7 +151,6 @@ defmodule PartyGameWeb.GameChannel do
     {:noreply, socket}
   end
 
-
   defp next_question(socket, payload) do
     game =
       Server.get_game(game_code(socket.topic))
@@ -162,7 +180,7 @@ defmodule PartyGameWeb.GameChannel do
           winner: "",
           isOver: game.is_over,
           question: question.question,
-          answers: question.answers,
+          answers: question.answers
         }
       )
     )
@@ -196,8 +214,6 @@ defmodule PartyGameWeb.GameChannel do
     end
   end
 
-
-
   defp start(payload) do
     Map.put(payload, "action", "start")
   end
@@ -216,16 +232,18 @@ defmodule PartyGameWeb.GameChannel do
       |> List.first()
       |> Map.merge(%{location: Map.get(payload, "location")})
 
-      Presence.update(self(), socket.topic, socket.assigns.name, metas)
+    Presence.update(self(), socket.topic, socket.assigns.name, metas)
 
     {:noreply, socket}
   end
 
   defp update_settings(socket, payload) do
-    settings = Settings.apply_settings(Settings.new, Map.get(payload, "settings", %{}))
+    settings = Settings.apply_settings(Settings.new(), Map.get(payload, "settings", %{}))
+
     broadcast_from(socket, "update_settings", %{
       "settings" => settings
     })
+
     {:noreply, socket}
   end
 end

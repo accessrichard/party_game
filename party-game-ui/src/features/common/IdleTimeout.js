@@ -21,10 +21,10 @@ export default function IdleTimeout(props) {
 
     return (
         <React.Fragment>
-            {isIdleTimeout && <div class="overlay overlay-visible">
-                <div class="popup">
+            {isIdleTimeout && <div className="overlay overlay-visible">
+                <div className="popup">
                     <h2>Game idle timeout expired.</h2>
-                    <div class="content">
+                    <div className="content">
                         <Link to="/">Click here to restart.</Link>
                     </div>
                 </div>
