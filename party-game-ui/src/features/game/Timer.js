@@ -5,10 +5,10 @@ import usePrevious from '../usePrevious';
 function formatTime(seconds, timeFormat) {
     const time = new Date(seconds * 1000).toISOString();
     if (timeFormat === "seconds") {
-      return time.substr(17, 2);
+      return time.substring(17, 19);
     } 
 
-    return time.substr(11, 8);
+    return time.substring(11, 19);
 }
 
 export default function Timer(props) {
