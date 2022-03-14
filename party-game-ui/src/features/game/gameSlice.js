@@ -104,6 +104,7 @@ export const gameSlice = createSlice({
                 players: [],
                 rounds: [],
                 isGameOwner: state.isGameOwner,
+                api: state.api,
                 settings: {
                     ...state.settings
                 }
