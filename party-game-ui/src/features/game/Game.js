@@ -6,7 +6,7 @@ import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
 import IdleTimeout from '../common/IdleTimeout';
-import Timer from './DateBasedTimer';
+import Timer from './Timer';
 import {
     channelPush
 } from '../phoenix/phoenixMiddleware';

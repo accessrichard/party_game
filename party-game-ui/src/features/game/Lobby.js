@@ -31,7 +31,7 @@ import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 import Players from './Players';
-import Timer from './DateBasedTimer';
+import Timer from './Timer';
 import { push } from "redux-first-history";
 
 const persistedEvents = (topic) => [

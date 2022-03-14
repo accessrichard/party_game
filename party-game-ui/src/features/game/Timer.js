@@ -5,50 +5,80 @@ import usePrevious from '../usePrevious';
 function formatTime(seconds, timeFormat) {
     const time = new Date(seconds * 1000).toISOString();
     if (timeFormat === "seconds") {
-      return time.substring(17, 19);
-    } 
+        return time.substring(17, 19);
+    }
 
     return time.substring(11, 19);
 }
 
+function getDateDiff(startDate) {
+    return Math.round((new Date() - startDate) / 1000);
+}
+
+function isTimerComplete(startDate, numberSeconds, isIncrement) {
+    if (startDate === null) {
+        return false;
+    }
+
+    return isIncrement
+        ? getDateDiff(startDate) >= numberSeconds
+        : numberSeconds - getDateDiff(startDate) <= 0
+}
+
 export default function Timer(props) {
-    const timeIncrement = props.timeIncrement || 1;
-    const startSeconds = props.startSeconds || 0;
-    const [seconds, setSeconds] = useState(startSeconds);
-    const {isActive, timerDone, timeFormat} = props;
+
+    const {
+        numberSeconds = 10,
+        isIncrement = true,
+        isVisible = true,
+        isActive = false,
+        onTimerCompleted,
+        timeFormat,
+        onStartDateSet
+    } = props;
+
+    const [seconds, setSeconds] = useState(isIncrement ? 1 : numberSeconds);
+    const [startDate, setStartDate] = useState(null);
 
     const prevActive = usePrevious(isActive);
 
     useEffect(() => {
-        const isDone = startSeconds > 0 && seconds === 0;
+
         if (!prevActive && isActive) {
-            setSeconds(startSeconds)
+            const date = new Date();
+            if (isIncrement) {
+                date.setSeconds(date.getSeconds() - 1);
+            }
+
+            setStartDate(date);
+            onStartDateSet && onStartDateSet(date);
         }
 
-        let interval = null;        
+        let interval = null;
 
         if (isActive) {
             interval = setInterval(() => {
-                setSeconds(seconds => seconds + timeIncrement);
+                setSeconds(isIncrement ? getDateDiff(startDate) : numberSeconds - getDateDiff(startDate));
             }, 1000);
-
-        } else if (!isActive && seconds !== 0) {
+        } else {
             clearInterval(interval);
         }
-       
-        if (isDone) {
-            timerDone();
-            setSeconds(startSeconds);
+
+        if (isTimerComplete(startDate, numberSeconds, isIncrement)) {
+            onTimerCompleted && onTimerCompleted();
+            const date = new Date();
+            setStartDate(date.setSeconds(date.getSeconds() + 1));
         }
 
         return () => clearInterval(interval);
-    }, [isActive, seconds, prevActive, startSeconds, timeIncrement, timerDone]);
+    }, [isActive, seconds, prevActive, numberSeconds, onTimerCompleted, startDate, isIncrement, onStartDateSet]);
 
     return (
         <React.Fragment>
-            <span>
-                {formatTime(seconds, timeFormat)}
-            </span>
+            {isVisible &&
+                <span>
+                    {formatTime(seconds, timeFormat)}
+                </span>}
         </React.Fragment>
     );
 }
