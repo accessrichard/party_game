@@ -31,7 +31,7 @@ import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 import Players from './Players';
-import Timer from './Timer';
+import Timer from './DateBasedTimer';
 import { push } from "redux-first-history";
 
 const persistedEvents = (topic) => [
@@ -99,7 +99,7 @@ export default function Lobby() {
         if (!gameCode) {
             dispatch(push('/'));
         }
-    }, [gameCode]);
+    }, [gameCode, dispatch]);
 
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {

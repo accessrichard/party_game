@@ -25,7 +25,7 @@ function Settings() {
 
         let newForm = {
             ...form,
-            [name]: parseInt(value, 10),
+            [name]: parseInt(value, 10) || ""
         };
 
         setForm(newForm);

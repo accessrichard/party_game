@@ -6,7 +6,7 @@ import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
 import IdleTimeout from '../common/IdleTimeout';
-import Timer from './Timer';
+import Timer from './DateBasedTimer';
 import {
     channelPush
 } from '../phoenix/phoenixMiddleware';
@@ -27,7 +27,7 @@ export default function Game() {
     const dispatch = useDispatch();
     const {
         isRoundStarted,
-        playerName,        
+        playerName,
         gameChannel,
         isGameOwner,
         question,
@@ -45,6 +45,7 @@ export default function Game() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
+    const [timerDates, setTimerDates] = useState(null);
 
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
@@ -54,6 +55,18 @@ export default function Game() {
 
     if (!gameChannel) {
         dispatch(push('/'));
+    }
+
+    useEffect(() => {       
+        if (!timerDates) {
+            return false;
+        }
+        
+        console.log(Math.round((timerDates.beginDate - new Date() ) / 1000));   
+    }, [timerDates, isWrong]);
+
+    function getTimerDates(date) {
+        setTimerDates(date)
     }
 
     useEffect(() => {
@@ -96,30 +109,26 @@ export default function Game() {
         dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
     }, [gameChannel, dispatch, playerName])
 
-    useEffect(() => {
-        setTimeout(() => {
-            //In case round ends before timer is reset - 
-            //if (startedRef.current && roundRef.current === round) {
-            if (isWrong) {
-                dispatch(clearWrongAnswer());
-                setIsQuestionAnswered(false);
-                dispatch(setFlash({ text: "" }))
-            }
-        }, settings.wrongAnswerTimeout * 1000);
-
-    }, [dispatch, isWrong, settings.wrongAnswerTimeout]);
+    function wrongAnswerTimerDone() {
+        //// In case round ends before timer is reset.
+        if (isWrong) {
+            dispatch(clearWrongAnswer());
+            setIsQuestionAnswered(false);
+            dispatch(setFlash({ text: "" }))
+        }
+    }
 
     useEffect(() => {
         if (isOver) {
             setTimeout(() => {
                 dispatch(push('/score'));
-            }, settings.nextQuestionTime * 1000);
+            }, 1000);
         }
     }, [isOver, dispatch, settings.nextQuestionTime]);
 
     useEffect(() => {
         const unblock = history.block((tx) => {
-            if (tx.action === "POP" && tx.location.pathname === "/lobby"){                
+            if (tx.action === "POP" && tx.location.pathname === "/lobby") {
                 return false;
             }
 
@@ -136,7 +145,7 @@ export default function Game() {
 
         return () => {
             unblock();
-          };
+        };
     }, []);
 
     function isHappy() {
@@ -145,27 +154,29 @@ export default function Game() {
 
     return (
         <React.Fragment>
-            <IdleTimeout/>
+            <IdleTimeout />
             <div className="full-width full-height flex-container flex-column">
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>
                 </header>
 
                 <div className='flex-column'>
+                    {isOver && <span>Game Over</span>}
                     {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
 
                     <Flash flash={flash}></Flash>
-                    {isWrong && <span>Wrong</span>}
-                    {isWrong && settings.wrongAnswerTimeout > 1 &&
-                        //Bug: Round ends before wrong timeout 
-                        <span>, Try again in&nbsp;
-                            <Timer key={isWrong + settings.wrongAnswerTimeout}
-                                isActive={isWrong}
-                                timeIncrement={-1}
+
+                    {isWrong &&
+                        <span>Wrong{settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
+                            <Timer key={"wrongAnswer" + isWrong + settings.wrongAnswerTimeout}
+                                isActive={isWrong}                                
+                                isVisible={settings.wrongAnswerTimeout > 1}
                                 timeFormat={"seconds"}
-                                startSeconds={settings.wrongAnswerTimeout}>
+                                timerDone={wrongAnswerTimerDone}
+                                isIncrement={false}
+                                numberSeconds={settings.wrongAnswerTimeout}>
                             </Timer>
-                            &nbsp;seconds
+                            {isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
                         </span>
                     }
                 </div>
@@ -180,13 +191,13 @@ export default function Game() {
                             {startCountdown && "Game starts in "}
                             {!startCountdown && isRoundStarted && "Round ends in "}
 
-                            <Timer key={isTimerActive + timerSeconds}
+                            {!isOver && <Timer key={"timerDone" + isTimerActive + timerSeconds}
                                 isActive={isTimerActive}
                                 timeIncrement={-1}
+                                isIncrement={false}
                                 timerDone={timerDone}
-                                timeFormat={"seconds"}
-                                startSeconds={timerSeconds}>
-                            </Timer>
+                                timeFormat={"seconds"}                                
+                                numberSeconds={timerSeconds} />}
                         </span>
                     </div>
 
@@ -196,9 +207,9 @@ export default function Game() {
                         correct={correct}>
                     </Answers>
 
-                    <div className="flex-container">
+                    <div className="flex-column">
                         {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
-                            <a className="app-link" href="/#" onClick={startClick}>Next</a>}
+                            <a className="app-link" href="/#" onClick={(e) => startClick(e, "start_round")}>Next</a>}
                     </div>
                 </div>
 
