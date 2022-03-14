@@ -11,26 +11,18 @@ function formatTime(seconds, timeFormat) {
     return time.substring(11, 19);
 }
 
-function getIncrementDiff(startDate) {
-    const dateDiff = (new Date() - startDate);
-    return Math.round(dateDiff / 1000)
+function getDateDiff(startDate) {
+    return Math.round((new Date() - startDate) / 1000);
 }
 
-function getDecrementDiff(startDate, numberSeconds) {
-    const dateDiff = (new Date() - startDate);
-    return Math.round(numberSeconds - (dateDiff / 1000))
-}
-
-function isDone(startDate, numberSeconds, isIncrement) {
+function isTimerComplete(startDate, numberSeconds, isIncrement) {
     if (startDate === null) {
         return false;
     }
 
-    if (isIncrement) {
-        return getIncrementDiff(startDate) >= numberSeconds
-    }
-
-    return getDecrementDiff(startDate, numberSeconds) <= 0
+    return isIncrement
+        ? getDateDiff(startDate) >= numberSeconds
+        : numberSeconds - getDateDiff(startDate) <= 0
 }
 
 export default function Timer(props) {
@@ -64,17 +56,13 @@ export default function Timer(props) {
 
         if (isActive) {
             interval = setInterval(() => {
-
-                setSeconds(isIncrement
-                    ? getIncrementDiff(startDate)
-                    : getDecrementDiff(startDate, numberSeconds))
-
+                setSeconds(isIncrement ? getDateDiff(startDate) : numberSeconds - getDateDiff(startDate))
             }, 1000);
         } else {
             clearInterval(interval);
         }
 
-        if (isDone(startDate, numberSeconds, isIncrement)) {
+        if (isTimerComplete(startDate, numberSeconds, isIncrement)) {
             timerDone && timerDone();
             const date = new Date();
             setStartDate(date.setSeconds(date.getSeconds() + 1));
@@ -85,9 +73,10 @@ export default function Timer(props) {
 
     return (
         <React.Fragment>
-            {isVisible && <span>
-                {formatTime(seconds, timeFormat)}
-            </span>}
+            {isVisible &&
+                <span>
+                    {formatTime(seconds, timeFormat)}
+                </span>}
         </React.Fragment>
     );
 }
