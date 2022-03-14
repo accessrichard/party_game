@@ -214,6 +214,10 @@ export default function Lobby() {
         return <Navigate to="/" />
     }
 
+    function onIdleTimeout() {
+        dispatch(idleTimeout());
+    }
+
     return (
         <React.Fragment>
 
@@ -264,7 +268,7 @@ export default function Lobby() {
 
 
             <span className="typography-md-text">
-                <Timer isActive={isTimerActive} timeIncrement={1} startSeconds={0}></Timer>
+                <Timer isActive={isTimerActive} onTimerCompleted={onIdleTimeout} numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800}></Timer>
             </span>
         </React.Fragment >
     );
