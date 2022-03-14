@@ -45,7 +45,9 @@ export default function Game() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
-    const [timerDates, setTimerDates] = useState(null);
+    const [timerStartDate, setTimerStartDate] = useState(null);
+
+    const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
     const startedRef = useRef(isRoundStarted);
     startedRef.current = isRoundStarted;
@@ -57,16 +59,18 @@ export default function Game() {
         dispatch(push('/'));
     }
 
-    useEffect(() => {       
-        if (!timerDates) {
+    useEffect(() => {
+        if (timerStartDate === null) {
+            setCanRetryWrongAnswer(true);
             return false;
         }
-        
-        console.log(Math.round((timerDates.beginDate - new Date() ) / 1000));   
-    }, [timerDates, isWrong]);
 
-    function getTimerDates(date) {
-        setTimerDates(date)
+        const countDownSeconds = Math.round((new Date() - timerStartDate) / 1000);
+        setCanRetryWrongAnswer(countDownSeconds - settings.wrongAnswerTimeout > 0);
+    }, [timerStartDate, isWrong, settings.wrongAnswerTimeout]);
+
+    function onTimerStartDateSet(date) {
+        setTimerStartDate(date)
     }
 
     useEffect(() => {
@@ -92,7 +96,7 @@ export default function Game() {
         startClickCallback(action, payload);
     }
 
-    function timerDone() {
+    function onTimerCompleted() {
         setIsTimerActive(false);
         startClickCallback(correct ? "start_round" : "next_question");
     }
@@ -109,7 +113,7 @@ export default function Game() {
         dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
     }, [gameChannel, dispatch, playerName])
 
-    function wrongAnswerTimerDone() {
+    function onWrongAnswerTimerCompleted() {
         //// In case round ends before timer is reset.
         if (isWrong) {
             dispatch(clearWrongAnswer());
@@ -167,16 +171,17 @@ export default function Game() {
                     <Flash flash={flash}></Flash>
 
                     {isWrong &&
-                        <span>Wrong{settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
+                        <span>Wrong{!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
+                        
                             <Timer key={"wrongAnswer" + isWrong + settings.wrongAnswerTimeout}
-                                isActive={isWrong}                                
-                                isVisible={settings.wrongAnswerTimeout > 1}
+                                isActive={isWrong}
+                                isVisible={!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1}
                                 timeFormat={"seconds"}
-                                timerDone={wrongAnswerTimerDone}
+                                onTimerCompleted={onWrongAnswerTimerCompleted}
                                 isIncrement={false}
                                 numberSeconds={settings.wrongAnswerTimeout}>
                             </Timer>
-                            {isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
+                            {!canRetryWrongAnswer && isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
                         </span>
                     }
                 </div>
@@ -191,12 +196,13 @@ export default function Game() {
                             {startCountdown && "Game starts in "}
                             {!startCountdown && isRoundStarted && "Round ends in "}
 
-                            {!isOver && <Timer key={"timerDone" + isTimerActive + timerSeconds}
+                            {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
                                 isActive={isTimerActive}
                                 timeIncrement={-1}
+                                onStartDateSet={onTimerStartDateSet}
                                 isIncrement={false}
-                                timerDone={timerDone}
-                                timeFormat={"seconds"}                                
+                                onTimerCompleted={onTimerCompleted}
+                                timeFormat={"seconds"}
                                 numberSeconds={timerSeconds} />}
                         </span>
                     </div>

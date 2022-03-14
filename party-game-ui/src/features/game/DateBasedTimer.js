@@ -32,12 +32,13 @@ export default function Timer(props) {
         isIncrement = true,
         isVisible = true,
         isActive = false,
-        timerDone,
-        timeFormat
+        onTimerCompleted,
+        timeFormat,
+        onStartDateSet
     } = props;
 
     const [seconds, setSeconds] = useState(isIncrement ? 1 : numberSeconds);
-    const [startDate, setStartDate] = useState(null)
+    const [startDate, setStartDate] = useState(null);
 
     const prevActive = usePrevious(isActive);
 
@@ -46,30 +47,31 @@ export default function Timer(props) {
         if (!prevActive && isActive) {
             const date = new Date();
             if (isIncrement) {
-                date.setSeconds(date.getSeconds() - 1)
+                date.setSeconds(date.getSeconds() - 1);
             }
 
-            setStartDate(date)
+            setStartDate(date);
+            onStartDateSet && onStartDateSet(date);
         }
 
         let interval = null;
 
         if (isActive) {
             interval = setInterval(() => {
-                setSeconds(isIncrement ? getDateDiff(startDate) : numberSeconds - getDateDiff(startDate))
+                setSeconds(isIncrement ? getDateDiff(startDate) : numberSeconds - getDateDiff(startDate));
             }, 1000);
         } else {
             clearInterval(interval);
         }
 
         if (isTimerComplete(startDate, numberSeconds, isIncrement)) {
-            timerDone && timerDone();
+            onTimerCompleted && onTimerCompleted();
             const date = new Date();
             setStartDate(date.setSeconds(date.getSeconds() + 1));
         }
 
         return () => clearInterval(interval);
-    }, [isActive, seconds, prevActive, numberSeconds, timerDone, startDate]);
+    }, [isActive, seconds, prevActive, numberSeconds, onTimerCompleted, startDate, isIncrement, onStartDateSet]);
 
     return (
         <React.Fragment>
