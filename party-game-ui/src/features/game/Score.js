@@ -47,7 +47,7 @@ function Score() {
                 ? scores.winners[0].name + " won!"
                 : scores.winners.map(x => x.name).join(" and ") + " tied!"}</div>
                 
-            <Faces isHappy={true} imgClass="small-logo spin" />
+            <Faces isHappy={true} className="small-logo spin" />
             <Scores scores={scores.scores} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
         </React.Fragment>
