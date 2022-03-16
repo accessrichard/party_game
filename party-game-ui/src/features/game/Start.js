@@ -35,35 +35,38 @@ function Create() {
     }
 
     return (
-        <div className="offset-bottom  center-screen">
-            <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
+        <div className='flex-container flex-grid'>
 
-            <form className="flex-grid flex-column form fill-space" onSubmit={handleSubmit} noValidate>
-
-                <div className="margin-bottom-5">
-                    <label className="text-align-left typography-emphasize" htmlFor="username">User Name</label>
-                    <input
-                        type="text"
-                        placeholder="User Name"
-                        id="username"
-                        required
-                        name="username"
-                        autoComplete="off"
-                        className="bordered-input max-width line-hieght-medium "
-                        onInvalid={handleChanges}
-                        onChange={handleChanges}
-
-                        onBlur={handleChanges}
-                    />
-                    <InputError className="input-error-text shake" errors={[(form.errors && form.errors.username) || ""]} />
+            <div className='flex-row flex-center'>
+                <div className='margin-20p landscape-hidden'>
+                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"/>
                 </div>
+            </div>
 
-                <input
-                    type="submit"
-                    value="Start Game"
-                    className="fill-space line-hieght-medium"
-                />
-            </form>
+            <div className='flex-row flex-1'>
+                <div className="wrapper card full-width flex-center">
+                    <h3>New Game</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="group">
+                            <input required
+                                autoComplete="off"
+                                name="username"
+                                onInvalid={handleChanges}
+                                onChange={handleChanges}
+                                onBlur={handleChanges}
+                                value={form.username}
+                            />
+                            <span className="highlight"></span>
+                            <span className="bar"></span>
+                            <label>Name</label>
+                            <InputError className="error shake" errors={[(form.errors && form.errors.username) || ""]} />
+                        </div>
+                        <div className="btn-box">
+                            <button className="btn btn-submit" type="submit">New Game</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }

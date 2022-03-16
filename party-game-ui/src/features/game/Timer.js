@@ -43,7 +43,6 @@ export default function Timer(props) {
     const prevActive = usePrevious(isActive);
 
     useEffect(() => {
-
         if (!prevActive && isActive) {
             const date = new Date();
             if (isIncrement) {

@@ -167,11 +167,10 @@ export default function Lobby() {
     }, [gameList, dispatch, name]);
 
     useEffect(() => {
-        if (!gameCode)
-        {
+        if (!gameCode) {
             return;
         }
-        
+
         if (socketStatus !== SOCKET_CONNECTED
             && socketConnect !== SOCKET_CONNECTING) {
             dispatch(socketConnect({
@@ -220,11 +219,15 @@ export default function Lobby() {
 
     return (
         <React.Fragment>
-
             <header className="full-width">
                 <IdleTimeout />
                 <div className="center-with-right-div">
-                    <span><Logo logoClass="pd-25 small-logo bouncy landscape-hidden" title="Players" titleClass="small-title landscape-hidden"></Logo></span>
+                    <span>
+                        <Logo
+                            logoClass="pd-25 small-logo bouncy landscape-hidden"
+                            title="Players"
+                            titleClass="small-title landscape-hidden" />
+                    </span>
                     <span>
                         {isGameOwner &&
                             <ul className="small-font text-align-right ul-nostyle">
@@ -243,32 +246,35 @@ export default function Lobby() {
                 <div className="typography-lg-text">Waiting for game owner to start game.</div>
             }
             {isGameOwner &&
-                <React.Fragment>
-                    <form className="flex-grid flex-column md-5 form center-screen" noValidate onSubmit={handleCreateGame}>
-
-
-                        <div className="text-align-left small-font typography-emphasize flex-row">
-                            Share link to play with friends:
-                            <div className="app-link pd-5 flex-row "><GameCodeLink gameCode={gameCode}></GameCodeLink></div>
-                        </div>
-
+                <div className="wrapper card center-65 text-align-left">
+                    <h3>Select Game</h3>
+                    <form noValidate onSubmit={handleCreateGame}>
                         <div className="flex-row">
                             <div className="flex-column margin-bottom-5 flex-center">
                                 <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
                             </div>
                         </div>
-
-                        <div className="flex-row">
-                            <div className="flex-column margin-bottom-5">
-                                <input className="line-hieght-medium" disabled={serverGamesLoading === 'pending'} type="submit" value="Start" />
+                        <div>
+                            Share link to play with friends:
+                            <div className="pd-5 flex-row ">
+                                <GameCodeLink gameCode={gameCode}></GameCodeLink>
                             </div>
                         </div>
+                        <div className="btn-box">
+                            <button className="btn btn-submit"
+                                disabled={serverGamesLoading === 'pending'}
+                                type="submit"
+                                value="Start">
+                                Start Game
+                            </button>
+                        </div>
                     </form>
-                </React.Fragment>}
-
-
+                </div>}
             <span className="typography-md-text">
-                <Timer isActive={isTimerActive} onTimerCompleted={onIdleTimeout} numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800}></Timer>
+                <Timer
+                    isActive={isTimerActive}
+                    onTimerCompleted={onIdleTimeout}
+                    numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
         </React.Fragment >
     );

@@ -8,7 +8,6 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Emphasize from '../common/Emphasize';
 import SmallText from '../common/SmallText';
 import { message } from './chatSlice';
 
@@ -77,13 +76,13 @@ const Chat = () => {
             {messages.map((message, key) =>
               <li key={key} className={`align-${message.align} pd-5`}>
                 <span className="typography-darker typography-md-text">{message.message}</span>
-                <SmallText>
+                <div className="typography-dark typography-sm-text">
                   {message.player === player ?
-                    <Emphasize>
+                    <span className="typography-emphasize">
                       {message.time} - {message.player}
-                    </Emphasize>
+                    </span>
                     : <span>{message.time} -{message.player}</span>}
-                </SmallText>
+                </div>
               </li>
             )}
           </ul>

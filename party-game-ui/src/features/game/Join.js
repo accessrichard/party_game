@@ -36,10 +36,10 @@ function Join() {
 
         let newForm = {
             ...form,
-            [name]: name  === "gameCode" ? (value || "").toUpperCase() : value,
+            [name]: name === "gameCode" ? (value || "").toUpperCase() : value,
         };
 
-        newForm.errors = { ...newForm.errors, [name]: validationMessage, gameCode: "" };
+        newForm.errors = { ...newForm.errors, [name]: validationMessage };
         setForm(newForm);
 
         if (gameCodeError) {
@@ -48,56 +48,59 @@ function Join() {
     };
 
     return (
-        <div className="offset-bottom">
-            <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
-
-            <form className="medium-width" onSubmit={handleSubmit} noValidate>
-
-                <div className="flex-column margin-bottom-5">
-                    <label className="text-align-left typography-emphasize" htmlFor="username"></label>
-                    <input
-                        placeholder="User Name"
-                        id="username"
-                        required
-                        name="username"
-                        autoComplete="off"
-                        className="bordered-input max-width line-hieght-medium"
-                        onInvalid={handleChanges}
-                        onChange={handleChanges}
-                        onBlur={handleChanges}
-                        value={form.username}
-                    >
-                    </input>
-                    <InputError className="input-error-text shake" errors={[(gameCodeError && gameCodeError.player_name) || gameCodeError]} />
-                    <InputError className="input-error-text shake" errors={[(form.errors && form.errors.username) || ""]} />
+        <div className='flex-container flex-grid'>
+            <div className='flex-row flex-center'>
+                <div className='margin-20p landscape-hidden'>
+                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
                 </div>
-                <div className="flex-column margin-bottom-5">
-                    <label className="text-align-left typography-emphasize" htmlFor="gameCode"></label>
-                    <input
-                        placeholder="Game Code"
-                        id="gameCode"
-                        required
-                        name="gameCode"
-                        autoComplete="off"
-                        className="bordered-input max-width line-hieght-medium "
-                        onInvalid={handleChanges}
-                        onChange={handleChanges}
-                        onBlur={handleChanges}
-                        value={form.gameCode}
-                    >
-                    </input>
-                    <InputError className="input-error-text shake" errors={[gameCodeError && gameCodeError.room_name]} />
-                    <InputError className="input-error-text shake" errors={[(form.errors && form.errors.gameCode) || ""]} />
+            </div>
 
-                </div>
+            <div className="wrapper card full-width flex-center">
+                <h3>Join Game</h3>
+                <form onSubmit={handleSubmit}>
+                    <div className="group">
+                        <input required
+                            autoComplete="off"
+                            name="username"
+                            onInvalid={handleChanges}
+                            onChange={handleChanges}
+                            onBlur={handleChanges}
+                            value={form.username}
+                        />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Name</label>
+                        <InputError className="error shake" errors={[(gameCodeError && gameCodeError.player_name) || gameCodeError]} />
+                        <InputError className="error shake" errors={[(form.errors && form.errors.username) || ""]} />
+
+                    </div>
+                    <div className="group">
+                        <input
+                            required
+                            autoComplete="off"
+                            name="gameCode"
+                            onInvalid={handleChanges}
+                            onChange={handleChanges}
+                            onBlur={handleChanges}
+                            value={form.gameCode}
+                        />
+                        <span className="highlight">
+                        </span>
+                        <span className="bar"></span>
+                        <label>Game Code</label>
+
+                        <InputError className="error shake" errors={[gameCodeError && gameCodeError.room_name]} />
+                        <InputError className="error shake" errors={[(form.errors && form.errors.gameCode) || ""]} />
+                    </div>
+
+                    <div className="btn-box">
+                        <button className="btn btn-submit" type="submit">Join Game</button>
+                    </div>
+                </form>
+            </div>
 
 
-                <input
-                    type="submit"
-                    value="Join Game"
-                    className="fill-space" />
 
-            </form>
 
         </div>
     );

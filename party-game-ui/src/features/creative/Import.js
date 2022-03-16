@@ -3,6 +3,7 @@ import { gameValidators, questionValidators } from './gameValidator';
 import { getErrors, validate } from '../common/validator';
 
 import Create from './Create';
+import InputError from '../common/InputError';
 import { errors as initialErrors } from './game';
 
 function mergeErrors(gameErrors, questionErrors) {
@@ -14,7 +15,6 @@ function mergeErrors(gameErrors, questionErrors) {
     if (questionErrors.length) {
         questionErrors.forEach((error) => {
 
-            console.log(error);
             if (error.question) {
                 allErrors.push(`Question #${error.index} titled ${error.question} field ${error.field}: ${error.errors}`);
             } else {
@@ -86,7 +86,6 @@ export default function Import(props) {
             setErrors([]);
 
             const gameObj = JSON.parse(game);
-
             const gameErrors = validate(gameValidators(gameObj));
             const questionErrors = validateQuestions(gameObj);
             const merged = mergeErrors(gameErrors, questionErrors)
@@ -124,34 +123,42 @@ export default function Import(props) {
         answers.forEach((ans, index) => {
             newAnswers["answer" + (index + 1)] = ans;
         });
-        
+
         return newAnswers;
     }
 
     return (
         <React.Fragment>
             {!gameForm &&
-                <div className="center-65 flex-grid flex-column  md-5 form">
-
-
-                    <label htmlFor="import-game">{props.text || "Paste your game here:"}</label>
-                    <textarea id="import-game" name="import-game" rows="15" cols="50" value={game} onChange={handleChange}>
-                    </textarea>
-                    <ul className="error">
-                        {errors.map((err, idx) => {
-                            return <li className="input-error-text red" key={idx}>{err}</li>
-                        })}
-                    </ul>
-                    {!props.hideSubmit && <div className="flex-row">
-                        <div className="flex-column md-5">
-                            <input type="submit" className="bordered-input max-width" value="Import" onClick={importGame} />
-                        </div>
+                <div className="wrapper card center-65 flex-center">
+                    <div className="group">
+                        <textarea required
+                            autoComplete="off"
+                            name="import-game"
+                            rows="15"
+                            cols="50"
+                            value={game}
+                            onChange={handleChange}
+                        />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>{props.text || "Paste your game here:"}</label>
+                        <InputError className="error shake" errors={[errors || ""]} />
+                       {false &&  <ul className="error shake">
+                            {errors.map((err, idx) => {
+                                return <li className="input-error-text red" key={idx}>{err}</li>
+                            })}
+                        </ul>}
                     </div>
+
+                    {!props.hideSubmit &&
+                        <div className="btn-box">
+                            <button className="btn btn-submit" type="Import" onClick={importGame}>Import Game</button>
+                        </div>
                     }
                 </div>
             }
             {gameForm && <Create game={gameForm}></Create>}
-
         </React.Fragment>
     );
 }

@@ -97,6 +97,10 @@ export default function Game() {
     }
 
     function onTimerCompleted() {
+        if (!isGameOwner) {
+            return;
+        }
+        
         setIsTimerActive(false);
         startClickCallback(correct ? "start_round" : "next_question");
     }
@@ -163,7 +167,6 @@ export default function Game() {
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>
                 </header>
-
                 <div className='flex-column'>
                     {isOver && <span>Game Over</span>}
                     {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
@@ -172,7 +175,7 @@ export default function Game() {
 
                     {isWrong &&
                         <span>Wrong{!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
-                        
+
                             <Timer key={"wrongAnswer" + isWrong + settings.wrongAnswerTimeout}
                                 isActive={isWrong}
                                 isVisible={!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1}
@@ -185,8 +188,6 @@ export default function Game() {
                         </span>
                     }
                 </div>
-
-
                 <div className='flex-coumn empty-space offset-phone-addressbar'>
                     <div className="question">
                         {question}

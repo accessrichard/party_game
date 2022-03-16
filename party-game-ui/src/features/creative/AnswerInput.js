@@ -1,4 +1,4 @@
-import InputField from '../common/InputField';
+import InputError from '../common/InputError';
 import { MULTIPLE_CHOICE } from '../common/questionTypes';
 import React from 'react';
 
@@ -7,92 +7,83 @@ export default function AnswerInput(props) {
     function handleChange(e) {
         props.onChange && props.onChange(e);
     };
-
-    function handleCorrectChange(e, col) {
-        props.onChange && props.onChange(e);
-    }
-
+    
     return (
         <React.Fragment>
-            <div className="flex-row">
+            <div className="flex-row margin-bottom-30">
                 <div className="flex-column md-5">
-
-                    <InputField errors={[props.errors.answer1]}
-                        label="Answer"
-                        name="answer1"
-                        required
-                        className="bordered-input max-width"
-                        id={"answer1" + props.index}
-                        value={props.value.answer1}
-                        onBlur={handleChange}
-                        onInvalid={handleChange}
-                        onChange={handleChange}>
-                    </InputField>
-                    <label htmlFor={"answer1-correct" + props.index}>
-                        <input type="checkbox" id={"answer1-correct" + props.index} onChange={(e) => handleCorrectChange(e, "correct1")} name="correct" value="1" checked={props.value.correct.toString() === "1"}></input>
-                    Correct
-                    </label>
+                    <div className="group-compact">
+                        <input required
+                            autoComplete="off"
+                            name="answer1"
+                            value={props.value.answer1}
+                            onBlur={handleChange}
+                            onInvalid={handleChange}
+                            onChange={handleChange}
+                            id={"answer1" + props.index}
+                        />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Correct Answer</label>
+                        <InputError className="error shake" errors={[props.errors.answer1]} />
+                    </div>
                 </div>
                 <div className="flex-column md-5">
-                    <InputField errors={[props.errors.answer2]}
-                        label="Answer"
-                        name="answer2"
-                        required
-                        className="bordered-input max-width"
-                        id={"answer2" + props.index}
-                        value={props.value.answer2}
-                        onBlur={handleChange}
-                        onInvalid={handleChange}
-                        onChange={handleChange}>
-                    </InputField>
-                    <label htmlFor={"answer2-correct" + props.index}>
-                        <input type="checkbox" id={"answer2-correct" + props.index} onChange={(e) => handleCorrectChange(e, "correct2")} name="correct" value="2" checked={props.value.correct.toString() === "2"}></input>
-                    Correct
-                    </label>
+                    <div className="group-compact">
+                        <input required
+                            autoComplete="off"
+                            name="answer2"
+                            value={props.value.answer2}
+                            onBlur={handleChange}
+                            onInvalid={handleChange}
+                            onChange={handleChange}
+                            id={"answer2" + props.index}
+                        />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Answer 2</label>
+                        <InputError className="error shake" errors={[props.errors.answer2]} />
+                    </div>
                 </div>
             </div>
-
-           
-                <div className="flex-row">
-                    <div className="flex-column md-5">
-
-                        <InputField errors={[props.errors.answer3]}
-                            label="Answer"
-                            name="answer3"
+            <div className="flex-row margin-bottom-30">
+                <div className="flex-column md-5">
+                    <div className="group-compact">
+                        <input
                             required={(props.value.type && props.value.type === MULTIPLE_CHOICE) || false}
-                            className="bordered-input max-width"
-                            id={"answer3" + props.index}
+                            autoComplete="off"
+                            name="answer3"
                             value={props.value.answer3}
                             onBlur={handleChange}
                             onInvalid={handleChange}
-                            onChange={handleChange}>
-                        </InputField>
-                        <label htmlFor={"answer3-correct" + props.index}>
-                            <input type="checkbox" id={"answer3-correct" + props.index} onChange={(e) => handleCorrectChange(e, "correct3")} name="correct" value="3" checked={props.value.correct.toString() === "3"}></input>
-                    Correct
-                    </label>
+                            onChange={handleChange}
+                            id={"answer3" + props.index}
+                        />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Answer 3</label>
+                        <InputError className="error shake" errors={[props.errors.answer3]} />
                     </div>
-                    <div className="flex-column md-5">
-
-                        <InputField errors={[props.errors.answer4]}
-                            label="Answer"
-                            name="answer4"
+                </div>
+                <div className="flex-column md-5">
+                    <div className="group-compact">
+                        <input
                             required={(props.value.type && props.value.type === MULTIPLE_CHOICE) || false}
-                            className="bordered-input max-width"
-                            id={"answer4" + props.index}
+                            autoComplete="off"
+                            name="answer4"
                             value={props.value.answer4}
                             onBlur={handleChange}
                             onInvalid={handleChange}
-                            onChange={handleChange}>
-                        </InputField>
-                        <label htmlFor={"answer4-correct" + props.index}>
-                            <input type="checkbox" id={"answer4-correct" + props.index} onChange={(e) => handleCorrectChange(e, "correct4")} name="correct" value="4" checked={props.value.correct.toString() === "4"}></input>
-                    Correct
-                    </label>
+                            onChange={handleChange}
+                            id={"answer4" + props.index}
+                        />
+                        <span className="highlight"></span>
+                        <span className="bar"></span>
+                        <label>Answer 4</label>
+                        <InputError className="error shake" errors={[props.errors.answer4]} />
                     </div>
-
                 </div>
-           
+            </div>
         </React.Fragment>
     );
 }

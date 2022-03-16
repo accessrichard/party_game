@@ -7,25 +7,25 @@ export default function TrueFalse(props) {
     };
 
     return (
-        <React.Fragment>            
-            <span className="small-font label-color ">&nbsp;&nbsp;Correct Answer: </span>
-                <label>
-                    <input type="radio"
-                        name={"correct-!-" + props.index}
-                        value="1"
-                        checked={props.value.toString() !== "2"}
-                        onChange={handleChange} />
+        <React.Fragment>
+            <span>&nbsp;&nbsp;Correct Answer: </span>
+            <label className='pointer-events'>
+                <input type="radio"
+                    name={"correct-!-" + props.index}
+                    value="1"
+                    checked={props.value.toString() !== "2"}
+                    onChange={handleChange} />
+                <span>True</span>
+            </label>
+            <label className='pointer-events'>
+                <input type="radio"
+                    name={"correct-!-" + props.index}
+                    value="2"
+                    checked={props.value.toString() === "2"}
+                    onChange={handleChange} />
 
-                    <span>True</span></label>
-
-                <label>
-                    <input type="radio"
-                        name={"correct-!-" + props.index}
-                        value="2"
-                        checked={props.value.toString() === "2"}
-                        onChange={handleChange} />
-
-                    <span>False</span></label>                   
+                <span>False</span>
+            </label>
         </React.Fragment>
     );
 }

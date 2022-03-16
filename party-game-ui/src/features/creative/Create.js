@@ -2,7 +2,7 @@ import { MULTIPLE_CHOICE, TRUE_FALSE } from '../common/questionTypes';
 import React, { useEffect, useRef, useState } from 'react';
 import { errors, game, question, questionErrors } from './game';
 
-import InputField from '../common/InputField';
+import InputError from '../common/InputError';
 import QuestionForm from './QuestionForm';
 import { changeGame } from '../game/gameSlice';
 import { createGame } from './creativeSlice';
@@ -86,7 +86,7 @@ function toErrorObject(e) {
 }
 
 const defaultState = {
-    ...{...game, questions: [question]},
+    ...{ ...game, questions: [question] },
     errors: errors
 }
 
@@ -107,7 +107,7 @@ export default function Create(props) {
 
 
     function handleChanges(e, index) {
-        let newForm = { ...form, ...{questions: [...form.questions]} };        
+        let newForm = { ...form, ...{ questions: [...form.questions] } };
         if (index !== undefined) {
             updateQuestion(newForm.questions, toFieldObject(e), question, index);
             updateQuestion(newForm.errors.questions, toErrorObject(e), questionErrors, index);
@@ -117,13 +117,14 @@ export default function Create(props) {
         }
 
         setForm(newForm);
+        e.preventDefault();
     }
 
     function addQuestion(e) {
-        e.preventDefault();
         if (formRef.current.reportValidity()) {
             setForm({ ...form, questions: [...form.questions, question] });
         }
+        e.preventDefault();
     }
 
     function removeQuestion(index) {
@@ -131,7 +132,7 @@ export default function Create(props) {
         newForm.questions.splice(index, 1);
         newForm.errors.questions.splice(index, 1);
         setForm(newForm);
-    }  
+    }
 
     function downloadGame(e) {
         e.preventDefault();
@@ -148,7 +149,7 @@ export default function Create(props) {
         if (!formRef.current.reportValidity()) {
             return;
         }
-        const serverSideGame = toServerSideGame(form);        
+        const serverSideGame = toServerSideGame(form);
         dispatch(createGame({ game: serverSideGame, redirect: true }));
         dispatch(changeGame(serverSideGame.name));
 
@@ -164,51 +165,57 @@ export default function Create(props) {
 
     return (
         <React.Fragment>
-            <form noValidate ref={formRef} className="flex-grid flex-column  md-5 form center-65">
-                <div className="empty-space">
-                    <div className="flex-row">
-                        <div className="flex-column md-5">
-                            <InputField
-                                label="Game Name"
-                                id="name"
-                                required
-                                name="name"
-                                value={form.name}
-                                onInvalid={handleChanges}
-                                onChange={handleChanges}
-                                onBlur={handleChanges}
-                                errors={[(form.errors && form.errors.name) || ""]}>
-                            </InputField>
+            <div className="wrapper center-65 flex-center flex-grid">
+                <form ref={formRef}>
+                    <div className="empty-space">
+                        <div className="flex-row">
+                            <div className="flex-column card">
+                                <div className="group-compact">
+                                    <input required
+                                        autoComplete="off"
+                                        name="name"
+                                        onInvalid={handleChanges}
+                                        onChange={handleChanges}
+                                        onBlur={handleChanges}
+                                        value={form.name}
+                                    />
+                                    <span className="highlight"></span>
+                                    <span className="bar"></span>
+                                    <label>Game Name</label>
+                                    <InputError className="error shake" errors={[(form.errors && form.errors.name) || ""]} />
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {form.questions.map((elem, index) => (
-                    <div key={index} className={index % 2 === 0 ? "empty-space list-odd" : "empty-space even list-even"}>
-                        <QuestionForm
-                            errors={form.errors}
-                            index={index}
-                            type={getType(index)}
-                            value={form.questions[index]}
-                            onInvalid={(e) => handleChanges(e, index)}
-                            onBlur={(e) => handleChanges(e, index)}
-                            onChange={(e) => handleChanges(e, index)}>
-                        </QuestionForm>
-
-                        {(index !== 0 && index === form.questions.length - 1) && <div className="flex-row">
-                            <div className="flex-column md-5 flex-right small-font ">
-                                <input type="submit" value={"Delete Question " + (index + 1)} onClick={() => removeQuestion(index)} />
-                            </div>
-                        </div>}
-
+                    {form.questions.map((elem, index) => (
+                        <div key={index} className={index % 2 === 0 ? "card  list-odd" : "card list-even"}>
+                            {(index > 0 || (index === 0 && form.questions.length > 1)) &&
+                                <button className="btn-nostyle close" onClick={() => removeQuestion(index)}>&times;</button>
+                            }
+                            <QuestionForm
+                                errors={form.errors}
+                                index={index}
+                                type={getType(index)}
+                                value={form.questions[index]}
+                                onInvalid={(e) => handleChanges(e, index)}
+                                onBlur={(e) => handleChanges(e, index)}
+                                onChange={(e) => handleChanges(e, index)}>
+                            </QuestionForm>
+                        </div>
+                    ))}
+                    <div className="flex-row flex-center">
+                        <div className="btn-box pd-5-lr">
+                            <button className="btn btn-submit" type="submit" onClick={addQuestion}>Add Question</button>
+                        </div>
+                        <div className="btn-box pd-5-lr">
+                            <button className="btn btn-submit" type="submit" onClick={downloadGame}>Download Game</button>
+                        </div>
+                        <div className="btn-box pd-5-lr">
+                            <button className="btn btn-submit" type="submit" onClick={play}>Play</button>
+                        </div>
                     </div>
-                ))}
-
-                <div className="flex-row flex-center">
-                    <input type="submit" className="bordered-input md-5" value="Add Question" onClick={addQuestion} />
-                    <input type="submit" className="bordered-input md-5" value="Download Game" onClick={downloadGame} />
-                    <input type="submit" className="bordered-input md-5" value="Play" onClick={play} />
-                </div>
-            </form>
+                </form>
+            </div>
         </React.Fragment>
     );
 }
