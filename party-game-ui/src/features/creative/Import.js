@@ -130,7 +130,7 @@ export default function Import(props) {
     return (
         <React.Fragment>
             {!gameForm &&
-                <div className="wrapper card center-65 flex-center">
+                <div className="wrapper card center-65 margin-25px flex-center">
                     <div className="group">
                         <textarea required
                             autoComplete="off"

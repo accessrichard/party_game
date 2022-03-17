@@ -6,11 +6,11 @@ const Scores = (props) => {
     return (
         <React.Fragment>
             <h3>Score</h3>
-            <ul className="ul-nostyle typography-left-align typography-sm-text2 ">
+            <ul className="ul-nostyle text-align-left medium-font">
                 {scores.map((score, key) =>
                     <li key={key} className="pd-5">
-                        <div><span className="typography-emphasize">Player:</span> {score && score.name}</div>
-                        <div><span className="typography-emphasize">Score:</span> {score && score.score}</div>
+                        <div><span className="bolder">Player:</span> {score && score.name}</div>
+                        <div><span className="bolder">Score:</span> {score && score.score}</div>
                     </li>
                 )}
             </ul>

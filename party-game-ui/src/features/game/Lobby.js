@@ -24,13 +24,13 @@ import {
 import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
 import IdleTimeout from '../common/IdleTimeout';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
-import Players from './Players';
 import Timer from './Timer';
 import { push } from "redux-first-history";
 
@@ -225,57 +225,65 @@ export default function Lobby() {
                     <span>
                         <Logo
                             logoClass="pd-25 small-logo bouncy landscape-hidden"
-                            title="Players"
-                            titleClass="small-title landscape-hidden" />
+                            title="Buzz Games"
+                            titleClass="larger-title landscape-hidden" />
                     </span>
-                    <span>
-                        {isGameOwner &&
-                            <ul className="small-font text-align-right ul-nostyle">
-                                <li><NavLink className="app-link" to="/settings" >Settings</NavLink></li>
-                                <li><NavLink className="app-link" to="/import">Import</NavLink></li>
-                                <li><NavLink className="app-link" to="/create">Create Your Own</NavLink></li>
-                            </ul>}
-                    </span>
+
                 </div>
             </header>
-            <div className="players-wrapper scroll-flex">
-                <Players></Players>
-            </div>
 
-            {!isGameOwner &&
-                <div className="typography-lg-text">Waiting for game owner to start game.</div>
-            }
-            {isGameOwner &&
-                <div className="wrapper card center-65 text-align-left">
-                    <h3>Select Game</h3>
-                    <form noValidate onSubmit={handleCreateGame}>
-                        <div className="flex-row">
-                            <div className="flex-column margin-bottom-5 flex-center">
-                                <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
+            <div className='margin-bottom-30 center-65'>
+
+                {!isGameOwner &&
+                    <div className="medium-font">Waiting for game owner to start game.</div>
+                }
+
+                <span className="font-14px">
+                    <Timer
+                        isActive={isTimerActive}
+                        onTimerCompleted={onIdleTimeout}
+                        numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
+                </span>
+
+                {isGameOwner &&
+                    <div className="wrapper card text-align-left">
+                        <h3>Select Game</h3>
+                        <form noValidate onSubmit={handleCreateGame}>
+                            <div className="flex-row">
+                                <div className="flex-column flex-center">
+                                    <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
+                                </div>
                             </div>
-                        </div>
+                            <div>
+                                Share link to play with friends:
+                                <div className="pd-5 flex-row ">
+                                    <GameCodeLink gameCode={gameCode}></GameCodeLink>
+                                </div>
+                            </div>
+                            <div className="btn-box">
+                                <button className="btn btn-submit"
+                                    disabled={serverGamesLoading === 'pending'}
+                                    type="submit"
+                                    value="Start">
+                                    Start Game
+                                </button>
+                            </div>
+                        </form>
                         <div>
-                            Share link to play with friends:
-                            <div className="pd-5 flex-row ">
-                                <GameCodeLink gameCode={gameCode}></GameCodeLink>
-                            </div>
+                            <span>
+                                {isGameOwner &&
+                                    <span className="flex-row flex-center">
+                                        <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
+                                        <NavLink className="pd-5-lr" to="/import">Import</NavLink>
+                                        <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
+                                    </span>}
+                            </span>
+
                         </div>
-                        <div className="btn-box">
-                            <button className="btn btn-submit"
-                                disabled={serverGamesLoading === 'pending'}
-                                type="submit"
-                                value="Start">
-                                Start Game
-                            </button>
-                        </div>
-                    </form>
-                </div>}
-            <span className="typography-md-text">
-                <Timer
-                    isActive={isTimerActive}
-                    onTimerCompleted={onIdleTimeout}
-                    numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
-            </span>
+                    </div>}
+            </div>
+            <Chat />
+
         </React.Fragment >
     );
 }

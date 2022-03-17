@@ -8,7 +8,7 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 
-import SmallText from '../common/SmallText';
+import Players from '../game/Players';
 import { message } from './chatSlice';
 
 const onEvents = (topic) => [
@@ -22,6 +22,8 @@ const onEvents = (topic) => [
 const Chat = () => {
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.messages);
+
+
   const chatBottomRef = useRef(null);
   const player = useSelector(state => state.game.playerName);
   const gameCode = useSelector(state => state.game.gameCode);
@@ -70,33 +72,44 @@ const Chat = () => {
 
   return (
     <React.Fragment>
-      <div className="card card-50vh flex-container scroll-flex">
-        <div className="flex-1 chat-container hidden-overflow" ref={chatBottomRef}>
-          <ul className="ul-nostyle">
-            {messages.map((message, key) =>
-              <li key={key} className={`align-${message.align} pd-5`}>
-                <span className="typography-darker typography-md-text">{message.message}</span>
-                <div className="typography-dark typography-sm-text">
-                  {message.player === player ?
-                    <span className="typography-emphasize">
-                      {message.time} - {message.player}
-                    </span>
-                    : <span>{message.time} -{message.player}</span>}
+
+      <div className='flex-container card center-65'>
+        <div className='flex-row scroll-flex'>
+          <div className='flex-column portrait card-30h sidebar card-light margin-right'>
+            <h3>Players</h3>
+            <Players />
+          </div>
+
+          <div className='flex-column portrait card-light card-30h scroll-flex hidden-overflow'>
+            <div className="chat-container" ref={chatBottomRef}>
+              <h3>Chat</h3>
+              <ul className="ul-nostyle">
+                {messages.map((message, key) =>
+                  <li key={key} className={`text-align-${message.align}`}>
+                    <span className={message.player === player ? "" : "bolder"}>{message.message}</span>
+                    <div className="smallest-font">
+                      <span>{message.time} - {message.player === player ? "Me" : player}</span>
+                    </div>
+                  </li>
+                )}
+              </ul>
+
+              <form className="medium-width pd-0 md-0" noValidate onSubmit={(e) => e.preventDefault()}>
+                <div className="chat-group">
+                  <input
+                    autoComplete="off"
+                    name="chat-input"
+                    value={text}
+                    onChange={(event) => setText(event.target.value)}
+                    onKeyPress={submitOnEnter}
+                  />
+                  <span className="highlight"></span>
+                  <span className="bar"></span>
+                  <label>Send Message</label>
                 </div>
-              </li>
-            )}
-          </ul>
-          <form className="medium-width pd-0 md-0" onSubmit={(e) => e.preventDefault()}>
-            <input type="text"
-              className="chat-input"
-              label="Type Something"
-              autoComplete="off"
-              placeholder="Send message"
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              onKeyPress={submitOnEnter}
-            />
-          </form>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </React.Fragment>

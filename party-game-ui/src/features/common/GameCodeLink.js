@@ -11,7 +11,7 @@ const GameCodeLink = (props) => {
 
     return (
         <React.Fragment>
-            <a className="link" href={link(gameCode)}>{link(gameCode)}</a>
+            <a href={link(gameCode)}>{link(gameCode)}</a>
         </React.Fragment >
     );
 }

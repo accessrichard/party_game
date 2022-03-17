@@ -193,7 +193,7 @@ export default function Game() {
                         {question}
                     </div>
                     <div>
-                        <span className="typography-md-text">
+                        <span className="font-14px">
                             {startCountdown && "Game starts in "}
                             {!startCountdown && isRoundStarted && "Round ends in "}
 

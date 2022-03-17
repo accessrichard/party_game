@@ -33,7 +33,7 @@ function Settings() {
 
     return (
         <div className="offset-bottom center-65">
-            <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
+            <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
             <div className="wrapper card flex-center">
                 <form onSubmit={handleSubmit} noValidate>
                     <h3>Settings</h3>

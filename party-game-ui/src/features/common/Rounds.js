@@ -6,7 +6,7 @@ const Rounds = (props) => {
     return (
         <React.Fragment>
             <h3>Rounds</h3>
-            <ul className="ul-nostyle typography-left-align">
+            <ul className="ul-nostyle text-align-left">
                 {rounds.map((round, key) =>
                     <li key={key} className="pd-5">
                         <div>Round Winner: {round && round.winner}</div>

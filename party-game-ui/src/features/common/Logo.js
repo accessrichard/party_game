@@ -12,7 +12,7 @@ const Logo = (props) => {
                     <div className={titleClass}>{title || "Buzz Games"}</div>
                 }
                 {showSubtitle &&
-                    <div className="tiny-title text-align-right fade-in">By Buzztastic Games</div>
+                    <div className="half-size-title text-align-right fade-in">By Buzztastic Games</div>
                 }
             </div>
         </React.Fragment >

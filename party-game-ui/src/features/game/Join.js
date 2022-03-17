@@ -51,7 +51,7 @@ function Join() {
         <div className='flex-container flex-grid'>
             <div className='flex-row flex-center'>
                 <div className='margin-20p landscape-hidden'>
-                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"></Logo>
+                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
                 </div>
             </div>
 

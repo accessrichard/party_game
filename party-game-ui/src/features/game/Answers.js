@@ -16,7 +16,7 @@ export default function Answers(props) {
                         <input
                             type="submit"
                             name="group1"
-                            className={`fill-space ${correct === ans ? "correct" : ""}`}
+                            className={`full-height full-width ${correct === ans ? "correct" : ""}`}
                             disabled={isDisabled ? "disabled" : ""}
                             value={ans}
                             autoComplete="off"

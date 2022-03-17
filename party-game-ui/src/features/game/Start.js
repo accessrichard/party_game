@@ -39,7 +39,7 @@ function Create() {
 
             <div className='flex-row flex-center'>
                 <div className='margin-20p landscape-hidden'>
-                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="small-title"/>
+                    <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"/>
                 </div>
             </div>
 
