@@ -106,7 +106,7 @@ export default function Create(props) {
     }, [props.game]);
 
 
-    function handleChanges(e, index) {
+    function handleChanges(e, index) {      
         let newForm = { ...form, ...{ questions: [...form.questions] } };
         if (index !== undefined) {
             updateQuestion(newForm.questions, toFieldObject(e), question, index);
@@ -116,8 +116,11 @@ export default function Create(props) {
             newForm.errors[e.target.name] = e.target.validationMessage;
         }
 
-        setForm(newForm);
-        e.preventDefault();
+        setForm(newForm);      
+          
+        if (e.type === 'invalid'){
+            e.preventDefault();
+        }
     }
 
     function addQuestion(e) {
@@ -177,7 +180,7 @@ export default function Create(props) {
                                         onInvalid={handleChanges}
                                         onChange={handleChanges}
                                         onBlur={handleChanges}
-                                        value={form.name}
+                                        value={form.name}                                        
                                     />
                                     <span className="highlight"></span>
                                     <span className="bar"></span>
@@ -188,7 +191,7 @@ export default function Create(props) {
                         </div>
                     </div>
                     {form.questions.map((elem, index) => (
-                        <div key={index} className={index % 2 === 0 ? "card  list-odd" : "card list-even"}>
+                        <div key={index} className="card  margin-bottom-30">
                             {(index > 0 || (index === 0 && form.questions.length > 1)) &&
                                 <button className="btn-nostyle close" onClick={() => removeQuestion(index)}>&times;</button>
                             }

@@ -6,7 +6,7 @@ export default function TypeRadio(props) {
 
     const [radio, setRadio] = useState(props.value || MULTIPLE_CHOICE);
 
-    function onChange(e) {
+    function onChange(e) {        
         setRadio(e.target.value);
         props.onChange && props.onChange(e);
     }

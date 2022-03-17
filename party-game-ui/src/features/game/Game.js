@@ -12,6 +12,7 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { history } from '../store';
 import { push } from "redux-first-history";
+import sprite from '../../img/face_sprite.svg';
 
 const sendEvent = (topic, channelData, action) => (
     {
@@ -162,6 +163,7 @@ export default function Game() {
 
     return (
         <React.Fragment>
+            <link rel="prefetch" href={sprite} as="image" type="image/svg+xml"/>
             <IdleTimeout />
             <div className="full-width full-height flex-container flex-column">
                 <header>
