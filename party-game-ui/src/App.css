@@ -622,7 +622,7 @@ input:not([type='checkbox']):not([type='radio']):focus, textarea:focus, select:f
   outline: none;
 }
 
-input:not([type='checkbox']):not([type='radio']):focus~label, textarea:focus~label, input:valid~label, textarea:valid~label, select:valid~label {
+input:not([type='checkbox']):not([type='radio']):focus~label, textarea:focus~label, input:valid~label, input:out-of-range~label, textarea:valid~label, select:valid~label {
   top: -14px;
   font-size: 12px;
   color: #2196f3;

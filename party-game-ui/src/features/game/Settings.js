@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import InputError from '../common/InputError';
 import Logo from '../common/Logo';
 import { push } from "redux-first-history";
 import { updateSettings } from './gameSlice';
@@ -9,27 +10,35 @@ function Settings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.game);
-    const [form, setForm] = useState({ ...settings });
+    const [form, setForm] = useState({ ...settings, errors: {
+        rounds: "",
+        questionTime: "",
+        nextQuestionTime: "",
+        wrongAnswerTimeout: ""
+
+    } });
 
     function handleSubmit(e) {
-        if (e.target.reportValidity()) {
+        e.preventDefault();
+
+        if (e.target.checkValidity()) {
             dispatch(updateSettings(form));
             dispatch(push("/lobby"));
         }
-        e.preventDefault();
     }
 
-    function onNumberChange(e) {
+    function onNumberChange(e) {                
         e.preventDefault();
-        const { name, value } = e.target;
-
+        const { name, value, validationMessage } = e.target;
         let newForm = {
             ...form,
-            [name]: parseInt(value, 10) || ""
+            [name]: parseInt(value, 10) || "",
+            errors: { ...form.errors, [name]: validationMessage }
         };
 
         setForm(newForm);
     }
+
 
     return (
         <div className="offset-bottom center-65">
@@ -41,15 +50,17 @@ function Settings() {
                         <input required
                             autoComplete="off"
                             name="rounds"
-                            type="number"
+                            type="number"                            
                             min="1"
                             max="100"
                             value={form.rounds}
-                            onChange={onNumberChange}
+                            onChange={onNumberChange}                                                        
                         />
                         <span className="highlight"></span>
                         <span className="bar"></span>
                         <label>Number Of Rounds:</label>
+                        <InputError className="error shake" errors={[form.errors.rounds]} />
+
                     </div>
                     <div className="group">
                         <input required
@@ -64,6 +75,7 @@ function Settings() {
                         <span className="highlight"></span>
                         <span className="bar"></span>
                         <label>Question Time (seconds):</label>
+                        <InputError className="error shake" errors={[form.errors.questionTime]} />
                     </div>
                     <div className="group">
                         <input required
@@ -78,6 +90,7 @@ function Settings() {
                         <span className="highlight"></span>
                         <span className="bar"></span>
                         <label>Next Question Time (seconds):</label>
+                        <InputError className="error shake" errors={[form.errors.nextQuestionTime]} />
                     </div>
                     <div className="group">
                         <input required
@@ -92,6 +105,7 @@ function Settings() {
                         <span className="highlight"></span>
                         <span className="bar"></span>
                         <label>Wrong Answer Timeout (seconds):</label>
+                        <InputError className="error shake" errors={[form.errors.wrongAnswerTimeout]} />
                     </div>
                     <div className="btn-box">
                         <button className="btn btn-submit" type="submit">Save</button>
