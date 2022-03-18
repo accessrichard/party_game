@@ -160,14 +160,14 @@ body {
   justify-content: center;
 }
 
-
-.flex-column.sidebar {
-  flex-grow: .4;
+.chat-container {
+  overflow: scroll;
+  height: 200px;
 }
 
-.chat-container {
-  margin: 0 0 26px 13px;
-  padding-right: 10px;
+.player-container {
+  overflow: scroll;
+  height: 275px;
 }
 
 .flex-container {
@@ -177,6 +177,35 @@ body {
 .flex-grid {
   display: flex;
   flex-wrap: wrap;
+}
+
+.border-box {
+  box-sizing: border-box;
+}
+
+.flex-item {
+  padding:10px;
+  box-sizing: border-box;  
+  display:flex;
+}
+
+.flex-2-col{
+  flex: 50%;
+  height: 400px;
+}
+
+.flex-2-col-sidebar {
+  flex: 25%;
+  height: 400px;
+}
+
+.flex-2-col-main {
+  flex: 75%;
+  height: 400px;
+}
+
+.flex-item .item {
+  flex: 1 1 auto;
 }
 
 .flex-1 {
@@ -293,13 +322,16 @@ body {
   .popup {
     width: 70%;
   }
+
+  .flex-2-col {
+    flex: 100%;
+  }
 }
 
 /* Desktop ----------- */
 @media screen and (min-device-width: 400px) {
   .card {
     padding: 20px 20px;
-    margin: 10px 0 0 0;
     position: relative;
   }
 
@@ -316,7 +348,7 @@ body {
   }
 
   .center-65 {
-    width: 55%;
+    width: 65%;
     margin-left: auto;
     margin-right: auto;
     max-width: 1000px;
@@ -329,8 +361,8 @@ body {
     width: 65%;
   }
 
-  .margin-port-land {
-    margin: 0 10px 0 0;
+  .flex-2-col {
+    flex: 100%;
   }
 }
 
@@ -352,7 +384,6 @@ body {
 
   .card {
     padding: 1px 30px;
-    margin: 10px 0 0 0;
     position: relative;
   }
 
@@ -373,15 +404,15 @@ body {
     margin-right: auto;
   }
 
-  .margin-port-land {
-    margin: 0 10px 0 0;
-  }
-
   .chat-group {
     position: absolute;
     bottom: 15px;
     margin: 0 0;
     width: 58%;
+  }
+
+  .flex-2-col {
+    flex: 100%;
   }
 }
 
@@ -391,13 +422,8 @@ body {
     width: 80%;
   }
 
-  .card-sm-fixed-height {    
-    overflow: none;
-    height: 175px;
-  }
-
   .center-65 {
-    width: 90%;
+    width: 97%;
   }
 
   .box {
@@ -410,14 +436,9 @@ body {
 
   .card {
     padding: 5px 15px;
-    margin: 10px;
     position: relative;
   }
-
-  .margin-port-land {
-    margin: 0 0 12px 0;
-  }
-
+  
   .chat-group {
     position: absolute;
     bottom: 15px;
@@ -430,6 +451,9 @@ body {
     font-size: 2.5em;
     font-weight: bold;
     margin: .5vm;
+  }
+  .flex-2-col {
+    flex: 100%;
   }
 }
 
@@ -749,16 +773,6 @@ label.pointer-events {
   font: inherit;
   cursor: pointer;
   outline: inherit;
-}
-
-.card-md-fixed-height {
-  height: 375px;
-  overflow: none;
-}
-
-.card-light {
-  background: #e8e8e8;
-  border-radius: 9px;
 }
 
 .shake {

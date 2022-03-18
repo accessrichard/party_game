@@ -73,16 +73,19 @@ const Chat = () => {
   return (
     <React.Fragment>
 
-      <div className='flex-container card center-65'>
-        <div className='flex-row scroll-flex'>
-          <div className='flex-column portrait card-sm-fixed-height sidebar card-light margin-port-land'>
+      <div className='flex-grid border-box center-65'>
+        <div className='flex-item flex-2-col-sidebar '>
+          <div className='item card '>
             <h3>Players</h3>
-            <Players />
+            <div className='player-container'>
+              <Players />
+            </div>
           </div>
-
-          <div className='flex-column portrait card-light card-md-fixed-height scroll-flex hidden-overflow'>
+        </div>
+        <div className='flex-item flex-2-col-main'>
+          <div className='item card'>
+            <h3>Chat</h3>
             <div className="chat-container" ref={chatBottomRef}>
-              <h3>Chat</h3>
               <ul className="ul-nostyle">
                 {messages.map((message, key) =>
                   <li key={key} className={`text-align-${message.align}`}>
@@ -93,9 +96,10 @@ const Chat = () => {
                   </li>
                 )}
               </ul>
-
-              <form className="medium-width pd-0 md-0" noValidate onSubmit={(e) => e.preventDefault()}>
-                <div className="chat-group">
+            </div>
+            <div>
+              <form noValidate onSubmit={(e) => e.preventDefault()}>
+                <div className="group">
                   <input
                     autoComplete="off"
                     name="chat-input"
@@ -112,7 +116,7 @@ const Chat = () => {
           </div>
         </div>
       </div>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
 
