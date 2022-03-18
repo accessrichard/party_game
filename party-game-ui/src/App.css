@@ -295,21 +295,23 @@ body {
 
   .large-title {
     display: block;
-    font-size: 3em;
+    font-size: 2.5em;
     font-weight: bold;
     margin: .5vm;
   }
 }
 
-.margin-left-10 {
-  margin-left: 10px;
-}
-
-@media screen and (min-width: 400px) {
+/* Desktop ----------- */
+@media screen and (min-device-width: 400px) {
   .card {
     padding: 20px 20px;
     margin: 10px 0 0 0;
     position: relative;
+  }
+
+  .card-md-fixed-auto-height {
+    height: 375px;
+    overflow: none;
   }
 
   .large-title {
@@ -342,6 +344,11 @@ body {
 @media (orientation: landscape) and (max-height: 600px) {
   .center-screen {
     width: 96%;
+  }
+
+  .card-md-fixed-auto-height {
+    height: 375px;
+    overflow: none;
   }
 
   .card-slim {
@@ -378,7 +385,7 @@ body {
 
   .chat-group {
     position: absolute;
-    bottom: 25px;
+    bottom: 15px;
     margin: 0 0;
     width: 58%;
   }
@@ -388,6 +395,11 @@ body {
 @media (orientation: portrait) and (max-width: 500px) {
   .center-screen {
     width: 80%;
+  }
+
+  .card-sm-fixed-height {    
+    overflow: none;
+    height: 175px;
   }
 
   .center-65 {
@@ -414,7 +426,7 @@ body {
 
   .chat-group {
     position: absolute;
-    bottom: 25px;
+    bottom: 15px;
     margin: 0 0;
     width: 83%;
   }
@@ -725,7 +737,7 @@ label.pointer-events {
 
 .btn-box {
   text-align: center;
-  margin: 50px 0;
+  margin: 10px 0;
 }
 
 .btn-nostyle {
@@ -738,7 +750,7 @@ label.pointer-events {
   outline: inherit;
 }
 
-.card-30h {
+.card-md-fixed-height {
   height: 375px;
   overflow: none;
 }

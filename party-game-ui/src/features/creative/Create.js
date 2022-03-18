@@ -172,7 +172,7 @@ export default function Create(props) {
                 <form ref={formRef}>
                     <div className="empty-space">
                         <div className="flex-row">
-                            <div className="flex-column card">
+                            <div className="flex-column card pd-25">
                                 <div className="group-compact">
                                     <input required
                                         autoComplete="off"
@@ -191,7 +191,7 @@ export default function Create(props) {
                         </div>
                     </div>
                     {form.questions.map((elem, index) => (
-                        <div key={index} className="card  margin-bottom-30">
+                        <div key={index} className="card  margin-bottom-30 pd-25">
                             {(index > 0 || (index === 0 && form.questions.length > 1)) &&
                                 <button className="btn-nostyle close" onClick={() => removeQuestion(index)}>&times;</button>
                             }

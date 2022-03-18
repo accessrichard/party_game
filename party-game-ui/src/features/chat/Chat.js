@@ -75,12 +75,12 @@ const Chat = () => {
 
       <div className='flex-container card center-65'>
         <div className='flex-row scroll-flex'>
-          <div className='flex-column portrait card-30h sidebar card-light margin-port-land'>
+          <div className='flex-column portrait card-sm-fixed-height sidebar card-light margin-port-land'>
             <h3>Players</h3>
             <Players />
           </div>
 
-          <div className='flex-column portrait card-light card-30h scroll-flex hidden-overflow'>
+          <div className='flex-column portrait card-light card-md-fixed-height scroll-flex hidden-overflow'>
             <div className="chat-container" ref={chatBottomRef}>
               <h3>Chat</h3>
               <ul className="ul-nostyle">
