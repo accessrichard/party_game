@@ -14,7 +14,7 @@ function Landing() {
     }, [dispatch])
 
     return (
-        <div className='flex-center app'>
+        <div className='flex-center app pd-5-lr'>
             <Logo logoClass="app-logo bouncy" showSubtitle={true} titleClass="large-title slidein-right" />
             <p className="slidein-left">
                 Create&nbsp;

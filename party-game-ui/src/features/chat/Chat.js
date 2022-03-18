@@ -75,7 +75,7 @@ const Chat = () => {
 
       <div className='flex-container card center-65'>
         <div className='flex-row scroll-flex'>
-          <div className='flex-column portrait card-30h sidebar card-light margin-right'>
+          <div className='flex-column portrait card-30h sidebar card-light margin-port-land'>
             <h3>Players</h3>
             <Players />
           </div>

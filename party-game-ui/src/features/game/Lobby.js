@@ -232,56 +232,53 @@ export default function Lobby() {
                 </div>
             </header>
 
-            <div className='margin-bottom-30 center-65'>
+            {!isGameOwner &&
+                <div className="medium-font">Waiting for game owner to start game.</div>
+            }
 
-                {!isGameOwner &&
-                    <div className="medium-font">Waiting for game owner to start game.</div>
-                }
+            <span className="font-14px">
+                <Timer
+                    isActive={isTimerActive}
+                    onTimerCompleted={onIdleTimeout}
+                    numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
+            </span>
 
-                <span className="font-14px">
-                    <Timer
-                        isActive={isTimerActive}
-                        onTimerCompleted={onIdleTimeout}
-                        numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
-                </span>
-
-                {isGameOwner &&
-                    <div className="wrapper card text-align-left">
-                        <h3>Select Game</h3>
-                        <form noValidate onSubmit={handleCreateGame}>
-                            <div className="flex-row">
-                                <div className="flex-column flex-center">
-                                    <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
-                                </div>
+            {isGameOwner &&
+                <div className="wrapper card text-align-left margin-bottom-30 center-65">
+                    <h3>Select Game</h3>
+                    <form noValidate onSubmit={handleCreateGame}>
+                        <div className="flex-row">
+                            <div className="flex-column flex-center">
+                                <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
                             </div>
-                            <div>
-                                Share link to play with friends:
-                                <div className="pd-5 flex-row ">
-                                    <GameCodeLink gameCode={gameCode}></GameCodeLink>
-                                </div>
-                            </div>
-                            <div className="btn-box">
-                                <button className="btn btn-submit"
-                                    disabled={serverGamesLoading === 'pending'}
-                                    type="submit"
-                                    value="Start">
-                                    Start Game
-                                </button>
-                            </div>
-                        </form>
-                        <div>
-                            <span>
-                                {isGameOwner &&
-                                    <span className="flex-row flex-center">
-                                        <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
-                                        <NavLink className="pd-5-lr" to="/import">Import</NavLink>
-                                        <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
-                                    </span>}
-                            </span>
-
                         </div>
-                    </div>}
-            </div>
+                        <div>
+                            Share link to play with friends:
+                            <div className="pd-5 flex-row ">
+                                <GameCodeLink gameCode={gameCode}></GameCodeLink>
+                            </div>
+                        </div>
+                        <div className="btn-box">
+                            <button className="btn btn-submit"
+                                disabled={serverGamesLoading === 'pending'}
+                                type="submit"
+                                value="Start">
+                                Start Game
+                            </button>
+                        </div>
+                    </form>
+                    <div>
+                        <span>
+                            {isGameOwner &&
+                                <span className="flex-row flex-center">
+                                    <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
+                                    <NavLink className="pd-5-lr" to="/import">Import</NavLink>
+                                    <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
+                                </span>}
+                        </span>
+
+                    </div>
+                </div>}
             <Chat />
 
         </React.Fragment >
