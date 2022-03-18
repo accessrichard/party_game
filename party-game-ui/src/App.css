@@ -292,13 +292,6 @@ body {
   .popup {
     width: 70%;
   }
-
-  .large-title {
-    display: block;
-    font-size: 2.5em;
-    font-weight: bold;
-    margin: .5vm;
-  }
 }
 
 /* Desktop ----------- */
@@ -429,6 +422,13 @@ body {
     bottom: 15px;
     margin: 0 0;
     width: 83%;
+  }
+
+  .large-title {
+    display: block;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: .5vm;
   }
 }
 
