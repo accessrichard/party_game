@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { clearWrongAnswer, setFlash } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -13,6 +13,7 @@ import {
 import { history } from '../store';
 import { push } from "redux-first-history";
 import sprite from '../../img/face_sprite.svg';
+import usePrevious from '../usePrevious';
 
 const sendEvent = (topic, channelData, action) => (
     {
@@ -49,12 +50,8 @@ export default function Game() {
     const [timerStartDate, setTimerStartDate] = useState(null);
 
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
-
-    const startedRef = useRef(isRoundStarted);
-    startedRef.current = isRoundStarted;
-
-    const roundRef = useRef(round);
-    roundRef.current = round;
+   
+    const prevRound = usePrevious(round);
 
     if (!gameChannel) {
         dispatch(push('/'));
@@ -83,14 +80,18 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
 
-    useEffect(() => {
-        if (isRoundStarted) {
+    useEffect(() => {        
+        if (isRoundStarted && round === prevRound) {            
             setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
+        } else if (round !== prevRound && isRoundStarted){
+            /// Force reset of timer when round changes
+            /// since timers can go out of sync across players.
+            setIsTimerActive(new Date());            
         }
 
         return () => { setIsTimerActive(false); };
-    }, [isRoundStarted, isTimerActive, settings.questionTime]);
+    }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);
 
     function startClick(e, action, payload = {}) {
         e && e.preventDefault();
@@ -200,7 +201,7 @@ export default function Game() {
                             {!startCountdown && isRoundStarted && "Round ends in "}
 
                             {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
-                                isActive={isTimerActive}
+                                isActive={isTimerActive}                                
                                 timeIncrement={-1}
                                 onStartDateSet={onTimerStartDateSet}
                                 isIncrement={false}

@@ -278,13 +278,11 @@ export default function Lobby() {
                                             <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
                                         </span>}
                                 </span>
-
                             </div>
                         </div>
                     </div>
                 </div>}
             <Chat />
-
         </React.Fragment >
     );
 }

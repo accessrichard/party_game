@@ -89,7 +89,7 @@ const Chat = () => {
               <ul className="ul-nostyle">
                 {messages.map((message, key) =>
                   <li key={key} className={`text-align-${message.align}`}>
-                    <span className={message.player === player ? "" : "bolder"}>{message.message}</span>
+                    <span className="bolder">{message.message}</span>
                     <div className="smallest-font">
                       <span>{message.time} - {message.player === player ? "Me" : player}</span>
                     </div>
