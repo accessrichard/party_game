@@ -209,9 +209,6 @@ export default function Lobby() {
         return <Navigate to="/game" />
     }
 
-    if (socketStatus === SOCKET_DISCONNECTED) {
-        return <Navigate to="/" />
-    }
 
     function onIdleTimeout() {
         dispatch(idleTimeout());

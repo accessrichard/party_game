@@ -9,6 +9,8 @@ export const SOCKET_DISCONNECTED = 'SOCKET_DISCONNECTED';
 export const CHANNEL_JOIN = 'CHANNEL_JOIN';
 export const CHANNEL_JOINED = 'CHANNEL_JOINED';
 export const CHANNEL_JOIN_ERROR = 'CHANNEL_JOIN_ERROR';
+export const CHANNEL_JOIN_TIMEOUT = 'CHANNEL_JOIN_TIMEOUT';
+export const CHANNEL_TIMEOUT  = "CHANNEL_TIMEOUT";
 export const CHANNEL_ERROR = 'CHANNEL_ERROR';
 export const CHANNEL_LEAVE = 'CHANNEL_LEAVE';
 export const CHANNEL_PUSH = 'CHANNEL_PUSH';
@@ -17,6 +19,8 @@ export const CHANNEL_ON = 'CHANNEL_ON';
 export const CHANNEL_OFF = 'CHANNEL_OFF';
 export const CHANNEL_PUSH_OK = 'CHANNEL_PUSH_OK';
 export const CHANNEL_PUSH_ERROR = 'CHANNEL_PUSH_ERROR';
+export const CHANNEL_PUSH_TIMEOUT = 'CHANNEL_PUSH_TIMEOUT';
+
 
 export const socketConnect = payload => ({ type: SOCKET_CONNECT, payload });
 export const socketError = payload => ({ type: SOCKET_ERROR, payload });
@@ -27,6 +31,7 @@ export const socketDisconnected = payload => ({ type: SOCKET_DISCONNECTED, paylo
 export const channelJoin = payload => ({ type: CHANNEL_JOIN, payload });
 export const channelJoined = payload => ({ type: CHANNEL_JOINED, payload });
 export const channelJoinError = payload => ({ type: CHANNEL_JOIN_ERROR, payload });
+export const channelJoinTimeout = payload => ({ type: CHANNEL_JOIN_TIMEOUT, payload });
 export const channelError = payload => ({ type: CHANNEL_ERROR, payload });
 export const channelLeave = payload => ({ type: CHANNEL_LEAVE, payload });
 export const channelPush = payload => ({ type: CHANNEL_PUSH, payload });
@@ -35,6 +40,8 @@ export const channelOff = payload => ({ type: CHANNEL_OFF, payload });
 export const channelReceive = payload => ({ type: CHANNEL_RECEIVE, payload });
 export const channelPushOk = payload => ({ type: CHANNEL_PUSH_OK, payload });
 export const channelPushError = payload => ({ type: CHANNEL_PUSH_ERROR, payload });
+export const channelPushTimeout = payload => ({ type: CHANNEL_PUSH_TIMEOUT, payload });
+
 
 const initialState = {
     socket: {
@@ -48,12 +55,12 @@ export function reducer(state = initialState, action = {}) {
     switch (action.type) {
         case SOCKET_CONNECTED:
         case SOCKET_CONNECTING:
+        case SOCKET_DISCONNECTED:
         case SOCKET_ERROR:
             return {
                 ...state,
                 socket: {
-                    status: action.type,
-                    message: action.payload
+                    status: action.type
                 }
             };
         case CHANNEL_LEAVE:
@@ -63,8 +70,10 @@ export function reducer(state = initialState, action = {}) {
             };
         case CHANNEL_ERROR:
         case CHANNEL_JOINED:
+        case CHANNEL_JOIN_TIMEOUT:
         case CHANNEL_JOIN_ERROR:
         case CHANNEL_PUSH_ERROR:
+        case CHANNEL_PUSH_TIMEOUT:
             if (!action.payload.topic) {
                 return state;
             }
@@ -126,10 +135,11 @@ const phoenixMiddleware = () => {
         socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));
     }
 
-    function disconnect() {
+    function disconnect(store, action) {
         if (socket !== null) {
             socket.disconnect();
         }
+
         socket = null;
     }
 
@@ -155,11 +165,14 @@ const phoenixMiddleware = () => {
                 store.dispatch(channelJoined(formatPayload(channel, e)))
             })
             .receive("error", e => {
-                store.dispatch(channelError(formatPayload(channel, e)));
+                store.dispatch(channelJoinError(formatPayload(channel, e)));
                 //// Phoenix keeps re-trying errors. This means on channel join if
                 //// auth fails, phoenix will retry every second. For simplicity
                 //// leaving channel on error. 
                 store.dispatch(channelLeave(formatPayload(channel)));
+            })
+            .receive("timeout", e => {
+                store.dispatch(channelJoinTimeout(formatPayload(channel, e)));                
             });
 
         channel.onError(e => store.dispatch(channelError(formatPayload(channel, e))));
@@ -190,7 +203,9 @@ const phoenixMiddleware = () => {
         const channel = getChannel(action.payload.topic);
         channel.push(action.payload.event, action.payload.data)
             .receive("ok", e => channelPushOk(formatPayload(channel, e)))
-            .receive("error", e => channelPushError(formatPayload(channel, e)));
+            .receive("error", e => channelPushError(formatPayload(channel, e)))
+            .receive("timeout", e => channelPushTimeout(formatPayload(channel, e)));
+
     }
 
     function on(store, action) {
@@ -235,7 +250,7 @@ const phoenixMiddleware = () => {
                 connect(store, action)
                 break;
             case SOCKET_DISCONNECT:
-                disconnect();
+                disconnect(store, action);
                 break;
             case CHANNEL_JOIN:
                 join(store, action);
