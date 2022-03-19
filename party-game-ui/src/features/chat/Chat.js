@@ -73,7 +73,7 @@ const Chat = () => {
   return (
     <React.Fragment>
 
-      <div className='flex-grid border-box center-65'>
+      <div className='flex-grid center-65'>
         <div className='flex-item flex-2-col-sidebar '>
           <div className='item card '>
             <h3>Players</h3>

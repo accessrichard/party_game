@@ -35,16 +35,16 @@ function Create() {
     }
 
     return (
-        <div className='flex-container flex-grid'>
+        <div className='flex-grid'>
 
-            <div className='flex-row flex-center'>
+            <div className='flex-row flex-item flex-center'>
                 <div className='margin-20p landscape-hidden'>
                     <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"/>
                 </div>
             </div>
 
-            <div className='flex-row flex-1'>
-                <div className="wrapper card full-width flex-center">
+            <div className='flex-row flex-item'>
+                <div className="item card">
                     <h3>New Game</h3>
                     <form onSubmit={handleSubmit}>
                         <div className="group">

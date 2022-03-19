@@ -130,32 +130,36 @@ export default function Import(props) {
     return (
         <React.Fragment>
             {!gameForm &&
-                <div className="wrapper card center-65 margin-25px flex-center">
-                    <div className="group">
-                        <textarea required
-                            autoComplete="off"
-                            name="import-game"
-                            rows="15"
-                            cols="50"
-                            value={game}
-                            onChange={handleChange}
-                        />
-                        <span className="highlight"></span>
-                        <span className="bar"></span>
-                        <label>{props.text || "Paste your game here:"}</label>
-                        <InputError className="error shake" errors={[errors || ""]} />
-                       {false &&  <ul className="error shake">
-                            {errors.map((err, idx) => {
-                                return <li className="input-error-text red" key={idx}>{err}</li>
-                            })}
-                        </ul>}
-                    </div>
+                <div className='flex-grid center-65'>
+                    <div className="flex-row flex-item">
+                        <div className='item card'>
+                            <div className="group">
+                                <textarea required
+                                    autoComplete="off"
+                                    name="import-game"
+                                    rows="15"
+                                    cols="50"
+                                    value={game}
+                                    onChange={handleChange}
+                                />
+                                <span className="highlight"></span>
+                                <span className="bar"></span>
+                                <label>{props.text || "Paste your game here:"}</label>
+                                <InputError className="error shake" errors={[errors || ""]} />
+                                {false && <ul className="error shake">
+                                    {errors.map((err, idx) => {
+                                        return <li className="input-error-text red" key={idx}>{err}</li>
+                                    })}
+                                </ul>}
+                            </div>
 
-                    {!props.hideSubmit &&
-                        <div className="btn-box">
-                            <button className="btn btn-submit" type="Import" onClick={importGame}>Import Game</button>
+                            {!props.hideSubmit &&
+                                <div className="btn-box">
+                                    <button className="btn btn-submit" type="Import" onClick={importGame}>Import Game</button>
+                                </div>
+                            }
                         </div>
-                    }
+                    </div>
                 </div>
             }
             {gameForm && <Create game={gameForm}></Create>}

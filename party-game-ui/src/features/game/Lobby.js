@@ -244,7 +244,7 @@ export default function Lobby() {
             </span>
 
             {isGameOwner &&
-                <div className='flex-grid border-box center-65'>
+                <div className='flex-grid center-65'>
                     <div className='flex-item full-width '>
                         <div className='item card text-align-left'>
                             <h3>Select Game</h3>

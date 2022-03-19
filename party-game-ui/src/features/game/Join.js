@@ -48,60 +48,57 @@ function Join() {
     };
 
     return (
-        <div className='flex-container flex-grid'>
-            <div className='flex-row flex-center'>
+        <div className='flex-grid'>
+            <div className='flex-item flex-row flex-center'>
                 <div className='margin-20p landscape-hidden'>
                     <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
                 </div>
             </div>
 
-            <div className="wrapper card full-width flex-center">
-                <h3>Join Game</h3>
-                <form onSubmit={handleSubmit}>
-                    <div className="group">
-                        <input required
-                            autoComplete="off"
-                            name="username"
-                            onInvalid={handleChanges}
-                            onChange={handleChanges}
-                            onBlur={handleChanges}
-                            value={form.username}
-                        />
-                        <span className="highlight"></span>
-                        <span className="bar"></span>
-                        <label>Name</label>
-                        <InputError className="error shake" errors={[(gameCodeError && gameCodeError.player_name) || gameCodeError]} />
-                        <InputError className="error shake" errors={[(form.errors && form.errors.username) || ""]} />
+            <div className='flex-row flex-item'>
+                <div className="item card">
 
-                    </div>
-                    <div className="group">
-                        <input
-                            required
-                            autoComplete="off"
-                            name="gameCode"
-                            onInvalid={handleChanges}
-                            onChange={handleChanges}
-                            onBlur={handleChanges}
-                            value={form.gameCode}
-                        />
-                        <span className="highlight">
-                        </span>
-                        <span className="bar"></span>
-                        <label>Game Code</label>
+                    <h3>Join Game</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="group">
+                            <input required
+                                autoComplete="off"
+                                name="username"
+                                onInvalid={handleChanges}
+                                onChange={handleChanges}
+                                onBlur={handleChanges}
+                                value={form.username}
+                            />
+                            <span className="highlight"></span>
+                            <span className="bar"></span>
+                            <label>Name</label>
+                            <InputError className="error shake" errors={[(gameCodeError && gameCodeError.player_name) || gameCodeError]} />
+                            <InputError className="error shake" errors={[(form.errors && form.errors.username) || ""]} />
 
-                        <InputError className="error shake" errors={[gameCodeError && gameCodeError.room_name]} />
-                        <InputError className="error shake" errors={[(form.errors && form.errors.gameCode) || ""]} />
-                    </div>
-
-                    <div className="btn-box">
-                        <button className="btn btn-submit" type="submit">Join Game</button>
-                    </div>
-                </form>
+                        </div>
+                        <div className="group">
+                            <input
+                                required
+                                autoComplete="off"
+                                name="gameCode"
+                                onInvalid={handleChanges}
+                                onChange={handleChanges}
+                                onBlur={handleChanges}
+                                value={form.gameCode}
+                            />
+                            <span className="highlight">
+                            </span>
+                            <span className="bar"></span>
+                            <label>Game Code</label>
+                            <InputError className="error shake" errors={[gameCodeError && gameCodeError.room_name]} />
+                            <InputError className="error shake" errors={[(form.errors && form.errors.gameCode) || ""]} />
+                        </div>
+                        <div className="btn-box">
+                            <button className="btn btn-submit" type="submit">Join Game</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-
-
-
         </div>
     );
 }
