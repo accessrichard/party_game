@@ -278,7 +278,14 @@ body {
 }
 
 .answer input[type="submit"]:hover:not([disabled]), input[type=submit]:active {
-  background: #d8d8d8;
+  background: whitesmoke;
+}
+
+/** Keep hover on desktop */
+@media (hover: hover) and (pointer: fine) {
+  .answer input[type="submit"]:hover:not([disabled]), input[type=submit]:active {
+    background: #d8d8d8;
+  }
 }
 
 .answer input[type="submit"] {
