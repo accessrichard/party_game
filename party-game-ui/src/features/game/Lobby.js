@@ -2,7 +2,6 @@ import {
     CHANNEL_JOINED,
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
-    SOCKET_DISCONNECTED,
     channelJoin,
     channelOn,
     channelPush,

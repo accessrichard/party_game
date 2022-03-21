@@ -7,6 +7,7 @@ export const SOCKET_CONNECTED = 'SOCKET_CONNECTED';
 export const SOCKET_DISCONNECT = 'SOCKET_DISCONNECT';
 export const SOCKET_DISCONNECTED = 'SOCKET_DISCONNECTED';
 export const CHANNEL_JOIN = 'CHANNEL_JOIN';
+export const CHANNEL_MESSAGE = 'CHANNEL_MESSAGE';
 export const CHANNEL_JOINED = 'CHANNEL_JOINED';
 export const CHANNEL_JOIN_ERROR = 'CHANNEL_JOIN_ERROR';
 export const CHANNEL_JOIN_TIMEOUT = 'CHANNEL_JOIN_TIMEOUT';
@@ -88,8 +89,7 @@ export function reducer(state = initialState, action = {}) {
             return {
                 ...state,
                 channels: newChannels
-            };
-
+            };     
         case CHANNEL_RECEIVE:
             //// Channel data can be sent to any redux action by
             //// passing in an action.
@@ -132,7 +132,7 @@ const phoenixMiddleware = () => {
         socket.connect();
         socket.onOpen(e => store.dispatch(socketConnected(e)));
         socket.onError(e => store.dispatch(socketError(e)));
-        socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));
+        socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));                        
     }
 
     function disconnect(store, action) {

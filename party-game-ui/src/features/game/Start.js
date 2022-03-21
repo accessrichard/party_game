@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';
 import Logo from '../common/Logo';
 import { startNewGame } from './gameSlice';
-import { useDispatch } from 'react-redux';
 
 function Create() {
     const dispatch = useDispatch();
+    const serverError = useSelector(state => state.game.api.start.error);
+
     const [form, setForm] = useState({
         username: "",
         errors: {
@@ -46,6 +48,7 @@ function Create() {
             <div className='flex-row flex-item'>
                 <div className="item card">
                     <h3>New Game</h3>
+                    <div className='error'>{serverError && "Can not communicate with server. Please try again later."}</div>
                     <form onSubmit={handleSubmit}>
                         <div className="group">
                             <input required
