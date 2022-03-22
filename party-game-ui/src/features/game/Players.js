@@ -8,11 +8,10 @@ const Players = () => {
 
     return (
         <React.Fragment>
-            <ul className="players ul-nostyle">
-                
+            <ul className="players ul-nostyle">                
                 {players.map((val, key) =>
                     <li key={key}>                        
-                        {val.name} {val.name !== playerName && val.isTyping && "(typing...)"}
+                        {val.name} {val.name !== playerName && val.isTyping && <i className='smallest-font'> - typing</i>}
                     </li>
                 )}
             </ul>

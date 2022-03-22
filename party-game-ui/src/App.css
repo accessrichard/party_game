@@ -195,12 +195,12 @@ body {
 }
 
 .flex-2-col-sidebar {
-  flex: 25%;
+  flex: 30%;
   height: 400px;
 }
 
 .flex-2-col-main {
-  flex: 75%;
+  flex: 70%;
   height: 400px;
 }
 

@@ -21,7 +21,7 @@ const onEvents = (topic) => [
 const typingEvent = (topic, isTyping) => {
   return {
     topic: topic,
-    event: "user:typing", 
+    event: "user:typing",
     data: { typing: isTyping }
   }
 }
@@ -47,7 +47,7 @@ const Chat = () => {
     if (socketStatus !== SOCKET_CONNECTED || isSubscribed) {
       return;
     }
-    
+
     setIsSubscribed(true);
     dispatch(channelJoin({ topic, data: { playerName: player } }));
     onEvents(topic).forEach((e) => dispatch(channelOn(e)));
@@ -88,7 +88,6 @@ const Chat = () => {
 
   return (
     <React.Fragment>
-
       <div className='flex-grid center-65'>
         <div className='flex-item flex-2-col-sidebar '>
           <div className='item card '>
@@ -132,7 +131,7 @@ const Chat = () => {
           </div>
         </div>
       </div>
-    </React.Fragment >
+    </React.Fragment>
   );
 }
 
