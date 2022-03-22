@@ -49,7 +49,7 @@ export default function Game() {
     const [timerStartDate, setTimerStartDate] = useState(null);
 
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
-   
+
     const prevRound = usePrevious(round);
 
     if (!gameChannel) {
@@ -79,14 +79,14 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
 
-    useEffect(() => {        
-        if (isRoundStarted && round === prevRound) {            
+    useEffect(() => {
+        if (isRoundStarted && round === prevRound) {
             setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
-        } else if (round !== prevRound && isRoundStarted){
+        } else if (round !== prevRound && isRoundStarted) {
             /// Force reset of timer when round changes
             /// since timers can go out of sync across players.
-            setIsTimerActive(new Date());            
+            setIsTimerActive(new Date());
         }
 
         return () => { setIsTimerActive(false); };
@@ -101,7 +101,7 @@ export default function Game() {
         if (!isGameOwner) {
             return;
         }
-        
+
         setIsTimerActive(false);
         startClickCallback(correct ? "start_round" : "next_question");
     }
@@ -163,7 +163,7 @@ export default function Game() {
 
     return (
         <React.Fragment>
-            <link rel="prefetch" href={sprite} as="image" type="image/svg+xml"/>
+            <link rel="prefetch" href={sprite} as="image" type="image/svg+xml" />
             <div className="full-width full-height flex-container flex-column">
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>
@@ -172,6 +172,9 @@ export default function Game() {
                     {isOver && <span>Game Over</span>}
                     {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
 
+
+                </div>
+                <div className='flex-coumn empty-space offset-phone-addressbar'>
                     <Flash flash={flash}></Flash>
 
                     {isWrong &&
@@ -188,8 +191,6 @@ export default function Game() {
                             {!canRetryWrongAnswer && isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
                         </span>
                     }
-                </div>
-                <div className='flex-coumn empty-space offset-phone-addressbar'>
                     <div className="question">
                         {question}
                     </div>
@@ -199,7 +200,7 @@ export default function Game() {
                             {!startCountdown && isRoundStarted && "Round ends in "}
 
                             {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
-                                isActive={isTimerActive}                                
+                                isActive={isTimerActive}
                                 timeIncrement={-1}
                                 onStartDateSet={onTimerStartDateSet}
                                 isIncrement={false}

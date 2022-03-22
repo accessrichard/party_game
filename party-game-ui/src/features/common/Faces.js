@@ -22,7 +22,7 @@ const Faces = (props) => {
 
     useEffect(() => {
         setFace(randomFace(isHappy));
-        return () => "";
+        return () => setFace("");
     }, [isHappy])
 
     return (
