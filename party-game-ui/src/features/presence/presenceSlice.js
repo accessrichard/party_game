@@ -1,6 +1,6 @@
-import { Presence } from "phoenix";
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
-import { createSlice, createSelector } from '@reduxjs/toolkit';
+import { Presence } from "phoenix";
 
 const initialState = {
     presence: {}
@@ -22,7 +22,7 @@ export const presenceSlice = createSlice({
 
 const getPresencesList = (p) => {
     return Presence.list(p.presence, (id, { metas: [user, ...rest] }) => {
-        return { name: id, online_at: user.online_at };
+        return { name: id, online_at: user.online_at, isTyping: user.typing };
     });
 };
 

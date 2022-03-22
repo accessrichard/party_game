@@ -4,13 +4,15 @@ import { useSelector } from 'react-redux';
 
 const Players = () => {
     const players = useSelector(getPresences);
+    const playerName = useSelector(state => state.game.playerName);
 
     return (
         <React.Fragment>
             <ul className="players ul-nostyle">
+                
                 {players.map((val, key) =>
-                    <li key={key}>
-                        {val.name}
+                    <li key={key}>                        
+                        {val.name} {val.name !== playerName && val.isTyping && "(typing...)"}
                     </li>
                 )}
             </ul>

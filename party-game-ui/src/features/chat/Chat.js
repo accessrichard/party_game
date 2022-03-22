@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   channelJoin,
-  channelLeave,
-  channelOff,
   channelOn,
   channelPush,
 } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Players from '../game/Players';
+import { SOCKET_CONNECTED } from '../phoenix/phoenixMiddleware';
 import { message } from './chatSlice';
 
 const onEvents = (topic) => [
@@ -19,36 +18,40 @@ const onEvents = (topic) => [
   }
 ]
 
+const typingEvent = (topic, isTyping) => {
+  return {
+    topic: topic,
+    event: "user:typing", 
+    data: { typing: isTyping }
+  }
+}
+
 const Chat = () => {
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.messages);
-
-
   const chatBottomRef = useRef(null);
   const player = useSelector(state => state.game.playerName);
   const gameCode = useSelector(state => state.game.gameCode);
   const socketStatus = useSelector(state => state.phoenix.socket.status);
   const [text, setText] = useState("");
+  const [isUserTyping, setIsUserTyping] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const topic = `chat:${gameCode}`
+  const presence = `game:${gameCode}`
 
   useEffect(() => {
     chatBottomRef.current.scrollTop = chatBottomRef.current.scrollHeight + window.innerHeight;
   });
 
   useEffect(() => {
-    if (socketStatus === "SOCKET_CONNECTED") {
-      dispatch(channelJoin({ topic, data: { playerName: player } }));
+    if (socketStatus !== SOCKET_CONNECTED || isSubscribed) {
+      return;
     }
-    return () => dispatch(channelLeave({ topic }));
-  }, [socketStatus, dispatch, topic, player]);
-
-  useEffect(() => {
-    if (socketStatus === "SOCKET_CONNECTED") {
-      onEvents(topic).forEach((e) => dispatch(channelOn(e)));
-    }
-
-    return () => onEvents(topic).forEach((e) => dispatch(channelOff(e)));
-  }, [socketStatus, dispatch, topic]);
+    
+    setIsSubscribed(true);
+    dispatch(channelJoin({ topic, data: { playerName: player } }));
+    onEvents(topic).forEach((e) => dispatch(channelOn(e)));
+  }, [socketStatus, dispatch, topic, player, isSubscribed]);
 
   function send() {
     dispatch(channelPush({
@@ -64,10 +67,23 @@ const Chat = () => {
     setText("");
   }
 
-  function submitOnEnter(e) {
+  function onKeyPress(e) {
     if (e.key === 'Enter' && text.trim() !== '') {
       send();
+      setIsUserTyping(false);
     }
+
+    if (isUserTyping) {
+      return;
+    }
+
+    setIsUserTyping(true);
+    dispatch(channelPush(typingEvent(presence, true)));
+
+    setTimeout(() => {
+      dispatch(channelPush(typingEvent(presence, false)));
+      setIsUserTyping(false);
+    }, 2500);
   }
 
   return (
@@ -105,7 +121,7 @@ const Chat = () => {
                     name="chat-input"
                     value={text}
                     onChange={(event) => setText(event.target.value)}
-                    onKeyPress={submitOnEnter}
+                    onKeyPress={onKeyPress}
                   />
                   <span className="highlight"></span>
                   <span className="bar"></span>

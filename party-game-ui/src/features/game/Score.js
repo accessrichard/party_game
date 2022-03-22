@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
 import { getScores, resetState } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Faces from '../common/Faces';
 import { Navigate } from 'react-router-dom';
+import React from 'react';
 import Scores from '../common/Scores';
-import {
-    channelPush
-} from '../phoenix/phoenixMiddleware';
 import { push } from "redux-first-history";
 
 function displayWinner(scores) {
@@ -29,16 +26,7 @@ function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
 
-    const {isGameStarted, gameChannel, isOver }  = useSelector(state => state.game);
-    
-    useEffect(() => {
-        dispatch(channelPush({
-            topic: gameChannel,
-            event: gameChannel,
-            data: { action: "update_location", location: "score" }
-        }));
-
-    }, [dispatch, gameChannel]);
+    const {isGameStarted, gameChannel, isOver }  = useSelector(state => state.game);        
 
     if (isGameStarted && !isOver) {
         return <Navigate to="/game" />
