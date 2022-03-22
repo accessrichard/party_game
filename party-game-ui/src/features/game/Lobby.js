@@ -2,6 +2,8 @@ import {
     CHANNEL_JOINED,
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
+    SOCKET_DISCONNECTED,
+    SOCKET_ERROR,
     channelJoin,
     channelOn,
     channelPush,
@@ -26,7 +28,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
-import IdleTimeout from '../common/IdleTimeout';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
@@ -170,8 +171,10 @@ export default function Lobby() {
             return;
         }
 
-        if (socketStatus !== SOCKET_CONNECTED
-            && socketConnect !== SOCKET_CONNECTING) {
+        if (socketStatus !== SOCKET_CONNECTED           
+            && socketStatus !== SOCKET_CONNECTING
+            && socketStatus !== SOCKET_DISCONNECTED
+            && socketStatus !== SOCKET_ERROR) {
             dispatch(socketConnect({
                 host: process.env.REACT_APP_SOCKET_URL,
                 params: {}
@@ -215,8 +218,7 @@ export default function Lobby() {
 
     return (
         <React.Fragment>
-            <header className="full-width">
-                <IdleTimeout />
+            <header className="full-width">                 
                 <div className="center-with-right-div">
                     <span>
                         <Logo

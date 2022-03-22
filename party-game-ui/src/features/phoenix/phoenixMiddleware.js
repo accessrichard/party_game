@@ -11,7 +11,7 @@ export const CHANNEL_MESSAGE = 'CHANNEL_MESSAGE';
 export const CHANNEL_JOINED = 'CHANNEL_JOINED';
 export const CHANNEL_JOIN_ERROR = 'CHANNEL_JOIN_ERROR';
 export const CHANNEL_JOIN_TIMEOUT = 'CHANNEL_JOIN_TIMEOUT';
-export const CHANNEL_TIMEOUT  = "CHANNEL_TIMEOUT";
+export const CHANNEL_TIMEOUT = "CHANNEL_TIMEOUT";
 export const CHANNEL_ERROR = 'CHANNEL_ERROR';
 export const CHANNEL_LEAVE = 'CHANNEL_LEAVE';
 export const CHANNEL_PUSH = 'CHANNEL_PUSH';
@@ -64,6 +64,10 @@ export function reducer(state = initialState, action = {}) {
                     status: action.type
                 }
             };
+        case SOCKET_DISCONNECT:
+            return {
+                ...state, initialState
+            }
         case CHANNEL_LEAVE:
             return {
                 ...state,
@@ -89,7 +93,7 @@ export function reducer(state = initialState, action = {}) {
             return {
                 ...state,
                 channels: newChannels
-            };     
+            };
         case CHANNEL_RECEIVE:
             //// Channel data can be sent to any redux action by
             //// passing in an action.
@@ -132,7 +136,7 @@ const phoenixMiddleware = () => {
         socket.connect();
         socket.onOpen(e => store.dispatch(socketConnected(e)));
         socket.onError(e => store.dispatch(socketError(e)));
-        socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));                        
+        socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));
     }
 
     function disconnect(store, action) {
@@ -172,7 +176,7 @@ const phoenixMiddleware = () => {
                 store.dispatch(channelLeave(formatPayload(channel)));
             })
             .receive("timeout", e => {
-                store.dispatch(channelJoinTimeout(formatPayload(channel, e)));                
+                store.dispatch(channelJoinTimeout(formatPayload(channel, e)));
             });
 
         channel.onError(e => store.dispatch(channelError(formatPayload(channel, e))));

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
-import IdleTimeout from '../common/IdleTimeout';
 import Timer from './Timer';
 import {
     channelPush
@@ -165,7 +164,6 @@ export default function Game() {
     return (
         <React.Fragment>
             <link rel="prefetch" href={sprite} as="image" type="image/svg+xml"/>
-            <IdleTimeout />
             <div className="full-width full-height flex-container flex-column">
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>

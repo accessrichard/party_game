@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Link } from 'react-router-dom';
+import Popup from './Popup';
 import { socketDisconnect } from '../phoenix/phoenixMiddleware';
 
 export default function IdleTimeout(props) {
@@ -15,20 +15,18 @@ export default function IdleTimeout(props) {
         }
 
         dispatch(socketDisconnect());
+        props.onIdleTimeout && props.onIdleTimeout();
 
-    }, [isIdleTimeout, dispatch]);
+    }, [isIdleTimeout, dispatch, props]);
 
 
     return (
         <React.Fragment>
-            {isIdleTimeout && <div className="overlay overlay-visible">
-                <div className="popup">
-                    <h2>Game idle timeout expired.</h2>
-                    <div className="content">
-                        <Link to="/">Click here to restart.</Link>
-                    </div>
-                </div>
-            </div>
+            {isIdleTimeout &&
+                <Popup
+                    title="Game idle timeout expired."
+                    content={<a href="/">Click here to restart</a>}
+                />
             }
         </React.Fragment >
     );

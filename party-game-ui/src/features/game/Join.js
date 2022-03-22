@@ -11,7 +11,7 @@ function Join() {
 
     const dispatch = useDispatch();
 
-    const gameCodeError = useSelector(state => state.game.api.join.error);
+    const gameCodeError = useSelector(state => state.game.api.join.error);    
 
     const [form, setForm] = useState({
         username: "",
@@ -50,7 +50,7 @@ function Join() {
     return (
         <div className='flex-grid'>
             <div className='flex-item flex-row flex-center'>
-                <div className='margin-20p landscape-hidden'>
+                <div className='margin-15p landscape-hidden'>
                     <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
                 </div>
             </div>

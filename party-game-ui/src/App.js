@@ -7,6 +7,7 @@ import {
 
 import AppBody from './features/common/AppBody';
 import Create from './features/creative/Create';
+import ExceptionPopup from './features/common/ExceptionPopup';
 import Game from './features/game/Game';
 import GoogleAnalytics from './features/common/GoogleAnalytics';
 import Import from './features/creative/Import';
@@ -26,17 +27,19 @@ function App() {
       <Routes>
         <Route element={<GoogleAnalytics />}>
           <Route path="/" element={<AppBody />}>
-            <Route index element={<Landing />} />
             <Route exact path="/start" element={<Start />} />
             <Route path="/join" element={<Join />}>
               <Route path="/join/:id" element={<Join />} />
             </Route>
-            <Route exact path="/lobby" element={<Lobby />} />
-            <Route exact path="/settings" element={<Settings />} />
-            <Route exact path="/score" element={<Score />} />
-            <Route exact path="/create" element={<Create />} />
-            <Route exact path="/import" element={<Import />} />
-            <Route exact path="/game" element={<Game />} />
+            <Route index element={<Landing />} />
+            <Route element={<ExceptionPopup />}>
+              <Route exact path="/lobby" element={<Lobby />} />
+              <Route exact path="/settings" element={<Settings />} />
+              <Route exact path="/score" element={<Score />} />
+              <Route exact path="/create" element={<Create />} />
+              <Route exact path="/import" element={<Import />} />
+              <Route exact path="/game" element={<Game />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
