@@ -10,6 +10,21 @@ import {
 } from '../phoenix/phoenixMiddleware';
 import { push } from "redux-first-history";
 
+function displayWinner(scores) {
+    const winners = scores.winners.filter(x => x.name !== "None");
+    if (winners.length === 0) {
+        return "Please try again!"
+    }
+
+    if (winners.length > 1) {
+        return winners.map(x => x.name).join(" and ") + " tied!"
+    }
+
+    if (winners.length === 1){
+        return scores.winners[0].name + " won!";
+    }
+}
+
 function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
@@ -41,10 +56,7 @@ function Score() {
 
     return (
         <React.Fragment>
-            <div className="pd-25 md-5 large-title">{scores.winners && scores.winners.length === 1
-                ? scores.winners[0].name + " won!"
-                : scores.winners.map(x => x.name).join(" and ") + " tied!"}</div>
-                
+            <div className="pd-25 md-5 large-title">{displayWinner(scores)}</div>
             <Faces isHappy={true} className="small-logo spin" />
             <Scores scores={scores.scores} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
