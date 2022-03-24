@@ -133,7 +133,10 @@ defmodule PartyGameWeb.GameChannel do
         %{question: "", answers: []}
       end
 
-    broadcast(socket, "next_question", assigns_payload(
+    broadcast(
+      socket,
+      "next_question",
+      assigns_payload(
         socket,
         payload,
         %{
@@ -233,11 +236,17 @@ defmodule PartyGameWeb.GameChannel do
     players = Map.keys(Presence.list(topic))
 
     unless Enum.member?(players, name) and players != [] do
-      new_owner = List.first(players)
-      game = Server.get_game(game_code(topic))
-      game = GameRoom.update_room_owner(game, new_owner)
-      Server.update_game(game)
-      PartyGameWeb.Endpoint.broadcast!(topic, "room_owner_change", %{room_owner: new_owner})
+      elect_new_game_owner(Server.lookup(game_code(topic)), players, topic)
     end
+  end
+
+  defp elect_new_game_owner({:error, _}, _, _), do: :ok
+
+  defp elect_new_game_owner({:ok, _}, players, topic) do
+    new_owner = List.first(players)
+    game = Server.get_game(game_code(topic))
+    game = GameRoom.update_room_owner(game, new_owner)
+    Server.update_game(game)
+    PartyGameWeb.Endpoint.broadcast!(topic, "room_owner_change", %{room_owner: new_owner})
   end
 end
