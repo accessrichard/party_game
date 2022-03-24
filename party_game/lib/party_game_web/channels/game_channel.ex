@@ -5,6 +5,7 @@ defmodule PartyGameWeb.GameChannel do
 
   alias PartyGameWeb.Presence
   alias PartyGame.Server
+  alias PartyGame.ChannelWatcher
   alias PartyGame.GameRoom
   alias PartyGame.Game.Player
   alias PartyGame.Games.Games
@@ -26,7 +27,6 @@ defmodule PartyGameWeb.GameChannel do
 
         send(self(), {:after_join})
         {:ok, socket}
-
       _ ->
         send(self(), {:after_join, :game_not_found})
         {:ok, socket}
@@ -41,6 +41,9 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
+
+    :ok = ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.assigns.name, socket.topic]})
+
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
         online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
@@ -98,19 +101,12 @@ defmodule PartyGameWeb.GameChannel do
     code
   end
 
-  defp action("start", socket, payload), do: broadcast_start(socket, payload)
   defp action("update_settings", socket, payload), do: update_settings(socket, payload)
   defp action("start_round", socket, payload), do: start_round(socket, payload)
   defp action("new_game", socket, payload), do: new_game(socket, payload)
   defp action("next_question", socket, payload), do: next_question(socket, payload)
   defp action("buzz", socket, payload), do: buzz(socket, payload)
   defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
-
-  @deprecated "Action no longer needed, use new_game"
-  defp broadcast_start(socket, _) do
-    broadcast(socket, "start", %{})
-    {:noreply, socket}
-  end
 
   defp new_game(socket, payload) do
     client_form = Map.get(payload, "game")
@@ -246,5 +242,16 @@ defmodule PartyGameWeb.GameChannel do
     })
 
     {:noreply, socket}
+  end
+
+  def leave(name, topic) do
+    players = Map.keys(Presence.list(topic))
+    unless Enum.member?(players, name) and players != [] do
+      new_owner = List.first(players)
+      game = Server.get_game(game_code(topic))
+      game = GameRoom.update_room_owner(game, new_owner)
+      Server.update_game(game)
+      PartyGameWeb.Endpoint.broadcast!(topic, "room_owner_change", %{room_owner: new_owner})
+    end
   end
 end

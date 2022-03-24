@@ -109,6 +109,10 @@ defmodule PartyGame.GameRoom do
     }
   end
 
+  def update_room_owner(%Game{} = game, owner) do
+    %{game | room_owner: owner}
+  end
+
   def get_player(%Game{} = game, player) do
     Enum.find(game.players, &(&1.name == player.name))
   end

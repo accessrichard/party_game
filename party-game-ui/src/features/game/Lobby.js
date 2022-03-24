@@ -12,6 +12,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
     changeGame,
+    changeOwner,
     idleTimeout,
     listGames,
     mergeGameList,
@@ -78,6 +79,11 @@ const persistedEvents = (topic) => [
     {
         event: 'game_server_idle_timeout',
         dispatcher: idleTimeout(),
+        topic,
+    },
+    {
+        event: 'room_owner_change',
+        dispatcher: changeOwner(),
         topic,
     }
 ]

@@ -8,8 +8,6 @@ const gameApi = {
 
     join(player_name, room_name) {
         const player = {
-            location: "lobby",
-            status: "online",
             name: player_name
         };
         

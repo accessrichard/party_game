@@ -148,6 +148,9 @@ export const gameSlice = createSlice({
         setFlash: (state, action) => {
             state.flash = action.payload
         },
+        changeOwner: (state, action) => {
+            state.isGameOwner = action.payload.room_owner ===  state.playerName;
+        },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
                 state.isWrong = true;
@@ -288,6 +291,7 @@ export const mergeGameList = (serverGames, clientGames) => {
 };
 
 export const {
+    changeOwner,
     start,
     stop,
     redirect,
@@ -301,7 +305,7 @@ export const {
     updateSettings,
     pushSettings,
     clearWrongAnswer,
-    syncGameState,    
+    syncGameState,
     phxReply,
     userJoinsRoom,
     clearJoinError,
