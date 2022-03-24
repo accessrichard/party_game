@@ -1,13 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
 import {
+  CHANNEL_ERROR,
+  CHANNEL_JOINED,
   channelJoin,
   channelOn,
   channelPush,
 } from '../phoenix/phoenixMiddleware';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Players from '../game/Players';
-import { SOCKET_CONNECTED } from '../phoenix/phoenixMiddleware';
 import { message } from './chatSlice';
 
 const onEvents = (topic) => [
@@ -32,10 +33,10 @@ const Chat = () => {
   const chatBottomRef = useRef(null);
   const player = useSelector(state => state.game.playerName);
   const gameCode = useSelector(state => state.game.gameCode);
-  const socketStatus = useSelector(state => state.phoenix.socket.status);
   const [text, setText] = useState("");
   const [isUserTyping, setIsUserTyping] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const channels = useSelector(state => state.phoenix.channels);
+
   const topic = `chat:${gameCode}`
   const presence = `game:${gameCode}`
 
@@ -44,14 +45,14 @@ const Chat = () => {
   });
 
   useEffect(() => {
-    if (socketStatus !== SOCKET_CONNECTED || isSubscribed) {
+    if (channels.some(x => x.topic === topic 
+      && (x.status === CHANNEL_JOINED || x.status === CHANNEL_ERROR))) {
       return;
     }
 
-    setIsSubscribed(true);
     dispatch(channelJoin({ topic, data: { playerName: player } }));
     onEvents(topic).forEach((e) => dispatch(channelOn(e)));
-  }, [socketStatus, dispatch, topic, player, isSubscribed]);
+  }, [channels, dispatch, topic, player]);
 
   function send() {
     dispatch(channelPush({

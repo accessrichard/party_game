@@ -1,4 +1,5 @@
 import {
+    CHANNEL_ERROR,
     CHANNEL_JOINED,
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
@@ -175,7 +176,7 @@ export default function Lobby() {
             return;
         }
 
-        if (socketStatus !== SOCKET_CONNECTED           
+        if (socketStatus !== SOCKET_CONNECTED
             && socketStatus !== SOCKET_CONNECTING
             && socketStatus !== SOCKET_DISCONNECTED
             && socketStatus !== SOCKET_ERROR) {
@@ -189,7 +190,8 @@ export default function Lobby() {
     useEffect(() => {
         const topic = `game:${gameCode}`;
 
-        if (gameCode && channels.some(x => x.topic === topic && x.status === CHANNEL_JOINED)) {
+        if (gameCode && channels.some(x => x.topic === topic 
+            && (x.status === CHANNEL_JOINED || x.status === CHANNEL_ERROR))) {
             return;
         }
 
@@ -222,7 +224,7 @@ export default function Lobby() {
 
     return (
         <React.Fragment>
-            <header className="full-width">                 
+            <header className="full-width">
                 <div className="center-with-right-div">
                     <span>
                         <Logo
