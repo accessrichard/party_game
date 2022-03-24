@@ -27,6 +27,7 @@ defmodule PartyGameWeb.GameChannel do
 
         send(self(), {:after_join})
         {:ok, socket}
+
       _ ->
         send(self(), {:after_join, :game_not_found})
         {:ok, socket}
@@ -41,8 +42,8 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
-
-    :ok = ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.assigns.name, socket.topic]})
+    :ok =
+      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.assigns.name, socket.topic]})
 
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
@@ -58,57 +59,28 @@ defmodule PartyGameWeb.GameChannel do
   end
 
   @impl true
-  def handle_in(@channel_name <> room_name, %{"action" => action} = payload, socket) do
-    Logger.info("handle_in #{@channel_name}#{room_name} for action: #{action}")
-    action(action, socket, payload)
-  end
+  def handle_in("update_settings", payload, socket) do
+    settings = Settings.apply_settings(Settings.new(), Map.get(payload, "settings", %{}))
 
-  @impl true
-  def handle_in("user:typing", payload, socket) do
-    metas =
-      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
-      |> List.first()
-      |> Map.merge(%{typing: Map.get(payload, "typing")})
-
-    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
+    broadcast_from(socket, "update_settings", %{
+      "settings" => settings
+    })
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_in(@channel_name <> _room_name, _, socket) do
-    {:noreply, socket}
+  def handle_in("start_round", payload, socket) do
+    game =
+      Server.get_game(game_code(socket.topic))
+      |> GameRoom.start_round()
+      |> Server.update_game()
+
+    reply_with_questions(socket, game, payload)
   end
 
   @impl true
-  def terminate(_reason, socket) do
-    remove_player(Server.lookup(game_code(socket.topic)), socket)
-  end
-
-  defp remove_player({:error, _}, _), do: :ok
-
-  defp remove_player({:ok, _}, socket) do
-    Server.get_game(game_code(socket.topic))
-    |> GameRoom.remove_player(socket.assigns.name)
-    |> Server.update_game()
-
-    :ok
-  end
-
-  defp game_code(topic) do
-    [_ | code] = String.split(topic, ":")
-    [code] = code
-    code
-  end
-
-  defp action("update_settings", socket, payload), do: update_settings(socket, payload)
-  defp action("start_round", socket, payload), do: start_round(socket, payload)
-  defp action("new_game", socket, payload), do: new_game(socket, payload)
-  defp action("next_question", socket, payload), do: next_question(socket, payload)
-  defp action("buzz", socket, payload), do: buzz(socket, payload)
-  defp action(_, socket, _), do: {:reply, {:ok, "nothing to see here"}, socket}
-
-  defp new_game(socket, payload) do
+  def handle_in("new_game", payload, socket) do
     client_form = Map.get(payload, "game")
 
     game_name = Map.get(client_form, "name")
@@ -143,23 +115,8 @@ defmodule PartyGameWeb.GameChannel do
     reply_with_questions(socket, game, payload)
   end
 
-  defp start_round(socket, payload) do
-    game =
-      Server.get_game(game_code(socket.topic))
-      |> GameRoom.start_round()
-      |> Server.update_game()
-
-    reply_with_questions(socket, game, payload)
-  end
-
-  defp reply_with_questions(socket, game, payload) do
-    [question | _] = game.questions
-    payload = start(payload)
-    broadcast(socket, "next_question", assigns_payload(socket, payload, question))
-    {:noreply, socket}
-  end
-
-  defp next_question(socket, payload) do
+  @impl true
+  def handle_in("next_question", payload, socket) do
     game =
       Server.get_game(game_code(socket.topic))
       |> GameRoom.next_question()
@@ -176,10 +133,7 @@ defmodule PartyGameWeb.GameChannel do
         %{question: "", answers: []}
       end
 
-    broadcast(
-      socket,
-      "next_question",
-      assigns_payload(
+    broadcast(socket, "next_question", assigns_payload(
         socket,
         payload,
         %{
@@ -196,7 +150,8 @@ defmodule PartyGameWeb.GameChannel do
     {:noreply, socket}
   end
 
-  defp buzz(socket, payload) do
+  @impl true
+  def handle_in("buzz", payload, socket) do
     game = Server.get_game(game_code(socket.topic))
 
     answer = Map.get(payload, "answer")
@@ -222,6 +177,46 @@ defmodule PartyGameWeb.GameChannel do
     end
   end
 
+  @impl true
+  def handle_in("user:typing", payload, socket) do
+    metas =
+      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
+      |> List.first()
+      |> Map.merge(%{typing: Map.get(payload, "typing")})
+
+    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def terminate(_reason, socket) do
+    remove_player(Server.lookup(game_code(socket.topic)), socket)
+  end
+
+  defp remove_player({:error, _}, _), do: :ok
+
+  defp remove_player({:ok, _}, socket) do
+    Server.get_game(game_code(socket.topic))
+    |> GameRoom.remove_player(socket.assigns.name)
+    |> Server.update_game()
+
+    :ok
+  end
+
+  defp game_code(topic) do
+    [_ | code] = String.split(topic, ":")
+    [code] = code
+    code
+  end
+
+  defp reply_with_questions(socket, game, payload) do
+    [question | _] = game.questions
+    payload = start(payload)
+    broadcast(socket, "next_question", assigns_payload(socket, payload, question))
+    {:noreply, socket}
+  end
+
   defp start(payload) do
     Map.put(payload, "action", "start")
   end
@@ -234,18 +229,9 @@ defmodule PartyGameWeb.GameChannel do
     }
   end
 
-  defp update_settings(socket, payload) do
-    settings = Settings.apply_settings(Settings.new(), Map.get(payload, "settings", %{}))
-
-    broadcast_from(socket, "update_settings", %{
-      "settings" => settings
-    })
-
-    {:noreply, socket}
-  end
-
   def leave(name, topic) do
     players = Map.keys(Presence.list(topic))
+
     unless Enum.member?(players, name) and players != [] do
       new_owner = List.first(players)
       game = Server.get_game(game_code(topic))

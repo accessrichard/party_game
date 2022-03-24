@@ -115,9 +115,9 @@ export default function Lobby() {
 
         dispatch(channelPush({
             topic: gameChannel,
-            event: gameChannel,
+            event: 'update_settings',
             data: {
-                action: 'update_settings', settings: {
+                settings: {
                     question_time: settings.questionTime,
                     next_question_time: settings.nextQuestionTime,
                     wrong_answer_timeout: settings.wrongAnswerTimeout,
@@ -139,10 +139,8 @@ export default function Lobby() {
         const data = { name: playerName, ...payload };
         dispatch(channelPush({
             topic: gameChannel,
-            event: gameChannel,
-            data: Object.assign(data, {
-                action: "new_game"
-            })
+            event: "new_game",
+            data: data
         }));
 
         e.preventDefault();

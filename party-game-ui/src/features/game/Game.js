@@ -17,10 +17,8 @@ import usePrevious from '../usePrevious';
 const sendEvent = (topic, channelData, action) => (
     {
         topic: topic,
-        event: topic,
-        data: Object.assign(channelData, {
-            action
-        })
+        event: action,
+        data: channelData
     });
 
 export default function Game() {
