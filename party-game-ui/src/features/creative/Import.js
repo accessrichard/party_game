@@ -25,7 +25,7 @@ export default function Import(props) {
 
     function importGame() {
         try {
-            if (game === "") {
+            if (!game || game.trim() === "") {
                 setErrors(["Can't import empty game."]);
                 return;
             }
