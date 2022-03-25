@@ -4,25 +4,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import Popup from './Popup';
 import { socketDisconnect } from '../phoenix/phoenixMiddleware';
 
-export default function IdleTimeout(props) {
+export default function GenServerTimeout(props) {
 
     const dispatch = useDispatch();
-    const isIdleTimeout = useSelector(state => state.game.isIdleTimeout);
+    const isGenServerTimeout = useSelector(state => state.game.isGenServerTimeout);
 
     useEffect(() => {
-        if (!isIdleTimeout) {
+        if (!isGenServerTimeout) {
             return;
         }
 
         dispatch(socketDisconnect());
-        props.onIdleTimeout && props.onIdleTimeout();
+        props.ongenServerTimeout && props.ongenServerTimeout();
 
-    }, [isIdleTimeout, dispatch, props]);
+    }, [isGenServerTimeout, dispatch, props]);
 
 
     return (
         <React.Fragment>
-            {isIdleTimeout &&
+            {isGenServerTimeout &&
                 <Popup
                     title="Game idle timeout expired."
                     content={<a href="/">Click here to restart</a>}

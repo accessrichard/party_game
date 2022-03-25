@@ -72,7 +72,7 @@ const initialState = {
     gameChannel: '',
     players: [],
     isGameOwner: false,
-    isIdleTimeout: false,
+    isGenServerTimeout: false,
     api: {
         start: { ...apiState },
         join: { ...apiState },
@@ -99,7 +99,7 @@ export const gameSlice = createSlice({
                 playerName: state.playerName,
                 name: state.name,
                 gameCode: state.gameCode,
-                isIdleTimeout: state.isIdleTimeout,
+                isGenServerTimeout: state.isGenServerTimeout,
                 gameChannel: state.gameChannel,
                 players: [],
                 rounds: [],
@@ -156,8 +156,8 @@ export const gameSlice = createSlice({
                 state.isWrong = true;
             }
         },
-        idleTimeout(state, action) {
-            state.isIdleTimeout = true;
+        genServerTimeout(state, action) {
+            state.isGenServerTimeout = true;
         },
         stopRound(state, action) {
             state.isRoundStarted = false;
@@ -300,7 +300,7 @@ export const {
     startGame,
     startRound,
     changeGame,
-    idleTimeout,
+    genServerTimeout,
     updateGameList,
     updateSettings,
     pushSettings,

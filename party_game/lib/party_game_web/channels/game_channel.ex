@@ -42,8 +42,7 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
-    :ok =
-      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.assigns.name, socket.topic]})
+    :ok = ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic]})
 
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
@@ -193,6 +192,12 @@ defmodule PartyGameWeb.GameChannel do
   end
 
   @impl true
+  def handle_in("ping", _, socket) do
+    Server.ping(game_code(socket.topic))
+    {:noreply, socket}
+  end
+
+  @impl true
   def terminate(_reason, socket) do
     remove_player(Server.lookup(game_code(socket.topic)), socket)
   end
@@ -232,10 +237,12 @@ defmodule PartyGameWeb.GameChannel do
     }
   end
 
-  def leave(name, topic) do
+  def leave(topic) do
     players = Map.keys(Presence.list(topic))
 
-    unless Enum.member?(players, name) and players != [] do
+    if players == [] do
+      Server.stop(game_code(topic))
+    else
       elect_new_game_owner(Server.lookup(game_code(topic)), players, topic)
     end
   end

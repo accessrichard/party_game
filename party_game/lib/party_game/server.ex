@@ -7,7 +7,7 @@ defmodule PartyGame.Server do
 
   @supervisor PartyGame.Game.Supervisor
 
-  @timeout 600_000
+  @timeout 900_000
 
   def start(%Game{} = game) do
     opts = [
@@ -61,6 +61,10 @@ defmodule PartyGame.Server do
     GenServer.call(via_tuple(room_name), {:buzz, player_name, answer})
   end
 
+  def ping(room_name) do
+    GenServer.call(via_tuple(room_name), :ping)
+  end
+
   def room_name() do
     rand = random_string(6)
 
@@ -83,6 +87,11 @@ defmodule PartyGame.Server do
   @impl true
   def handle_call(:game, _from, game) do
     {:reply, game, game, @timeout}
+  end
+
+  @impl true
+  def handle_call(:ping, _from, game) do
+    {:reply, :ok, game, @timeout}
   end
 
   @impl true

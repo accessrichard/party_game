@@ -156,6 +156,10 @@ body {
   font-size: 16px;
 }
 
+.align-center {
+  align-items: center;
+}
+
 .flex-center {
   justify-content: center;
 }
@@ -225,6 +229,26 @@ body {
   flex-basis: 0;
   flex-grow: 1;
   flex-shrink: 1;
+}
+
+.flex-inline-form-field {
+  flex-direction: column;
+  display: flex;
+  flex-basis: 0;
+  flex-grow: 6;
+  flex-shrink: 1;
+  padding: 5px;
+}
+
+.flex-inline-form-button {
+  flex-direction: column;
+  display: flex;
+  flex-basis: 0;
+  flex-grow: 1;
+  flex-shrink: 1;
+  padding: 5px;
+  align-items: center;
+  justify-content: center;  
 }
 
 @media (max-width: 800px) {
@@ -625,7 +649,8 @@ form {
 
 .group-compact {
   position: relative;
-  margin: 0px 0;
+  margin: 0;
+  padding: 0 0 20px 0;
 }
 
 textarea {
@@ -733,7 +758,12 @@ label.pointer-events {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.btn:hover {
+.btn:disabled, .btn.btn-submit:disabled {
+  background: rgb(238, 238, 238);
+  color: #959595;
+}
+
+.btn:hover:not([disabled]) {
   color: #8b8b8b;
   box-shadow: 0 7px 14px rgba(0, 0, 0, 0.18), 0 5px 5px rgba(0, 0, 0, 0.12);
 }
@@ -753,7 +783,7 @@ label.pointer-events {
   color: #ffffff;
 }
 
-.btn.btn-submit:hover {
+.btn.btn-submit:hover:not([disabled]) {
   background: #0d8aee;
   color: #deeffd;
 }

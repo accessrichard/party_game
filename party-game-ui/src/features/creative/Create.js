@@ -1,93 +1,30 @@
-import { MULTIPLE_CHOICE, TRUE_FALSE } from '../common/questionTypes';
 import React, { useEffect, useRef, useState } from 'react';
+import {
+    addDefaultFormErrors,
+    download,
+    gameToForm,
+    getGamesNames,
+    getSessionGame,
+    saveSessionStorage,
+    toErrorObject,
+    toFieldObject,
+    toServerSideGame,
+    updateQuestion
+} from './creative';
 import { errors, game, question, questionErrors } from './game';
+import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';
+import { MULTIPLE_CHOICE } from '../common/questionTypes';
 import QuestionForm from './QuestionForm';
 import { changeGame } from '../game/gameSlice';
+import { channelPush } from '../phoenix/phoenixMiddleware';
 import { createGame } from './creativeSlice';
-import { useDispatch } from 'react-redux';
-
-function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-}
-
-
-function removeIndexFromName(name) {
-    if (name && name.indexOf("-!-") !== -1) {
-        return name.substr(0, name.indexOf("-!-"));
-    }
-
-    return name;
-}
-
-function updateQuestion(newQuestion, field, defaultVal, index) {
-    if (typeof newQuestion[index] === 'undefined') {
-        newQuestion[index] = { ...defaultVal };
-    }
-
-    newQuestion[index] = { ...newQuestion[index], ...field };
-}
-
-function mapToTrueFalseQuestion(question) {
-    question.answers = ["True", "False"];
-    question.correct = (question.correct.toString() === "1" && "True") || "False";
-}
-
-function mapToMultipleChoiceQuestion(question) {
-    question.correct = question["answer" + question.correct] || question.answer1;
-    question.answers = Object.entries(question)
-        .filter(([key, value]) => value !== ""
-            && key.startsWith("answer"))
-        .map(val => val[1]);
-}
-
-function toServerSideGame(form) {
-    const exportForm = JSON.parse(JSON.stringify(form));
-    delete exportForm.errors;
-
-    exportForm.questions.forEach((q) => {
-        if (q.type === TRUE_FALSE) {
-            mapToTrueFalseQuestion(q);
-        } else {
-            mapToMultipleChoiceQuestion(q);
-        }
-
-        Object.keys(q).filter((key) => key.startsWith("answer") && key !== "answers")
-            .forEach((key) => {
-                delete q[key];
-            });
-    });
-
-    return exportForm;
-}
-
-function toFieldObject(e) {
-    var name = removeIndexFromName(e.target.name);
-    const obj = {};
-    obj[name] = e.target.value;
-    return obj;
-}
-
-function toErrorObject(e) {
-    var name = removeIndexFromName(e.target.name);
-    const obj = {};
-    obj[name] = e.target.validationMessage;
-    return obj;
-}
 
 const defaultState = {
     ...{ ...game, questions: [question] },
-    errors: errors
+    errors: errors,
+    id: Date.now()
 }
 
 export default function Create(props) {
@@ -96,17 +33,19 @@ export default function Create(props) {
     const formRef = useRef(null);
 
     const [form, setForm] = useState(defaultState);
+    const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
+    const [editGameValue, setEditGameValue] = useState("");
+    const gameChannel = useSelector(state => state.game.gameChannel);
 
     useEffect(() => {
         if (props.game) {
-            setForm(props.game);
+            setForm(addDefaultFormErrors(props.game));
         } else {
             setForm(defaultState);
         }
     }, [props.game]);
 
-
-    function handleChanges(e, index) {      
+    function handleChanges(e, index) {
         let newForm = { ...form, ...{ questions: [...form.questions] } };
         if (index !== undefined) {
             updateQuestion(newForm.questions, toFieldObject(e), question, index);
@@ -116,17 +55,50 @@ export default function Create(props) {
             newForm.errors[e.target.name] = e.target.validationMessage;
         }
 
-        setForm(newForm);      
-          
-        if (e.type === 'invalid'){
+        setForm(newForm);
+
+        if (e.type === 'invalid') {
             e.preventDefault();
+        }
+
+        if (!isGenServerDebounced) {
+            setIsGenServerDebounced(true);    
         }
     }
 
+    function onEditGameChange(e) {
+        setEditGameValue(e.target.value);
+    }
+
+    function onEditGameClick(e) {
+        e.preventDefault();
+        const game = getSessionGame(editGameValue);
+        setForm(gameToForm(game));
+    }
+
+    useEffect(() => {
+        if (!isGenServerDebounced) {
+            return;
+        }
+
+        var timer = setTimeout(() => {
+            dispatch(channelPush({
+                topic: gameChannel,
+                event: 'ping'
+            }));
+
+            setIsGenServerDebounced(false);
+        }, 1000 * 30);
+
+        return () => clearTimeout(timer);
+    }, [isGenServerDebounced, dispatch, gameChannel]);
+
     function addQuestion(e) {
         if (formRef.current.reportValidity()) {
+            saveSessionStorage(form);
             setForm({ ...form, questions: [...form.questions, question] });
         }
+
         e.preventDefault();
     }
 
@@ -152,9 +124,11 @@ export default function Create(props) {
         if (!formRef.current.reportValidity()) {
             return;
         }
+
+        saveSessionStorage(form);
         const serverSideGame = toServerSideGame(form);
-        dispatch(createGame({ game: serverSideGame, redirect: true }));
         dispatch(changeGame(serverSideGame.name));
+        dispatch(createGame({ game: serverSideGame, redirect: true }));
 
     }
 
@@ -180,7 +154,7 @@ export default function Create(props) {
                                         onInvalid={handleChanges}
                                         onChange={handleChanges}
                                         onBlur={handleChanges}
-                                        value={form.name}                                        
+                                        value={form.name}
                                     />
                                     <span className="highlight"></span>
                                     <span className="bar"></span>
@@ -206,16 +180,48 @@ export default function Create(props) {
                             </QuestionForm>
                         </div>
                     ))}
-                    <div className="flex-row flex-center">
-                        <div className="btn-box pd-5-lr">
-                            <button className="btn btn-submit" type="submit" onClick={addQuestion}>Add Question</button>
+
+                    <div className='card'>
+                        <div className="flex-row flex-center">
+                            <div className="btn-box pd-5">
+                                <button className="btn btn-submit" type="submit" onClick={addQuestion}>Add Question</button>
+                            </div>
+                            <div className="btn-box pd-5">
+                                <button className="btn btn-submit" type="submit" onClick={downloadGame}>Download Game</button>
+                            </div>
+                            <div className="btn-box pd-5">
+                                <button className="btn btn-submit" type="submit" onClick={play}>Play</button>
+                            </div>
                         </div>
-                        <div className="btn-box pd-5-lr">
-                            <button className="btn btn-submit" type="submit" onClick={downloadGame}>Download Game</button>
-                        </div>
-                        <div className="btn-box pd-5-lr">
-                            <button className="btn btn-submit" type="submit" onClick={play}>Play</button>
-                        </div>
+                        <span>Games are not saved, however you can download and import them later on...</span>
+                        {getGamesNames().length > 0 &&
+                            <div className="flex-row">
+                                <div className="group flex-inline-form-field">
+                                    <select
+                                        autoComplete="off"
+                                        name="edit-games"
+                                        onChange={onEditGameChange}
+                                        value={editGameValue}
+                                    >
+                                        {["", ...(getGamesNames() || [])].map((val) =>
+                                            <option key={val} value={val}>{val}</option>
+                                        )}
+                                    </select>
+                                    <span className="highlight"></span>
+                                    <span className="bar"></span>
+                                    <label>Edit Game From Session</label>
+                                </div>
+                                <div className="pd-5-lr flex-inline-form-button">
+                                    <button
+                                        className="btn btn-submit"
+                                        disabled={editGameValue === ''}
+                                        type="submit"
+                                        onClick={onEditGameClick}>
+                                        Edit Game
+                                    </button>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </form>
             </div>

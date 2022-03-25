@@ -14,7 +14,7 @@ import React, { useEffect, useState } from 'react';
 import {
     changeGame,
     changeOwner,
-    idleTimeout,
+    genServerTimeout,
     listGames,
     mergeGameList,
     phxReply,
@@ -79,7 +79,7 @@ const persistedEvents = (topic) => [
     },
     {
         event: 'game_server_idle_timeout',
-        dispatcher: idleTimeout(),
+        dispatcher: genServerTimeout(),
         topic,
     },
     {
@@ -217,9 +217,8 @@ export default function Lobby() {
         return <Navigate to="/game" />
     }
 
-
-    function onIdleTimeout() {
-        dispatch(idleTimeout());
+    function ongenServerTimeout() {
+        dispatch(genServerTimeout());
     }
 
     return (
@@ -243,7 +242,7 @@ export default function Lobby() {
             <span className="font-14px">
                 <Timer
                     isActive={isTimerActive}
-                    onTimerCompleted={onIdleTimeout}
+                    onTimerCompleted={ongenServerTimeout}
                     numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
 

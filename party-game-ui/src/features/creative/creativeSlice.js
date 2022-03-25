@@ -7,7 +7,7 @@ import { push } from "redux-first-history";
 export const createGame = createAsyncThunk(
     'creative/createGame',
     async (gameObj, thunkAPI) => {
-        const { game, redirect} = gameObj;
+        const { game, redirect } = gameObj;
         const response = await api.validate(game).catch((err) => {
             console.log(err);
         });
@@ -15,7 +15,7 @@ export const createGame = createAsyncThunk(
         thunkAPI.dispatch(saveGame({ isValid: response.isValid, errors: response.errors, game }));
 
         if (response.isValid && redirect) {
-             thunkAPI.dispatch(push('/lobby'));
+            thunkAPI.dispatch(push('/lobby'));
         }
 
         return response;
@@ -32,18 +32,15 @@ const initialState = {
 export const creativeSlice = createSlice({
     name: 'creative',
     initialState: initialState,
-    reducers: {       
+    reducers: {
         saveGame: (state, action) => {
             const { game, errors, isValid } = action.payload;
-            const newGame = { game, errors, isValid }
-            if (state.games.find((game) => game.name === newGame.game.name)) {
-                state.games = state.games.map(game => game.name === newGame.game.name || newGame.game);
-                return;
+            const newGame = { game, errors, isValid }            
+            if (state.games.find((game) => game.game.name === newGame.game.name)) {
+                state.games = state.games.map(game => game.game.name === newGame.game.name ? newGame : game);
+            } else {
+                state.games.push(newGame);
             }
-
-            const games = [...state.games]
-            games.push(newGame);
-            state.games = games;
         }
     },
     extraReducers: {

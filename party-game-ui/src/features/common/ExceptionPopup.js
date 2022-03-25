@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import IdleTimeout from "./IdleTimeout";
+import GenServerTimeout from "./GenServerTimeout";
 import { Outlet } from 'react-router';
 import SocketDisconnect from "./SocketDisconnect";
 
@@ -14,16 +14,16 @@ export default function ExceptionPopup(props) {
         }
     }
 
-    function onIdleTimeout() {
+    function ongenServerTimeout() {
         if (shownError !== "") {
-            setShownError("onIdleTimeout");
+            setShownError("onGenServerTimeout");
         }
     }
 
     return (
         <>
             {(shownError === "" || shownError === "onDisconnect") && <SocketDisconnect onDisconnect={onDisconnect} />}
-            {(shownError === "" || shownError === "onIdleTimeout") && <IdleTimeout onIdleTimeout={onIdleTimeout} />}
+            {(shownError === "" || shownError === "onGenServerTimeout") && <GenServerTimeout ongenServerTimeout={ongenServerTimeout} />}
             <Outlet/>
         </>
     )

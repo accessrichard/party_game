@@ -1,15 +1,6 @@
 defmodule PartyGame.ChannelWatcher do
   @moduledoc """
-  When a user leaves a game we need a mechanism to notify other users.any()
-
-  intercepting presence_diff out messages is too noisy as a game room of 25
-  players would run handle_out 25 times in a row.
-
-  e.g.
-  intercept ["presence_diff"]
-
-  @impl true
-  def handle_out("presence_diff", diff, socket)
+  When a user leaves a game we need a mechanism to notify other users.
 
   Using a genserver to monitor the channel process exit to notify users
   of players leaving.
@@ -20,8 +11,6 @@ defmodule PartyGame.ChannelWatcher do
   use GenServer
 
   @name __MODULE__
-
-
 
   ## Client API
 

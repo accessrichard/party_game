@@ -148,8 +148,7 @@ const phoenixMiddleware = () => {
     }
 
     function join(store, action) {
-        if (!socket) {
-            console.log("Socket not connected!");
+        if (!socket) {            
             return;
         }
 
