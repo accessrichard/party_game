@@ -1,7 +1,8 @@
+import { Outlet } from 'react-router';
 import React from 'react';
 
 export default function InlineFacesSprite() {
-    return (
+    return (<>
         <svg xmlns="http://www.w3.org/2000/svg" className="hidden">
             <defs>
                 <symbol id="happy1" viewBox="0 0 58 58">
@@ -110,5 +111,7 @@ export default function InlineFacesSprite() {
                 </symbol>
             </defs>
         </svg>
+        <Outlet />
+    </>
     );
 }

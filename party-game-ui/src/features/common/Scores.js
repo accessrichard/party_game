@@ -10,7 +10,9 @@ const Scores = (props) => {
                 {scores.filter(x => x.name !== "None").map((score, key) =>
                     <li key={key} className="pd-5">
                         <div><span className="bolder">Player:</span> {score && score.name}</div>
-                        <div><span className="bolder">Score:</span> {score && score.score} - {score && ((score.score / rounds) * 100) }%</div>
+                        <div><span className="bolder">Score:</span> {score && score.score} - {score && Math.round((score.score / Math.max(rounds - 1, 1)) * 100) }%</div>
+                        {console.log(score.score)}
+                        {console.log(rounds)}
                         
                     </li>
                 )}

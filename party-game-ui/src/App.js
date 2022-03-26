@@ -11,6 +11,7 @@ import ExceptionPopup from './features/common/ExceptionPopup';
 import Game from './features/game/Game';
 import GoogleAnalytics from './features/common/GoogleAnalytics';
 import Import from './features/creative/Import';
+import InlineFacesSprite from './features/common/InlineFacesSprite';
 import Join from './features/game/Join';
 import Landing from './features/Landing';
 import Lobby from './features/game/Lobby';
@@ -35,10 +36,12 @@ function App() {
             <Route element={<ExceptionPopup />}>
               <Route exact path="/lobby" element={<Lobby />} />
               <Route exact path="/settings" element={<Settings />} />
-              <Route exact path="/score" element={<Score />} />
+              <Route element={<InlineFacesSprite />}>
+                <Route exact path="/score" element={<Score />} />
+                <Route exact path="/game" element={<Game />} />
+              </Route>
               <Route exact path="/create" element={<Create />} />
               <Route exact path="/import" element={<Import />} />
-              <Route exact path="/game" element={<Game />} />
             </Route>
           </Route>
         </Route>
