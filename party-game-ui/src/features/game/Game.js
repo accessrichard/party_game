@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
+import InlineFacesSprite from '../common/InlineFacesSprite';
 import Timer from './Timer';
 import {
     channelPush
 } from '../phoenix/phoenixMiddleware';
 import { history } from '../store';
 import { push } from "redux-first-history";
-import sprite from '../../img/face_sprite.svg';
 import usePrevious from '../usePrevious';
 
 const sendEvent = (topic, channelData, action) => (
@@ -161,7 +161,8 @@ export default function Game() {
 
     return (
         <React.Fragment>
-            <link rel="prefetch" href={sprite} as="image" type="image/svg+xml" />
+            <InlineFacesSprite />
+
             <div className="full-width full-height flex-container flex-column">
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>
@@ -169,8 +170,6 @@ export default function Game() {
                 <div className='flex-column'>
                     {isOver && <span>Game Over</span>}
                     {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
-
-
                 </div>
                 <div className='flex-coumn empty-space offset-phone-addressbar'>
                     <Flash flash={flash}></Flash>

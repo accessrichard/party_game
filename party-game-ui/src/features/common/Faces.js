@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import sprite from '../../img/face_sprite.svg';
-
 const HAPPY_FACE_SVG_COUNT = 3;
 const SAD_FACE_SVG_COUNT = 6;
 
@@ -27,11 +25,10 @@ const Faces = (props) => {
 
     return (
         <React.Fragment>
-           
             {face && <svg className={className || "app-logo"}>
-                <use
-                    href={sprite + "#" + face}>
-                </use>
+                <svg className={className || "app-logo"}>
+                    <use href={"#" + face} />
+                </svg>
             </svg>}
 
         </React.Fragment>
