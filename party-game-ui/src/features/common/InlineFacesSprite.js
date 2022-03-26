@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function InlineFacesSprite() {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg">
+        <svg xmlns="http://www.w3.org/2000/svg" className="hidden">
             <defs>
                 <symbol id="happy1" viewBox="0 0 58 58">
                     <path style={{ fill: "#fdc794" }} d="M29.392 54.999c11.246.156 17.52-4.381 21.008-9.189 3.603-4.966 4.764-11.283 3.647-17.323-4.043-21.845-24.655-21.66-24.655-21.66S8.781 6.642 4.738 28.488c-1.118 6.04.044 12.356 3.647 17.323 3.487 4.807 9.761 9.344 21.007 9.188z" />

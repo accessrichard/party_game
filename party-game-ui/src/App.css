@@ -188,12 +188,12 @@ body {
 }
 
 .flex-item {
-  padding:10px;
-  box-sizing: border-box;  
-  display:flex;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
 }
 
-.flex-2-col{
+.flex-2-col {
   flex: 50%;
   height: 400px;
 }
@@ -248,7 +248,7 @@ body {
   flex-shrink: 1;
   padding: 5px;
   align-items: center;
-  justify-content: center;  
+  justify-content: center;
 }
 
 @media (max-width: 800px) {
@@ -334,6 +334,10 @@ body {
 
 .light-background {
   background: whitesmoke;
+}
+
+.hidden {
+  display: none;
 }
 
 /* Smartphones (portrait and landscape) ----------- */
@@ -469,7 +473,7 @@ body {
     padding: 5px 15px;
     position: relative;
   }
-  
+
   .chat-group {
     position: absolute;
     bottom: 15px;
@@ -483,6 +487,7 @@ body {
     font-weight: bold;
     margin: .5vm;
   }
+
   .flex-2-col {
     flex: 100%;
   }
