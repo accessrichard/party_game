@@ -117,8 +117,7 @@ export const gameSlice = createSlice({
         },
         startRound: (state, action) => {
             state.isGameStarted = !action.payload.data.isOver;
-            state.isRoundStarted = true;
-            state.round += 1;
+            state.isRoundStarted = true;            
             state.question = action.payload.data.question;
             state.answers = action.payload.data.answers;
             state.flash = {};
@@ -127,6 +126,9 @@ export const gameSlice = createSlice({
             state.roundWinner = '';
             state.isWrong = false;
             state.isOver = action.payload.data.isOver;
+            if (!action.payload.data.isOver) {
+                state.round += 1;
+            }
         },
         startGame: (state) => {
             state.isGameStarted = true;
@@ -149,7 +151,7 @@ export const gameSlice = createSlice({
             state.flash = action.payload
         },
         changeOwner: (state, action) => {
-            state.isGameOwner = action.payload.room_owner ===  state.playerName;
+            state.isGameOwner = action.payload.room_owner === state.playerName;
         },
         phxReply(state, action) {
             if (action.payload.status === "wrong") {
@@ -190,7 +192,7 @@ export const gameSlice = createSlice({
             state.gameCode = action.payload.room_name;
             state.gameChannel = `game:${action.payload.room_name}`;
             state.players = action.payload.players;
-            state.isGameOwner = action.payload.room_owner ===  action.payload.playerName;
+            state.isGameOwner = action.payload.room_owner === action.payload.playerName;
             state.name = action.payload.name || '';
         },
         updateSettings(state, action) {
@@ -217,7 +219,7 @@ export const gameSlice = createSlice({
         userJoinsRoom(state, action) {
             if (!state.players.filter(x => x.name === action.payload.name)) {
                 state.players.push(action.payload);
-            }            
+            }
         },
         clearJoinError(state, action) {
             state.api.join.error = "";
