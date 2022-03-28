@@ -3,6 +3,7 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 
 import api from '../game/gameApi';
 import { push } from "redux-first-history";
+import { toClientSettings } from './settingsApi';
 
 export const listGames = createAsyncThunk(
     'game/listGames',
@@ -51,12 +52,13 @@ export const stopGame = createAsyncThunk(
 )
 
 const initialState = {
-    settings: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 1, rounds: 10 },
+    settings: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 1, rounds: 10, isNewGamePrompt: true },
     round: 0,
     isGameStarted: false,
     isPaused: false,
-    startCountdown: true,
+    startCountdown: false,
     isRoundStarted: false,
+    isNewGamePrompt: false,
     isOver: false,
     question: null,
     correct: '',
@@ -72,7 +74,7 @@ const initialState = {
     gameChannel: '',
     players: [],
     isGameOwner: false,
-    isGenServerTimeout: false,
+    genServerTimeout: null,
     api: {
         start: { ...apiState },
         join: { ...apiState },
@@ -81,43 +83,40 @@ const initialState = {
     }
 };
 
-function addStopRoundEvent(state, action) {
-    const event = action.payload.event;
-    const msg = `${new Date(event.timestamp).toLocaleString()} - ${action.payload.player.name}: ${event.action}`
-    state.events.unshift(msg);
-    if (state.events.length > 50) {
-        state.events.pop();
-    }
+function resetGame(state) {
+    const savedState = {
+        playerName: state.playerName,
+        name: state.name,
+        gameCode: state.gameCode,
+        round: 0,               
+        gameChannel: state.gameChannel,
+        players: [],
+        rounds: [],
+        isGameOwner: state.isGameOwner,
+        api: state.api,
+        settings: {
+            ...state.settings
+        }
+    };
+
+    Object.assign(state, { ...initialState, ...savedState});
 }
 
 export const gameSlice = createSlice({
     name: 'game',
     initialState: initialState,
-    reducers: {
-        resetState: (state) => {
-            const savedState = {
-                playerName: state.playerName,
-                name: state.name,
-                gameCode: state.gameCode,
-                isGenServerTimeout: state.isGenServerTimeout,
-                gameChannel: state.gameChannel,
-                players: [],
-                rounds: [],
-                isGameOwner: state.isGameOwner,
-                api: state.api,
-                settings: {
-                    ...state.settings
-                }
-            };
-
-            Object.assign(state, { ...initialState, ...savedState });
-        },
+    reducers: {       
         clearWrongAnswer: (state) => {
             state.isWrong = false;
         },
         startRound: (state, action) => {
+            if (action.payload.isNew) {
+                resetGame(state)
+            }
+            
+            state.isNewGamePrompt = false;
             state.isGameStarted = !action.payload.data.isOver;
-            state.isRoundStarted = true;            
+            state.isRoundStarted = true;
             state.question = action.payload.data.question;
             state.answers = action.payload.data.answers;
             state.flash = {};
@@ -125,23 +124,12 @@ export const gameSlice = createSlice({
             state.correct = '';
             state.roundWinner = '';
             state.isWrong = false;
-            state.isOver = action.payload.data.isOver;
+            state.isOver = action.payload.data.isOver;            
+
             if (!action.payload.data.isOver) {
                 state.round += 1;
             }
-        },
-        startGame: (state) => {
-            state.isGameStarted = true;
-            state.isRoundStarted = false;
-            state.round = 0;
-            state.rounds = [];
-            state.flash = {};
-            state.startCountdown = false;
-            state.correct = '';
-            state.roundWinner = '';
-            state.isWrong = false;
-            state.isOver = false;
-        },
+        },        
         stopGame: (state) => {
             state.isGameStarted = false;
             state.startCountdown = false;
@@ -150,24 +138,33 @@ export const gameSlice = createSlice({
         setFlash: (state, action) => {
             state.flash = action.payload
         },
-        changeOwner: (state, action) => {
+        handleChangeOwner: (state, action) => {
             state.isGameOwner = action.payload.room_owner === state.playerName;
         },
-        phxReply(state, action) {
-            if (action.payload.status === "wrong") {
-                state.isWrong = true;
-            }
+        handleWrongAnswer(state, action) {
+            state.isWrong = true;
         },
-        genServerTimeout(state, action) {
-            state.isGenServerTimeout = true;
+        handleGenServerTimeout(state, action) {
+            state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
-        stopRound(state, action) {
+        unansweredTimeout: (state, action) => {
             state.isRoundStarted = false;
             state.isWrong = false;
-            if (action.payload.event) {
-                addStopRoundEvent(state, action);
+            if (!state.isOver && !state.isPaused) {
+                state.startCountdown = true;
             }
-
+        },
+        handleNewGameCreated(state, action) {
+            resetGame(state);
+            if (state.settings.isNewGamePrompt) {
+                state.isNewGamePrompt = true
+            } else {
+                state.isGameStarted = true;                
+            }
+        },
+        handleCorrectAnswer(state, action) {
+            state.isRoundStarted = false;
+            state.isWrong = false;
             state.rounds = action.payload.data.rounds;
             state.flash = {
                 text: `${action.payload.data.winner} answered correct!`,
@@ -198,25 +195,10 @@ export const gameSlice = createSlice({
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
         },
-        pushSettings: (state, action) => {
-
-            if (action.payload.settings.question_time) {
-                state.settings.questionTime = action.payload.settings.question_time;
-            }
-
-            if (action.payload.settings.next_question_time) {
-                state.settings.nextQuestionTime = action.payload.settings.next_question_time;
-            }
-
-            if (action.payload.settings.wrong_answer_timeout) {
-                state.settings.wrongAnswerTimeout = action.payload.settings.wrong_answer_timeout;
-            }
-
-            if (action.payload.settings.rounds) {
-                state.settings.rounds = action.payload.settings.rounds;
-            }
+        handleUpdateSettings: (state, action) => {
+            state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
         },
-        userJoinsRoom(state, action) {
+        handleJoin(state, action) {
             if (!state.players.filter(x => x.name === action.payload.name)) {
                 state.players.push(action.payload);
             }
@@ -293,23 +275,23 @@ export const mergeGameList = (serverGames, clientGames) => {
 };
 
 export const {
-    changeOwner,
     start,
-    stop,
-    redirect,
-    resetState,
-    stopRound,
-    startGame,
     startRound,
+    stop,
+    unansweredTimeout,
+    redirect,
+    handleChangeOwner,
+    handleCorrectAnswer,    
+    handleGenServerTimeout,
+    handleWrongAnswer,
+    handleNewGameCreated,
+    handleJoin,
     changeGame,
-    genServerTimeout,
     updateGameList,
     updateSettings,
-    pushSettings,
+    handleUpdateSettings,
     clearWrongAnswer,
     syncGameState,
-    phxReply,
-    userJoinsRoom,
     clearJoinError,
     setFlash } = gameSlice.actions;
 

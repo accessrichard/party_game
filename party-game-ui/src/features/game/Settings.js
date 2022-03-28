@@ -10,13 +10,15 @@ function Settings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.game);
-    const [form, setForm] = useState({ ...settings, errors: {
-        rounds: "",
-        questionTime: "",
-        nextQuestionTime: "",
-        wrongAnswerTimeout: ""
-
-    } });
+    const [form, setForm] = useState({
+        ...settings, errors: {
+            rounds: "",
+            questionTime: "",
+            nextQuestionTime: "",
+            wrongAnswerTimeout: "",
+            isNewGamePrompt: true
+        }
+    });
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -27,7 +29,7 @@ function Settings() {
         }
     }
 
-    function onNumberChange(e) {                
+    function onNumberChange(e) {
         e.preventDefault();
         const { name, value, validationMessage } = e.target;
         let newForm = {
@@ -39,7 +41,16 @@ function Settings() {
         setForm(newForm);
     }
 
+    function onBoolChange(e) {
+        const { name, value } = e.target;
+        let newForm = {
+            ...form,
+            [name]: value === 'true'
+        };
 
+        setForm(newForm);
+    }
+    
     return (
         <div className="offset-bottom center-65">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
@@ -50,11 +61,11 @@ function Settings() {
                         <input required
                             autoComplete="off"
                             name="rounds"
-                            type="number"                            
+                            type="number"
                             min="1"
                             max="100"
                             value={form.rounds}
-                            onChange={onNumberChange}                                                        
+                            onChange={onNumberChange}
                         />
                         <span className="highlight"></span>
                         <span className="bar"></span>
@@ -106,6 +117,25 @@ function Settings() {
                         <span className="bar"></span>
                         <label>Wrong Answer Timeout (seconds):</label>
                         <InputError className="error shake" errors={[form.errors.wrongAnswerTimeout]} />
+                    </div>
+                    <div>
+                        <span>Enable countdown before starting game: </span>
+                        <label className='pointer-events'>
+                            <input type="radio"
+                                name="isNewGamePrompt"
+                                value={true}
+                                checked={form.isNewGamePrompt}
+                                onChange={onBoolChange} />
+                            <span>Yes</span>
+                        </label>
+                        <label className='pointer-events'>
+                            <input type="radio"
+                                name="isNewGamePrompt"
+                                value={false}
+                                checked={!form.isNewGamePrompt}
+                                onChange={onBoolChange} />
+                            <span>No</span>
+                        </label>
                     </div>
                     <div className="btn-box">
                         <button className="btn btn-submit" type="submit">Save</button>

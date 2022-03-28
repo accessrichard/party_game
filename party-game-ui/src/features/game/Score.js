@@ -1,10 +1,11 @@
-import { getScores, resetState } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Faces from '../common/Faces';
 import { Navigate } from 'react-router-dom';
+import NewGamePrompt from '../common/NewGamePrompt';
 import React from 'react';
 import Scores from '../common/Scores';
+import { getScores } from './gameSlice';
 import { push } from "redux-first-history";
 
 function displayWinner(scores) {
@@ -38,12 +39,12 @@ function Score() {
 
     function playAgain(e) {
         e.preventDefault();
-        dispatch(resetState());
         dispatch(push('/lobby'));
     }
 
     return (
         <React.Fragment>
+            <NewGamePrompt/>
             <div className="pd-25 md-5 large-title">{displayWinner(scores)}</div>
             <Faces isHappy={true} className="small-logo spin" />
             <Scores scores={scores.scores} rounds={round} />

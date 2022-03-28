@@ -105,7 +105,7 @@ defmodule PartyGame.Server do
 
   @impl true
   def handle_info(:timeout, game) do
-    PartyGameWeb.Endpoint.broadcast!("game:#{game.room_name}", "game_server_idle_timeout", %{})
+    PartyGameWeb.Endpoint.broadcast!("game:#{game.room_name}", "handle_game_server_idle_timeout", %{"reason" => "Game Server Idle Timeout"})
     {:stop, :normal, game}
   end
 

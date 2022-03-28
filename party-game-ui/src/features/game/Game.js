@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { clearWrongAnswer, setFlash } from './gameSlice';
+import { clearWrongAnswer, setFlash, unansweredTimeout } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
+import { Navigate } from 'react-router-dom';
 import Timer from './Timer';
 import {
     channelPush
@@ -37,7 +38,7 @@ export default function Game() {
         correct,
         roundWinner,
         settings,
-        startCountdown,
+        startCountdown
     } = useSelector(state => state.game);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -47,11 +48,7 @@ export default function Game() {
 
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
-    const prevRound = usePrevious(round);
-
-    if (!gameChannel) {
-        dispatch(push('/'));
-    }
+    const prevRound = usePrevious(round);    
 
     useEffect(() => {
         if (timerStartDate === null) {
@@ -89,9 +86,9 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);
 
-    function startClick(e, action, payload = {}) {
+    function startClick(e) {
         e && e.preventDefault();
-        startClickCallback(action, payload);
+        startClickCallback(correct ? "start_round" : "next_question");
     }
 
     function onTimerCompleted() {
@@ -100,18 +97,24 @@ export default function Game() {
         }
 
         setIsTimerActive(false);
+        if (!isQuestionAnswered && isRoundStarted) {
+            dispatch(unansweredTimeout())
+            return;
+        }
+
         startClickCallback(correct ? "start_round" : "next_question");
     }
 
     function onAnswerClick(e, answer) {
         setIsQuestionAnswered(true);
         const data = { answer, name: playerName };
-        dispatch(channelPush(sendEvent(gameChannel, data, "buzz")));
+        dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
     }
 
     const startClickCallback = useCallback((action, payload = {}) => {
         setIsQuestionAnswered(false);
         const data = { name: playerName, ...payload };
+        console.log({ data, action })
         dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
     }, [gameChannel, dispatch, playerName])
 
@@ -156,6 +159,10 @@ export default function Game() {
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";
+    }
+
+    if (!gameChannel) {
+        return <Navigate to="/"/>
     }
 
     return (
@@ -205,14 +212,14 @@ export default function Game() {
                     </div>
 
                     <Answers onAnswerClick={onAnswerClick}
-                        isDisabled={(!isRoundStarted && isQuestionAnswered) || (correct !== "" || isWrong)}
+                        isDisabled={(!isRoundStarted) || (correct !== "" || isWrong)}
                         answers={answers}
                         correct={correct}>
                     </Answers>
 
                     <div className="flex-column">
                         {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
-                            <a className="app-link" href="/#" onClick={(e) => startClick(e, "start_round")}>Next</a>}
+                            <a className="app-link" href="/#" onClick={startClick}>Next</a>}
                     </div>
                 </div>
 

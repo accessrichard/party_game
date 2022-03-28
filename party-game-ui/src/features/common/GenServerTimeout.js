@@ -7,25 +7,28 @@ import { socketDisconnect } from '../phoenix/phoenixMiddleware';
 export default function GenServerTimeout(props) {
 
     const dispatch = useDispatch();
-    const isGenServerTimeout = useSelector(state => state.game.isGenServerTimeout);
+    const genServerTimeout = useSelector(state => state.game.genServerTimeout);
 
     useEffect(() => {
-        if (!isGenServerTimeout) {
+        if (!genServerTimeout) {
             return;
         }
 
         dispatch(socketDisconnect());
         props.ongenServerTimeout && props.ongenServerTimeout();
 
-    }, [isGenServerTimeout, dispatch, props]);
+    }, [genServerTimeout, dispatch, props]);
 
 
     return (
         <React.Fragment>
-            {isGenServerTimeout &&
+            {genServerTimeout &&
                 <Popup
                     title="Game idle timeout expired."
-                    content={<a href="/">Click here to restart</a>}
+                    content={<div>
+                        <div>{genServerTimeout.reason && genServerTimeout.reason}</div>
+                        <a href="/">Click here to restart</a>
+                    </div>}
                 />
             }
         </React.Fragment >

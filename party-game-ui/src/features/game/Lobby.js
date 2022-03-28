@@ -10,19 +10,20 @@ import {
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
+import { NavLink, Navigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
     changeGame,
-    changeOwner,
-    genServerTimeout,
+    handleChangeOwner,
+    handleCorrectAnswer,
+    handleGenServerTimeout,
+    handleJoin,
+    handleNewGameCreated,
+    handleUpdateSettings,
+    handleWrongAnswer,
     listGames,
     mergeGameList,
-    phxReply,
-    pushSettings,
-    startGame,
-    startRound,
-    stopRound,
-    userJoinsRoom
+    startRound
 } from './gameSlice';
 import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,15 +32,15 @@ import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
 import Logo from '../common/Logo';
-import { NavLink } from 'react-router-dom';
-import { Navigate } from 'react-router-dom';
+import NewGamePrompt from '../common/NewGamePrompt';
 import Timer from './Timer';
 import { push } from "redux-first-history";
+import { toServerSettings } from './settingsApi';
 
 const persistedEvents = (topic) => [
     {
-        event: 'join',
-        dispatcher: userJoinsRoom(),
+        event: 'handle_join',
+        dispatcher: handleJoin(),
         topic,
     },
     {
@@ -53,39 +54,39 @@ const persistedEvents = (topic) => [
         topic
     },
     {
-        event: 'start',
-        dispatcher: startGame(),
+        event: 'handle_update_settings',
+        dispatcher: handleUpdateSettings(),
         topic
     },
     {
-        event: 'update_settings',
-        dispatcher: pushSettings(),
-        topic
-    },
-    {
-        event: 'buzz',
-        dispatcher: stopRound(),
+        event: 'handle_correct_answer',
+        dispatcher: handleCorrectAnswer(),
         topic,
     },
     {
-        event: 'next_question',
+        event: 'handle_next_question',
         dispatcher: startRound(),
         topic,
     },
     {
-        event: 'phx_reply',
-        dispatcher: phxReply(),
+        event: 'handle_wrong_answer',
+        dispatcher: handleWrongAnswer(),
         topic,
     },
     {
-        event: 'game_server_idle_timeout',
-        dispatcher: genServerTimeout(),
+        event: 'handle_game_server_idle_timeout',
+        dispatcher: handleGenServerTimeout(),
         topic,
     },
     {
-        event: 'room_owner_change',
-        dispatcher: changeOwner(),
+        event: 'handle_room_owner_change',
+        dispatcher: handleChangeOwner(),
         topic,
+    },
+    {
+        event: 'handle_new_game_created',
+        dispatcher: handleNewGameCreated(),
+        topic
     }
 ]
 
@@ -99,7 +100,6 @@ export default function Lobby() {
     const serverGames = useSelector(state => state.game.api.list.data);
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
     const channels = useSelector(state => state.phoenix.channels);
-
     const socketStatus = useSelector(state => state.phoenix.socket.status);
 
     useEffect(() => {
@@ -118,12 +118,7 @@ export default function Lobby() {
             topic: gameChannel,
             event: 'update_settings',
             data: {
-                settings: {
-                    question_time: settings.questionTime,
-                    next_question_time: settings.nextQuestionTime,
-                    wrong_answer_timeout: settings.wrongAnswerTimeout,
-                    rounds: settings.rounds
-                }
+                settings: toServerSettings(settings)
             }
         }));
 
@@ -168,7 +163,6 @@ export default function Lobby() {
         if (gameList && gameList.length > 0) {
             dispatch(changeGame(gameList[0].name));
         }
-
     }, [gameList, dispatch, name]);
 
     useEffect(() => {
@@ -190,7 +184,7 @@ export default function Lobby() {
     useEffect(() => {
         const topic = `game:${gameCode}`;
 
-        if (gameCode && channels.some(x => x.topic === topic 
+        if (gameCode && channels.some(x => x.topic === topic
             && (x.status === CHANNEL_JOINED || x.status === CHANNEL_ERROR))) {
             return;
         }
@@ -213,12 +207,12 @@ export default function Lobby() {
         dispatch(changeGame(e.target.value));
     }
 
-    if (isGameStarted) {
-        return <Navigate to="/game" />
+    function onGenServerTimeout() {
+        dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
     }
 
-    function ongenServerTimeout() {
-        dispatch(genServerTimeout());
+    if (isGameStarted) {
+        return <Navigate to="/game" />
     }
 
     return (
@@ -231,7 +225,6 @@ export default function Lobby() {
                             title="Buzz Games"
                             titleClass="larger-title landscape-hidden" />
                     </span>
-
                 </div>
             </header>
 
@@ -242,7 +235,7 @@ export default function Lobby() {
             <span className="font-14px">
                 <Timer
                     isActive={isTimerActive}
-                    onTimerCompleted={ongenServerTimeout}
+                    onTimerCompleted={onGenServerTimeout}
                     numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
 
@@ -286,6 +279,7 @@ export default function Lobby() {
                     </div>
                 </div>}
             <Chat />
+            <NewGamePrompt/>
         </React.Fragment >
     );
 }
