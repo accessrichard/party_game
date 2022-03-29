@@ -71,7 +71,7 @@ defmodule PartyGame.GameRoom do
   end
 
   def remove_player(%Game{} = game, player_name) do
-    %{game | players: Enum.filter(game.players, &(&1 !== player_name))}
+    %{game | players: Enum.filter(game.players, &(&1.name !== player_name))}
   end
 
   def start_game(%Game{} = game) do

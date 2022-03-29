@@ -19,7 +19,6 @@ import {
     handleGenServerTimeout,
     handleJoin,
     handleNewGameCreated,
-    handleUpdateSettings,
     handleWrongAnswer,
     listGames,
     mergeGameList,
@@ -51,11 +50,6 @@ const persistedEvents = (topic) => [
     {
         event: 'presence_diff',
         dispatcher: syncPresenceDiff(),
-        topic
-    },
-    {
-        event: 'handle_update_settings',
-        dispatcher: handleUpdateSettings(),
         topic
     },
     {
@@ -114,14 +108,6 @@ export default function Lobby() {
             return;
         }
 
-        dispatch(channelPush({
-            topic: gameChannel,
-            event: 'update_settings',
-            data: {
-                settings: toServerSettings(settings)
-            }
-        }));
-
         const list = mergeGameList(serverGames, creativeGames);
 
         let game = list.find(x => x.name === name);
@@ -132,7 +118,7 @@ export default function Lobby() {
         }
 
         const payload = { game: game, rounds: settings.rounds };
-        const data = { name: playerName, ...payload };
+        const data = { name: playerName, settings: toServerSettings(settings),  ...payload };
         dispatch(channelPush({
             topic: gameChannel,
             event: "new_game",

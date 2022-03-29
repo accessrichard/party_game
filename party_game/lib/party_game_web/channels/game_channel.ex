@@ -9,7 +9,6 @@ defmodule PartyGameWeb.GameChannel do
   alias PartyGame.GameRoom
   alias PartyGame.Game.Player
   alias PartyGame.Games.Games
-  alias PartyGame.Game.Settings
 
   @channel_name "game:"
 
@@ -39,7 +38,8 @@ defmodule PartyGameWeb.GameChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
-    :ok = ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic]})
+    :ok =
+      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
 
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
@@ -55,27 +55,13 @@ defmodule PartyGameWeb.GameChannel do
   end
 
   @impl true
-  def handle_in("update_settings", payload, socket) do
-    game =
-      Server.get_game(game_code(socket.topic))
-      |> GameRoom.update_settings(Map.get(payload, "settings", %{}))
-      |> Server.update_game()
-
-    broadcast_from(socket, "handle_update_settings", %{
-      "settings" => game.settings
-    })
-
-    {:noreply, socket}
-  end
-
-  @impl true
   def handle_in("start_round", _, socket) do
     game =
       Server.get_game(game_code(socket.topic))
       |> GameRoom.start_round()
       |> Server.update_game()
 
-    reply_with_questions(socket, game.questions, %{is_new?: false})
+    reply_with_questions(socket, %{is_new?: false, game: game})
   end
 
   @impl true
@@ -106,17 +92,24 @@ defmodule PartyGameWeb.GameChannel do
       |> GameRoom.start_game()
       |> GameRoom.add_questions(questions, game_name)
 
+    game =
+      if Map.has_key?(payload, "settings") do
+        GameRoom.update_settings(game, Map.get(payload, "settings"))
+      else
+        game
+      end
+
     if game.settings.prompt_game_start do
       Server.update_game(game)
 
-      broadcast(socket, "handle_new_game_created", %{})
+      broadcast(socket, "handle_new_game_created", %{"settings" => game.settings})
       {:noreply, socket}
     else
       game
       |> GameRoom.start_round()
       |> Server.update_game()
 
-      reply_with_questions(socket, game.questions, %{is_new?: true})
+      reply_with_questions(socket, %{is_new?: true, game: game})
     end
   end
 
@@ -223,29 +216,50 @@ defmodule PartyGameWeb.GameChannel do
     code
   end
 
-  defp reply_with_questions(socket, [question | _], %{is_new?: isNew}) do
+  defp reply_with_questions(socket, %{is_new?: isNew, game: game}) do
+    [question | _] = game.questions
     resp = %{"data" => question, "isNew" => isNew}
+
+    resp =
+      if isNew do
+        Map.put(resp, "settings", game.settings)
+      else
+        resp
+      end
+
     broadcast(socket, "handle_next_question", resp)
     {:noreply, socket}
   end
 
-  def leave(topic) do
+  def leave(topic, name) do
     players = Map.keys(Presence.list(topic))
 
     if players == [] do
       Server.stop(game_code(topic))
     else
-      elect_new_game_owner(Server.lookup(game_code(topic)), players, topic)
+      player_leave(Server.lookup(game_code(topic)), name, players, topic)
     end
   end
 
-  defp elect_new_game_owner({:error, _}, _, _), do: :ok
+  defp player_leave({:error, _}, _, _, _), do: :ok
 
-  defp elect_new_game_owner({:ok, _}, players, topic) do
-    new_owner = List.first(players)
+  defp player_leave({:ok, _}, name, players, topic) do
     game = Server.get_game(game_code(topic))
-    game = GameRoom.update_room_owner(game, new_owner)
+    game = GameRoom.remove_player(game, name)
+
+    game = if name == game.room_owner do
+      elect_new_game_owner(players, topic, game)
+    else
+      game
+    end
+
     Server.update_game(game)
+  end
+
+  defp elect_new_game_owner(players, topic, game) do
+    new_owner = List.first(players)
+    game = GameRoom.update_room_owner(game, new_owner)
     PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
+    game
   end
 end

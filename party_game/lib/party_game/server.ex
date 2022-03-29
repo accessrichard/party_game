@@ -19,10 +19,9 @@ defmodule PartyGame.Server do
   end
 
   def stop(room_name) do
-    with {:ok, pid} <- lookup(room_name) do
-      :ok = DynamicSupervisor.terminate_child(@supervisor, pid)
-    else
-      {:error, reason} -> {:error, reason}
+    case lookup(room_name) do
+      {:ok, pid} -> DynamicSupervisor.terminate_child(@supervisor, pid)
+      _ -> :ok
     end
   end
 
@@ -66,11 +65,24 @@ defmodule PartyGame.Server do
   end
 
   def room_name() do
-    rand = random_string(6)
+    rand = random_string(room_name_length())
 
     case lookup(rand) do
       {:ok, _} -> room_name()
       {:error, _} -> rand
+    end
+  end
+
+  defp room_name_length() do
+    %{workers: worker_count} = DynamicSupervisor.count_children(PartyGame.Game.Supervisor)
+
+    case worker_count do
+      n when n < 5 -> 1
+      n when n >= 5 and n < 10 -> 2
+      n when n >= 10 and n < 100 -> 3
+      n when n >= 100 and n < 500 -> 4
+      n when n >= 500 and n < 1000 -> 5
+      _ -> 6
     end
   end
 
@@ -105,7 +117,12 @@ defmodule PartyGame.Server do
 
   @impl true
   def handle_info(:timeout, game) do
-    PartyGameWeb.Endpoint.broadcast!("game:#{game.room_name}", "handle_game_server_idle_timeout", %{"reason" => "Game Server Idle Timeout"})
+    PartyGameWeb.Endpoint.broadcast!(
+      "game:#{game.room_name}",
+      "handle_game_server_idle_timeout",
+      %{"reason" => "Game Server Idle Timeout"}
+    )
+
     {:stop, :normal, game}
   end
 

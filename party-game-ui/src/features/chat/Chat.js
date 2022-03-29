@@ -84,7 +84,7 @@ const Chat = () => {
     setTimeout(() => {
       dispatch(channelPush(typingEvent(presence, false)));
       setIsUserTyping(false);
-    }, 2500);
+    }, 1000 * 2);
   }
 
   return (

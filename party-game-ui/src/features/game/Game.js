@@ -114,7 +114,6 @@ export default function Game() {
     const startClickCallback = useCallback((action, payload = {}) => {
         setIsQuestionAnswered(false);
         const data = { name: playerName, ...payload };
-        console.log({ data, action })
         dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
     }, [gameChannel, dispatch, playerName])
 

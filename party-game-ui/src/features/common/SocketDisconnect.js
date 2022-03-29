@@ -22,7 +22,7 @@ export default function SocketDisconnect(props) {
                 setIsDisconnected(true);
                 props.onDisconnect && props.onDisconnect();
             }
-        }, 5000);
+        }, 1000 * 15);
 
     }, [socketStatus, dispatch, isDisconnected, props]);
 

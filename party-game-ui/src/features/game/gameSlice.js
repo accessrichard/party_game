@@ -111,7 +111,8 @@ export const gameSlice = createSlice({
         },
         startRound: (state, action) => {
             if (action.payload.isNew) {
-                resetGame(state)
+                resetGame(state);
+                state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             }
             
             state.isNewGamePrompt = false;
@@ -156,6 +157,8 @@ export const gameSlice = createSlice({
         },
         handleNewGameCreated(state, action) {
             resetGame(state);
+
+            state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             if (state.settings.isNewGamePrompt) {
                 state.isNewGamePrompt = true
             } else {
@@ -194,9 +197,6 @@ export const gameSlice = createSlice({
         },
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
-        },
-        handleUpdateSettings: (state, action) => {
-            state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
         },
         handleJoin(state, action) {
             if (!state.players.filter(x => x.name === action.payload.name)) {
@@ -289,7 +289,6 @@ export const {
     changeGame,
     updateGameList,
     updateSettings,
-    handleUpdateSettings,
     clearWrongAnswer,
     syncGameState,
     clearJoinError,

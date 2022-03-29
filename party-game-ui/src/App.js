@@ -24,7 +24,6 @@ import { history } from './features/store';
 function App() {
   return (
     <Router history={history}>
-
       <Routes>
         <Route element={<GoogleAnalytics />}>
           <Route path="/" element={<AppBody />}>
