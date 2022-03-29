@@ -119,7 +119,7 @@ function Settings() {
                         <InputError className="error shake" errors={[form.errors.wrongAnswerTimeout]} />
                     </div>
                     <div>
-                        <span>Enable countdown before starting game: </span>
+                        <span>Enable start game countdown: </span>
                         <label className='pointer-events'>
                             <input type="radio"
                                 name="isNewGamePrompt"
