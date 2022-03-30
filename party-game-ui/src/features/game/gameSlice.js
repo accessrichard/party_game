@@ -225,8 +225,8 @@ export const gameSlice = createSlice({
 });
 
 const rounds = state => state.game.rounds;
-const gamePlayers = state => state.game.players;
-const getWinners = (rounds, players) => {
+const presencePlayers = state => state.presence.presence;
+const getWinners = (rounds, presence) => {
     const groupByWinner = rounds.reduce((total, val) => {
         val.winner in total
             || (total[val.winner] = { score: 0, name: val.winner });
@@ -234,10 +234,11 @@ const getWinners = (rounds, players) => {
         return total;
     }, {});
 
-    const startingPlayers = players.reduce((total, player) => {
-        total[player.name] = {
+    
+    const startingPlayers = Object.keys(presence).reduce((total, name) => {
+        total[name] = {
             score: 0,
-            name: player.name
+            name
         };
         return total;
     }, {});
@@ -253,7 +254,7 @@ const getWinners = (rounds, players) => {
     }
 };
 
-export const getScores = createSelector([rounds, gamePlayers], getWinners);
+export const getScores = createSelector([rounds, presencePlayers], getWinners);
 
 
 export const mergeGameList = (serverGames, clientGames) => {

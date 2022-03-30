@@ -27,7 +27,7 @@ function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
 
-    const {isGameStarted, gameChannel, isOver, round }  = useSelector(state => state.game);        
+    const {isGameStarted, gameChannel, isOver, round }  = useSelector(state => state.game);
 
     if (isGameStarted && !isOver) {
         return <Navigate to="/game" />
@@ -41,7 +41,7 @@ function Score() {
         e.preventDefault();
         dispatch(push('/lobby'));
     }
-
+    
     return (
         <React.Fragment>
             <NewGamePrompt/>
