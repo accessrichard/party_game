@@ -17,7 +17,8 @@ defmodule PartyGame.Games.States do
         %Question{
           question: "What is the capital of #{state}?",
           answers: random_answers(state, capital, other_cities),
-          correct: capital
+          correct: capital,
+          id: Ecto.UUID.autogenerate()
         }
         | acc
       ]

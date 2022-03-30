@@ -122,6 +122,25 @@ defmodule PartyGame.GameRoom do
     question.correct == answer and game.round_started
   end
 
+  @doc """
+  Handles cases where a users network connection is slower
+  than anothers. By the time the answer_click reaches the server
+  the game already advanced rounds, tracking questions
+  via guid.
+  """
+  def buzz(%Game{} = game, _, _, _) when game.questions == [] do
+    {:noreply, game}
+  end
+
+  def buzz(%Game{} = game, player_name, answer, guid)  do
+    [question | _] = game.questions
+    if guid == question.id do
+      buzz(game, player_name, answer)
+    else
+      {:noreply, game}
+    end
+  end
+
   def buzz(%Game{} = game, player_name, answer) do
     cond do
       win_round?(game, answer) ->

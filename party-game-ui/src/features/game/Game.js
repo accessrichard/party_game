@@ -30,6 +30,7 @@ export default function Game() {
         gameChannel,
         isGameOwner,
         question,
+        id,
         answers,
         flash,
         isWrong,
@@ -107,7 +108,7 @@ export default function Game() {
 
     function onAnswerClick(e, answer) {
         setIsQuestionAnswered(true);
-        const data = { answer, name: playerName };
+        const data = { answer, name: playerName, id: id };
         dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
     }
 

@@ -10,8 +10,6 @@ defmodule PartyGame.Games.BuildYourOwnPrebuilt do
     new_game.questions
   end
 
-
-  # PartyGame.Games.BuildYourOwnPrebuilt.new(%{"name" => "Cars"},1)
   def prebuilt_games() do
    File.ls!(@games_path)
     |> Enum.filter(&(Path.extname(&1) === ".json"))

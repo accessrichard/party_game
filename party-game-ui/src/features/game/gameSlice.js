@@ -119,6 +119,7 @@ export const gameSlice = createSlice({
             state.isGameStarted = !action.payload.data.isOver;
             state.isRoundStarted = true;
             state.question = action.payload.data.question;
+            state.id = action.payload.data.id;
             state.answers = action.payload.data.answers;
             state.flash = {};
             state.startCountdown = false;

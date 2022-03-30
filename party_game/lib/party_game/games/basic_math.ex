@@ -55,7 +55,8 @@ defmodule PartyGame.Games.BasicMath do
     %Question{
       question: "#{num1} + #{num2}",
       answers: Enum.take_random(answers, 4),
-      correct: Integer.to_string(correct)
+      correct: Integer.to_string(correct),
+      id: Ecto.UUID.autogenerate()
     }
   end
 
@@ -69,7 +70,8 @@ defmodule PartyGame.Games.BasicMath do
     %Question{
       question: "#{max(num1, num2)} - #{min(num1, num2)}",
       answers: Enum.take_random(answers, 4),
-      correct: Integer.to_string(correct)
+      correct: Integer.to_string(correct),
+      id: Ecto.UUID.autogenerate()
     }
   end
 
@@ -83,7 +85,8 @@ defmodule PartyGame.Games.BasicMath do
     %Question{
       question: "#{max(num1, num2)} * #{min(num1, num2)}",
       answers: Enum.take_random(answers, 4),
-      correct: Integer.to_string(correct)
+      correct: Integer.to_string(correct),
+      id: Ecto.UUID.autogenerate()
     }
   end
 
@@ -98,7 +101,8 @@ defmodule PartyGame.Games.BasicMath do
     %Question{
       question: "#{dividend} / #{divisor}",
       answers: Enum.take_random(answers, 4),
-      correct: Integer.to_string(quotient)
+      correct: Integer.to_string(quotient),
+      id: Ecto.UUID.autogenerate()
     }
   end
 

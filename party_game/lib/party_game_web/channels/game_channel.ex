@@ -139,7 +139,8 @@ defmodule PartyGameWeb.GameChannel do
           winner: "",
           isOver: game.is_over,
           question: question.question,
-          answers: question.answers
+          answers: question.answers,
+          id: question.id
         }
       }
     )
@@ -150,10 +151,10 @@ defmodule PartyGameWeb.GameChannel do
   @impl true
   def handle_in("answer_click", payload, socket) do
     game = Server.get_game(game_code(socket.topic))
-
     answer = Map.get(payload, "answer")
+    guid = Map.get(payload, "id")
 
-    case GameRoom.buzz(game, socket.assigns.name, answer) do
+    case GameRoom.buzz(game, socket.assigns.name, answer, guid) do
       {:win, game} ->
         broadcast(
           socket,
@@ -169,6 +170,9 @@ defmodule PartyGameWeb.GameChannel do
         )
 
         Server.update_game(game)
+        {:noreply, socket}
+
+      {:noreply, _} ->
         {:noreply, socket}
 
       _ ->
@@ -247,11 +251,12 @@ defmodule PartyGameWeb.GameChannel do
     game = Server.get_game(game_code(topic))
     game = GameRoom.remove_player(game, name)
 
-    game = if name == game.room_owner do
-      elect_new_game_owner(players, topic, game)
-    else
-      game
-    end
+    game =
+      if name == game.room_owner do
+        elect_new_game_owner(players, topic, game)
+      else
+        game
+      end
 
     Server.update_game(game)
   end
