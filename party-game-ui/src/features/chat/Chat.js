@@ -68,12 +68,9 @@ const Chat = () => {
     setText("");
   }
 
-  function onKeyPress(e) {
-    if (e.key === 'Enter' && text.trim() !== '') {
-      send();
-      setIsUserTyping(false);
-    }
-
+  function onChange(e) {
+    setText(e.target.value);
+    
     if (isUserTyping) {
       return;
     }
@@ -85,6 +82,13 @@ const Chat = () => {
       dispatch(channelPush(typingEvent(presence, false)));
       setIsUserTyping(false);
     }, 1000 * 2);
+  }
+
+  function onKeyDown(e) {
+    if (e.key === 'Enter' && text.trim() !== '') {
+      send();
+      setIsUserTyping(false);
+    }   
   }
 
   return (
@@ -120,8 +124,8 @@ const Chat = () => {
                     autoComplete="off"
                     name="chat-input"
                     value={text}
-                    onChange={(event) => setText(event.target.value)}
-                    onKeyPress={onKeyPress}
+                    onChange={onChange}
+                    onKeyDown={onKeyDown}
                   />
                   <span className="highlight"></span>
                   <span className="bar"></span>
