@@ -121,13 +121,7 @@ defmodule PartyGameWeb.GameChannel do
       |> GameRoom.start_round()
       |> Server.update_game()
 
-    question =
-      if length(game.questions) >= 1 do
-        [question | _] = game.questions
-        question
-      else
-        %{question: "", answers: []}
-      end
+    question = next_question(game)
 
     broadcast(
       socket,
@@ -266,5 +260,14 @@ defmodule PartyGameWeb.GameChannel do
     game = GameRoom.update_room_owner(game, new_owner)
     PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
     game
+  end
+
+  defp next_question(%PartyGame.Game.Game{} = game) when game.questions == [] do
+    %{question: "", answers: [], id: Ecto.UUID.autogenerate()}
+  end
+
+  defp next_question(%PartyGame.Game.Game{} = game) do
+    [question | _] = game.questions
+    question
   end
 end
