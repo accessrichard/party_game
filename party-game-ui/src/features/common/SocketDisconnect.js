@@ -8,7 +8,7 @@ export default function SocketDisconnect(props) {
 
     const dispatch = useDispatch();
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    const [isDisconnected, setIsDisconnected] = useState(false);
+    const [isDisconnected, setIsDisconnected] = useState(false);    
 
     useEffect(() => {
         if (socketStatus !== SOCKET_DISCONNECTED || isDisconnected) {

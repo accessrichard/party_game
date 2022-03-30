@@ -1,6 +1,7 @@
 import {
     CHANNEL_ERROR,
     CHANNEL_JOINED,
+    CHANNEL_JOIN_ERROR,
     SOCKET_CONNECTED,
     SOCKET_CONNECTING,
     SOCKET_DISCONNECTED,
@@ -171,7 +172,9 @@ export default function Lobby() {
         const topic = `game:${gameCode}`;
 
         if (gameCode && channels.some(x => x.topic === topic
-            && (x.status === CHANNEL_JOINED || x.status === CHANNEL_ERROR))) {
+            && (x.status === CHANNEL_JOINED 
+                || x.status === CHANNEL_ERROR
+                || x.status === CHANNEL_JOIN_ERROR))) {
             return;
         }
 

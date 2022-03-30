@@ -1,6 +1,7 @@
 import {
   CHANNEL_ERROR,
   CHANNEL_JOINED,
+  CHANNEL_JOIN_ERROR,
   channelJoin,
   channelOn,
   channelPush,
@@ -46,11 +47,13 @@ const Chat = () => {
 
   useEffect(() => {
     if (channels.some(x => x.topic === topic 
-      && (x.status === CHANNEL_JOINED || x.status === CHANNEL_ERROR))) {
+      && (x.status === CHANNEL_JOINED 
+        || x.status === CHANNEL_ERROR
+        || x.status === CHANNEL_JOIN_ERROR))) {
       return;
     }
 
-    dispatch(channelJoin({ topic, data: { playerName: player } }));
+    dispatch(channelJoin({ topic, data: { name: player } }));
     onEvents(topic).forEach((e) => dispatch(channelOn(e)));
   }, [channels, dispatch, topic, player]);
 
