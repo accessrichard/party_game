@@ -89,7 +89,15 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const { playerName, gameCode, gameChannel, isGameOwner, isGameStarted, name, settings } = useSelector(state => state.game);
+    const { 
+        playerName, 
+        gameCode, 
+        gameChannel, 
+        isNewGamePrompt, 
+        isGameOwner, 
+        isGameStarted, 
+        name, 
+        settings } = useSelector(state => state.game);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
@@ -119,7 +127,7 @@ export default function Lobby() {
         }
 
         const payload = { game: game, rounds: settings.rounds };
-        const data = { name: playerName, settings: toServerSettings(settings),  ...payload };
+        const data = { name: playerName, settings: toServerSettings(settings), ...payload };
         dispatch(channelPush({
             topic: gameChannel,
             event: "new_game",
@@ -172,7 +180,7 @@ export default function Lobby() {
         const topic = `game:${gameCode}`;
 
         if (gameCode && channels.some(x => x.topic === topic
-            && (x.status === CHANNEL_JOINED 
+            && (x.status === CHANNEL_JOINED
                 || x.status === CHANNEL_ERROR
                 || x.status === CHANNEL_JOIN_ERROR))) {
             return;
@@ -227,7 +235,7 @@ export default function Lobby() {
                     onTimerCompleted={onGenServerTimeout}
                     numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
-
+            
             {isGameOwner &&
                 <div className='flex-grid center-65'>
                     <div className='flex-item full-width '>
@@ -247,7 +255,7 @@ export default function Lobby() {
                                 </div>
                                 <div className="btn-box">
                                     <button className="btn btn-submit"
-                                        disabled={serverGamesLoading === 'pending'}
+                                        disabled={serverGamesLoading === 'pending' || isNewGamePrompt || isGameStarted}
                                         type="submit"
                                         value="Start">
                                         Start Game
@@ -268,7 +276,7 @@ export default function Lobby() {
                     </div>
                 </div>}
             <Chat />
-            <NewGamePrompt/>
+            <NewGamePrompt />
         </React.Fragment >
     );
 }
