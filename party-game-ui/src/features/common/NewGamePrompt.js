@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Timer from '../game/Timer';
 import { channelPush } from '../phoenix/phoenixMiddleware';
+import { push } from 'redux-first-history';
 
 export default function NewGamePrompt() {
 
@@ -15,19 +16,20 @@ export default function NewGamePrompt() {
     }, [isNewGamePrompt, dispatch]);
 
     function onTimerCompleted() {
-        setIsTimerActive(false);
-
         if (isGameOwner) {
             dispatch(channelPush({
                 topic: gameChannel,
                 event: "start_round"
             }));
         }
+
+        setIsTimerActive(false);
+        dispatch(push('/game'));
     }
 
     return (
         <>
-           {isTimerActive && <div className='overlay'>
+            {isTimerActive && <div className='overlay'>
                 <div className='flex-center align-center  flex-container full-height'>
                     <h2>Game Starts In:&nbsp;
                         <Timer numberSeconds={3}
@@ -37,7 +39,7 @@ export default function NewGamePrompt() {
                             timeFormat="seconds"
                             onTimerCompleted={onTimerCompleted}
                         />
-                        </h2>
+                    </h2>
                 </div>
             </div>}
         </>
