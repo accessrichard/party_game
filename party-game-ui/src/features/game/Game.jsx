@@ -128,10 +128,15 @@ export default function Game() {
     }
 
     useEffect(() => {
+        let timeout;
         if (isOver) {
-            setTimeout(() => {
+         timeout = setTimeout(() => {
                 dispatch(push('/score'));
             }, 1000);
+        }
+
+        return () => {
+            timeout && clearTimeout(timeout);        
         }
     }, [isOver, dispatch, settings.nextQuestionTime]);
 

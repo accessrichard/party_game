@@ -3,8 +3,9 @@ import {
   CHANNEL_JOINED,
   CHANNEL_JOIN_ERROR,
   channelJoin,
-  channelOn,
+  channelOn,  
   channelPush,
+  channelOff
 } from '../phoenix/phoenixMiddleware';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,15 +47,15 @@ const Chat = () => {
   });
 
   useEffect(() => {
-    if (channels.some(x => x.topic === topic 
+    if (!channels.some(x => x.topic === topic 
       && (x.status === CHANNEL_JOINED 
         || x.status === CHANNEL_ERROR
-        || x.status === CHANNEL_JOIN_ERROR))) {
-      return;
+        || x.status === CHANNEL_JOIN_ERROR))) {          
+          dispatch(channelJoin({ topic, data: { name: player } }));
     }
-
-    dispatch(channelJoin({ topic, data: { name: player } }));
+    
     onEvents(topic).forEach((e) => dispatch(channelOn(e)));
+    return () => { onEvents(topic).forEach((e) => dispatch(channelOff(e))); };
   }, [channels, dispatch, topic, player]);
 
   function send() {
