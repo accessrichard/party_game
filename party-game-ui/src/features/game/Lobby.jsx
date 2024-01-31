@@ -170,7 +170,7 @@ export default function Lobby() {
             && socketStatus !== SOCKET_DISCONNECTED
             && socketStatus !== SOCKET_ERROR) {
             dispatch(socketConnect({
-                host: process.env.REACT_APP_SOCKET_URL,
+                host: import.meta.env.VITE_SOCKET_URL,
                 params: {}
             }));
         }
@@ -233,7 +233,7 @@ export default function Lobby() {
                 <Timer
                     isActive={isTimerActive}
                     onTimerCompleted={onGenServerTimeout}
-                    numberSeconds={process.env.LOBBY_IDLE_TIMEOUT || 1800} />
+                    numberSeconds={import.meta.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
             
             {isGameOwner &&

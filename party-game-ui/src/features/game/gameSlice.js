@@ -208,19 +208,19 @@ export const gameSlice = createSlice({
             state.api.join.error = "";
         }
     },
-    extraReducers: {
-        [startNewGame.pending]: (state, action) => { pending(state.api.start, action) },
-        [startNewGame.fulfilled]: (state, action) => { fulfilled(state.api.start, action) },
-        [startNewGame.rejected]: (state, action) => { rejected(state.api.start, action) },
-        [joinGame.pending]: (state, action) => { pending(state.api.join, action) },
-        [joinGame.fulfilled]: (state, action) => { fulfilled(state.api.join, action) },
-        [joinGame.rejected]: (state, action) => { rejected(state.api.join, action) },
-        [stopGame.pending]: (state, action) => { pending(state.api.stop, action) },
-        [stopGame.fulfilled]: (state, action) => { fulfilled(state.api.stop, action) },
-        [stopGame.rejected]: (state, action) => { rejected(state.api.stop, action) },
-        [listGames.pending]: (state, action) => { pending(state.api.list, action) },
-        [listGames.fulfilled]: (state, action) => { fulfilled(state.api.list, action) },
-        [listGames.rejected]: (state, action) => { rejected(state.api.list, action) }
+    extraReducers: builder => { 
+        builder.addCase(startNewGame.pending, (state, action) => { pending(state.api.start, action) });
+        builder.addCase(startNewGame.fulfilled, (state, action) => { fulfilled(state.api.start, action) });
+        builder.addCase(startNewGame.rejected, (state, action) => { rejected(state.api.start, action) });
+        builder.addCase(joinGame.pending, (state, action) => { pending(state.api.join, action) });
+        builder.addCase(joinGame.fulfilled, (state, action) => { fulfilled(state.api.join, action) });
+        builder.addCase(joinGame.rejected, (state, action) => { rejected(state.api.join, action) });
+        builder.addCase(stopGame.pending, (state, action) => { pending(state.api.stop, action) });
+        builder.addCase(stopGame.fulfilled, (state, action) => { fulfilled(state.api.stop, action) });
+        builder.addCase(stopGame.rejected, (state, action) => { rejected(state.api.stop, action) });
+        builder.addCase(listGames.pending, (state, action) => { pending(state.api.list, action) });
+        builder.addCase(listGames.fulfilled, (state, action) => { fulfilled(state.api.list, action) });
+        builder.addCase(listGames.rejected, (state, action) => { rejected(state.api.list, action) });
     }
 });
 

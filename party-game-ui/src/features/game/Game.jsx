@@ -54,7 +54,7 @@ export default function Game() {
     useEffect(() => {
         if (timerStartDate === null) {
             setCanRetryWrongAnswer(true);
-            return false;
+            return;
         }
 
         const countDownSeconds = Math.round((new Date() - timerStartDate) / 1000);

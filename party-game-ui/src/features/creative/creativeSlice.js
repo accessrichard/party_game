@@ -43,10 +43,11 @@ export const creativeSlice = createSlice({
             }
         }
     },
-    extraReducers: {
-        [createGame.pending]: (state, action) => { pending(state.api.validate, action) },
-        [createGame.fulfilled]: (state, action) => { fulfilled(state.api.validate, action) },
-        [createGame.rejected]: (state, action) => { rejected(state.api.validate, action) },
+    extraReducers: builder => { 
+
+        builder.addCase(createGame.pending, (state, action) => { pending(state.api.validate, action) });
+        builder.addCase(createGame.fulfilled, (state, action) => { fulfilled(state.api.validate, action) });
+        builder.addCase(createGame.rejected, (state, action) => { rejected(state.api.validate, action) });
     }
 });
 

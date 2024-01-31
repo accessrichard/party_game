@@ -16,7 +16,7 @@ export default function GoogleAnalytics(props) {
             return;
         }
 
-        if (document.location.hostname.includes('localhost') || !!process.env.GA_MEASUREID) {
+        if (document.location.hostname.includes('localhost') || !!import.meta.env.GA_MEASUREID) {
             setIsEnabled(false);
             return;
         }

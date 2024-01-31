@@ -1,5 +1,5 @@
 import React from 'react';
-import {getPresences} from '../presence/presenceSlice';
+import { getPresences } from '../presence/presenceSlice';
 import { useSelector } from 'react-redux';
 
 const Players = () => {

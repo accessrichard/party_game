@@ -11,8 +11,8 @@ function client(endpoint, config = {}) {
     };
 
     config = Object.assign(defaultConifg, config);
-    const promise = fetch(`${process.env.REACT_APP_API_URL}/${endpoint}`, config);
-    setTimeout(() => controller.abort(), process.env.REACT_APP_API_TIMEOUT);
+    const promise = fetch(`${import.meta.env.VITE_API_URL}/${endpoint}`, config);
+    setTimeout(() => controller.abort(), import.meta.env.VITE_API_TIMEOUT);
 
     return promise.then(response => {
         if (!response.ok) {
