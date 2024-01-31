@@ -170,7 +170,7 @@ export default function Lobby() {
             && socketStatus !== SOCKET_DISCONNECTED
             && socketStatus !== SOCKET_ERROR) {
             dispatch(socketConnect({
-                host: import.meta.env.VITE_SOCKET_URL,
+                host: import.meta.env.VITE_SOCKET_URL || '/socket',
                 params: {}
             }));
         }

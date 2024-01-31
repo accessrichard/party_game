@@ -4,13 +4,18 @@ import react from '@vitejs/plugin-react-swc'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  root: '.',
+  build: {
+    outDir: "../party_game/priv/static",
+  },
   server: {
      cors: {
         origin: false
     },
+    port: 5180,
     proxy: {
       "/api": "http://localhost:4000",
-      '/api2': {
+      '/api_debug': {
         target: 'http://localhost:4000/',
         changeOrigin: true,
         secure: false,      

@@ -11,8 +11,8 @@ function client(endpoint, config = {}) {
     };
 
     config = Object.assign(defaultConifg, config);
-    const promise = fetch(`${import.meta.env.VITE_API_URL}/${endpoint}`, config);
-    setTimeout(() => controller.abort(), import.meta.env.VITE_API_TIMEOUT);
+    const promise = fetch(`${import.meta.env.VITE_API_URL || ''}/${endpoint}`, config);
+    setTimeout(() => controller.abort(), import.meta.env.VITE_API_TIMEOUT || 5000);
 
     return promise.then(response => {
         if (!response.ok) {

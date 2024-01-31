@@ -18,7 +18,7 @@ export default function Import(props) {
     function handleChange(e) {
         setGame(e.target.value);
 
-        if (errors !== []) {
+        if (errors.length !== 0) {
             setErrors([]);
         }
     }
