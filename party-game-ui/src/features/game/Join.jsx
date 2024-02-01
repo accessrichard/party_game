@@ -45,7 +45,7 @@ function Join() {
         if (gameCodeError) {
             dispatch(clearJoinError());
         }
-    };
+    }
 
     return (
         <div className='flex-grid'>

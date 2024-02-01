@@ -10,9 +10,9 @@ const GameCodeLink = (props) => {
     const { gameCode } = props;
 
     return (
-        <React.Fragment>
+        <>
             <a href={link(gameCode)} target="_blank" rel="noreferrer noopener">{link(gameCode)}</a>
-        </React.Fragment >
+        </>
     );
 }
 

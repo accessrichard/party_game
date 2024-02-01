@@ -11,12 +11,12 @@ export default function InputError(props) {
     }
 
     return (
-        <React.Fragment>                
+        <>                
                 {hasError() && <ul className={className || "medium-font input-error-text error-color shake"}>
                     {errors.map((err, idx) => {
                         return <li key={idx}>{err}</li>
                     })}
                 </ul>}            
-        </React.Fragment>
+        </>
     );
 }

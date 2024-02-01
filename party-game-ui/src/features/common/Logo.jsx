@@ -5,7 +5,7 @@ const Logo = (props) => {
     const { logoClass, titleClass, title, showSubtitle, showTitle = true } = props;
 
     return (
-        <React.Fragment>
+        <>
             <img src={logo} className={logoClass} alt="logo" />
             <div>
                 {showTitle &&
@@ -15,7 +15,7 @@ const Logo = (props) => {
                     <div className="half-size-title text-align-right fade-in">By Buzztastic Games</div>
                 }
             </div>
-        </React.Fragment >
+        </>
     );
 }
 

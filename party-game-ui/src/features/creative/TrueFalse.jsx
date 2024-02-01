@@ -4,10 +4,10 @@ export default function TrueFalse(props) {
 
     function handleChange(e) {
         props.onChange && props.onChange(e);
-    };
+    }
 
     return (
-        <React.Fragment>
+        <>
             <span>&nbsp;&nbsp;Correct Answer: </span>
             <label className='pointer-events'>
                 <input type="radio"
@@ -26,6 +26,6 @@ export default function TrueFalse(props) {
 
                 <span>False</span>
             </label>
-        </React.Fragment>
+        </>
     );
 }

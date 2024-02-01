@@ -6,7 +6,7 @@ import {
     useLocation
 } from "react-router-dom";
 
-export default function GoogleAnalytics(props) {
+export default function GoogleAnalytics() {
 
     const location = useLocation();
     const [isEnabled, setIsEnabled] = useState(import.meta.env.PROD);
@@ -34,8 +34,8 @@ export default function GoogleAnalytics(props) {
 
 
     return (
-        <React.Fragment>
+        <>
             <Outlet></Outlet>
-        </React.Fragment>
+        </>
     );
 }

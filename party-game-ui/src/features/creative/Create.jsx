@@ -141,7 +141,7 @@ export default function Create(props) {
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="wrapper center-65 flex-center flex-grid">
                 <form ref={formRef}>
                     <div className="empty-space">
@@ -225,6 +225,6 @@ export default function Create(props) {
                     </div>
                 </form>
             </div>
-        </React.Fragment>
+        </>
     );
 }

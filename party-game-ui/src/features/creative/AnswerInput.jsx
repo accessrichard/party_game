@@ -6,10 +6,10 @@ export default function AnswerInput(props) {
 
     function handleChange(e) {
         props.onChange && props.onChange(e);
-    };
+    }
     
     return (
-        <React.Fragment>
+        <>
             <div className="flex-row margin-bottom-30">
                 <div className="flex-column md-5">
                     <div className="group-compact">
@@ -84,6 +84,6 @@ export default function AnswerInput(props) {
                     </div>
                 </div>
             </div>
-        </React.Fragment>
+        </>
     );
 }

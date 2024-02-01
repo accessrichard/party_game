@@ -24,14 +24,14 @@ const Faces = (props) => {
     }, [isHappy])
 
     return (
-        <React.Fragment>
+        <>
             {face && <svg className={className || "app-logo"}>
                 <svg className={className || "app-logo"}>
                     <use href={"#" + face} />
                 </svg>
             </svg>}
 
-        </React.Fragment>
+        </>
     );
 }
 

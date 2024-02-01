@@ -234,7 +234,6 @@ const getWinners = (rounds, presence) => {
         return total;
     }, {});
 
-    
     const startingPlayers = Object.keys(presence).reduce((total, name) => {
         total[name] = {
             score: 0,

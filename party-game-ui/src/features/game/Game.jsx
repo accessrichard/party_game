@@ -1,18 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { clearWrongAnswer, setFlash, unansweredTimeout } from './gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
-
 import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
 import { Navigate } from 'react-router-dom';
 import Timer from './Timer';
-import {
-    channelPush
-} from '../phoenix/phoenixMiddleware';
 import { history } from '../store';
 import { push } from "redux-first-history";
 import usePrevious from '../usePrevious';
+
+import {
+    channelPush, channelOn, channelOff
+} from '../phoenix/phoenixMiddleware';
+
+import {
+    clearWrongAnswer,
+    setFlash,
+    unansweredTimeout, handleChangeOwner,
+    handleCorrectAnswer,
+    handleGenServerTimeout,
+    startRound,
+    handleWrongAnswer,
+} from './gameSlice';
 
 const sendEvent = (topic, channelData, action) => (
     {
@@ -21,6 +30,34 @@ const sendEvent = (topic, channelData, action) => (
         data: channelData
     });
 
+const events = (topic) => [
+    {
+        event: 'handle_correct_answer',
+        dispatcher: handleCorrectAnswer(),
+        topic,
+    },
+    {
+        event: 'handle_next_question',
+        dispatcher: startRound(),
+        topic,
+    },
+    {
+        event: 'handle_wrong_answer',
+        dispatcher: handleWrongAnswer(),
+        topic,
+    },
+    {
+        event: 'handle_game_server_idle_timeout',
+        dispatcher: handleGenServerTimeout(),
+        topic,
+    },
+    {
+        event: 'handle_room_owner_change',
+        dispatcher: handleChangeOwner(),
+        topic,
+    }
+]
+
 export default function Game() {
 
     const dispatch = useDispatch();
@@ -28,6 +65,7 @@ export default function Game() {
         isRoundStarted,
         playerName,
         gameChannel,
+        gameCode,
         isGameOwner,
         question,
         id,
@@ -49,7 +87,16 @@ export default function Game() {
 
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
-    const prevRound = usePrevious(round);    
+    const prevRound = usePrevious(round);
+
+    useEffect(() => {
+        const topic = `game:${gameCode}`;
+
+        events(topic).forEach((e) => dispatch(channelOn(e)))
+
+        return () => { events(topic).forEach((e) => dispatch(channelOff(e))) }
+    }, []);
+
 
     useEffect(() => {
         if (timerStartDate === null) {
@@ -130,13 +177,13 @@ export default function Game() {
     useEffect(() => {
         let timeout;
         if (isOver) {
-         timeout = setTimeout(() => {
+            timeout = setTimeout(() => {
                 dispatch(push('/score'));
             }, 1000);
         }
 
         return () => {
-            timeout && clearTimeout(timeout);        
+            timeout && clearTimeout(timeout);
         }
     }, [isOver, dispatch, settings.nextQuestionTime]);
 
@@ -167,11 +214,11 @@ export default function Game() {
     }
 
     if (!gameChannel) {
-        return <Navigate to="/"/>
+        return <Navigate to="/" />
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="full-width full-height flex-container flex-column">
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>
@@ -229,6 +276,6 @@ export default function Game() {
                 </div>
 
             </div>
-        </React.Fragment>
+        </>
     );
 }

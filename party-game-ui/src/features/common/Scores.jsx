@@ -4,7 +4,7 @@ const Scores = (props) => {
     const { scores, rounds } = props;
 
     return (
-        <React.Fragment>
+        <>
             <h3>Score</h3>
             <ul className="ul-nostyle text-align-left medium-font">
                 {scores.filter(x => x.name !== "None").map((score, key) =>
@@ -14,7 +14,7 @@ const Scores = (props) => {
                     </li>
                 )}
             </ul>
-        </React.Fragment >
+        </>
     );
 }
 

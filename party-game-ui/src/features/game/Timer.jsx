@@ -73,11 +73,11 @@ export default function Timer(props) {
     }, [isActive, seconds, prevActive, numberSeconds, onTimerCompleted, startDate, isIncrement, onStartDateSet]);
 
     return (
-        <React.Fragment>
+        <>
             {isVisible &&
                 <span>
                     {formatTime(seconds, timeFormat)}
                 </span>}
-        </React.Fragment>
+        </>
     );
 }

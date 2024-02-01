@@ -47,10 +47,14 @@ const Chat = () => {
   });
 
   useEffect(() => {
+    if (!gameCode) {
+      return;
+    }
+    
     if (!channels.some(x => x.topic === topic 
       && (x.status === CHANNEL_JOINED 
         || x.status === CHANNEL_ERROR
-        || x.status === CHANNEL_JOIN_ERROR))) {          
+        || x.status === CHANNEL_JOIN_ERROR))) {
           dispatch(channelJoin({ topic, data: { name: player } }));
     }
     
@@ -96,7 +100,7 @@ const Chat = () => {
   }
 
   return (
-    <React.Fragment>
+    <>
       <div className='flex-grid center-65'>
         <div className='flex-item flex-2-col-sidebar '>
           <div className='item card '>
@@ -140,7 +144,7 @@ const Chat = () => {
           </div>
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 }
 

@@ -1,13 +1,8 @@
 import {
-    CHANNEL_ERROR,
-    CHANNEL_JOINED,
-    CHANNEL_JOIN_ERROR,
     SOCKET_CONNECTED,
-    SOCKET_CONNECTING,
-    SOCKET_DISCONNECTED,
-    SOCKET_ERROR,
     channelJoin,
     channelOn,
+    channelOff,
     channelPush,
     socketConnect
 } from '../phoenix/phoenixMiddleware';
@@ -16,11 +11,9 @@ import React, { useEffect, useState } from 'react';
 import {
     changeGame,
     handleChangeOwner,
-    handleCorrectAnswer,
     handleGenServerTimeout,
     handleJoin,
     handleNewGameCreated,
-    handleWrongAnswer,
     listGames,
     mergeGameList,
     startRound
@@ -37,7 +30,7 @@ import Timer from './Timer';
 import { push } from "redux-first-history";
 import { toServerSettings } from './settingsApi';
 
-const persistedEvents = (topic) => [
+const events = (topic) => [
     {
         event: 'handle_join',
         dispatcher: handleJoin(),
@@ -54,21 +47,6 @@ const persistedEvents = (topic) => [
         topic
     },
     {
-        event: 'handle_correct_answer',
-        dispatcher: handleCorrectAnswer(),
-        topic,
-    },
-    {
-        event: 'handle_next_question',
-        dispatcher: startRound(),
-        topic,
-    },
-    {
-        event: 'handle_wrong_answer',
-        dispatcher: handleWrongAnswer(),
-        topic,
-    },
-    {
         event: 'handle_game_server_idle_timeout',
         dispatcher: handleGenServerTimeout(),
         topic,
@@ -82,6 +60,11 @@ const persistedEvents = (topic) => [
         event: 'handle_new_game_created',
         dispatcher: handleNewGameCreated(),
         topic
+    },
+    {
+        event: 'handle_next_question',
+        dispatcher: startRound(),
+        topic,
     }
 ]
 
@@ -89,14 +72,14 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const { 
-        playerName, 
-        gameCode, 
-        gameChannel, 
-        isNewGamePrompt, 
-        isGameOwner, 
-        isGameStarted, 
-        name, 
+    const {
+        playerName,
+        gameCode,
+        gameChannel,
+        isNewGamePrompt,
+        isGameOwner,
+        isGameStarted,
+        name,
         settings } = useSelector(state => state.game);
 
     const creativeGames = useSelector(state => state.creative.games);
@@ -104,12 +87,76 @@ export default function Lobby() {
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
     const channels = useSelector(state => state.phoenix.channels);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
+    
+    console.log(channels)
 
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
         }
     }, [gameCode, dispatch]);
+
+    useEffect(() => {
+        setIsTimerActive(true);
+        return () => { setIsTimerActive(false); };
+    }, []);
+
+    useEffect(() => {
+        if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {
+            dispatch(listGames());
+        }
+
+    }, [dispatch, serverGames, serverGamesLoading]);
+
+    useEffect(() => {
+        const list = mergeGameList(serverGames, creativeGames);
+        setGameList(list);
+    }, [creativeGames, serverGames, setGameList]);
+
+    /**
+     * Set the game to the first game in the list
+     * or leave it be what the prior selection was
+     */
+    useEffect(() => {
+        if (name) {
+            return;
+        }
+
+        if (gameList && gameList.length > 0) {
+            dispatch(changeGame(gameList[0].name));
+        }
+    }, [gameList, dispatch, name]);
+
+    useEffect(() => {
+        dispatch(socketConnect({
+            host: import.meta.env.VITE_SOCKET_URL || '/socket',
+            params: {}
+        }));
+    }, []);
+
+    useEffect(() => {
+        const topic = `game:${gameCode}`;
+        if (socketStatus === SOCKET_CONNECTED) {
+            dispatch(channelJoin({
+                topic,
+                data: { name: playerName }
+            }));
+        }
+    }, [dispatch, gameCode, playerName, socketStatus]);
+
+
+    useEffect(() => {
+        const topic = `game:${gameCode}`;
+
+        const hasChannel = channels.find(x => x.topic === topic);
+        if (hasChannel) {
+            events(topic).forEach((e) => dispatch(channelOn(e)))
+        }
+
+        return () => { events(topic).forEach((e) => dispatch(channelOff(e))) }
+    }, [gameCode, channels]);
+
+
 
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
@@ -137,69 +184,6 @@ export default function Lobby() {
         e.preventDefault();
     }
 
-    useEffect(() => {
-        if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.lenght === 0)) {
-            dispatch(listGames());
-        }
-
-    }, [dispatch, serverGames, serverGamesLoading]);
-
-    useEffect(() => {
-        const list = mergeGameList(serverGames, creativeGames);
-        setGameList(list);
-    }, [creativeGames, serverGames, setGameList]);
-
-    useEffect(() => {
-        //// Initialize the game to the first game in the list if not selected.
-        if (name) {
-            return;
-        }
-
-        if (gameList && gameList.length > 0) {
-            dispatch(changeGame(gameList[0].name));
-        }
-    }, [gameList, dispatch, name]);
-
-    useEffect(() => {
-        if (!gameCode) {
-            return;
-        }
-
-        if (socketStatus !== SOCKET_CONNECTED
-            && socketStatus !== SOCKET_CONNECTING
-            && socketStatus !== SOCKET_DISCONNECTED
-            && socketStatus !== SOCKET_ERROR) {
-            dispatch(socketConnect({
-                host: import.meta.env.VITE_SOCKET_URL || '/socket',
-                params: {}
-            }));
-        }
-    }, [socketStatus, dispatch, gameCode]);
-
-    useEffect(() => {
-        const topic = `game:${gameCode}`;
-
-        if (gameCode && channels.some(x => x.topic === topic
-            && (x.status === CHANNEL_JOINED
-                || x.status === CHANNEL_ERROR
-                || x.status === CHANNEL_JOIN_ERROR))) {
-            return;
-        }
-
-        dispatch(channelJoin({
-            topic,
-            data: { name: playerName }
-        }));
-
-        persistedEvents(topic).forEach((e) => dispatch(channelOn(e)));
-
-    }, [dispatch, gameCode, playerName, channels]);
-
-    useEffect(() => {
-        setIsTimerActive(true);
-        return () => { setIsTimerActive(false); };
-    }, []);
-
     function onGameChange(e) {
         dispatch(changeGame(e.target.value));
     }
@@ -213,7 +197,7 @@ export default function Lobby() {
     }
 
     return (
-        <React.Fragment>
+        <>
             <header className="full-width">
                 <div className="center-with-right-div">
                     <span>
@@ -235,7 +219,7 @@ export default function Lobby() {
                     onTimerCompleted={onGenServerTimeout}
                     numberSeconds={import.meta.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
-            
+
             {isGameOwner &&
                 <div className='flex-grid center-65'>
                     <div className='flex-item full-width '>
@@ -277,6 +261,6 @@ export default function Lobby() {
                 </div>}
             <Chat />
             <NewGamePrompt />
-        </React.Fragment >
+        </>
     );
 }

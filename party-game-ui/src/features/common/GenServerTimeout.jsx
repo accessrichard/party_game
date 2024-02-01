@@ -21,7 +21,7 @@ export default function GenServerTimeout(props) {
 
 
     return (
-        <React.Fragment>
+        <>
             {genServerTimeout &&
                 <Popup
                     title="Game idle timeout expired."
@@ -31,6 +31,6 @@ export default function GenServerTimeout(props) {
                     </div>}
                 />
             }
-        </React.Fragment >
+        </>
     );
 }

@@ -78,12 +78,13 @@ export function reducer(state = initialState, action = {}) {
         case CHANNEL_JOIN_TIMEOUT:
         case CHANNEL_JOIN_ERROR:
         case CHANNEL_PUSH_ERROR:
-        case CHANNEL_PUSH_TIMEOUT:
+        case CHANNEL_PUSH_TIMEOUT: {
             if (!action.payload.topic) {
                 return state;
             }
 
-            const newChannels = state.channels.filter(x => x.topic !== action.payload.topic);
+            const newChannels = state.channels.filter(x => x.topic !== action.payload.topic)
+
             newChannels.push({
                 status: action.type,
                 topic: action.payload.topic,
@@ -94,6 +95,7 @@ export function reducer(state = initialState, action = {}) {
                 ...state,
                 channels: newChannels
             };
+        }
         case CHANNEL_RECEIVE:
             //// Channel data can be sent to any redux action by
             //// passing in an action.
@@ -115,15 +117,15 @@ const phoenixMiddleware = () => {
     let socket = null;
     const channels = {};
 
-    const hasChannel = (name) => channels.hasOwnProperty(name);
+    const hasChannel = (name) => Object.prototype.hasOwnProperty.call(channels, name);
 
     function getChannel(name) {
         return hasChannel(name) ? channels[name] : null;
-    };
+    }
 
     function addChannel(name, channel) {
         channels[name] = channel;
-    };
+    }
 
     const formatPayload = (channel, data, event) => ({
         topic: channel.topic,
@@ -132,6 +134,10 @@ const phoenixMiddleware = () => {
     });
 
     function connect(store, action) {
+        if (socket !== null) {
+            return;
+        }
+
         socket = new Socket(action.payload.host, { ...action.payload.params });
         socket.connect();
         socket.onOpen(e => store.dispatch(socketConnected(e)));
@@ -148,7 +154,8 @@ const phoenixMiddleware = () => {
     }
 
     function join(store, action) {
-        if (!socket) {            
+        if (!socket) {
+            console.log("Cannot join channel without a socket connection!")
             return;
         }
 
@@ -221,7 +228,7 @@ const phoenixMiddleware = () => {
         }
 
         const channel = getChannel(action.payload.topic);
-
+        
         channel.on(action.payload.event, e => {
             if (action.payload.dispatcher) {
                 //// On events are dispatched to the action.payload.dispatcher action

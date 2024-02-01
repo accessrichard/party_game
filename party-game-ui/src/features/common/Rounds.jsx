@@ -4,7 +4,7 @@ const Rounds = (props) => {
     const { rounds } = props;
 
     return (
-        <React.Fragment>
+        <>
             <h3>Rounds</h3>
             <ul className="ul-nostyle text-align-left">
                 {rounds.map((round, key) =>
@@ -15,7 +15,7 @@ const Rounds = (props) => {
                     </li>
                 )}
             </ul>
-        </React.Fragment >
+        </>
     );
 }
 

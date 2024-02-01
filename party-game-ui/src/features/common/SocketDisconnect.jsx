@@ -28,13 +28,13 @@ export default function SocketDisconnect(props) {
 
 
     return (
-        <React.Fragment>
+        <>
             {isDisconnected &&
                 <Popup
                     title="Lost connnection to server."
                     content={<a href="/">Click here to restart</a>}
                 />
             }
-        </React.Fragment >
+        </>
     );
 }

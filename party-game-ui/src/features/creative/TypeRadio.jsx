@@ -12,7 +12,7 @@ export default function TypeRadio(props) {
     }
 
     return (
-        <React.Fragment>
+        <>
             <label className='pointer-events'>
                 <input type="radio"
                     name={"type-!-" + props.index}
@@ -34,6 +34,6 @@ export default function TypeRadio(props) {
                     return <li key={idx}>{err}</li>
                 })}
             </ul>}
-        </React.Fragment>
+        </>
     );
 }

@@ -8,7 +8,7 @@ export default function GameList(props) {
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="group">
                 <select required
                     autoComplete="off"
@@ -25,6 +25,6 @@ export default function GameList(props) {
                 <span className="bar"></span>
                 <label>Select Game</label>
             </div>
-        </React.Fragment>
+        </>
     );
 }

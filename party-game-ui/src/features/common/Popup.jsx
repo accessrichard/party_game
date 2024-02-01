@@ -7,7 +7,7 @@ export default function Popup(props) {
     } = props;
 
     return (
-        <React.Fragment>
+        <>
             <div className="overlay overlay-visible">
                 <div className="popup">
                     <h2>{title}</h2>
@@ -16,6 +16,6 @@ export default function Popup(props) {
                     </div>
                 </div>
             </div>
-        </React.Fragment >
+        </>
     );
 }

@@ -49,7 +49,7 @@ export default function Import(props) {
 
 
     return (
-        <React.Fragment>
+        <>
             {!gameForm &&
                 <div className='flex-grid center-65'>
                     <div className="flex-row flex-item">
@@ -84,6 +84,6 @@ export default function Import(props) {
                 </div>
             }
             {gameForm && <Create game={gameForm}></Create>}
-        </React.Fragment>
+        </>
     );
 }

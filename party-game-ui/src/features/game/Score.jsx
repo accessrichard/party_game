@@ -43,13 +43,13 @@ function Score() {
     }
     
     return (
-        <React.Fragment>
+        <>
             <NewGamePrompt/>
             <div className="pd-25 md-5 large-title">{displayWinner(scores)}</div>
             <Faces isHappy={true} className="small-logo spin" />
             <Scores scores={scores.scores} rounds={round} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
-        </React.Fragment>
+        </>
     );
 }
 

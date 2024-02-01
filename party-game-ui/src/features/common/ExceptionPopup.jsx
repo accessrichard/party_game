@@ -4,7 +4,7 @@ import GenServerTimeout from "./GenServerTimeout";
 import { Outlet } from 'react-router';
 import SocketDisconnect from "./SocketDisconnect";
 
-export default function ExceptionPopup(props) {
+export default function ExceptionPopup() {
 
     const [shownError, setShownError] = useState("");
 

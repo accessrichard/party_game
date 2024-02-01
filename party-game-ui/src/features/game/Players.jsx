@@ -7,7 +7,7 @@ const Players = () => {
     const playerName = useSelector(state => state.game.playerName);
 
     return (
-        <React.Fragment>
+        <>
             <ul className="players ul-nostyle">                
                 {players.map((val, key) =>
                     <li key={key}>                        
@@ -15,7 +15,7 @@ const Players = () => {
                     </li>
                 )}
             </ul>
-        </React.Fragment>
+        </>
     );
 }
 

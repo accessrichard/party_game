@@ -11,7 +11,7 @@ export default function QuestionForm(props) {
 
     function handleChange(e) {
         props.onChange && props.onChange(e);
-    };
+    }
 
     function hasError(field) {
         return props.errors && props.errors[field]
@@ -35,7 +35,7 @@ export default function QuestionForm(props) {
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="flex-row">
                 <div className="flex-column md-5">
                     <div className='group-compact'>
@@ -76,6 +76,6 @@ export default function QuestionForm(props) {
                     onChange={handleChange}>
                 </AnswerInput>}
 
-        </React.Fragment>
+        </>
     );
 }

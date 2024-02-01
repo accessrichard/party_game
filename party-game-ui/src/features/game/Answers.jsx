@@ -4,12 +4,12 @@ export default function Answers(props) {
 
     const { isDisabled, answers, correct } = props;
 
-    function onAnswerClick(e, key) {
-        props.onAnswerClick(e, e.target.value);
+    function onAnswerClick(e) {
+        props.onAnswerClick(e, e.target.value)
     }
 
     return (
-        <React.Fragment>
+        <>
             <div className="answer-wrapper">
                 {(answers || []).map((ans, key) =>
                     <div className="answer light-background dark-border" key={key}>
@@ -20,11 +20,11 @@ export default function Answers(props) {
                             disabled={isDisabled ? "disabled" : ""}
                             value={ans}
                             autoComplete="off"
-                            onClick={e => onAnswerClick(e, key)}>
+                            onClick={e => onAnswerClick(e)}>
                         </input>
                     </div>
                 )}
             </div>
-        </React.Fragment>
+        </>
     );
 }
