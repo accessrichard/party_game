@@ -1,11 +1,11 @@
 import {
-    SOCKET_CONNECTED,
-    channelJoin,
-    channelOn,
-    channelOff,
-    channelPush,
-    socketConnect
+    channelPush
 } from '../phoenix/phoenixMiddleware';
+import {
+    usePhoenixChannel,
+    usePhoenixEvents,
+    usePhoenixSocket
+} from '../phoenix/usePhoenix';
 import { NavLink, Navigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
@@ -85,22 +85,31 @@ export default function Lobby() {
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.game.api.list.data);
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
-    const channels = useSelector(state => state.phoenix.channels);
-    const socketStatus = useSelector(state => state.phoenix.socket.status);
-    
-    console.log(channels)
 
+    usePhoenixSocket();
+    usePhoenixChannel(`game:${gameCode}`, { name: playerName });
+    usePhoenixEvents(`game:${gameCode}`, events);
+
+    /**
+     * Redirect to home page if there is no game code at this point.
+     */
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
         }
     }, [gameCode, dispatch]);
 
+    /**
+     * Display a count-up timer of lobby wait time.
+     */
     useEffect(() => {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };
     }, []);
 
+    /**
+     * Load the server game list drop-down.
+     */
     useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {
             dispatch(listGames());
@@ -108,6 +117,9 @@ export default function Lobby() {
 
     }, [dispatch, serverGames, serverGamesLoading]);
 
+    /**
+     * Merge the user created games with the server game list.
+     */
     useEffect(() => {
         const list = mergeGameList(serverGames, creativeGames);
         setGameList(list);
@@ -127,37 +139,16 @@ export default function Lobby() {
         }
     }, [gameList, dispatch, name]);
 
-    useEffect(() => {
-        dispatch(socketConnect({
-            host: import.meta.env.VITE_SOCKET_URL || '/socket',
-            params: {}
-        }));
-    }, []);
-
-    useEffect(() => {
-        const topic = `game:${gameCode}`;
-        if (socketStatus === SOCKET_CONNECTED) {
-            dispatch(channelJoin({
-                topic,
-                data: { name: playerName }
-            }));
-        }
-    }, [dispatch, gameCode, playerName, socketStatus]);
-
-
-    useEffect(() => {
-        const topic = `game:${gameCode}`;
-
-        const hasChannel = channels.find(x => x.topic === topic);
-        if (hasChannel) {
-            events(topic).forEach((e) => dispatch(channelOn(e)))
-        }
-
-        return () => { events(topic).forEach((e) => dispatch(channelOff(e))) }
-    }, [gameCode, channels]);
-
-
-
+    /**
+     * Create and kicks off a new game:
+     *   a. Send the new_game event to the server.
+     *   b. Server replies with handle_new_game_created
+     *      which is dispatched to redux via channel events.
+     *   c. Once redux handles the new game created, the 
+     *      <NewGamePrompt> element is flagged to display
+     *      an overlay and once the overlay timer is done
+     *      will trigger the game to start.
+     */
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
             e.preventDefault();
@@ -190,6 +181,10 @@ export default function Lobby() {
 
     function onGenServerTimeout() {
         dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
+    }
+
+    function onStartGame() {
+        dispatch(push('/game'));
     }
 
     if (isGameStarted) {
@@ -260,7 +255,7 @@ export default function Lobby() {
                     </div>
                 </div>}
             <Chat />
-            <NewGamePrompt />
+            <NewGamePrompt onStartGame={() => onStartGame()} />
         </>
     );
 }

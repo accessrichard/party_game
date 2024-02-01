@@ -3,9 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Timer from '../game/Timer';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { push } from 'redux-first-history';
 
-export default function NewGamePrompt() {
+export default function NewGamePrompt(props) {
 
     const dispatch = useDispatch();
     const { isNewGamePrompt, gameChannel, isGameOwner } = useSelector(state => state.game);
@@ -24,7 +23,7 @@ export default function NewGamePrompt() {
         }
 
         setIsTimerActive(false);
-        dispatch(push('/game'));
+        props && props.onStartGame();        
     }
 
     return (

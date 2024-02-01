@@ -44,6 +44,21 @@ export const channelPushError = payload => ({ type: CHANNEL_PUSH_ERROR, payload 
 export const channelPushTimeout = payload => ({ type: CHANNEL_PUSH_TIMEOUT, payload });
 
 
+export function hasConnectedChannel(channels, topic) {
+    return channels.some(x => x.topic === topic
+        && x.status === CHANNEL_JOINED)
+}
+
+export function hasChannelError(channels, topic) {
+    return channels.some(x => x.topic === topic
+        && (x.status === CHANNEL_ERROR
+        || x.status === CHANNEL_JOIN_ERROR))
+}
+
+export function hasConnectedSocket(socketStatus) {
+    return socketStatus === SOCKET_CONNECTED;
+}
+
 const initialState = {
     socket: {
         status: null,
@@ -228,7 +243,7 @@ const phoenixMiddleware = () => {
         }
 
         const channel = getChannel(action.payload.topic);
-        
+
         channel.on(action.payload.event, e => {
             if (action.payload.dispatcher) {
                 //// On events are dispatched to the action.payload.dispatcher action

@@ -1,12 +1,10 @@
 import {
-  CHANNEL_ERROR,
-  CHANNEL_JOINED,
-  CHANNEL_JOIN_ERROR,
-  channelJoin,
-  channelOn,  
-  channelPush,
-  channelOff
+  channelPush
 } from '../phoenix/phoenixMiddleware';
+import {
+  usePhoenixChannel,
+  usePhoenixEvents
+} from '../phoenix/usePhoenix';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -37,32 +35,16 @@ const Chat = () => {
   const gameCode = useSelector(state => state.game.gameCode);
   const [text, setText] = useState("");
   const [isUserTyping, setIsUserTyping] = useState(false);
-  const channels = useSelector(state => state.phoenix.channels);
 
-  const topic = `chat:${gameCode}`
-  const presence = `game:${gameCode}`
+  usePhoenixChannel(`chat:${gameCode}`, { name: player });
+  usePhoenixEvents(`chat:${gameCode}`, onEvents);
 
   useEffect(() => {
     chatBottomRef.current.scrollTop = chatBottomRef.current.scrollHeight + window.innerHeight;
   });
 
-  useEffect(() => {
-    if (!gameCode) {
-      return;
-    }
-    
-    if (!channels.some(x => x.topic === topic 
-      && (x.status === CHANNEL_JOINED 
-        || x.status === CHANNEL_ERROR
-        || x.status === CHANNEL_JOIN_ERROR))) {
-          dispatch(channelJoin({ topic, data: { name: player } }));
-    }
-    
-    onEvents(topic).forEach((e) => dispatch(channelOn(e)));
-    return () => { onEvents(topic).forEach((e) => dispatch(channelOff(e))); };
-  }, [channels, dispatch, topic, player]);
-
   function send() {
+    const topic = `chat:${gameCode}`
     dispatch(channelPush({
       topic,
       event: topic,
@@ -78,12 +60,13 @@ const Chat = () => {
 
   function onChange(e) {
     setText(e.target.value);
-    
+
     if (isUserTyping) {
       return;
     }
 
     setIsUserTyping(true);
+    const presence = `game:${gameCode}`;
     dispatch(channelPush(typingEvent(presence, true)));
 
     setTimeout(() => {
@@ -96,7 +79,7 @@ const Chat = () => {
     if (e.key === 'Enter' && text.trim() !== '') {
       send();
       setIsUserTyping(false);
-    }   
+    }
   }
 
   return (
