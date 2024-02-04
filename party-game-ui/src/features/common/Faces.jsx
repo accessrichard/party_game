@@ -26,9 +26,9 @@ const Faces = (props) => {
     return (
         <>
             {face && <svg className={className || "app-logo"}>
-                <svg className={className || "app-logo"}>
+               
                     <use href={"#" + face} />
-                </svg>
+               
             </svg>}
 
         </>
