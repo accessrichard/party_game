@@ -165,12 +165,12 @@ body {
 }
 
 .chat-container {
-  overflow: scroll;
+  overflow: auto;
   height: 200px;
 }
 
 .player-container {
-  overflow: scroll;
+  overflow: auto;
   height: 275px;
 }
 

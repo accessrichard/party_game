@@ -38,7 +38,7 @@ defmodule PartyGame.Games.Games do
         "options" => %{"type" => "division"}
       },
       %{
-        "name" => "States",
+        "name" => "U.S. State Capitals",
         "module" => Games.States,
         "type" => "multi_choice",
         "location" => "server"
