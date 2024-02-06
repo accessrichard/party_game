@@ -60,6 +60,56 @@ defmodule PartyGame.Games.BasicMath do
     }
   end
 
+  def multiply_fraction(num_range \\ 10) do
+    numerator1 = :rand.uniform(num_range)
+    denominator1 = :rand.uniform(num_range)
+
+    numerator2 = :rand.uniform(num_range)
+    denominator2 = :rand.uniform(num_range)
+
+    numerator_answer = numerator1 * numerator2
+    denominator_answer = denominator1 * denominator2
+
+    gcd = greatest_common_denominator(numerator_answer, denominator_answer)
+    numerator = numerator_answer / gcd
+    denominator = denominator_answer / gcd
+
+    %Question{
+      question: "#{numerator1} / #{denominator1} * #{numerator2} / #{denominator2}",
+      answers: [],
+      correct: "#{numerator} / #{denominator}",
+      id: Ecto.UUID.autogenerate()
+    }
+  end
+
+  def divide_fraction(num_range \\ 10) do
+    numerator1 = :rand.uniform(num_range)
+    denominator1 = :rand.uniform(num_range)
+
+    numerator2 = :rand.uniform(num_range)
+    denominator2 = :rand.uniform(num_range)
+
+    numerator_answer = numerator1 * denominator2
+    denominator_answer = denominator1 * numerator2
+
+    gcd = greatest_common_denominator(numerator_answer, denominator_answer)
+    numerator = numerator_answer / gcd
+    denominator = denominator_answer / gcd
+
+
+    %Question{
+      question: "(#{numerator1} / #{denominator1}) / (#{numerator2} / #{denominator2})",
+      answers: [],
+      correct: "#{numerator} / #{denominator}",
+      id: Ecto.UUID.autogenerate()
+    }
+  end
+
+  defp greatest_common_denominator(a, 0), do: a
+  defp greatest_common_denominator(a, b) do
+    greatest_common_denominator(b, Integer.mod(a, b))
+  end
+
   defp subtract(num_range \\ 50) do
     max = num_range
     num1 = :rand.uniform(num_range)
