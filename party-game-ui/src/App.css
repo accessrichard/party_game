@@ -282,6 +282,7 @@ body {
 .question {
   font-size: calc(10px + 4vmin);
   padding: 4%;
+  white-space: pre-wrap;
 }
 
 .answer {
