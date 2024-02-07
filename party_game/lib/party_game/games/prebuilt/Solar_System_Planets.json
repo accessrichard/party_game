@@ -1,0 +1,181 @@
+{
+    "name": "Planets",
+    "questions": [
+        {
+            "question": "What is the smallest planet in our solar system?",
+            "type": "multi",
+            "correct": "Mercury",
+            "answers": [
+                "Mercury",
+                "Venus",
+                "Mars",
+                "Jupiter"
+            ]
+        },
+        {
+            "question": "What is the closest planet to the Sun?",
+            "type": "multi",
+            "correct": "Mercury",
+            "answers": [
+                "Mercury",
+                "Mars",
+                "Venus",
+                "Earth"
+            ]
+        },
+        {
+            "question": "What is the biggest planet in our solar system?",
+            "type": "multi",
+            "correct": "Jupiter",
+            "answers": [
+                "Jupiter",
+                "Saturn",
+                "Uranus",
+                "Neptune"
+            ]
+        },
+        {
+            "question": "What is the farthest planet in our solar system not considering Pluto?",
+            "type": "multi",
+            "correct": "Neptune",
+            "answers": [
+                "Neptune",
+                "Uranus",
+                "Jupiter",
+                "Saturn"
+            ]
+        },
+        {
+            "question": "What planet rotates at a nearly 90-degree angle from the plane of its orbit?",
+            "type": "multi",
+            "correct": "Uranus",
+            "answers": [
+                "Uranus",
+                "Neptune",
+                "Jupiter",
+                "Mercury"
+            ]
+        },
+        {
+            "question": "Which planet has the longest day equivilent to 243 Earth days?",
+            "type": "multi",
+            "correct": "Venus",
+            "answers": [
+                "Venus",
+                "Jupiter",
+                "Mercury",
+                "Mars"
+            ]
+        },
+        {
+            "question": "Which planet doesn't have any moons?",
+            "type": "multi",
+            "correct": "Venus",
+            "answers": [
+                "Venus",
+                "Uranus",
+                "Neptune",
+                "Jupiter"
+            ]
+        },
+        {
+            "question": "Which rocky planet has the thickest atmosphere?",
+            "type": "multi",
+            "correct": "Venus",
+            "answers": [
+                "Venus",
+                "Earth",
+                "Mars",
+                "Mercury"
+            ]
+        },
+        {
+            "question": "Which gas giant has the thickest atmosphere?",
+            "type": "multi",
+            "correct": "Jupiter",
+            "answers": [
+                "Jupiter",
+                "Saturn",
+                "Neptune",
+                "Uranus"
+            ]
+        },
+        {
+            "question": "Which planet has the most moons?",
+            "type": "multi",
+            "correct": "Saturn",
+            "answers": [
+                "Saturn",
+                "Jupitar",
+                "Neptune",
+                "Uranus"
+            ]
+        },
+        {
+            "question": "Where is the astroid belt located?",
+            "type": "multi",
+            "correct": "Between Mars and Jupiter",
+            "answers": [
+                "Between Mars and Jupiter",
+                "Between Earth and Venus",
+                "Between Jupiter and Saturn",
+                "Outside of Pluto"
+            ]
+        },
+        {
+            "question": "What is the largest planet in our solar system?",
+            "type": "multi",
+            "correct": "Jupiter",
+            "answers": [
+                "Jupiter",
+                "Neptune",
+                "Uranus",
+                "Saturn"
+            ]
+        },
+        {
+            "question": "Which planet has supersonic winds?",
+            "type": "multi",
+            "correct": "Neptune",
+            "answers": [
+                "Neptune",
+                "Earth",
+                "Mars",
+                "Mercury"
+            ]
+        },
+        {
+            "question": "What is the hottest planet in our solar system?",
+            "type": "multi",
+            "correct": "Venus",
+            "answers": [
+                "Venus",
+                "Mars",
+                "Mercury",
+                "Jupiter"
+            ]
+        },
+        {
+            "question": "What is the only planet that orbits clockwise in our solar system?",
+            "type": "multi",
+            "correct": "Venus",
+            "answers": [
+                "Venus",
+                "Earth",
+                "Mars",
+                "Mercury"
+            ]
+        },
+        {
+            "question": "What planet has the longest year equivilent to 165 earth years?",
+            "type": "multi",
+            "correct": "Neptune",
+            "answers": [
+                "Neptune",
+                "Mars",
+                "Jupiter",
+                "Venus"
+            ]
+        }
+    ]
+}
