@@ -97,7 +97,6 @@ export default function Game() {
         return () => { events(topic).forEach((e) => dispatch(channelOff(e))) }
     }, []);
 
-
     useEffect(() => {
         if (timerStartDate === null) {
             setCanRetryWrongAnswer(true);

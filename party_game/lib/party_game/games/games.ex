@@ -52,6 +52,13 @@ defmodule PartyGame.Games.Games do
         "options" => %{"type" => "fraction_divide"}
       },
       %{
+        "name" => "Equations",
+        "module" => Games.BasicMath,
+        "type" => "multi_choice",
+        "location" => "server",
+        "options" => %{"type" => "equation"}
+      },
+      %{
         "name" => "U.S. State Capitals",
         "module" => Games.States,
         "type" => "multi_choice",

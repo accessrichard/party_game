@@ -18,6 +18,9 @@ defmodule PartyGame.Games.BasicMath do
       "division" ->
         Enum.take_random(new_division(number_questions), number_questions)
 
+      "equation" ->
+          Enum.take_random(new_equation(number_questions), number_questions)
+
       "fraction_divide" ->
         Enum.take_random(new_fraction_divide(number_questions), number_questions)
 
@@ -51,6 +54,10 @@ defmodule PartyGame.Games.BasicMath do
     for _ <- 0..number_questions, do: divide()
   end
 
+  def new_equation(number_questions \\ 10) do
+    for _ <- 0..number_questions, do: equation()
+  end
+
   def new_fraction_divide(number_questions \\ 10) do
     for _ <- 0..number_questions, do: fraction(:divide)
   end
@@ -74,10 +81,27 @@ defmodule PartyGame.Games.BasicMath do
     }
   end
 
-  def fraction_answer(:divide, n1, n2, d1, d2), do: {n1 * d2, d1 * n2}
-  def fraction_answer(:multiply, n1, n2, d1, d2), do: {n1 * n2, d1 * d2}
+  def equation(num_range \\ 10) do
 
-  def fraction(op, num_range \\ 10) do
+    x = :rand.uniform(num_range)
+    z = x * :rand.uniform(10)
+    y = :rand.uniform(z)
+    ans = round(z / x)
+
+    answers = gen_answers([ans], z)
+
+    %Question{
+      question: "#{x}x + #{y} = #{z + y}",
+      answers: Enum.take_random(answers, 4),
+      correct: to_string(ans),
+      id: Ecto.UUID.autogenerate()
+    }
+  end
+
+  defp fraction_answer(:divide, n1, n2, d1, d2), do: {n1 * d2, d1 * n2}
+  defp fraction_answer(:multiply, n1, n2, d1, d2), do: {n1 * n2, d1 * d2}
+
+  defp fraction(op, num_range \\ 10) do
     numerator1 = :rand.uniform(num_range)
     denominator1 = :rand.uniform(num_range)
     numerator2 = :rand.uniform(num_range)
