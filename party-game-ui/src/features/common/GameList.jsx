@@ -10,7 +10,8 @@ export default function GameList(props) {
     return (
         <>
             <div className="group">
-                <select required
+                <select
+                    required
                     autoComplete="off"
                     id="game-list"
                     name="games"
@@ -23,7 +24,7 @@ export default function GameList(props) {
                 </select>
                 <span className="highlight"></span>
                 <span className="bar"></span>
-                <label>Select Game</label>
+                <label className="prefilled-select-label">Select Game</label>
             </div>
         </>
     );

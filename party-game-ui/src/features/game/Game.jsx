@@ -245,7 +245,7 @@ export default function Game() {
                         </span>
                     }
                     <div className="question">
-                        {question}
+                        {question.replaceAll(' ', '\u00a0')}
                     </div>
                     <div>
                         <span className="font-14px">
@@ -264,7 +264,7 @@ export default function Game() {
                     </div>
 
                     <Answers onAnswerClick={onAnswerClick}
-                        isDisabled={(!isRoundStarted) || (correct !== "" || isWrong)}
+                        isDisabled={isQuestionAnswered || !isRoundStarted || (correct !== "" || isWrong)}
                         answers={answers}
                         correct={correct}>
                     </Answers>

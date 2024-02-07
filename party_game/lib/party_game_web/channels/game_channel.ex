@@ -128,9 +128,6 @@ defmodule PartyGameWeb.GameChannel do
       "handle_next_question",
       %{
         data: %{
-          rounds: game.rounds,
-          answer: "",
-          winner: "",
           isOver: game.is_over,
           question: question.question,
           answers: question.answers,
@@ -155,7 +152,7 @@ defmodule PartyGameWeb.GameChannel do
           "handle_correct_answer",
           %{
             data: %{
-              rounds: game.rounds,
+              rounds: if(game.is_over, do: game.rounds, else: []),
               answer: answer,
               winner: socket.assigns.name,
               isOver: game.is_over

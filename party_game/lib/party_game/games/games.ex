@@ -31,11 +31,25 @@ defmodule PartyGame.Games.Games do
         "options" => %{"type" => "multiplication"}
       },
       %{
+        "name" => "Multiplication - Fractions",
+        "module" => Games.BasicMath,
+        "type" => "multi_choice",
+        "location" => "server",
+        "options" => %{"type" => "fraction_multiply"}
+      },
+      %{
         "name" => "Division",
         "module" => Games.BasicMath,
         "type" => "multi_choice",
         "location" => "server",
         "options" => %{"type" => "division"}
+      },
+      %{
+        "name" => "Division - Fractions",
+        "module" => Games.BasicMath,
+        "type" => "multi_choice",
+        "location" => "server",
+        "options" => %{"type" => "fraction_divide"}
       },
       %{
         "name" => "U.S. State Capitals",
