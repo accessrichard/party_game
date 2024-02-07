@@ -245,7 +245,7 @@ export default function Game() {
                         </span>
                     }
                     <div className="question">
-                        {question.replaceAll(' ', '\u00a0')}
+                        {(question || "").replaceAll(' ', '\u00a0')}
                     </div>
                     <div>
                         <span className="font-14px">
