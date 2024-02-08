@@ -96,7 +96,13 @@ defmodule PartyGame.GameRoom do
   end
 
   def start_round(%Game{} = game) do
-    %{game | round_started: true}
+    case game.questions == [] do
+      true ->
+        end_game(game)
+
+      false ->
+        %{game | round_started: true}
+    end
   end
 
   def update_player(%Game{} = game, %Player{} = player) do

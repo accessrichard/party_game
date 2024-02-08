@@ -89,6 +89,14 @@ export default function Game() {
 
     const prevRound = usePrevious(round);
 
+    /**
+     * Subscribe to events from phoenix channels.
+     * 
+     * These events are auto handled in redux.
+     * 
+     * See PheonixMiddleware.js which auto maps socket/channel events
+     * to state updates.
+     */
     useEffect(() => {
         const topic = `game:${gameCode}`;
 
@@ -97,6 +105,9 @@ export default function Game() {
         return () => { events(topic).forEach((e) => dispatch(channelOff(e))) }
     }, []);
 
+    /**
+     * Sets a delay timeout on wrong answers as configured in the settings.
+     */
     useEffect(() => {
         if (timerStartDate === null) {
             setCanRetryWrongAnswer(true);
@@ -111,6 +122,10 @@ export default function Game() {
         setTimerStartDate(date)
     }
 
+    /**
+     * Sets a countdown timer until the question can no longer be answered
+     * or until the next question is displayed as configured in settings.
+     */
     useEffect(() => {
         if (startCountdown) {
             setTimerSeconds(settings.nextQuestionTime);
@@ -120,6 +135,10 @@ export default function Game() {
         return () => { setIsTimerActive(false); };
     }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
 
+
+    /**
+     * Activates the timer when a round is started.
+     */
     useEffect(() => {
         if (isRoundStarted && round === prevRound) {
             setTimerSeconds(settings.questionTime);
@@ -128,6 +147,7 @@ export default function Game() {
             /// Force reset of timer when round changes
             /// since timers can go out of sync across players.
             setIsTimerActive(new Date());
+            setIsQuestionAnswered(false);
         }
 
         return () => { setIsTimerActive(false); };
@@ -261,7 +281,6 @@ export default function Game() {
                                 numberSeconds={timerSeconds} />}
                         </span>
                     </div>
-
                     <Answers onAnswerClick={onAnswerClick}
                         isDisabled={isQuestionAnswered || !isRoundStarted || (correct !== "" || isWrong)}
                         answers={answers}
