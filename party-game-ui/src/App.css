@@ -280,9 +280,16 @@ body {
 }
 
 .question {
-  font-size: calc(10px + 4vmin);
   padding: 4%;
   white-space: pre-wrap;
+}
+
+.question-small {
+  font-size: calc(10px + 2vmin);
+}
+
+.question-big {
+  font-size: calc(10px + 4vmin);
 }
 
 .answer {
