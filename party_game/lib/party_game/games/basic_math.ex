@@ -19,7 +19,7 @@ defmodule PartyGame.Games.BasicMath do
         Enum.take_random(new_division(number_questions), number_questions)
 
       "equation" ->
-          Enum.take_random(new_equation(number_questions), number_questions)
+        Enum.take_random(new_equation(number_questions), number_questions)
 
       "fraction_divide" ->
         Enum.take_random(new_fraction_divide(number_questions), number_questions)
@@ -82,7 +82,6 @@ defmodule PartyGame.Games.BasicMath do
   end
 
   def equation(num_range \\ 10) do
-
     x = :rand.uniform(num_range)
     z = x * :rand.uniform(10)
     y = :rand.uniform(z)
@@ -158,7 +157,6 @@ defmodule PartyGame.Games.BasicMath do
   end
 
   defp greatest_common_denominator(a, 0), do: a
-
   defp greatest_common_denominator(a, b) do
     greatest_common_denominator(b, Integer.mod(a, b))
   end
@@ -221,10 +219,15 @@ defmodule PartyGame.Games.BasicMath do
   defp unique_num(max_value, existing_nums) do
     new = :rand.uniform(max_value)
 
-    if Enum.member?(existing_nums, new) do
-      unique_num(max_value, existing_nums)
-    else
-      new
+    cond do
+      (max_value <= length(existing_nums)) ->
+        new
+
+      Enum.member?(existing_nums, new) ->
+        unique_num(max_value, existing_nums)
+
+      true ->
+        new
     end
   end
 end
