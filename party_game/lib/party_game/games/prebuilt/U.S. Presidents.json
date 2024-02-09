@@ -77,7 +77,490 @@
                 "William McKinley",
                 "Warren G. Harding"
             ]
+        },
+        {
+            "question": "Which president spoke English as a second language?",
+            "type": "multi",
+            "correct": "Martin Van Buren",
+            "answers": [
+                "Martin Van Buren",
+                "William Henry Harrison",
+                "Grover Cleveland",
+                "William Howard Taft"
+            ]
+        },
+        {
+            "question": "Which president died 31 days after his innaguration?",
+            "type": "multi",
+            "correct": "William Henry Harrison",
+            "answers": [
+                "William Henry Harrison",
+                "James K. Polk",
+                "Robert Kennedy",
+                "Zachary Taylor"
+            ]
+        },
+        {
+            "question": "Who was the first president to have his veto of legislation overridden by Congress?",
+            "type": "multi",
+            "correct": "John Tyler",
+            "answers": [
+                "John Tyler",
+                "Harry S. Truman",
+                "Richard Nixon",
+                "Bill Clinton"
+            ]
+        },
+        {
+            "question": "Which president had 15 kids?",
+            "type": "multi",
+            "correct": "John Tyler",
+            "answers": [
+                "John Tyler",
+                "Millard Fillmore",
+                "Franklin Pierce",
+                "Jon Kennedy"
+            ]
+        },
+        {
+            "question": "Which president is known for acquiring more than a million square miles of western territory  including California, Nevada, Utah, Arizona, New Mexico, and parts of Colorado and Wyoming?",
+            "type": "multi",
+            "correct": "James K. Polk",
+            "answers": [
+                "James K. Polk",
+                "James Buchanan",
+                "Abraham Lincoln",
+                "Andrew Johnson"
+            ]
+        },
+        {
+            "question": "Which president died of Cholera less than 2 years in office?",
+            "type": "multi",
+            "correct": "Zachary Taylor",
+            "answers": [
+                "Zachary Taylor",
+                "Millard Fillmore",
+                "Franklin Pierce",
+                "James Buchanan"
+            ]
+        },
+        {
+            "question": "Who was the last to be a Whig party president?",
+            "type": "multi",
+            "correct": "Millard Fillmore",
+            "answers": [
+                "Millard Fillmore",
+                "William Henry Harrison",
+                "Rutherford B. Hayes",
+                "John Adams"
+            ]
+        },
+        {
+            "question": "Who was the only Federalist party president?",
+            "type": "multi",
+            "correct": "John Adams",
+            "answers": [
+                "John Adams",
+                "Thomas Jefferson",
+                "James Madison",
+                "John Quincy Adams"
+            ]
+        },
+        {
+            "question": "Which president-elect lost their 11 year old son due to train derailment?",
+            "type": "multi",
+            "correct": "Franklin Pierce",
+            "answers": [
+                "Franklin Pierce",
+                "Theodore Roosevelt",
+                "Franklin D. Roosevelt",
+                "Warren G. Harding"
+            ]
+        },
+        {
+            "question": "Which president was ridiculed for his handling of the Fort Sumter crisis?",
+            "type": "multi",
+            "correct": "James Buchanan",
+            "answers": [
+                "James Buchanan",
+                "Rutherford B. Hayes",
+                "John Tyler",
+                "Abraham Lincoln"
+            ]
+        },
+        {
+            "question": "Which president issued the Emancipation Proclamation that freed slaves within the Confederacy?",
+            "type": "multi",
+            "correct": "Abraham Lincoln",
+            "answers": [
+                "Abraham Lincoln",
+                "Ulysses S. Grant",
+                "George Washington",
+                "Andrew Jackson"
+            ]
+        },
+        {
+            "question": "Who was the first president to be impeached by the House of Representatives?",
+            "type": "multi",
+            "correct": "Andrew Johnson",
+            "answers": [
+                "Andrew Johnson",
+                "Bill Clinton",
+                "Donald Trump",
+                "Richard Nixon"
+            ]
+        },
+        {
+            "question": "What president led the Union Armies to victory in the American Civil war and later became the 18th president?",
+            "type": "multi",
+            "correct": "Ulysses S. Grant",
+            "answers": [
+                "Ulysses S. Grant",
+                "Abraham Lincoln",
+                "James Madison",
+                "George Washington"
+            ]
+        },
+        {
+            "question": "Which president led the end of Reconstruction and returned the South to \"home rule\"?",
+            "type": "multi",
+            "correct": "Rutherford B. Hayes",
+            "answers": [
+                "Rutherford B. Hayes",
+                "Ulysses S. Grant",
+                "Abraham Lincoln",
+                "James A. Garfield"
+            ]
+        },
+        {
+            "question": "Which president who was assassinated published a proof of the Pythagorean theorem?",
+            "type": "multi",
+            "correct": "James A. Garfield",
+            "answers": [
+                "James A. Garfield",
+                "Millard Fillmore",
+                "Woodrow Wilson",
+                "Robert Kennedy"
+            ]
+        },
+        {
+            "question": "Which president was the replacement of the assassinated James Garfield?",
+            "type": "multi",
+            "correct": "Chester A. Arthur",
+            "answers": [
+                "Chester A. Arthur",
+                "Grover Cleveland",
+                "Rutherford B. Hayes",
+                "Ulysses S. Grant"
+            ]
+        },
+        {
+            "question": "Which president who was the first Democrat elected after the Civil War also was the first president to serve two non-consecutive term?",
+            "type": "multi",
+            "correct": "Grover Cleveland",
+            "answers": [
+                "Grover Cleveland",
+                "William McKinley",
+                "Benjamin Harrison",
+                "William McKinley"
+            ]
+        },
+        {
+            "question": "Which president was responsible for annexing the Republic of Hawaii, and purchasing the Philippines, Guam and Puerto Rico?",
+            "type": "multi",
+            "correct": "William McKinley",
+            "answers": [
+                "William McKinley",
+                "Theodore Roosevelt",
+                "Benjamin Harrison",
+                "Chester A. Arthur"
+            ]
+        },
+        {
+            "question": "Under which president did congress pass the Sherman Antitrust Act of 1890 which was the first federal law to regulate corporations and prevent monopolies?",
+            "type": "multi",
+            "correct": "Benjamin Harrison",
+            "answers": [
+                "Benjamin Harrison",
+                "Grover Cleveland",
+                "William McKinley",
+                "William Howard Taft"
+            ]
+        },
+        {
+            "question": "Which president was the first American to ever win a Nobel Prize?",
+            "type": "multi",
+            "correct": "Theodore Roosevelt",
+            "answers": [
+                "Theodore Roosevelt",
+                "Ronald Reagan",
+                "George Washington",
+                "Abraham Lincoln"
+            ]
+        },
+        {
+            "question": "Which president also served as Chief Justice of the United States?",
+            "type": "multi",
+            "correct": "William Howard Taft",
+            "answers": [
+                "William Howard Taft",
+                "Chester A. Arthur",
+                "Andrew Johnson",
+                "James Madison"
+            ]
+        },
+        {
+            "question": "Which president signed the first major federal governmen social welfare legislation the Sheppard–Towner Maternity Act?",
+            "type": "multi",
+            "correct": "Warren G. Harding",
+            "answers": [
+                "Warren G. Harding",
+                "Calvin Coolidge",
+                "Herbert Hoover",
+                "Franklin D. Roosevelt"
+            ]
+        },
+        {
+            "question": "Which president signed the Indian Citizenship Act of 1924 granting U.S. citizenship to all Native Americans?",
+            "type": "multi",
+            "correct": "Calvin Coolidge",
+            "answers": [
+                "Calvin Coolidge",
+                "Herbert Hoover",
+                "Warren G. Harding",
+                "Franklin D. Roosevelt"
+            ]
+        },
+        {
+            "question": "Who was the only president to server more than two terms?",
+            "type": "multi",
+            "correct": "Franklin D. Roosevelt",
+            "answers": [
+                "Franklin D. Roosevelt",
+                "Harry S. Truman",
+                "Dwight D. Eisenhower",
+                "Calvin Coolidge"
+            ]
+        },
+        {
+            "question": "Which president promised the American people a New Deal during the great depression?",
+            "type": "multi",
+            "correct": "Franklin D. Roosevelt",
+            "answers": [
+                "Franklin D. Roosevelt",
+                "Harry S. Truman",
+                "Woodrow Wilson",
+                "Andrew Johnson"
+            ]
+        },
+        {
+            "question": "Which president led the United States into World War 2?",
+            "type": "multi",
+            "correct": "Franklin D. Roosevelt ",
+            "answers": [
+                "Franklin D. Roosevelt ",
+                "Harry S. Truman",
+                "Dwight D. Eisenhower",
+                "Herbert Hoover"
+            ]
+        },
+        {
+            "question": "Which president led the United States into World War 1?",
+            "type": "multi",
+            "correct": "Woodrow Wilson",
+            "answers": [
+                "Woodrow Wilson",
+                "Franklin D. Roosevelt ",
+                "Dwight D. Eisenhower",
+                "Harry S. Truman"
+            ]
+        },
+        {
+            "question": "Which president authroized the use of the Atomic Bomb?",
+            "type": "multi",
+            "correct": "Harry S. Truman",
+            "answers": [
+                "Harry S. Truman",
+                "Woodrow Wilson",
+                "Franklin D. Roosevelt ",
+                "Dwight D. Eisenhower"
+            ]
+        },
+        {
+            "question": "Which president was the Supreme Commander of the troops invading France on D-Day during WW2?",
+            "type": "multi",
+            "correct": "Dwight D. Eisenhower",
+            "answers": [
+                "Dwight D. Eisenhower",
+                "Franklin D. Roosevelt ",
+                "Harry S. Truman",
+                "Woodrow Wilson"
+            ]
+        },
+        {
+            "question": "Which president wrote \"Profiles in Courage\" and won the Pulitzer Prize in history?",
+            "type": "multi",
+            "correct": "John F. Kennedy",
+            "answers": [
+                "John F. Kennedy",
+                "Lyndon B. Johnson",
+                "Franklin D. Roosevelt ",
+                "Harry S. Truman"
+            ]
+        },
+        {
+            "question": "Which president made the Apollo program a national priority?",
+            "type": "multi",
+            "correct": "Lyndon B. Johnson",
+            "answers": [
+                "Lyndon B. Johnson",
+                "John F. Kennedy",
+                "Richard Nixon",
+                "Gerald Ford"
+            ]
+        },
+        {
+            "question": "Which president escalated involvement in the Vietnam War?",
+            "type": "multi",
+            "correct": "Lyndon B. Johnson",
+            "answers": [
+                "Lyndon B. Johnson",
+                "George Bush",
+                "Bill Clinton",
+                "Gerald Ford"
+            ]
+        },
+        {
+            "question": "Which president  signed the Social Security Amendments of 1965, leading to Medicare and Medicaid?",
+            "type": "multi",
+            "correct": "Lyndon B. Johnson",
+            "answers": [
+                "Lyndon B. Johnson",
+                "Gerald Ford",
+                "Richard Nixon",
+                "Harry S. Truman"
+            ]
+        },
+        {
+            "question": "Under which president were the Civil Rights Act of 1964, the Voting Rights Act of 1965, and the Civil Rights Act of 1968 bills signed?",
+            "type": "multi",
+            "correct": "Lyndon B. Johnson",
+            "answers": [
+                "Lyndon B. Johnson",
+                "Gerald Ford",
+                "Harry S. Truman",
+                "Richard Nixon"
+            ]
+        },
+        {
+            "question": "Which president resigned over the watergate scandal?",
+            "type": "multi",
+            "correct": "Richard Nixon",
+            "answers": [
+                "Richard Nixon",
+                "Harry S. Truman",
+                "Gerald Ford",
+                "Bill Clinton"
+            ]
+        },
+        {
+            "question": "Who was the first vice president chosen under the Twenty-fifth Amendment?",
+            "type": "multi",
+            "correct": "Gerald R. Ford",
+            "answers": [
+                "Gerald R. Ford",
+                "Richard Nixon",
+                "Bill Clinton",
+                "Donald Trump"
+            ]
+        },
+        {
+            "question": "Which president created the Department of Energy to research wind and solar power?",
+            "type": "multi",
+            "correct": "Jimmy Carter",
+            "answers": [
+                "Jimmy Carter",
+                "Bill Clinton",
+                "Barack Obama",
+                "George W. Bush"
+            ]
+        },
+        {
+            "question": "Which president was a Hollywood actor?",
+            "type": "multi",
+            "correct": "Ronald Reagan",
+            "answers": [
+                "Ronald Reagan",
+                "Bill Clinton",
+                "Jimmy Carter",
+                "George W. Bush"
+            ]
+        },
+        {
+            "question": "Which president oversaw the end of the Cold War?",
+            "type": "multi",
+            "correct": "George W. Bush",
+            "answers": [
+                "George W. Bush",
+                "Bill Clinton",
+                "Ronald Reagan",
+                "Jimmy Carter"
+            ]
+        },
+        {
+            "question": "Which president signed the North American Free Trade Agreement into law? ",
+            "type": "multi",
+            "correct": "Bill Clinton",
+            "answers": [
+                "Bill Clinton",
+                "Donald Trump",
+                "Ronald Reagan",
+                "Jimmy Carter"
+            ]
+        },
+        {
+            "question": "Who was the president during September 11, 2001?",
+            "type": "multi",
+            "correct": "George W. Bush",
+            "answers": [
+                "George W. Bush",
+                "Bill Clinton",
+                "George H. W. Bush",
+                "Barack Obama"
+            ]
+        },
+        {
+            "question": "Which president was responsible for the Affordable Care Act (ACA)?",
+            "type": "multi",
+            "correct": "Barack Obama",
+            "answers": [
+                "Barack Obama",
+                "Bill Clinton",
+                "George W. Bush",
+                "Ronald Reagan"
+            ]
+        },
+        {
+            "question": "Who was the only president that was impeached multiple times?",
+            "type": "multi",
+            "correct": "Donald Trump",
+            "answers": [
+                "Donald Trump",
+                "Bill Clinton",
+                "Andrew Jackson",
+                "Ronald Reagan"
+            ]
+        },
+        {
+            "question": "Which president precided over the end of military involvement in Afghanistan? ",
+            "type": "multi",
+            "correct": "Joe Biden",
+            "answers": [
+                "Joe Biden",
+                "George W. Bush",
+                "Bill Clinton",
+                "Barack Obama"
+            ]
         }
-    ],
-    "id": 1707445884062
+    ]
 }
