@@ -1,0 +1,105 @@
+{
+    "name": "Hollywood Movie Quotes",
+    "questions": [
+        {
+            "question": "It's not the years, honey, it's the mileage.",
+            "type": "multi",
+            "correct": "Indiana Jones and the Raiders of the Lost Ark",
+            "answers": [
+                "Indiana Jones and the Raiders of the Lost Ark",
+                "L.A. Confidential",
+                "Monty Python and the Holy Grail",
+                "The Big Lebowski"
+            ]
+        },
+        {
+            "question": " I'm like a bad penny, I always turn up.",
+            "type": "multi",
+            "correct": "Indiana Jones and the Last Crusade",
+            "answers": [
+                "Indiana Jones and the Last Crusade",
+                "Groundhog Day",
+                "Casino",
+                "For a Few Dollars More"
+            ]
+        },
+        {
+            "question": "You know what you have to do. Do it. Do it.",
+            "type": "multi",
+            "correct": "Rocky IV",
+            "answers": [
+                "Rocky IV",
+                "Robocop",
+                "Beverly Hills Cop",
+                "Lethal Weapon"
+            ]
+        },
+        {
+            "question": "What did one shepherd say to the other shepherd? Let's get the flock out of here!",
+            "type": "multi",
+            "correct": "Lethal Weapon",
+            "answers": [
+                "Lethal Weapon",
+                "Beverly Hills Cop",
+                " Hot Shots! Part Deux",
+                "Die Hard"
+            ]
+        },
+        {
+            "question": "I'm not saying I don't trust you, and I'm not saying I do. But I don't.",
+            "type": "multi",
+            "correct": " Hot Shots! Part Deux",
+            "answers": [
+                " Hot Shots! Part Deux",
+                "Beverly Hills Cop",
+                "Lethal Weapon",
+                "Die Hard"
+            ]
+        },
+        {
+            "question": "It's not who I am underneath, but what I do that defines me.",
+            "type": "multi",
+            "correct": "Batman Begins",
+            "answers": [
+                "Batman Begins",
+                "Spiderman",
+                "The Avengers",
+                "Iron Man"
+            ]
+        },
+        {
+            "question": "Who do you think you are, Clint Eastwood? ",
+            "type": "multi",
+            "correct": "Beverly Hills Cop",
+            "answers": [
+                "Beverly Hills Cop",
+                "Unforgiven",
+                "Jurasic Park",
+                "Die Hard 2"
+            ]
+        },
+        {
+            "question": "Clever girl",
+            "type": "multi",
+            "correct": "Jurassic Park",
+            "answers": [
+                "Jurassic Park",
+                "The Truman Show",
+                "Avengers: Endgame",
+                "American Beauty"
+            ]
+        },
+        {
+            "question": "I guess I could be pretty pissed off about what happened to me, but it's hard to stay mad when there's so much beauty in the world.",
+            "type": "multi",
+            "correct": "American Beauty",
+            "answers": [
+                "American Beauty",
+                "Once Upon a Time in the West",
+                "The Usual Suspects",
+                "Terminator 2: Judgment Day"
+            ]
+        }
+    ],
+    "id": 1707607866191
+}
