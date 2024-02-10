@@ -1,0 +1,149 @@
+{
+    "name": "U.S. Government",
+    "questions": [
+        {
+            "question": "Who is the head of the executive branch of the United States government?",
+            "type": "multi",
+            "correct": "The President",
+            "answers": [
+                "The President",
+                "The Speaker of the House",
+                "The Supreme Court Chief Justice",
+                "The Senate Majority Leader"
+            ]
+        },
+        {
+            "question": "How many voting members are there in the United States Congress?",
+            "type": "multi",
+            "correct": "535",
+            "answers": [
+                "535",
+                "515",
+                "143",
+                "432"
+            ]
+        },
+        {
+            "question": "What is the final step before a bill becomes a law in the United States?",
+            "type": "multi",
+            "correct": "The President Signs the Bill",
+            "answers": [
+                "The President Signs the Bill",
+                "The Senate Approves the Bill",
+                "The House Debates the Bill",
+                "The Supreme Court Reviews the Bill"
+            ]
+        },
+        {
+            "question": "What is the primary function of the Judicial Branch of the United States government?",
+            "type": "multi",
+            "correct": "Interpret Laws",
+            "answers": [
+                "Interpret Laws",
+                "Write Laws",
+                "Veto Laws",
+                "Enforce Laws"
+            ]
+        },
+        {
+            "question": "How many houses are in the U.S. legislative branch?",
+            "type": "multi",
+            "correct": "Two",
+            "answers": [
+                "Two",
+                "One",
+                "Three",
+                "Four"
+            ]
+        },
+        {
+            "question": "How many senators does each state in the United States have in the Senate?",
+            "type": "multi",
+            "correct": "Two",
+            "answers": [
+                "Two",
+                "One",
+                "Three",
+                "Four"
+            ]
+        },
+        {
+            "question": "Who makes up the legislative branch?",
+            "type": "multi",
+            "correct": "House and Senate",
+            "answers": [
+                "House and Senate",
+                "The President",
+                "The Supreme Court",
+                "The Vice President"
+            ]
+        },
+        {
+            "question": "What form of government does the United States have?",
+            "type": "multi",
+            "correct": "Federal Republic",
+            "answers": [
+                "Federal Republic",
+                "Monarchy",
+                "Communist",
+                "Socialist"
+            ]
+        },
+        {
+            "question": "What are the first 10 amendments called?",
+            "type": "multi",
+            "correct": "The Bill of Rights",
+            "answers": [
+                "The Bill of Rights",
+                "The Bill of Tens",
+                "The Commandments",
+                "The Constitution"
+            ]
+        },
+        {
+            "question": "Who was the first person to sign the Constitution?",
+            "type": "multi",
+            "correct": "George Washington",
+            "answers": [
+                "George Washington",
+                "Thomas Jefferson",
+                "Benjamin Franklin",
+                "James Madison"
+            ]
+        },
+        {
+            "question": "Who wrote the original Bill of Rights?",
+            "type": "multi",
+            "correct": "James Madison",
+            "answers": [
+                "James Madison",
+                "Benjamin Franklin",
+                "George Washington",
+                "Thomas Jefferson"
+            ]
+        },
+        {
+            "question": "What document did the Constitution replace?",
+            "type": "multi",
+            "correct": "The Articles Of Confederation",
+            "answers": [
+                "The Articles Of Confederation",
+                "The Bill of Rights",
+                "The Emancipation Proclamation",
+                "The Civil Rights Act of 1870"
+            ]
+        },
+        {
+            "question": "What was the purpose of The Federalist Papers?",
+            "type": "multi",
+            "correct": "To Urge The Ratification of The United States Constitution",
+            "answers": [
+                "To Urge The Ratification of The United States Constitution",
+                "To Prevent War With Britain",
+                "To Raise Taxes",
+                "To Form the Union Army"
+            ]
+        }
+    ],
+    "id": 1707521113378
+}
