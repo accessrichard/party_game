@@ -50,7 +50,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def list(conn, _) do
-    render(conn, "games.json", games: PartyGame.Games.Games.names())
+    render(conn, "games.json", games: PartyGame.Games.Games.list_non_blank())
   end
 
   def stop(conn, %{"room_name" => room_name}) do

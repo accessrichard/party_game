@@ -22,7 +22,13 @@ defmodule PartyGameWeb.GameView do
   end
 
   def render("games.json", %{games: games}) do
-    %{data: games}
+    %{data: Enum.map(games, fn x ->
+      %{
+        category: x.category,
+        location: x.location,
+        name: x.name
+      }
+    end)}
   end
 
   def render("stop.json", room_name) do

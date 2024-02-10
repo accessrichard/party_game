@@ -125,13 +125,8 @@ defmodule PartyGame.Games.Games do
     end
   end
 
-  def names() do
-    non_empty = Enum.filter(list(), &(&1.name !== ""))
-
-    Enum.map(
-      non_empty,
-      fn x -> %{:name => x.name, :location => x.location, :type => x.type} end
-    )
+  def list_non_blank() do
+    Enum.filter(list(), &(&1.name !== ""))
   end
 
   def shuffle_questions(questions) do

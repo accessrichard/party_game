@@ -7,6 +7,15 @@ export default function GameList(props) {
         props.onGameChange && props.onGameChange(e);
     }
 
+    const groupedGames = games.reduce((acc, game) => {
+        const gamesByCategory = acc[game.category] || [];
+
+        return {
+            ...acc,
+            [game.category || "Misc"]: [...gamesByCategory, game]
+        }
+    }, {});
+
     return (
         <>
             <div className="group">
@@ -18,14 +27,23 @@ export default function GameList(props) {
                     onChange={onGameChange}
                     value={value}
                 >
-                    {(games || []).map((val) =>
-                        <option key={val.name} value={val.name}>{val.name}</option>
-                    )}
-                </select>
-                <span className="highlight"></span>
-                <span className="bar"></span>
-                <label className="prefilled-select-label">Select Game</label>
-            </div>
+                    {
+                        Object.keys(groupedGames).map((category) => (
+                            <optgroup key={category} label={category}>
+                                {
+                                    groupedGames[category].map(({ id, name }) => (
+                                        <option key={name} value={id}>{name}</option>
+                                    ))
+                                }
+                            </optgroup>
+                        ))
+                    }
+                    
+            </select>
+            <span className="highlight"></span>
+            <span className="bar"></span>
+            <label className="prefilled-select-label">Select Game</label>
+        </div >
         </>
     );
 }
