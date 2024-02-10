@@ -1,6 +1,6 @@
 defmodule PartyGame.Games.BuildYourOwnPrebuilt do
 
-  @games_path "./lib/party_game/games/prebuilt/"
+  @games_path "./lib/party_game/games/prebuilt"
 
   def new(game, _) do
     name = Map.get(game, :name) || Map.get(game, "name")
@@ -11,11 +11,37 @@ defmodule PartyGame.Games.BuildYourOwnPrebuilt do
   end
 
   def prebuilt_games() do
-   File.ls!(@games_path)
-    |> Enum.filter(&(Path.extname(&1) === ".json"))
-    |> Enum.map(&(%{
-        name: String.replace(Path.basename(&1, ".json"), "_", " "),
-        path: Path.join(@games_path, &1)
-        }))
+    games = ls_r(@games_path)
+    game_list(games, @games_path)
+  end
+
+  def game_list(list, base_path) when is_list(list) do
+    Enum.map(list, fn file ->
+      %{
+        name: Path.basename(file, ".json"),
+        category: category(file, base_path),
+        path: file
+      }
+    end)
+  end
+
+  def category(file, base_path) do
+    if Path.dirname(file) == base_path do
+      nil
+    else
+      List.last(Path.split(Path.dirname(file)))
+    end
+  end
+
+  def ls_r(path \\ ".") do
+    cond do
+      File.regular?(path) -> [path]
+      File.dir?(path) ->
+        File.ls!(path)
+        |> Enum.map(&Path.join(path, &1))
+        |> Enum.map(&ls_r/1)
+        |> Enum.concat
+      true -> []
+    end
   end
 end

@@ -1,84 +1,96 @@
 defmodule PartyGame.Games.Games do
   alias PartyGame.Games
+  alias PartyGame.Game.GameMetaData
 
   def list() do
     games = [
-      %{
-        "name" => "Basic Math",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server"
+      %GameMetaData{
+        name: "Basic Math",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Addition",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "addition"}
+      %GameMetaData{
+        name: "Addition",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "addition"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Subtraction",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "subtraction"}
+      %GameMetaData{
+        name: "Subtraction",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "subtraction"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Multiplication",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "multiplication"}
+      %GameMetaData{
+        name: "Multiplication",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "multiplication"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Multiplication - Fractions",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "fraction_multiply"}
+      %GameMetaData{
+        name: "Multiplication - Fractions",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "fraction_multiply"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Division",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "division"}
+      %GameMetaData{
+        name: "Division",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "division"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Division - Fractions",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "fraction_divide"}
+      %GameMetaData{
+        name: "Division - Fractions",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "fraction_divide"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "Equations",
-        "module" => Games.BasicMath,
-        "type" => "multi_choice",
-        "location" => "server",
-        "options" => %{"type" => "equation"}
+      %GameMetaData{
+        name: "Equations",
+        category: "Math",
+        type: "multi_choice",
+        location: "server",
+        options: %{type: "equation"},
+        module: Games.BasicMath
       },
-      %{
-        "name" => "U.S. State Capitals",
-        "module" => Games.States,
-        "type" => "multi_choice",
-        "location" => "server"
+      %GameMetaData{
+        name: "U.S. State Capitals",
+        category: "United States",
+        type: "multi_choice",
+        location: "server",
+        module: Games.States
       },
-      %{
-        "name" => "",
-        "module" => Games.BuildYourOwn,
-        "type" => "custom",
-        "location" => "client"
+      %GameMetaData{
+        name: "",
+        category: "User Games",
+        type: "custom",
+        location: "client",
+        module: Games.BuildYourOwn
       }
     ]
 
     games ++
       Enum.map(Games.BuildYourOwnPrebuilt.prebuilt_games(), fn x ->
-        %{
-          "name" => x.name,
-          "module" => Games.BuildYourOwnPrebuilt,
-          "type" => "multi_choice",
-          "location" => "server"
+        %GameMetaData{
+          name: x.name,
+          module: Games.BuildYourOwnPrebuilt,
+          type: "multi_choice",
+          location: "server",
+          category: x.category
         }
       end)
   end
@@ -87,23 +99,23 @@ defmodule PartyGame.Games.Games do
     name = Map.get(game, :name)
     location = Map.get(game, :location)
 
-    game_list =
+    game_metadata =
       Enum.find(list(), fn x ->
-        (x["name"] == name and x["location"] == location) or
-          (x["location"] == location and location == "client")
+        (x.name == name and x.location == location) or
+          (x.location == location and location == "client")
       end)
 
     num_rounds = Map.get(game, :rounds, 10)
 
-    case game_list do
+    case game_metadata do
       nil ->
         {:error, "Game does not exist!"}
 
       _ ->
-        questions = game_list["module"].new(game, Map.get(game_list, "options", %{}))
+        questions = game_metadata.module.new(game, Map.get(game_metadata, "options", %{}))
 
         # Shuffle questions for client games
-        if location == "client" || game_list["module"] === Games.BuildYourOwnPrebuilt do
+        if location == "client" || game_metadata.module === Games.BuildYourOwnPrebuilt do
           shuffle_questions(questions)
           |> shuffle_question_answers()
           |> Enum.take(num_rounds)
@@ -114,11 +126,11 @@ defmodule PartyGame.Games.Games do
   end
 
   def names() do
-    non_empty = Enum.filter(list(), &(&1["name"] !== ""))
+    non_empty = Enum.filter(list(), &(&1.name !== ""))
 
     Enum.map(
       non_empty,
-      fn x -> %{:name => x["name"], :location => x["location"], :type => x["type"]} end
+      fn x -> %{:name => x.name, :location => x.location, :type => x.type} end
     )
   end
 
