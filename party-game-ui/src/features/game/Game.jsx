@@ -263,7 +263,7 @@ export default function Game() {
                             {!canRetryWrongAnswer && isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
                         </span>
                     }
-                    <div className={(question || "").length < 60 ? "question question-big" : "question question-small"}>
+                    <div className={(question || "").length < 40 ? "question question-big" : "question question-small"}>
                         {question}
                     </div>
                     <div>

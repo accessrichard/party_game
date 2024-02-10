@@ -1,0 +1,357 @@
+{
+    "name": "Animated Movie Quotes (2000's)",
+    "questions": [
+        {
+            "question": "We Finish Each Other’s… Sandwiches!",
+            "type": "multi",
+            "correct": "Frozen",
+            "answers": [
+                "Frozen",
+                "Soul",
+                "Inside Out",
+                "Toy Story 3"
+            ]
+        },
+        {
+            "question": "I don’t know why, but overall it just smells like the color brown.",
+            "type": "multi",
+            "correct": "Tangled",
+            "answers": [
+                "Tangled",
+                "Coco",
+                "Turning Red",
+                "The Book of Life"
+            ]
+        },
+        {
+            "question": "“When you use a bird to write with, it’s called tweeting.”",
+            "type": "multi",
+            "correct": "Moana",
+            "answers": [
+                "Moana",
+                "Zootopia",
+                "Monsters, Inc. ",
+                "Shrek"
+            ]
+        },
+        {
+            "question": "Do You Think When She Goes To Sleep She Counts Herself?",
+            "type": "multi",
+            "correct": "Zootopia",
+            "answers": [
+                "Zootopia",
+                "Wreck-It Ralph",
+                "Dispicable Me",
+                "Coraline"
+            ]
+        },
+        {
+            "question": "You Feel What You Feel And Your Feelings Are Real.",
+            "type": "multi",
+            "correct": "Frozen II",
+            "answers": [
+                "Frozen II",
+                "Frozen I",
+                "Puss in Boots",
+                "Monsters University"
+            ]
+        },
+        {
+            "question": "What’s going on in this candy-coated heart of darkness?",
+            "type": "multi",
+            "correct": "Wreck-It Ralph",
+            "answers": [
+                "Wreck-It Ralph",
+                "How to Train Your Dragon",
+                "The Incredibles",
+                "Coco"
+            ]
+        },
+        {
+            "question": "Success doesn't come for free. You have to do whatever it takes to seize your moment.",
+            "type": "multi",
+            "correct": "Coco",
+            "answers": [
+                "Coco",
+                "Toy Story 2",
+                "Inside Out",
+                "Encanto"
+            ]
+        },
+        {
+            "question": "Sometimes family weirdos just get a bad rap.",
+            "type": "multi",
+            "correct": "Encanto",
+            "answers": [
+                "Encanto",
+                "Coco",
+                "Tangled",
+                "The Incredibles"
+            ]
+        },
+        {
+            "question": "Now, I'll tell you what we're not gonna do. We're not gonna panic, we're not gonna die.",
+            "type": "multi",
+            "correct": "The Incredibles",
+            "answers": [
+                "The Incredibles",
+                "Toy Story 2",
+                "Spider-Man: Into the Spider-Verse",
+                "DC League of Super-Pets "
+            ]
+        },
+        {
+            "question": "Kids today, with their long hair and their no killing stuff.",
+            "type": "multi",
+            "correct": "The Book of Life",
+            "answers": [
+                "The Book of Life",
+                "Spider-Man: Into the Spider-Verse",
+                "The Incredibles",
+                "The Incredibles 2"
+            ]
+        },
+        {
+            "question": "Authority should derive from the consent of the governed, not from threat of force!",
+            "type": "multi",
+            "correct": "Toy Story 3",
+            "answers": [
+                "Toy Story 3",
+                "Toy Story",
+                "Toy Story 2",
+                "Toy Story 4"
+            ]
+        },
+        {
+            "question": "With great ability comes great accountability.",
+            "type": "multi",
+            "correct": "Spider-Man: Into the Spider-Verse",
+            "answers": [
+                "Spider-Man: Into the Spider-Verse",
+                "Spider-Man: Across the Spider-Verse",
+                "The Incredibles",
+                "The Incredibles 2"
+            ]
+        },
+        {
+            "question": "On My Honor, Or May I Be Chopped Up and Made Into Soup.",
+            "type": "multi",
+            "correct": "Finding Nemo",
+            "answers": [
+                "Finding Nemo",
+                "Finding Dory",
+                "How to Train Your Dragon",
+                "Luca"
+            ]
+        },
+        {
+            "question": "You were wise to seek help from the world's most deadly weapon...",
+            "type": "multi",
+            "correct": "How to Train Your Dragon",
+            "answers": [
+                "How to Train Your Dragon",
+                "Monsters, Inc.",
+                "Frozen II",
+                "The Incredibles II"
+            ]
+        },
+        {
+            "question": "You've been jealous of my good looks since the fourth grade.",
+            "type": "multi",
+            "correct": "Monsters, Inc.",
+            "answers": [
+                "Monsters, Inc.",
+                "Monsters University",
+                "How to Train Your Dragon 2",
+                "Kubo and the Two Strings"
+            ]
+        },
+        {
+            "question": "That might sound boring, but I think the boring stuff is the stuff I remember the most.",
+            "type": "multi",
+            "correct": "Up",
+            "answers": [
+                "Up",
+                "Inside Out",
+                "WALL·E",
+                " The Mitchells vs the Machines"
+            ]
+        },
+        {
+            "question": "My parents haven't figured me out yet. To be fair, it took a while to figure myself out.",
+            "type": "multi",
+            "correct": "The Mitchells vs the Machines",
+            "answers": [
+                "The Mitchells vs the Machines",
+                "Raya and the Last Dragon",
+                "Onward",
+                " Song of the Sea"
+            ]
+        },
+        {
+            "question": "Ladies and gentlemen, this is your captain speaking. We’re having a slight malfunction with the autopilot.",
+            "type": "multi",
+            "correct": "WALL-E",
+            "answers": [
+                "WALL-E",
+                "Luca",
+                "Monsters, Inc.",
+                "Onward"
+            ]
+        },
+        {
+            "question": "It's my job to make great students greater, not make mediocre students less mediocre.",
+            "type": "multi",
+            "correct": " Monsters University",
+            "answers": [
+                " Monsters University",
+                "Monsters, Inc.",
+                " Guillermo del Toro's Pinocchio",
+                "WALL-E"
+            ]
+        },
+        {
+            "question": "Show me some slobber! Drool is a tool, kids. Use it!",
+            "type": "multi",
+            "correct": " Monsters University",
+            "answers": [
+                " Monsters University",
+                "Monsters, Inc.",
+                " Zootopia",
+                "Soul"
+            ]
+        },
+        {
+            "question": "When you've reached rock bottom, there's only one way to go, and that's up!",
+            "type": "multi",
+            "correct": "Sing",
+            "answers": [
+                "Sing",
+                "Cars",
+                "Ice Age",
+                "Mulan II"
+            ]
+        },
+        {
+            "question": "Whatever you do, DO NOT EAT the free pistachio ice cream! It has TURNED.",
+            "type": "multi",
+            "correct": "Cars",
+            "answers": [
+                "Cars",
+                "Ice Age",
+                "Mulan",
+                "Chicken Little"
+            ]
+        },
+        {
+            "question": "Careful, old man, only my voice is gentle.",
+            "type": "multi",
+            "correct": "Eragon",
+            "answers": [
+                "Eragon",
+                "Ice Age",
+                "Mulan",
+                "Chicken Little"
+            ]
+        },
+        {
+            "question": "For a second there, I actually thought you were gonna eat me.",
+            "type": "multi",
+            "correct": "Ice Age",
+            "answers": [
+                "Ice Age",
+                " Ice Age: The Meltdown",
+                "Ice Age: Continental Drift",
+                "Chicken Little"
+            ]
+        },
+        {
+            "question": " You did it, buddy, you kicked water's butt! ",
+            "type": "multi",
+            "correct": "Ice Age: The Meltdown",
+            "answers": [
+                "Ice Age: The Meltdown",
+                "Ice Age: Continental Drift",
+                " Ice Age: Dawn of the Dinosaurs",
+                "Ice Age"
+            ]
+        },
+        {
+            "question": "My mother once told me that bad news is just good news in disguise.",
+            "type": "multi",
+            "correct": "Ice Age: Continental Drift",
+            "answers": [
+                "Ice Age: Continental Drift",
+                " Ice Age: Dawn of the Dinosaurs",
+                "Ice Age: The Meltdown",
+                "Ice Age"
+            ]
+        },
+        {
+            "question": "Reflect before you snack—act!",
+            "type": "multi",
+            "correct": "Mulan",
+            "answers": [
+                "Mulan",
+                "Chicken Little",
+                "Sing",
+                "Moana"
+            ]
+        },
+        {
+            "question": "Just leave me some ammo, a little water, some chips if you have 'em.",
+            "type": "multi",
+            "correct": "Chicken Little",
+            "answers": [
+                "Chicken Little",
+                "Sing",
+                "Moana",
+                "Coco"
+            ]
+        },
+        {
+            "question": "Has anyone seen my glass eye?",
+            "type": "multi",
+            "correct": "Sing",
+            "answers": [
+                "Sing",
+                "The Incredibles",
+                "The Incredibles 2",
+                "Monsters, Inc."
+            ]
+        },
+        {
+            "question": "I Know In A Couple Years These Will Seem Like Childish Fears.",
+            "type": "multi",
+            "correct": "Frozen",
+            "answers": [
+                "Frozen",
+                "Coco",
+                "Encanto",
+                "Sing"
+            ]
+        },
+        {
+            "question": "Don't Know If I'm Elated Or Gassy, But I'm Somewhere In That Zone.",
+            "type": "multi",
+            "correct": "Frozen",
+            "answers": [
+                "Frozen",
+                "Frozen II",
+                "Sing",
+                "Coco"
+            ]
+        },
+        {
+            "question": "I'm tired of perfect, I want real.",
+            "type": "multi",
+            "correct": "Encanto",
+            "answers": [
+                "Encanto",
+                "Coco",
+                "Frozen",
+                "Frozen II"
+            ]
+        }
+    ]
+}

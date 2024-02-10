@@ -8,7 +8,7 @@ export default function GameList(props) {
     }
 
     const groupedGames = games.reduce((acc, game) => {
-        const gamesByCategory = acc[game.category] || [];
+        const gamesByCategory = acc[game.category || "Misc"] || [];
 
         return {
             ...acc,
