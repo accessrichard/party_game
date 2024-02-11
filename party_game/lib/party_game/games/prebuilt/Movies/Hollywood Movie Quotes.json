@@ -99,7 +99,292 @@
                 "The Usual Suspects",
                 "Terminator 2: Judgment Day"
             ]
+        },
+        {
+            "question": "I was driving before you were an itch in your daddy’s pants!",
+            "type": "multi",
+            "correct": "Lethal Weapon",
+            "answers": [
+                "Lethal Weapon",
+                " The Godfather",
+                "Pulp Fiction",
+                "Fight Club"
+            ]
+        },
+        {
+            "question": "It's the same old story. Boy finds girl, boy loses girl, girl finds boy, boy forgets girl, boy remembers girl, girls dies in a tragic blimp accident over the Orange Bowl on New Year's Day.",
+            "type": "multi",
+            "correct": "The Naked Gun: From the Files of Police Squad!",
+            "answers": [
+                "The Naked Gun: From the Files of Police Squad!",
+                "Hot Shots",
+                "Hot Shots",
+                "Hot Shots! Part Deux"
+            ]
+        },
+        {
+            "question": "This is your life, and it's ending one minute at a time.",
+            "type": "multi",
+            "correct": "Fight Club",
+            "answers": [
+                "Fight Club",
+                "The Godfather",
+                "The Truman Show",
+                "Inception"
+            ]
+        },
+        {
+            "question": "Somebody Help Me, I'm Being Spontaneous!",
+            "type": "multi",
+            "correct": "The Truman Show",
+            "answers": [
+                "The Truman Show",
+                "One Flew Over the Cuckoo's Nest",
+                "The Pianist",
+                "The Shining"
+            ]
+        },
+        {
+            "question": "You throw another moon at me and I'm gonna lose it!",
+            "type": "multi",
+            "correct": "Avengers: Infinity War",
+            "answers": [
+                "Avengers: Infinity War",
+                "Iron Man",
+                "The Hulk",
+                "Doctor Strange"
+            ]
+        },
+        {
+            "question": "Women: can't live with them, can't live without them.",
+            "type": "multi",
+            "correct": "The Shining",
+            "answers": [
+                "The Shining",
+                "Joker",
+                "Once Upon a Time in America",
+                "Reservoir Dogs"
+            ]
+        },
+        {
+            "question": "Do. Or do not. There is no try.",
+            "type": "multi",
+            "correct": "Star Wars Episode V – The Empire Strikes Back",
+            "answers": [
+                "Star Wars Episode V – The Empire Strikes Back",
+                "Star Wars Episode VI – Return of the Jedi",
+                "Star Wars Episode IV – A New Hope",
+                "Star Wars Episode I – The Phantom Menace"
+            ]
+        },
+        {
+            "question": "Do you trust that we have provided you with enough slack so that your block will land safely on the lawn?",
+            "type": "multi",
+            "correct": "Old School",
+            "answers": [
+                "Old School",
+                "Step Brothers",
+                "Idiocracy",
+                "Superbad"
+            ]
+        },
+        {
+            "question": "You don’t have the technology or the steady hands to pull off a procedure like that, so ha!",
+            "type": "multi",
+            "correct": "Superbad",
+            "answers": [
+                "Superbad",
+                "Idiocracy",
+                "Step Brothers",
+                "Old School"
+            ]
+        },
+        {
+            "question": "Your Voice Is Like A Combination Of Fergie And Jesus.",
+            "type": "multi",
+            "correct": "Step Brothers",
+            "answers": [
+                "Step Brothers",
+                "The Silence of the Lambs",
+                "It's a Wonderful Life",
+                "Hangover"
+            ]
+        },
+        {
+            "question": "This is heavy.",
+            "type": "multi",
+            "correct": "Back to the Future",
+            "answers": [
+                "Back to the Future",
+                " Bill & Ted's Excellent Adventure",
+                " Heavy Metal",
+                "Hangover"
+            ]
+        },
+        {
+            "question": "The best place to be is here.",
+            "type": "multi",
+            "correct": " Bill & Ted's Excellent Adventure",
+            "answers": [
+                " Bill & Ted's Excellent Adventure",
+                "Back to the Future",
+                "It's a Wonderful Life",
+                "The Lion King"
+            ]
+        },
+        {
+            "question": "You Got to Put Your Behind in Your Past!",
+            "type": "multi",
+            "correct": "The Lion King",
+            "answers": [
+                "The Lion King",
+                "Moana",
+                "Coco",
+                "Cars"
+            ]
+        },
+        {
+            "question": "I'm not a smart man, but I know what love is.",
+            "type": "multi",
+            "correct": "Forest Gump",
+            "answers": [
+                "Forest Gump",
+                "Cast Away",
+                "Big",
+                "It's a Wonderful Life"
+            ]
+        },
+        {
+            "question": "Are You Not Entertained?",
+            "type": "multi",
+            "correct": "Gladiator",
+            "answers": [
+                "Gladiator",
+                "Office Space",
+                "The Mummy",
+                "War Machine"
+            ]
+        },
+        {
+            "question": "I only gamble with my life, never my money.",
+            "type": "multi",
+            "correct": "The Mummy",
+            "answers": [
+                "The Mummy",
+                "The Scorpion King",
+                "Van Heilsing",
+                "Hellboy"
+            ]
+        },
+        {
+            "question": "Time takes it all, whether you want it to or not.",
+            "type": "multi",
+            "correct": "The Green Mile",
+            "answers": [
+                "The Green Mile",
+                " The Shawshank Redemption",
+                "Just Mercy",
+                "Django Unchained"
+            ]
+        },
+        {
+            "question": "The Ratio of People to Cake Is Too Big.",
+            "type": "multi",
+            "correct": "Office Space",
+            "answers": [
+                "Office Space",
+                "Idiocracy",
+                "Waiting",
+                "Extract"
+            ]
+        },
+        {
+            "question": "You mean like in the toilet?",
+            "type": "multi",
+            "correct": "Idiocracy",
+            "answers": [
+                "Idiocracy",
+                "Office Space",
+                "Waiting",
+                "Extract"
+            ]
+        },
+        {
+            "question": "I Didn't Get Your Daughter's Name, But Hopefully My Son Did.",
+            "type": "multi",
+            "correct": "American Pie 2",
+            "answers": [
+                "American Pie 2",
+                "American Pie",
+                "American Wedding",
+                "American Reunion"
+            ]
+        },
+        {
+            "question": "I hope that their first child, be a masculine child.",
+            "type": "multi",
+            "correct": "The Godfather",
+            "answers": [
+                "The Godfather",
+                "Capone",
+                "American Hustle",
+                "The Devils Advocate"
+            ]
+        },
+        {
+            "question": "Do Not Seek The Treasure",
+            "type": "multi",
+            "correct": "O Brother, Where Art Thou?",
+            "answers": [
+                "O Brother, Where Art Thou?",
+                "Hail, Ceasar!",
+                "Three Kings",
+                "Out of Sight"
+            ]
+        },
+        {
+            "question": "Ted Nugent called, he wants his shirt back.",
+            "type": "multi",
+            "correct": "Ocean's Eleven",
+            "answers": [
+                "Ocean's Eleven",
+                "Wrath of Man",
+                "Once Upon a Time in Hollywood",
+                "2 Guns"
+            ]
+        },
+        {
+            "question": "You know, usually I don't sleep with someone on the first date. ",
+            "type": "multi",
+            "correct": "Failure to Launch",
+            "answers": [
+                "Failure to Launch",
+                "The Backup Plan",
+                "Home Again",
+                "No Strings Attached"
+            ]
+        },
+        {
+            "question": "Men are simple. We cannot be trained.",
+            "type": "multi",
+            "correct": "The Ugly Truth",
+            "answers": [
+                "The Ugly Truth",
+                "Morning Glory",
+                "Knocked Up",
+                "27 Dresses"
+            ]
+        },
+        {
+            "question": "I don't think you understand. I didn't come to rescue Rambo from you. I came here to rescue you from him.",
+            "type": "multi",
+            "correct": "First Blood",
+            "answers": [
+                "First Blood",
+                " Rambo: First Blood Part II",
+                " Rambo III",
+                "Rambo"
+            ]
         }
-    ],
-    "id": 1707607866191
+    ]
 }
