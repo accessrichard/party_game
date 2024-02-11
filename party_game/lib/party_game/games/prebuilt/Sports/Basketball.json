@@ -1,0 +1,245 @@
+{
+    "name": "Basketball",
+    "questions": [
+        {
+            "question": "What was Basketball originally played with?",
+            "type": "multi",
+            "correct": "Soccer Ball",
+            "answers": [
+                "Soccer Ball",
+                "Dodgeball",
+                "Hacky Sack",
+                "Crumpled up Piece of Paper"
+            ]
+        },
+        {
+            "question": "What was banned between 1968 and 1976?",
+            "type": "multi",
+            "correct": "Slam Dunk",
+            "answers": [
+                "Slam Dunk",
+                "Dribbling",
+                "Full Court Throw",
+                "3 Pointers"
+            ]
+        },
+        {
+            "question": "Michael Jordan was fined for wearing Air Jordan shoes?",
+            "type": "tf",
+            "correct": "True",
+            "answers": [
+                "True",
+                "False"
+            ]
+        },
+        {
+            "question": "Who was the first player in NBA history to reach 30,000 points and 6,000 assists?",
+            "type": "multi",
+            "correct": "Kobe Bryant",
+            "answers": [
+                "Kobe Bryant",
+                "Michael Jordan",
+                "Larry Bird",
+                "Dennis Rodman"
+            ]
+        },
+        {
+            "question": "Which player has only made one 3 pointer in his NBA career?",
+            "type": "multi",
+            "correct": "Shaquille O’Neal",
+            "answers": [
+                "Shaquille O’Neal",
+                "Bill Russell",
+                "Wilt Chamberlain",
+                "Paul Arizin"
+            ]
+        },
+        {
+            "question": "Which player won Olympic Gold Medal for USA in 2000?",
+            "type": "multi",
+            "correct": "Vince Carter",
+            "answers": [
+                "Vince Carter",
+                "Dwight Howard",
+                "Dwyane Wade",
+                "Kevin Garnett"
+            ]
+        },
+        {
+            "question": "Which NBA player was given the nickname, \"The Big Ticket\"?",
+            "type": "multi",
+            "correct": "Kevin Garnett",
+            "answers": [
+                "Kevin Garnett",
+                "Kobe Bryant",
+                "Moses Malone",
+                "Stephen Curry"
+            ]
+        },
+        {
+            "question": "Which player spent 18 seasons in the NBA with the Utah Jazz?",
+            "type": "multi",
+            "correct": "Karl Malone",
+            "answers": [
+                "Karl Malone",
+                "John Collins",
+                "Jordan Clarkson",
+                "Walker Kessler"
+            ]
+        },
+        {
+            "question": "Who was  the first player in NBA history to average a triple-double for an entire season, with 30.8 points, 12.5 rebounds and 11.4 assists?",
+            "type": "multi",
+            "correct": "Oscar Robertson",
+            "answers": [
+                "Oscar Robertson",
+                "Moses Malone",
+                "Jerry West",
+                "Hakeem Olajuwon"
+            ]
+        },
+        {
+            "question": "Who was the two-time NBA Most Valuable Player (2001-2002 and 2002-2003)?",
+            "type": "multi",
+            "correct": "Tim Duncan",
+            "answers": [
+                "Tim Duncan",
+                "Shaquille O'Neal",
+                "Jason Kidd",
+                "Kobe Bryant"
+            ]
+        },
+        {
+            "question": "Which player was nicknamed 'The Big Dipper'?",
+            "type": "multi",
+            "correct": "Wilt Chamberlain",
+            "answers": [
+                "Wilt Chamberlain",
+                "Bill Russell",
+                "Magic Johnson",
+                "Kareem Abdul-Jabbar"
+            ]
+        },
+        {
+            "question": "Who was the only NBA player to score 4,000 points in a season?",
+            "type": "multi",
+            "correct": "Wilt Chamberlain",
+            "answers": [
+                "Wilt Chamberlain",
+                "Kareem Abdul-Jabbar",
+                "Magic Johnson",
+                "Bill Russell"
+            ]
+        },
+        {
+            "question": "Which player was the first overall pick of the 2003 NBA draft?",
+            "type": "multi",
+            "correct": "LeBron James",
+            "answers": [
+                "LeBron James",
+                "Darko Miličić",
+                "Carmelo Anthony",
+                "Chris Bosh"
+            ]
+        },
+        {
+            "question": "Which player studied the martial art of Jeet Kune Do under Bruce Lee?",
+            "type": "multi",
+            "correct": "Kareem Abdul-Jabbar",
+            "answers": [
+                "Kareem Abdul-Jabbar",
+                "James Johnson",
+                "Taky Kimura ",
+                "Brandon Lee"
+            ]
+        },
+        {
+            "question": "Which player is best friends with fellow NBA player Michael Beasley who he grew up with?",
+            "type": "multi",
+            "correct": "Kevin Durant",
+            "answers": [
+                "Kevin Durant",
+                "Joel Anthony",
+                "Marcus Banks",
+                "Dwyane Wade"
+            ]
+        },
+        {
+            "question": "Which player holds the record for the most three pointers in one game?",
+            "type": "multi",
+            "correct": "Stephen Curry",
+            "answers": [
+                "Stephen Curry",
+                "Ray Allen",
+                "James Harden",
+                "Reggie Miller"
+            ]
+        },
+        {
+            "question": "Which player holds the NBA single-game record for most rebounds in a half?",
+            "type": "multi",
+            "correct": "Bill Russell",
+            "answers": [
+                "Bill Russell",
+                "Wilt Chamberlain",
+                "Elvin Hayes",
+                "Moses Malone"
+            ]
+        },
+        {
+            "question": "Which player has been an HIV/AIDS advocate since the 80's?",
+            "type": "multi",
+            "correct": "Magic Johnson",
+            "answers": [
+                "Magic Johnson",
+                "Michael Jordan",
+                "Shaquille O’Neal",
+                "Hakeem Olajuwon"
+            ]
+        },
+        {
+            "question": "Which player holds the NBA record for blocked shots (3,830) and is the only player to record more than 3,000 blocked shots and 2,000 steals in a career?",
+            "type": "multi",
+            "correct": "Hakeem Olajuwon",
+            "answers": [
+                "Hakeem Olajuwon",
+                "Anthony Davis",
+                "Evan Mobley",
+                "Evan Mobley"
+            ]
+        },
+        {
+            "question": "Which player was the head coach of the Los Angeles Lakers in the 1970's?",
+            "type": "multi",
+            "correct": "Jerry West",
+            "answers": [
+                "Jerry West",
+                "Pat Riley",
+                "Magic Johnson",
+                "Bill Bertka"
+            ]
+        },
+        {
+            "question": "Which player was a 3 time All-Star, a 6 time rebounding champion, a 3 time league MVP?",
+            "type": "multi",
+            "correct": "Moses Malone",
+            "answers": [
+                "Moses Malone",
+                "Michael Jordan",
+                "LeBron James",
+                "Julius Erving"
+            ]
+        },
+        {
+            "question": "This player was the NBA Most Valuable Player (MVP) in 1995?",
+            "type": "multi",
+            "correct": "David Robinson",
+            "answers": [
+                "David Robinson",
+                "Michael Jordan",
+                "Mitch Richmond",
+                "Karl Malone"
+            ]
+        }
+    ]
+}
