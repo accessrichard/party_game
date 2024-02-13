@@ -12,12 +12,12 @@ defmodule PartyGameWeb.CreateController do
       true ->
         conn
         |> put_status(:ok)
-        |> render("success.json", %{isValid: true})
+        |> render(:success, %{isValid: true})
 
       false ->
         conn
         |> put_status(:ok)
-        |> render("error.json", changeset: changeset)
+        |> render(:error, changeset: changeset)
     end
   end
 end

@@ -1,13 +1,17 @@
 defmodule PartyGameWeb.Router do
   use PartyGameWeb, :router
 
-  alias PartyGameWeb.GameController
-  alias PartyGameWeb.CreateController
-  alias PartyGameWeb.PageController
+  alias PartyGameWeb.{
+    GameController,
+    CreateController,
+    JavaScriptSpaController,
+    HomeController
+  }
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug :put_root_layout, html: {PartyGameWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
@@ -16,11 +20,9 @@ defmodule PartyGameWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", PartyGameWeb do
-    pipe_through :api
-  end
-
   scope "/api" do
+    pipe_through :api
+
     post "/game", GameController, :create
     post "/create/validate", CreateController, :validate
     post "/game/join", GameController, :join
@@ -47,9 +49,10 @@ defmodule PartyGameWeb.Router do
   scope "/" do
     # Use the default browser stack
     pipe_through :browser
+    get "/seo", HomeController, :index
 
     # This route declaration MUST be below everything else! Else, it will
     # override the rest of the routes, even the `/api` routes we've set above.
-    get "/*path", PageController, :index
+    get "/*path", JavaScriptSpaController, :index
   end
 end

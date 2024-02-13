@@ -19,12 +19,12 @@ defmodule PartyGameWeb.GameController do
 
       conn
       |> put_status(:created)
-      |> render("game.json", game: game)
+      |> render(:game, game: game)
     else
       {:error, reason} ->
         conn
         |> put_status(:ok)
-        |> render("error.json", error: reason)
+        |> render(:error, error: reason)
     end
   end
 
@@ -40,29 +40,29 @@ defmodule PartyGameWeb.GameController do
 
       conn
       |> put_status(:created)
-      |> render("game.json", game: game)
+      |> render(:game, game: game)
     else
       {:error, reason} ->
         conn
         |> put_status(:ok)
-        |> render("error.json", error: reason)
+        |> render(:error, error: reason)
     end
   end
 
   def list(conn, _) do
-    render(conn, "games.json", games: PartyGame.Games.Games.list_non_blank())
+    render(conn, :games, games: PartyGame.Games.Games.list_non_blank())
   end
 
   def stop(conn, %{"room_name" => room_name}) do
     with :ok <- Server.stop(room_name) do
       conn
       |> put_status(:ok)
-      |> render("stop.json", room_name)
+      |> render(:stop, room_name)
     else
       {:error, reason} ->
         conn
         |> put_status(:ok)
-        |> render("error.json", error: reason)
+        |> render(:error, error: reason)
     end
   end
 end

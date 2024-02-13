@@ -1,11 +1,10 @@
-defmodule PartyGameWeb.GameView do
-  use PartyGameWeb, :view
+defmodule PartyGameWeb.GameJSON do
 
-  def render("error.json", %{error: reason}) do
+  def error(%{error: reason}) do
     %{error: reason}
   end
 
-  def render("game.json", %{game: game}) do
+  def game(%{game: game}) do
     %{
       data: %{
         name: game.name,
@@ -21,7 +20,7 @@ defmodule PartyGameWeb.GameView do
     }
   end
 
-  def render("games.json", %{games: games}) do
+  def games(%{games: games}) do
     %{data: Enum.map(games, fn x ->
       %{
         category: x.category,
@@ -31,7 +30,7 @@ defmodule PartyGameWeb.GameView do
     end)}
   end
 
-  def render("stop.json", room_name) do
+  def stop(room_name) do
     %{status: "stopped", room_name: room_name}
   end
 end

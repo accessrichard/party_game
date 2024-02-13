@@ -1,4 +1,4 @@
-defmodule PartyGameWeb.PageController do
+defmodule PartyGameWeb.JavaScriptSpaController do
   use PartyGameWeb, :controller
 
   def index(conn, _params) do

@@ -21,17 +21,21 @@ defmodule PartyGameWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: PartyGameWeb
+      use Phoenix.Controller,
+        formats: [:html, :json],
+        layouts: [html: PartyGameWeb.Layouts]
 
       import Plug.Conn
       import PartyGameWeb.Gettext
+
+      unquote(verified_routes())
     end
   end
 
   def view do
     quote do
       use Phoenix.View,
-        root: "lib/party_game_web/templates",
+        root: "lib/party_game_web/components",
         namespace: PartyGameWeb
 
       # Import convenience functions from controllers
