@@ -6,6 +6,7 @@ defmodule PartyGameWeb.GameController do
   alias PartyGame.GameRoom
   alias PartyGame.Game.Game
   alias PartyGame.Server
+  alias PartyGame.Games.Games
 
   action_fallback PartyGameWeb.FallbackController
 
@@ -50,7 +51,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def list(conn, _) do
-    render(conn, :games, games: PartyGame.Games.Games.list_non_blank())
+    render(conn, :games, games: Games.cached_game_list)
   end
 
   def stop(conn, %{"room_name" => room_name}) do

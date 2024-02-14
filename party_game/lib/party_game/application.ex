@@ -17,6 +17,7 @@ defmodule PartyGame.Application do
       PartyGame.ChannelWatcher,
       # Start a worker by calling: PartyGame.Worker.start_link(arg)
       # {PartyGame.Worker, arg}
+      {Cachex, name: :party_game_cache},
       {Registry, keys: :unique, name: PartyGame.Game.Registry},
       {DynamicSupervisor, name: PartyGame.Game.Supervisor, strategy: :one_for_one}
     ]

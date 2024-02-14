@@ -15,7 +15,7 @@ function sliceArray(array, numCols) {
     const numPerCol = Math.ceil(array.length / numCols)
 
     return [...Array(Math.ceil(array.length / numPerCol))]
-            .map((_, i) => array.slice(i * numPerCol, (i + 1) * numPerCol));
+        .map((_, i) => array.slice(i * numPerCol, (i + 1) * numPerCol));
 }
 
 function Landing() {
@@ -55,7 +55,12 @@ function Landing() {
                     </ul>
                 </div>
                 <div className='flex-column  flex-item pad-5pc'>
-                    Make your own Trivia Game to play with friends or Create flashcards to study for a test alone!
+                    <div className='flex-column  flex-item'>
+                        Play with friends or alone
+                    </div>
+                    <div className='flex-column  flex-item'>
+                        Create your own Trivia Game
+                    </div>
                 </div>
                 <div className='flex-column text-align-left flex-item pad-5pc'>
                     Interactive Game Creator
@@ -64,8 +69,8 @@ function Landing() {
             </div>
             <div className='flex flex-row flex-center'>
                 <div className='flex-column flex-item pad-5pc'>
-                    No accounts or login necassary. Start playing immediately!
-                    <span className='font-14px'>Just enter any name you want on the next screen and you are good to play alone or with a friend.</span>
+                    Start playing immediately!
+                    <span className='font-14px'>Just enter any name you want on the next screen and select your game.</span>
                 </div>
             </div>
             <div className='flex flex-row flex-center app-light pad-5pc-top'>

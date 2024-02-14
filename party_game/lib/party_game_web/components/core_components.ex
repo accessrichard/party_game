@@ -1,7 +1,18 @@
 defmodule PartyGameWeb.CoreComponents do
   use Phoenix.Component
 
-  #import PartyGameWeb.Gettext
+  def google_analytics(assigns) do
+    ~H"""
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YSXHFW8BVQ"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YSXHFW8BVQ');
+    </script>
+    """
+  end
 
   def logo(assigns) do
     ~H"""

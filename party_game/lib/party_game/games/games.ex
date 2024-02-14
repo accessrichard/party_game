@@ -125,12 +125,31 @@ defmodule PartyGame.Games.Games do
     end
   end
 
-  def list_non_blank() do
-    Enum.filter(list(), &(&1.name !== ""))
+  def non_blank_game_list(game_list) do
+    Enum.filter(game_list, &(&1.name !== ""))
+  end
+
+  def sort_game_list(game_list) do
+    Enum.sort(game_list, &(&1.category > &2.category))
   end
 
   def shuffle_questions(questions) do
     Enum.shuffle(questions)
+  end
+
+  def cached_game_list() do
+    {_, games} =
+      Cachex.fetch(
+        :party_game_cache,
+        "game_list",
+        fn _ ->
+          list()
+          |> non_blank_game_list
+          |> sort_game_list
+        end,
+        ttl: :timer.minutes(5)
+      )
+    games
   end
 
   def shuffle_question_answers(questions) do

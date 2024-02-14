@@ -8,7 +8,11 @@
     <meta name="description" content="Fun multi-player buzz games for math, addition, subtraction, multiplication, division, geography, and United State capitals." />
    
     <meta name="csrf-token" content={get_csrf_token()} />
-    <link phx-track-static rel="stylesheet" href={PartyGameWeb.Handlers.CssFinder.get_react_build_css} />
+    <link phx-track-static rel="stylesheet" href={PartyGameWeb.Handlers.CssFinder.get_react_build_css_cached} />
+       
+    <%= unless assigns.conn.host == "localhost" do %>
+     <.google_analytics/>
+    <% end %>
   </head>
   <body>
   <noscript>Fun multi-player buzz games for math, addition, subtraction, multiplication, division, geography, and United State capitals. You need to enable JavaScript to run this app.</noscript>    
