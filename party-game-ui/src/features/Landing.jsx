@@ -7,17 +7,21 @@ import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { listGames } from './game/gameSlice';
 
-function sliceArray(array, n) {
+function sliceArray(array, numCols) {
     if (array === null) {
         return
     }
-    return [...Array(Math.ceil(array.length / n))].map((_, i) => array.slice(i * n, (i + 1) * n));
+
+    const numPerCol = Math.ceil(array.length / numCols)
+
+    return [...Array(Math.ceil(array.length / numPerCol))]
+            .map((_, i) => array.slice(i * numPerCol, (i + 1) * numPerCol));
 }
 
 function Landing() {
     const dispatch = useDispatch();
     const serverGames = useSelector(state => state.game.api.list.data);
-    const serverGameCols = sliceArray(serverGames, serverGames && Math.ceil(serverGames.length / 3));
+    const serverGameCols = sliceArray(serverGames, 3);
 
     useEffect(() => {
         dispatch({ type: 'logout/logout' });
@@ -39,58 +43,52 @@ function Landing() {
                 </p>
             </div>
             <div className='flex flex-row flex-center app-light pd-5-lr'>
-                <div className='flex-column text-align-left flex-item pad-5per'>
+                <div className='flex-column text-align-left flex-item pad-5pc'>
                     Play Trivia Games!
                     <span className='font-14px'>Play games alone or togather to see who can answer the quickest!
                     </span>
                     <ul className='font-14px'>
-                        <li>Learn addition, subtraction, multiplication, division and equations.</li>
+                        <li>Learn to become proficient in Addition, Subtraction, Multiplication, Division and Equations.</li>
                         <li>Play Sports Trivia Games</li>
                         <li>Learn the United States Capitals!</li>
                         <li>Learn about the Solar System!</li>
                     </ul>
                 </div>
-                <div className='flex-column  flex-item pad-5per'>
+                <div className='flex-column  flex-item pad-5pc'>
                     Make your own Trivia Game to play with friends or Create flashcards to study for a test alone!
                 </div>
-                <div className='flex-column text-align-left flex-item pad-5per'>
+                <div className='flex-column text-align-left flex-item pad-5pc'>
                     Interactive Game Creator
-                    <span className='font-14px'>Make your own flashcards or game with our interactive Game creator. Create your game, download it to a text file, and whenever you want to play it again, open the file up and paste it in our import game section.
-                    </span>
+                    <span className='font-14px'>Make your own flashcards or game with our interactive Game creator. Create your game, download it to a text file, and whenever you want to play it again, open the file up and paste it in our import game section.</span>
                 </div>
             </div>
             <div className='flex flex-row flex-center'>
-                <div className='flex-column  flex-item pad-5per'>
+                <div className='flex-column flex-item pad-5pc'>
                     No accounts or login necassary. Start playing immediately!
-                    <span className='font-14px'>Just enter any name you want on the next screen and you are good to play alone or with a friend.
-                    </span>
+                    <span className='font-14px'>Just enter any name you want on the next screen and you are good to play alone or with a friend.</span>
                 </div>
             </div>
-            <div className='flex flex-row flex-center app-light pd-5-lr'>
-                <div className='flex-column text-align-left flex-item pad-5per'>
+            <div className='flex flex-row flex-center app-light pad-5pc-top'>
+                <div className='flex-column text-align-left flex-item pad-5pc-lr'>
                     Trivia Questions and Games are added all the time.
-                    <span className='font-14px'>Here are the current game offerings:
-                    </span>
-</div></div>
-<div className='flex flex-row flex-center app-light pd-5per-lr'>
+                    <span className='font-14px'>Here are the current trivia offerings:</span>
+                </div>
+            </div>
+            <div className='flex flex-row flex-center app-light pad-5pc-lr pad-5pc-bottom'>
                 {(serverGameCols || []).map((x, key) => {
-
-                    return <div key={key} className='flex-column text-align-left flex-item pd-5per-lr'>
+                    let cat = x.category
+                    return <div key={key} className='flex-column text-align-left flex-item pad-5pc-lr pad-5pc-bottom '>
                         <ul className='font-14px' >
+                            <h3>{x.category}</h3>
                             {(x || []).map((game, key) =>
                                 <li key={key}>
-                                    {game.name}
+                                    {(game.category || "") + " - " + game.name}
                                 </li>
-                            )
-                            }
+                            )}
                         </ul>
                     </div>
-
                 })}
             </div>
-            
-
-
         </>
     );
 }

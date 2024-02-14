@@ -212,12 +212,21 @@ body {
   flex: 1 1 auto;
 }
 
-.pad-5per {
+.pad-5pc-top {
+  padding-top: 5%;
+}
+
+.pad-5pc-bottom {
+  padding-bottom: 5%;
+}
+
+.pad-5pc {
   padding: 5%;
 }
 
-.pd-5per-lr {
-  padding: 0 5%;
+.pad-5pc-lr {
+  padding-left: 5%;
+  padding-right: 5%;
 }
 
 .flex-1 {

@@ -22,7 +22,7 @@
             ]
         },
         {
-            "question": "Are Moon phases the same everywhere on Earth?",
+            "question": "Moon phases are the same everywhere on Earth?",
             "type": "tf",
             "correct": "True",
             "answers": [
