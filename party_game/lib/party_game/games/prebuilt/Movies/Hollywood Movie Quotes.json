@@ -13,7 +13,7 @@
             ]
         },
         {
-            "question": " I'm like a bad penny, I always turn up.",
+            "question": "I'm like a bad penny, I always turn up.",
             "type": "multi",
             "correct": "Indiana Jones and the Last Crusade",
             "answers": [
@@ -41,16 +41,16 @@
             "answers": [
                 "Lethal Weapon",
                 "Beverly Hills Cop",
-                " Hot Shots! Part Deux",
+                "Hot Shots! Part Deux",
                 "Die Hard"
             ]
         },
         {
             "question": "I'm not saying I don't trust you, and I'm not saying I do. But I don't.",
             "type": "multi",
-            "correct": " Hot Shots! Part Deux",
+            "correct": "Hot Shots! Part Deux",
             "answers": [
-                " Hot Shots! Part Deux",
+                "Hot Shots! Part Deux",
                 "Beverly Hills Cop",
                 "Lethal Weapon",
                 "Die Hard"
@@ -74,7 +74,7 @@
             "answers": [
                 "Beverly Hills Cop",
                 "Unforgiven",
-                "Jurasic Park",
+                "Jurassic Park",
                 "Die Hard 2"
             ]
         },
@@ -106,7 +106,7 @@
             "correct": "Lethal Weapon",
             "answers": [
                 "Lethal Weapon",
-                " The Godfather",
+                "The Godfather",
                 "Pulp Fiction",
                 "Fight Club"
             ]
@@ -118,7 +118,7 @@
             "answers": [
                 "The Naked Gun: From the Files of Police Squad!",
                 "Hot Shots",
-                "Hot Shots",
+                "Step Brothers",
                 "Hot Shots! Part Deux"
             ]
         },
@@ -169,12 +169,12 @@
         {
             "question": "Do. Or do not. There is no try.",
             "type": "multi",
-            "correct": "Star Wars Episode V – The Empire Strikes Back",
+            "correct": "Star Wars Episode V - The Empire Strikes Back",
             "answers": [
-                "Star Wars Episode V – The Empire Strikes Back",
-                "Star Wars Episode VI – Return of the Jedi",
-                "Star Wars Episode IV – A New Hope",
-                "Star Wars Episode I – The Phantom Menace"
+                "Star Wars Episode V - The Empire Strikes Back",
+                "Star Wars Episode VI - Return of the Jedi",
+                "Star Wars Episode IV - A New Hope",
+                "Star Wars Episode I - The Phantom Menace"
             ]
         },
         {
@@ -189,7 +189,7 @@
             ]
         },
         {
-            "question": "You don’t have the technology or the steady hands to pull off a procedure like that, so ha!",
+            "question": "You don't have the technology or the steady hands to pull off a procedure like that, so ha!",
             "type": "multi",
             "correct": "Superbad",
             "answers": [
@@ -216,17 +216,17 @@
             "correct": "Back to the Future",
             "answers": [
                 "Back to the Future",
-                " Bill & Ted's Excellent Adventure",
-                " Heavy Metal",
+                "Bill & Ted's Excellent Adventure",
+                "Heavy Metal",
                 "Hangover"
             ]
         },
         {
             "question": "The best place to be is here.",
             "type": "multi",
-            "correct": " Bill & Ted's Excellent Adventure",
+            "correct": "Bill & Ted's Excellent Adventure",
             "answers": [
-                " Bill & Ted's Excellent Adventure",
+                "Bill & Ted's Excellent Adventure",
                 "Back to the Future",
                 "It's a Wonderful Life",
                 "The Lion King"
@@ -282,7 +282,7 @@
             "correct": "The Green Mile",
             "answers": [
                 "The Green Mile",
-                " The Shawshank Redemption",
+                "The Shawshank Redemption",
                 "Just Mercy",
                 "Django Unchained"
             ]
@@ -381,8 +381,8 @@
             "correct": "First Blood",
             "answers": [
                 "First Blood",
-                " Rambo: First Blood Part II",
-                " Rambo III",
+                "Rambo: First Blood Part II",
+                "Rambo III",
                 "Rambo"
             ]
         }
