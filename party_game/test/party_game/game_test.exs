@@ -2,7 +2,7 @@ defmodule PartyGame.GameTest do
   alias PartyGame.GameRoom
   alias PartyGame.Game.Game
   alias PartyGame.Game.Player
-  alias PartyGame.Games.States
+  alias PartyGame.Games.MultipleChoice.States
 
   use ExUnit.Case, async: true
 

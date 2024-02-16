@@ -1,5 +1,5 @@
 defmodule PartyGame.StatesTest do
-  alias PartyGame.Games.States
+  alias PartyGame.Games.MultipleChoice.States
 
   use ExUnit.Case, async: true
 

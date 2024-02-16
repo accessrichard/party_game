@@ -1,5 +1,5 @@
 defmodule PartyGame.Games.Games do
-  alias PartyGame.Games
+  alias PartyGame.Games.MultipleChoice
   alias PartyGame.Game.GameMetaData
 
   def list() do
@@ -9,7 +9,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Addition",
@@ -17,7 +17,7 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "addition"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Subtraction",
@@ -25,7 +25,7 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "subtraction"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Multiplication",
@@ -33,7 +33,7 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "multiplication"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Multiplication - Fractions",
@@ -41,7 +41,7 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "fraction_multiply"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Division",
@@ -49,7 +49,7 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "division"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Division - Fractions",
@@ -57,7 +57,7 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "fraction_divide"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Equations",
@@ -65,29 +65,29 @@ defmodule PartyGame.Games.Games do
         type: "multi_choice",
         location: "server",
         options: %{type: "equation"},
-        module: Games.BasicMath
+        module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "U.S. State Capitals",
         category: "United States",
         type: "multi_choice",
         location: "server",
-        module: Games.States
+        module: MultipleChoice.States
       },
       %GameMetaData{
         name: "",
         category: "User Games",
         type: "custom",
         location: "client",
-        module: Games.BuildYourOwn
+        module: MultipleChoice.BuildYourOwn
       }
     ]
 
     games ++
-      Enum.map(Games.BuildYourOwnPrebuilt.prebuilt_games(), fn x ->
+      Enum.map(MultipleChoice.BuildYourOwnPrebuilt.prebuilt_games(), fn x ->
         %GameMetaData{
           name: x.name,
-          module: Games.BuildYourOwnPrebuilt,
+          module: MultipleChoice.BuildYourOwnPrebuilt,
           type: "multi_choice",
           location: "server",
           category: x.category

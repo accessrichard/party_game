@@ -1,4 +1,4 @@
-defmodule PartyGame.Games.BuildYourOwnPrebuilt do
+defmodule PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do
 
   @games_path "./lib/party_game/games/prebuilt"
 

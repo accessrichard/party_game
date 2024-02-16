@@ -1,4 +1,4 @@
-defmodule PartyGame.Games.BuildYourOwn do
+defmodule PartyGame.Games.MultipleChoice.BuildYourOwn do
 
   def new(game, _) do
       game.game.questions

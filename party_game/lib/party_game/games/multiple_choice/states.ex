@@ -1,4 +1,4 @@
-defmodule PartyGame.Games.States do
+defmodule PartyGame.Games.MultipleChoice.States do
   alias PartyGame.Game.Question
 
   def new(game) do

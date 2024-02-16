@@ -1,4 +1,4 @@
-defmodule PartyGame.Games.BasicMath do
+defmodule PartyGame.Games.MultipleChoice.BasicMath do
   alias PartyGame.Game.Question
 
   def new(game, options \\ %{}) do
