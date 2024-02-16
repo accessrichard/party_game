@@ -28,7 +28,9 @@ defmodule PartyGameWeb.CanvasHTML do
 
   def render(_, assigns) do
     ~H"""
-    <h1>Some Text Here</h1>
+    <h2>Drawing<span id="word"></span></h2>
+    <span id="timer">00:00:00</span>
+    <div id="canvas-overlay"><div id="visible-area">Visible Area</div></div>
     <canvas id="paint-canvas"></canvas>
     <div class="nav-bar">
       <.color_buttons/>

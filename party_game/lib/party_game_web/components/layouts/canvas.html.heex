@@ -8,6 +8,9 @@
     <meta name="description" content="Fun multi-player buzz games for math, addition, subtraction, multiplication, division, geography, and United State capitals." />
    
     <meta name="csrf-token" content={get_csrf_token()} />
+     <script>
+      const socketUrl = "<%= Application.get_env(:party_game, "VITE_SOCKET_URL", "/socket") %>";
+    </script>
     <link phx-track-static rel="stylesheet" href={~p"/assets/canvas.css"} />
     <script phx-track-static src={~p"/assets/canvas.js"}></script>
   </head>
