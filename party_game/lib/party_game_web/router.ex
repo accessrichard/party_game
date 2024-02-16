@@ -5,7 +5,8 @@ defmodule PartyGameWeb.Router do
     GameController,
     CreateController,
     JavaScriptSpaController,
-    HomeController
+    HomeController,
+    CanvasController
   }
 
   pipeline :browser do
@@ -50,6 +51,7 @@ defmodule PartyGameWeb.Router do
     # Use the default browser stack
     pipe_through :browser
     get "/seo", HomeController, :index
+    get "/canvas", CanvasController, :index
 
     # This route declaration MUST be below everything else! Else, it will
     # override the rest of the routes, even the `/api` routes we've set above.
