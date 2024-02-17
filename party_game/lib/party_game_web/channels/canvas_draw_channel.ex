@@ -66,7 +66,7 @@ defmodule PartyGameWeb.CanvasDrawChannel do
 
   @impl true
   def handle_in("word", _, socket) do
-     broadcast(socket, "word",  %{"word" => CanvasGame.word()})
+     broadcast(socket, "word",  %{"word" => CanvasGame.word(1) |> Enum.at(0)})
     {:noreply, socket}
   end
 
