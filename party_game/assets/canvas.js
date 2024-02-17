@@ -76,7 +76,10 @@ window.onload = function () {
   channel.push("resize", display)
   channel.on("resize", (resizing) => resize(resizing, store.displays, canvas));
   channel.on("commands", (resp) => onCommands(resp.commands));
-  channel.on("word", (word) => onWord(word))
+  channel.on("word", (word) => onWord(word));
+  channel.on("handle_game_server_idle_timeout", (timeout => onTimeout(timeout)));
+  channel.on("presence_state", (state) => onPresenceState(state));
+  channel.on("handle_join", (join) => onHandleJoin(join));
 
   canvas.addEventListener('mousedown', mouseDown);
   canvas.addEventListener('mousemove', mouseMove);
@@ -154,6 +157,19 @@ window.onload = function () {
 
   function onWord(word) {
     document.getElementById("word-game").textContent = ` Draw: ${word.word}`;
+  }
+
+  function onTimeout() {
+    //alert("The server has timed out. Please start again.");
+    console.log("NotImplemented - Timeout Event")
+  }
+
+  function onPresenceState(state){
+    console.log("NotImplemented - onPresenceState");
+  }
+
+  function onHandleJoin(join){
+    console.log("NotImplemented - onHandleJoin");
   }
 
   function onCommands(commands) {

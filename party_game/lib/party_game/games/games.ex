@@ -1,6 +1,7 @@
 defmodule PartyGame.Games.Games do
   alias PartyGame.Games.MultipleChoice
   alias PartyGame.Game.GameMetaData
+  alias PartyGame.Games.CanvasDraw
 
   def list() do
     games = [
@@ -9,6 +10,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -16,6 +18,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "addition"},
         module: MultipleChoice.BasicMath
       },
@@ -24,6 +27,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "subtraction"},
         module: MultipleChoice.BasicMath
       },
@@ -32,6 +36,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "multiplication"},
         module: MultipleChoice.BasicMath
       },
@@ -40,6 +45,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "fraction_multiply"},
         module: MultipleChoice.BasicMath
       },
@@ -48,6 +54,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "division"},
         module: MultipleChoice.BasicMath
       },
@@ -56,6 +63,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "fraction_divide"},
         module: MultipleChoice.BasicMath
       },
@@ -64,6 +72,7 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         options: %{type: "equation"},
         module: MultipleChoice.BasicMath
       },
@@ -72,13 +81,51 @@ defmodule PartyGame.Games.Games do
         category: "United States",
         type: "multi_choice",
         location: "server",
+        url: "/game",
         module: MultipleChoice.States
+      },
+      %GameMetaData{
+        name: "Draw Togather",
+        category: "Drawing",
+        type: "canvas",
+        location: "server",
+        url: "/canvas",
+        options: %{type: "draw_togather"},
+        module: CanvasDraw.CanvasGame
+      },
+      %GameMetaData{
+        name: "Guess The Drawing",
+        category: "Drawing",
+        type: "canvas",
+        location: "server",
+        url: "/canvas",
+        options: %{type: "guessing_game"},
+        module: CanvasDraw.CanvasGame
+      },
+      %GameMetaData{
+        name: "Alternating Draw Togather",
+        category: "Drawing",
+        type: "canvas",
+        location: "server",
+        url: "/canvas",
+        options: %{type: "alternate_draw"},
+        module: CanvasDraw.CanvasGame
+      },
+      %GameMetaData{
+        name: "Free Draw Togather",
+        category: "Drawing",
+        type: "canvas",
+        location: "server",
+        url: "/canvas",
+        options: %{type: "free_draw"},
+        module: CanvasDraw.CanvasGame
       },
       %GameMetaData{
         name: "",
         category: "User Games",
         type: "custom",
         location: "client",
+        url: "/game",
         module: MultipleChoice.BuildYourOwn
       }
     ]

@@ -2,12 +2,20 @@ defmodule PartyGame.Games.CanvasDraw.CanvasGame do
   alias PartyGame.Game.Question
   @word_path "./lib/party_game/games/canvas_draw"
 
-  def new(game) do
-    new(game, nil)
+  def new(game, options \\ %{}) do
+    type = Map.get(options, "type", "")
+    number_questions = Map.get(game, :rounds, 10)
+
+    case type do
+      "free_draw" ->
+        %Question{}
+
+      _ ->
+        questions(number_questions)
+    end
   end
 
-  def new(game, _) do
-    number_questions = Map.get(game, :rounds, 10)
+  def questions(number_questions) do
     words = word(number_questions)
 
     Enum.reduce(words, [], fn word, acc ->

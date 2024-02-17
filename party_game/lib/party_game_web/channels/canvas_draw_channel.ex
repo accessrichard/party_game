@@ -30,25 +30,29 @@ defmodule PartyGameWeb.CanvasDrawChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
+    #:ok =
+    #  ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
+
     broadcast(socket, "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
+
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:after_join}, socket) do
-    :ok =
-      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
+#    :ok =
+#      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
 
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.name, %{
-        online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
-        typing: false
-      })
+#    {:ok, _} =
+#     Presence.track(socket, socket.assigns.name, %{
+#        online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
+#        typing: false
+#      })
 
-    push(socket, "presence_state", Presence.list(socket))
-    player = Player.add_player(socket.assigns.name)
+ #   push(socket, "presence_state", Presence.list(socket))
+ #   player = Player.add_player(socket.assigns.name)
 
-    broadcast_from(socket, "handle_join", player)
+ #   broadcast_from(socket, "handle_join", player)
     {:noreply, socket}
   end
 
