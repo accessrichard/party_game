@@ -31,12 +31,14 @@ function displayTimer(startDate, el, countDownTime = 0, cb) {
 
     if (time <= 0) {
       clearInterval(interval)
+      cb && cb();
     }
 
     el.textContent = formatTime(time);
 
-    cb && cb();
   }, 1000);
+
+  return interval;
 }
 
 function componentToHex(c) {
@@ -54,7 +56,6 @@ function toHex(rgb) {
 }
 
 window.onload = function () {
-  displayTimer(new Date(), document.getElementById("timer"))
   const store = {
 
     drawing: [],
@@ -100,7 +101,7 @@ window.onload = function () {
       context.strokeStyle = strokeStyle;
       return;
     }
-    
+
     Array.from(colors).forEach((color) => {
       let colorButton = window.getComputedStyle(color).backgroundColor;
       if (toHex(colorButton) === context.strokeStyle) {
@@ -239,6 +240,7 @@ window.onload = function () {
   }
 
   function start() {
+    displayTimer(new Date(), document.getElementById("timer"))
     channel.push("word")
   }
 
