@@ -37,11 +37,7 @@ function displayTimer(startDate, el, countDownTime = 0, cb){
 
     cb && cb();    
   }, 1000);
-
 }
-
-
-
 
 window.onload = function () {
   displayTimer(new Date(), document.getElementById("timer"))
@@ -51,6 +47,7 @@ window.onload = function () {
     displays: [],
     mouseMove: [],
     isDrawing: false,
+    isColorShared: false,
 
     reset: function () {
       this.mouseMove = [];
@@ -65,13 +62,13 @@ window.onload = function () {
 
   const context = canvas.getContext("2d");
   context.strokeStyle = 'black';
-  context.lineWidth = 1;
+  context.lineWidth = 2;
 
   const display = { id: Math.random() * 1000, display: { width: canvas.width, height: canvas.height } };
 
   channel.push("resize", display)
   channel.on("resize", (resizing) => resize(resizing, store.displays, canvas));
-  channel.on("commands", (resp) => applyCommands(resp.commands));
+  channel.on("commands", (resp) => onCommands(resp.commands));
   channel.on("word", (word) => onWord(word))
 
   channel.push("word")
@@ -121,19 +118,36 @@ window.onload = function () {
     var elem = document.getElementById("canvas-overlay")
     elem.style.width = Math.min(minWidth, canvas.width) + "px";
     elem.style.height = Math.min(minHeight, canvas.height) + "px";
+//    resize clears out the canvas so has to be done on init
+//    canvas.height =  Math.min(minHeight, canvas.height)
+//    canvas.width = Math.min(minWidth, canvas.width)
+    elem.style.display = "block"
   }
 
   function onWord(word) {
-    document.getElementById("word").textContent = ` Your word is: ${word.word}`;
+    document.getElementById("word-game").textContent = ` Your word is: ${word.word}`;
   }
 
-  function applyCommands(commands) {
-    commands.forEach(command => applyCommand(command));
+  function onCommands(commands) {
+    
+    const strokeStyle = context.strokeStyle;    
+    
+    commands.forEach(command => onCommand(command));
+    if (store.isColorShared) {
+      context.strokeStyle = strokeStyle;
+    } else {
+      Array.from(colors).forEach((color) => {
+          //TODO
+      });
+    }
+    
+    
+
   }
 
-  function applyCommand(command) {
+  function onCommand(command) {
     if (command.op === "assign") {
-      context[command.command] = command.value;
+      context[command.command] = command.value;      
       return;
     }
 
@@ -165,6 +179,7 @@ window.onload = function () {
     store.isDrawing = true;
 
     context.beginPath();
+    store.drawing.push({ command: "strokeStyle", value: context.strokeStyle, op: "assign" });
     store.drawing.push({ command: "beginPath", value: null, op: "function" });
 
     context.moveTo(event.layerX, event.layerY);
