@@ -15,7 +15,7 @@ channel.join()
 
 
 function formatTime(seconds) {
-  const time = new Date(seconds * 1000).toISOString();  
+  const time = new Date(seconds * 1000).toISOString();
   return time.substring(11, 19);
 }
 
@@ -23,20 +23,34 @@ function getDateDiff(startDate) {
   return Math.round((new Date() - startDate) / 1000);
 }
 
-function displayTimer(startDate, el, countDownTime = 0, cb){
+function displayTimer(startDate, el, countDownTime = 0, cb) {
   const interval = setInterval(() => {
-    const time = countDownTime === 0 
-          ? getDateDiff(startDate) 
-          : countDownTime - getDateDiff(startDate);
-    
+    const time = countDownTime === 0
+      ? getDateDiff(startDate)
+      : countDownTime - getDateDiff(startDate);
+
     if (time <= 0) {
-      clearInterval(interval)  
+      clearInterval(interval)
     }
 
     el.textContent = formatTime(time);
 
-    cb && cb();    
+    cb && cb();
   }, 1000);
+}
+
+function componentToHex(c) {
+  var hex = c.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+function toHex(rgb) {
+  [r, g, b] = rgb.replace(/[^\d,]/g, '').split(',')
+  return rgbToHex(r, g, b)
 }
 
 window.onload = function () {
@@ -48,6 +62,7 @@ window.onload = function () {
     mouseMove: [],
     isDrawing: false,
     isColorShared: false,
+    strokeStyle: 'black',
 
     reset: function () {
       this.mouseMove = [];
@@ -71,8 +86,6 @@ window.onload = function () {
   channel.on("commands", (resp) => onCommands(resp.commands));
   channel.on("word", (word) => onWord(word))
 
-  channel.push("word")
-
   canvas.addEventListener('mousedown', mouseDown);
   canvas.addEventListener('mousemove', mouseMove);
   canvas.addEventListener('mouseup', mouseUp);
@@ -82,11 +95,34 @@ window.onload = function () {
     color.addEventListener('click', onColorClick);
   });
 
-  var saveButton = document.getElementById('save');
+  function syncColors() {
+    if (store.isColorShared && false) {
+      context.strokeStyle = strokeStyle;
+      return;
+    }
+    
+    Array.from(colors).forEach((color) => {
+      let colorButton = window.getComputedStyle(color).backgroundColor;
+      if (toHex(colorButton) === context.strokeStyle) {
+        onColorClick({ target: color })
+      }
+    });
+  }
+
+  let saveButton = document.getElementById('save');
   saveButton.addEventListener('click', save);
 
-  var clearButton = document.getElementById('clear');
+  let clearButton = document.getElementById('clear');
   clearButton.addEventListener('click', clear);
+
+  let nextButton = document.getElementById('next');
+  nextButton.addEventListener('click', next);
+
+  let backButton = document.getElementById('back');
+  backButton.addEventListener('click', back);
+
+  let startButton = document.getElementById('start');
+  startButton.addEventListener('click', start);
 
   function canvasWidth() {
     return window.innerWidth - (window.innerWidth * .02);
@@ -101,7 +137,7 @@ window.onload = function () {
     Array.from(colors).forEach((color) => { color.classList.remove("active") });
     event.target.classList.add("active");
     store.drawing.push({ command: "strokeStyle", value: color, op: "assign" });
-    context.strokeStyle = color || 'black';
+    context.strokeStyle = color || store.strokeStyle;
   }
 
   function resize(resizing, displays, canvas) {
@@ -118,9 +154,9 @@ window.onload = function () {
     var elem = document.getElementById("canvas-overlay")
     elem.style.width = Math.min(minWidth, canvas.width) + "px";
     elem.style.height = Math.min(minHeight, canvas.height) + "px";
-//    resize clears out the canvas so has to be done on init
-//    canvas.height =  Math.min(minHeight, canvas.height)
-//    canvas.width = Math.min(minWidth, canvas.width)
+    //    resize clears out the canvas so has to be done on init
+    //    canvas.height =  Math.min(minHeight, canvas.height)
+    //    canvas.width = Math.min(minWidth, canvas.width)
     elem.style.display = "block"
   }
 
@@ -129,25 +165,17 @@ window.onload = function () {
   }
 
   function onCommands(commands) {
-    
-    const strokeStyle = context.strokeStyle;    
-    
-    commands.forEach(command => onCommand(command));
-    if (store.isColorShared) {
-      context.strokeStyle = strokeStyle;
-    } else {
-      Array.from(colors).forEach((color) => {
-          //TODO
-      });
-    }
-    
-    
 
+    store.strokeStyle = context.strokeStyle;
+
+    commands.forEach(command => onCommand(command));
+
+    syncColors();
   }
 
   function onCommand(command) {
     if (command.op === "assign") {
-      context[command.command] = command.value;      
+      context[command.command] = command.value;
       return;
     }
 
@@ -200,6 +228,18 @@ window.onload = function () {
     store.drawing.push({ command: "resize", value: display, op: "function" })
     channel.push("commands", { commands: store.drawing })
     store.reset();
+  }
+
+  function back() {
+    window.location.href = "/";
+  }
+
+  function next() {
+    channel.push("word")
+  }
+
+  function start() {
+    channel.push("word")
   }
 
   function clear() {
