@@ -61,10 +61,13 @@ defmodule PartyGame.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get"],
+      setup: ["deps.get", "assets.setup", "assets.build"],
       "ecto.setup": ["run priv/repo/seeds.exs"],
       "ecto.reset": [],
-      test: []
+      test: ["test"],
+      "assets.setup": ["esbuild.install --if-missing"],
+      "assets.build": ["esbuild default"],
+      "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end
 end

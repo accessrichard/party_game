@@ -15,7 +15,7 @@ defmodule PartyGameWeb.CanvasHTML do
     ~H"""
     <div class="container">
       <div>
-      <span id="timer">00:00:00</span>
+        <span id="timer">00:00:00</span>
       </div>
       <div class="break"></div>
       <div>
@@ -39,12 +39,11 @@ defmodule PartyGameWeb.CanvasHTML do
   def render(_, assigns) do
     ~H"""
     <div class="container">
-    <h2 id="word-game"></h2>
+      <h1 id="word-game">Drawing Game</h1>
     </div>
     <div id="canvas-overlay"><div id="visible-area">Visible Area</div></div>
     <canvas id="paint-canvas"></canvas>
-      <.color_buttons/>
-
+    <.color_buttons/>
     """
   end
 end

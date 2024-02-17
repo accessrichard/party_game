@@ -1,4 +1,4 @@
-defmodule PartyGame.GameTest do
+defmodule PartyGame.MultipleChoiceGameTest do
   alias PartyGame.GameRoom
   alias PartyGame.Game.Game
   alias PartyGame.Game.Player

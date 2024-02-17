@@ -41,18 +41,9 @@ function displayTimer(startDate, el, countDownTime = 0, cb) {
   return interval;
 }
 
-function componentToHex(c) {
-  var hex = c.toString(16);
-  return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-  return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
-}
-
 function toHex(rgb) {
   [r, g, b] = rgb.replace(/[^\d,]/g, '').split(',')
-  return rgbToHex(r, g, b)
+  return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
 window.onload = function () {
@@ -97,7 +88,7 @@ window.onload = function () {
   });
 
   function syncColors() {
-    if (store.isColorShared && false) {
+    if (store.isColorShared) {
       context.strokeStyle = strokeStyle;
       return;
     }
@@ -162,7 +153,7 @@ window.onload = function () {
   }
 
   function onWord(word) {
-    document.getElementById("word-game").textContent = ` Your word is: ${word.word}`;
+    document.getElementById("word-game").textContent = ` Draw: ${word.word}`;
   }
 
   function onCommands(commands) {
