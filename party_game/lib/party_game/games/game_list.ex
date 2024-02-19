@@ -1,4 +1,4 @@
-defmodule PartyGame.Games.Games do
+defmodule PartyGame.Games.GameList do
   alias PartyGame.Games.MultipleChoice
   alias PartyGame.Game.GameMetaData
   alias PartyGame.Games.CanvasDraw
@@ -10,7 +10,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -18,7 +17,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "addition"},
         module: MultipleChoice.BasicMath
       },
@@ -27,7 +25,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "subtraction"},
         module: MultipleChoice.BasicMath
       },
@@ -36,7 +33,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "multiplication"},
         module: MultipleChoice.BasicMath
       },
@@ -45,7 +41,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "fraction_multiply"},
         module: MultipleChoice.BasicMath
       },
@@ -54,7 +49,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "division"},
         module: MultipleChoice.BasicMath
       },
@@ -63,7 +57,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "fraction_divide"},
         module: MultipleChoice.BasicMath
       },
@@ -72,7 +65,6 @@ defmodule PartyGame.Games.Games do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         options: %{type: "equation"},
         module: MultipleChoice.BasicMath
       },
@@ -81,7 +73,6 @@ defmodule PartyGame.Games.Games do
         category: "United States",
         type: "multi_choice",
         location: "server",
-        url: "/game",
         module: MultipleChoice.States
       },
       %GameMetaData{
@@ -125,7 +116,6 @@ defmodule PartyGame.Games.Games do
         category: "User Games",
         type: "custom",
         location: "client",
-        url: "/game",
         module: MultipleChoice.BuildYourOwn
       }
     ]
@@ -140,48 +130,6 @@ defmodule PartyGame.Games.Games do
           category: x.category
         }
       end)
-  end
-
-  def generate_questions(game) do
-    name = Map.get(game, :name)
-    location = Map.get(game, :location)
-
-    game_metadata =
-      Enum.find(list(), fn x ->
-        (x.name == name and x.location == location) or
-          (x.location == location and location == "client")
-      end)
-
-    num_rounds = Map.get(game, :rounds, 10)
-
-    case game_metadata do
-      nil ->
-        {:error, "Game does not exist!"}
-
-      _ ->
-        questions = game_metadata.module.new(game, Map.get(game_metadata, "options", %{}))
-
-        # Shuffle questions for client games
-        if location == "client" || game_metadata.module === Games.BuildYourOwnPrebuilt do
-          shuffle_questions(questions)
-          |> shuffle_question_answers()
-          |> Enum.take(num_rounds)
-        else
-          Enum.take(questions, num_rounds)
-        end
-    end
-  end
-
-  def non_blank_game_list(game_list) do
-    Enum.filter(game_list, &(&1.name !== ""))
-  end
-
-  def sort_game_list(game_list) do
-    Enum.sort(game_list, &(&1.category > &2.category))
-  end
-
-  def shuffle_questions(questions) do
-    Enum.shuffle(questions)
   end
 
   def cached_game_list() do
@@ -199,13 +147,13 @@ defmodule PartyGame.Games.Games do
     games
   end
 
-  def shuffle_question_answers(questions) do
-    Enum.map(questions, fn x ->
-      if length(x.answers) > 2 do
-        %PartyGame.Game.Question{x | answers: Enum.shuffle(x.answers)}
-      else
-        x
-      end
-    end)
+  defp non_blank_game_list(game_list) do
+    Enum.filter(game_list, &(&1.name !== ""))
   end
+
+  defp sort_game_list(game_list) do
+    Enum.sort(game_list, &(&1.category > &2.category))
+  end
+
+
 end

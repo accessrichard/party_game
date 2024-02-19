@@ -37,7 +37,7 @@ export default function Timer(props) {
         onStartDateSet
     } = props;
 
-    const [seconds, setSeconds] = useState(isIncrement ? 1 : numberSeconds);
+    const [seconds, setSeconds] = useState(isIncrement ? 0 : numberSeconds);
     const [startDate, setStartDate] = useState(null);
 
     const prevActive = usePrevious(isActive);
@@ -70,7 +70,7 @@ export default function Timer(props) {
         }
 
         return () => clearInterval(interval);
-    }, [isActive, seconds, prevActive, numberSeconds, onTimerCompleted, startDate, isIncrement, onStartDateSet]);
+    }, [isActive, seconds, prevActive, numberSeconds, startDate, isIncrement]);
 
     return (
         <>

@@ -230,7 +230,6 @@ const phoenixMiddleware = () => {
             .receive("ok", e => channelPushOk(formatPayload(channel, e)))
             .receive("error", e => channelPushError(formatPayload(channel, e)))
             .receive("timeout", e => channelPushTimeout(formatPayload(channel, e)));
-
     }
 
     function on(store, action) {

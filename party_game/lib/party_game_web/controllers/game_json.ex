@@ -1,7 +1,17 @@
 defmodule PartyGameWeb.GameJSON do
+  alias PartyGame.EctoHelpers
 
   def error(%{error: reason}) do
     %{error: reason}
+  end
+
+  def error(%{changeset: changeset}) do
+    errors = EctoHelpers.format_errors(changeset)
+    %{errors: errors, isValid: false}
+  end
+
+  def success(%{isValid: isValid}) do
+    %{isValid: isValid}
   end
 
   def game(%{game: game}) do
@@ -20,12 +30,13 @@ defmodule PartyGameWeb.GameJSON do
     }
   end
 
-  def games(%{games: games}) do
+  def list(%{games: games}) do
     %{data: Enum.map(games, fn x ->
       %{
         category: x.category,
         location: x.location,
-        name: x.name
+        name: x.name,
+        url: x.url
       }
     end)}
   end

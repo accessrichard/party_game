@@ -178,6 +178,50 @@ defmodule PartyGame.GameRoom do
     end
   end
 
+  def generate_questions(game, game_list) do
+    name = Map.get(game, :name)
+    location = Map.get(game, :location)
+
+    game_metadata =
+      Enum.find(game_list, fn x ->
+        (x.name == name and x.location == location) or
+          (x.location == location and location == "client")
+      end)
+
+    num_rounds = Map.get(game, :rounds, 10)
+
+    case game_metadata do
+      nil ->
+        {:error, "Game does not exist!"}
+
+      _ ->
+        questions = game_metadata.module.new(game, Map.get(game_metadata, "options", %{}))
+
+        # Shuffle questions for client games
+        if location == "client" || game_metadata.module === Games.BuildYourOwnPrebuilt do
+          shuffle_questions(questions)
+          |> shuffle_question_answers()
+          |> Enum.take(num_rounds)
+        else
+          Enum.take(questions, num_rounds)
+        end
+    end
+  end
+
+  defp shuffle_questions(questions) do
+    Enum.shuffle(questions)
+  end
+
+  defp shuffle_question_answers(questions) do
+    Enum.map(questions, fn x ->
+      if length(x.answers) > 2 do
+        %PartyGame.Game.Question{x | answers: Enum.shuffle(x.answers)}
+      else
+        x
+      end
+    end)
+  end
+
   defp take_next_question(%Game{} = game) do
     [question | questions] = game.questions
     round = %Round{question: question, winner: "None", answer: question.correct}

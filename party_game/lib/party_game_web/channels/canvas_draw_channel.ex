@@ -32,7 +32,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   def handle_info({:after_join, :game_not_found}, socket) do
     #:ok =
     #  ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
-
     broadcast(socket, "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
 
     {:noreply, socket}
@@ -72,6 +71,20 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   def handle_in("word", _, socket) do
      broadcast(socket, "word",  %{"word" => CanvasGame.word(1) |> Enum.at(0)})
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("start", _, socket) do
+   # server_game = Server.get_game(game_code(socket.topic))
+
+     broadcast(socket, "start",  %{"word" => CanvasGame.word(1) |> Enum.at(0)})
+    {:noreply, socket}
+  end
+
+  defp game_code(topic) do
+    [_ | code] = String.split(topic, ":")
+    [code] = code
+    code
   end
 
 end

@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import createPhoenixMiddleware, { reducer as channelReducer } from './phoenix/phoenixMiddleware';
-
 import chatReducer from './chat/chatSlice';
+import canvasReducer from './canvas/canvasSlice';
 import { createBrowserHistory } from "history";
 import { createReduxHistoryContext } from "redux-first-history";
 import creativeReducer from './creative/creativeSlice';
@@ -20,7 +20,8 @@ const reducers = {
   chat: chatReducer,
   game: gameReducer,
   creative: creativeReducer,
-  presence: presenceReducer
+  presence: presenceReducer,
+  canvas: canvasReducer
 };
 
 const combinedReducer = combineReducers(reducers);

@@ -246,7 +246,7 @@ window.onload = function () {
     channel.push("word")
   }
 
-  function start() {
+  function start(opts) {
     displayTimer(new Date(), document.getElementById("timer"))
     channel.push("word")
   }

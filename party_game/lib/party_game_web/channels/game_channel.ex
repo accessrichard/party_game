@@ -8,7 +8,8 @@ defmodule PartyGameWeb.GameChannel do
   alias PartyGame.ChannelWatcher
   alias PartyGame.GameRoom
   alias PartyGame.Game.Player
-  alias PartyGame.Games.Games
+  alias PartyGame.Games.GameList
+  alias PartyGame.Game.Game
 
   @channel_name "game:"
 
@@ -74,18 +75,18 @@ defmodule PartyGameWeb.GameChannel do
 
     game =
       if game_location == "client" do
-        PartyGame.Game.Game.create_game(server_game, client_form)
+        Game.create_game(server_game, client_form)
       else
         server_game
       end
 
     questions =
-      Games.generate_questions(%{
+      GameRoom.generate_questions(%{
         name: game_name,
         rounds: rounds,
         location: game_location,
         game: game
-      })
+      }, GameList.cached_game_list)
 
     game =
       game

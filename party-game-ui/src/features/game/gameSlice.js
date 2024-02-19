@@ -70,6 +70,7 @@ const initialState = {
     rounds: [],
     playerName: null,
     name: '',
+    url: '',
     gameCode: null,
     gameChannel: '',
     players: [],
@@ -87,6 +88,7 @@ function resetGame(state) {
     const savedState = {
         playerName: state.playerName,
         name: state.name,
+        url: state.url,
         gameCode: state.gameCode,
         round: 0,               
         gameChannel: state.gameChannel,
@@ -186,7 +188,8 @@ export const gameSlice = createSlice({
             }
         },
         changeGame: (state, action) => {
-            state.name = action.payload;
+            state.name = action.payload.name;
+            state.url = action.payload.url;
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;

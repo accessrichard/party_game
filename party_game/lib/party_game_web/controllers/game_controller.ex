@@ -6,7 +6,7 @@ defmodule PartyGameWeb.GameController do
   alias PartyGame.GameRoom
   alias PartyGame.Game.Game
   alias PartyGame.Server
-  alias PartyGame.Games.Games
+  alias PartyGame.Games.GameList
 
   action_fallback PartyGameWeb.FallbackController
 
@@ -26,6 +26,22 @@ defmodule PartyGameWeb.GameController do
         conn
         |> put_status(:ok)
         |> render(:error, error: reason)
+    end
+  end
+
+  def validate(conn, game_params) do
+    changeset = Game.create_game_changeset(%Game{}, game_params)
+
+    case changeset.valid? do
+      true ->
+        conn
+        |> put_status(:ok)
+        |> render(:success, %{isValid: true})
+
+      false ->
+        conn
+        |> put_status(:ok)
+        |> render(:error, changeset: changeset)
     end
   end
 
@@ -51,7 +67,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def list(conn, _) do
-    render(conn, :games, games: Games.cached_game_list)
+    render(conn, :list, games: GameList.cached_game_list)
   end
 
   def stop(conn, %{"room_name" => room_name}) do

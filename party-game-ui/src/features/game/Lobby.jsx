@@ -80,6 +80,7 @@ export default function Lobby() {
         isGameOwner,
         isGameStarted,
         name,
+        url,
         settings } = useSelector(state => state.game);
 
     const creativeGames = useSelector(state => state.creative.games);
@@ -97,7 +98,7 @@ export default function Lobby() {
         if (!gameCode) {
             dispatch(push('/'));
         }
-    }, [gameCode, dispatch]);
+    }, [gameCode]);
 
     /**
      * Display a count-up timer of lobby wait time.
@@ -115,7 +116,7 @@ export default function Lobby() {
             dispatch(listGames());
         }
 
-    }, [dispatch, serverGames, serverGamesLoading]);
+    }, [serverGames, serverGamesLoading]);
 
     /**
      * Merge the user created games with the server game list.
@@ -135,9 +136,9 @@ export default function Lobby() {
         }
 
         if (gameList && gameList.length > 0) {
-            dispatch(changeGame(gameList[0].name));
+            dispatch(changeGame({ name: gameList[0].name, location: gameList[0].url }));
         }
-    }, [gameList, dispatch, name]);
+    }, [gameList, name]);
 
     /**
      * Create and kicks off a new game:
@@ -176,7 +177,8 @@ export default function Lobby() {
     }
 
     function onGameChange(e) {
-        dispatch(changeGame(e.target.value));
+        const game = gameList.find(x => x.name == e.target.value);
+        dispatch(changeGame({ name: game.name, url: game.url }));
     }
 
     function onGenServerTimeout() {
@@ -184,7 +186,7 @@ export default function Lobby() {
     }
 
     function onStartGame() {
-        dispatch(push('/game'));
+        dispatch(push(url || "/game"));
     }
 
     if (isGameStarted) {

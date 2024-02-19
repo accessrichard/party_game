@@ -5,9 +5,10 @@ import Faces from '../common/Faces';
 import Flash from '../common/Flash';
 import { Navigate } from 'react-router-dom';
 import Timer from './Timer';
-import { history } from '../store';
 import { push } from "redux-first-history";
 import usePrevious from '../usePrevious';
+import { usePhoenixEvents } from '../phoenix/usePhoenix';
+import useBackButtonBlock from '../useBackButtonBlock';
 
 import {
     channelPush, channelOn, channelOff
@@ -89,21 +90,9 @@ export default function Game() {
 
     const prevRound = usePrevious(round);
 
-    /**
-     * Subscribe to events from phoenix channels.
-     * 
-     * These events are auto handled in redux.
-     * 
-     * See PheonixMiddleware.js which auto maps socket/channel events
-     * to state updates.
-     */
-    useEffect(() => {
-        const topic = `game:${gameCode}`;
+    usePhoenixEvents(`game:${gameCode}`, events);
+    useBackButtonBlock();
 
-        events(topic).forEach((e) => dispatch(channelOn(e)))
-
-        return () => { events(topic).forEach((e) => dispatch(channelOff(e))) }
-    }, []);
 
     /**
      * Sets a delay timeout on wrong answers as configured in the settings.
@@ -117,10 +106,6 @@ export default function Game() {
         const countDownSeconds = Math.round((new Date() - timerStartDate) / 1000);
         setCanRetryWrongAnswer(countDownSeconds - settings.wrongAnswerTimeout > 0);
     }, [timerStartDate, isWrong, settings.wrongAnswerTimeout]);
-
-    function onTimerStartDateSet(date) {
-        setTimerStartDate(date)
-    }
 
     /**
      * Sets a countdown timer until the question can no longer be answered
@@ -204,29 +189,7 @@ export default function Game() {
         return () => {
             timeout && clearTimeout(timeout);
         }
-    }, [isOver, dispatch, settings.nextQuestionTime]);
-
-    useEffect(() => {
-        const unblock = history.block((tx) => {
-            if (tx.action === "POP" && tx.location.pathname === "/lobby") {
-                return false;
-            }
-
-            if (tx.action === "PUSH" && tx.location.pathname === "/") {
-                //// Prevent console error when refresh page.
-                unblock();
-                return true;
-            }
-
-            unblock();
-            tx.retry();
-            return true;
-        });
-
-        return () => {
-            unblock();
-        };
-    }, []);
+    }, [isOver, settings.nextQuestionTime]);
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";
@@ -274,7 +237,7 @@ export default function Game() {
                             {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
                                 isActive={isTimerActive}
                                 timeIncrement={-1}
-                                onStartDateSet={onTimerStartDateSet}
+                                onStartDateSet={setTimerStartDate}
                                 isIncrement={false}
                                 onTimerCompleted={onTimerCompleted}
                                 timeFormat={"seconds"}
