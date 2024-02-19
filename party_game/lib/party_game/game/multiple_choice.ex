@@ -8,7 +8,7 @@ defmodule PartyGame.Game.MultipleChoice do
   use Ecto.Schema
 
   @primary_key false
-  schema "multiplechoice" do
+  embedded_schema do
     embeds_many(:rounds, Round, on_replace: :delete)
     embeds_many(:players, Player, on_replace: :delete)
     embeds_one(:settings, MultipleChoiceSettings, on_replace: :delete)

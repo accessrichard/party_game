@@ -3,7 +3,7 @@ defmodule PartyGame.Game.MultipleChoiceSettings do
   use Ecto.Schema
   @primary_key false
   @derive {Jason.Encoder, only: [:question_time, :next_question_time, :wrong_answer_timeout, :rounds, :prompt_game_start]}
-  schema "multiplechoicesettings" do
+  embedded_schema do
     field(:question_time, :integer, default: 10)
     field(:next_question_time, :integer, default: 1)
     field(:wrong_answer_timeout, :integer, default: 1)
