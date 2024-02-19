@@ -16,7 +16,7 @@ defmodule PartyGameWeb.GameController do
 
     with %Game{} = game <- GameRoom.add_player(Game.new(), player_name) do
       game = GameRoom.gen_room_name(game)
-      Server.start(game)
+      Server.start(%{game: game})
 
       conn
       |> put_status(:created)
@@ -53,7 +53,7 @@ defmodule PartyGameWeb.GameController do
          game = GenServer.call(pid, :game),
          %Game{} = game <- GameRoom.add_player(game, player) do
 
-      Server.update_game(room_name, game)
+      Server.update_game(room_name, %{game: game})
 
       conn
       |> put_status(:created)

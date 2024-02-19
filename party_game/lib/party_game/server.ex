@@ -9,7 +9,7 @@ defmodule PartyGame.Server do
 
   @timeout 900_000
 
-  def start(%Game{} = game) do
+  def start(%{game: game}) do
     opts = [
       game: game,
       name: {:via, Registry, {@registry, game.room_name}}
@@ -48,11 +48,11 @@ defmodule PartyGame.Server do
     GenServer.call(via_tuple(room_name), :game)
   end
 
-  def update_game(%Game{} = game) do
+  def update_game(%{game: game}) do
     GenServer.call(via_tuple(game.room_name), {:update, game})
   end
 
-  def update_game(room_name, %Game{} = game) do
+  def update_game(room_name, %{game: game}) do
     GenServer.call(via_tuple(room_name), {:update, game})
   end
 
@@ -92,7 +92,7 @@ defmodule PartyGame.Server do
 
   # Server (callbacks)
   @impl true
-  def handle_call({:update, %Game{} = game}, _from, _game) do
+  def handle_call({:update, game}, _from, _game) do
     {:reply, game, game, @timeout}
   end
 

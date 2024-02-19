@@ -2,10 +2,10 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   require Logger
   use PartyGameWeb, :channel
 
-  alias PartyGameWeb.Presence
+  # alias PartyGameWeb.Presence
   alias PartyGame.Server
-  alias PartyGame.ChannelWatcher
-  alias PartyGame.Game.Player
+  # alias PartyGame.ChannelWatcher
+  # alias PartyGame.Game.Player
   alias PartyGame.Games.CanvasDraw.CanvasGame
 
   @channel_name "canvas:J"

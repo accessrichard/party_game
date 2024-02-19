@@ -60,7 +60,8 @@ defmodule PartyGameWeb.GameChannel do
     game =
       Server.get_game(game_code(socket.topic))
       |> GameRoom.start_round()
-      |> Server.update_game()
+
+    Server.update_game(%{game: game})
 
     reply_with_questions(socket, %{is_new?: false, game: game})
   end
@@ -101,14 +102,13 @@ defmodule PartyGameWeb.GameChannel do
       end
 
     if game.settings.prompt_game_start do
-      Server.update_game(game)
+      Server.update_game(%{game: game})
 
       broadcast(socket, "handle_new_game_created", %{"settings" => game.settings})
       {:noreply, socket}
     else
-      game
-      |> GameRoom.start_round()
-      |> Server.update_game()
+      game = GameRoom.start_round()
+      Server.update_game(%{game: game})
 
       reply_with_questions(socket, %{is_new?: true, game: game})
     end
@@ -120,7 +120,8 @@ defmodule PartyGameWeb.GameChannel do
       Server.get_game(game_code(socket.topic))
       |> GameRoom.next_question()
       |> GameRoom.start_round()
-      |> Server.update_game()
+
+    Server.update_game(%{game: game})
 
     question = next_question(game)
 
@@ -161,7 +162,7 @@ defmodule PartyGameWeb.GameChannel do
           }
         )
 
-        Server.update_game(game)
+        Server.update_game(%{game: game})
         {:noreply, socket}
 
       {:noreply, _} ->
@@ -199,9 +200,10 @@ defmodule PartyGameWeb.GameChannel do
   defp remove_player({:error, _}, _), do: :ok
 
   defp remove_player({:ok, _}, socket) do
-    Server.get_game(game_code(socket.topic))
+    game =Server.get_game(game_code(socket.topic))
     |> GameRoom.remove_player(socket.assigns.name)
-    |> Server.update_game()
+
+    Server.update_game(%{game: game})
 
     :ok
   end
@@ -250,7 +252,7 @@ defmodule PartyGameWeb.GameChannel do
         game
       end
 
-    Server.update_game(game)
+    Server.update_game(%{game: game})
   end
 
   defp elect_new_game_owner(players, topic, game) do

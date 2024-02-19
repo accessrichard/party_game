@@ -12,10 +12,10 @@ defmodule PartyGame.ServerTest do
         |> GameRoom.gen_room_name()
         |> GameRoom.add_player("richard")
 
-      Server.start(game)
+      Server.start(%{game: game})
       game = GameRoom.add_player(game, "Rick")
 
-      Server.update_game(game.room_name, game)
+      Server.update_game(game.room_name, %{game: game})
       game2 = Server.get_game(game.room_name)
 
       assert game2.room_name == game.room_name && Enum.count(game.players) == 2
