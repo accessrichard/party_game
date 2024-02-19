@@ -1,4 +1,4 @@
-defmodule PartyGameWeb.GameChannel do
+defmodule PartyGameWeb.MultipleChoiceChannel do
   require Logger
 
   use PartyGameWeb, :channel
@@ -9,7 +9,7 @@ defmodule PartyGameWeb.GameChannel do
   alias PartyGame.GameRoom
   alias PartyGame.Game.Player
   alias PartyGame.Games.GameList
-  alias PartyGame.Game.Game
+  alias PartyGame.Game.MultipleChoice
 
   @channel_name "game:"
 
@@ -76,7 +76,7 @@ defmodule PartyGameWeb.GameChannel do
 
     game =
       if game_location == "client" do
-        Game.create_game(server_game, client_form)
+        MultipleChoice.create_game(server_game, client_form)
       else
         server_game
       end
@@ -107,7 +107,7 @@ defmodule PartyGameWeb.GameChannel do
       broadcast(socket, "handle_new_game_created", %{"settings" => game.settings})
       {:noreply, socket}
     else
-      game = GameRoom.start_round()
+      game = GameRoom.start_round(game)
       Server.update_game(%{game: game})
 
       reply_with_questions(socket, %{is_new?: true, game: game})
@@ -262,11 +262,11 @@ defmodule PartyGameWeb.GameChannel do
     game
   end
 
-  defp next_question(%PartyGame.Game.Game{} = game) when game.questions == [] do
+  defp next_question(%MultipleChoice{} = game) when game.questions == [] do
     %{question: "", answers: [], id: Ecto.UUID.autogenerate()}
   end
 
-  defp next_question(%PartyGame.Game.Game{} = game) do
+  defp next_question(%MultipleChoice{} = game) do
     [question | _] = game.questions
     question
   end

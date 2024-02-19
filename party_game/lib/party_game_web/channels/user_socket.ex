@@ -2,7 +2,7 @@ defmodule PartyGameWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "game:*", PartyGameWeb.GameChannel
+  channel "game:*", PartyGameWeb.MultipleChoiceChannel
   channel "chat:*", PartyGameWeb.ChatChannel
   channel "canvas:*", PartyGameWeb.CanvasDrawChannel
 

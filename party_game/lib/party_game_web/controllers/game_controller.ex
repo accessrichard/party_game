@@ -4,7 +4,7 @@ defmodule PartyGameWeb.GameController do
   use PartyGameWeb, :controller
 
   alias PartyGame.GameRoom
-  alias PartyGame.Game.Game
+  alias PartyGame.Game.MultipleChoice
   alias PartyGame.Server
   alias PartyGame.Games.GameList
 
@@ -14,7 +14,7 @@ defmodule PartyGameWeb.GameController do
 
     Logger.info  "Create game for player: #{player_name}"
 
-    with %Game{} = game <- GameRoom.add_player(Game.new(), player_name) do
+    with %MultipleChoice{} = game <- GameRoom.add_player(MultipleChoice.new(), player_name) do
       game = GameRoom.gen_room_name(game)
       Server.start(%{game: game})
 
@@ -30,7 +30,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def validate(conn, game_params) do
-    changeset = Game.create_game_changeset(%Game{}, game_params)
+    changeset = MultipleChoice.create_game_changeset(%MultipleChoice{}, game_params)
 
     case changeset.valid? do
       true ->
@@ -51,7 +51,7 @@ defmodule PartyGameWeb.GameController do
 
     with {:ok, pid} <- Server.lookup(room_name),
          game = GenServer.call(pid, :game),
-         %Game{} = game <- GameRoom.add_player(game, player) do
+         %MultipleChoice{} = game <- GameRoom.add_player(game, player) do
 
       Server.update_game(room_name, %{game: game})
 

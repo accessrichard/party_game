@@ -1,16 +1,15 @@
 defmodule PartyGame.GameRoom do
-  alias PartyGame.Game
-  alias PartyGame.Game.Settings
+  alias PartyGame.Game.MultipleChoiceSettings
   alias PartyGame.Game.Round
   alias PartyGame.Game.Player
   alias PartyGame.Server
-  alias PartyGame.Game.Game
+  alias PartyGame.Game.MultipleChoice
 
-  def gen_room_name(%Game{} = game) do
+  def gen_room_name(%MultipleChoice{} = game) do
     %{game | room_name: Server.room_name()}
   end
 
-  def add_player(%Game{} = game, %{} = player) do
+  def add_player(%MultipleChoice{} = game, %{} = player) do
     player_name = Map.get(player, "name")
 
     with {:ok, _} <- game_stopped(game),
@@ -26,7 +25,7 @@ defmodule PartyGame.GameRoom do
     end
   end
 
-  def add_player(%Game{} = game, player_name) do
+  def add_player(%MultipleChoice{} = game, player_name) do
     with {:ok, _} <- game_stopped(game),
          {:ok, _} <- required(player_name, "Player name"),
          {:ok, _} <- name_taken(game, player_name) do
@@ -40,53 +39,53 @@ defmodule PartyGame.GameRoom do
     end
   end
 
-  def add_player!(%Game{} = game, player_name) do
-    with %Game{} = game <- add_player(game, player_name) do
+  def add_player!(%MultipleChoice{} = game, player_name) do
+    with %MultipleChoice{} = game <- add_player(game, player_name) do
       game
     else
       error -> raise error
     end
   end
 
-  def update_settings(%Game{} = game, settings) do
-    %{game | settings: Settings.apply_settings(game.settings, settings)}
+  def update_settings(%MultipleChoice{} = game, settings) do
+    %{game | settings: MultipleChoiceSettings.apply_settings(game.settings, settings)}
   end
 
-  def name_taken(%Game{} = game, player_name) do
+  def name_taken(%MultipleChoice{} = game, player_name) do
     case player_exists?(game, player_name) do
       false -> {:ok, player_name}
       true -> {:error, %{player_name: "Name taken. Choose a different name."}}
     end
   end
 
-  def player_exists?(%Game{} = game, player_name) do
+  def player_exists?(%MultipleChoice{} = game, player_name) do
     case Enum.find(game.players, fn player -> player.name == player_name end) do
       nil -> false
       _ -> true
     end
   end
 
-  def add_questions(%Game{} = game, questions, name \\ "Game") do
+  def add_questions(%MultipleChoice{} = game, questions, name \\ "Game") do
     %{game | questions: questions, name: name}
   end
 
-  def remove_player(%Game{} = game, player_name) do
+  def remove_player(%MultipleChoice{} = game, player_name) do
     %{game | players: Enum.filter(game.players, &(&1.name !== player_name))}
   end
 
-  def start_game(%Game{} = game) do
+  def start_game(%MultipleChoice{} = game) do
     %{game | started: true, rounds: []}
   end
 
-  def stop_game(%Game{} = game) do
+  def stop_game(%MultipleChoice{} = game) do
     %{game | started: false}
   end
 
-  def end_game(%Game{} = game) do
+  def end_game(%MultipleChoice{} = game) do
     %{game | is_over: true, started: false, round_started: false}
   end
 
-  def score(%Game{} = game) do
+  def score(%MultipleChoice{} = game) do
     scores =
       Enum.reduce(game.rounds, %{}, fn round, acc ->
         Map.put(acc, round.winner, Map.get(acc, round.winner, 0) + 1)
@@ -95,7 +94,7 @@ defmodule PartyGame.GameRoom do
     Enum.sort_by(scores, &elem(&1, 1), :desc)
   end
 
-  def start_round(%Game{} = game) do
+  def start_round(%MultipleChoice{} = game) do
     case game.questions == [] do
       true ->
         end_game(game)
@@ -105,7 +104,7 @@ defmodule PartyGame.GameRoom do
     end
   end
 
-  def update_player(%Game{} = game, %Player{} = player) do
+  def update_player(%MultipleChoice{} = game, %Player{} = player) do
     %{
       game
       | players:
@@ -115,15 +114,15 @@ defmodule PartyGame.GameRoom do
     }
   end
 
-  def update_room_owner(%Game{} = game, owner) do
+  def update_room_owner(%MultipleChoice{} = game, owner) do
     %{game | room_owner: owner}
   end
 
-  def get_player(%Game{} = game, player) do
+  def get_player(%MultipleChoice{} = game, player) do
     Enum.find(game.players, &(&1.name == player.name))
   end
 
-  def win_round?(%Game{} = game, answer) do
+  def win_round?(%MultipleChoice{} = game, answer) do
     [question | _] = game.questions
     question.correct == answer and game.round_started
   end
@@ -134,11 +133,11 @@ defmodule PartyGame.GameRoom do
   the game already advanced rounds, tracking questions
   via guid.
   """
-  def buzz(%Game{} = game, _, _, _) when game.questions == [] do
+  def buzz(%MultipleChoice{} = game, _, _, _) when game.questions == [] do
     {:noreply, game}
   end
 
-  def buzz(%Game{} = game, player_name, answer, guid)  do
+  def buzz(%MultipleChoice{} = game, player_name, answer, guid)  do
     [question | _] = game.questions
     if guid == question.id do
       buzz(game, player_name, answer)
@@ -147,7 +146,7 @@ defmodule PartyGame.GameRoom do
     end
   end
 
-  def buzz(%Game{} = game, player_name, answer) do
+  def buzz(%MultipleChoice{} = game, player_name, answer) do
     cond do
       win_round?(game, answer) ->
         [question | questions] = game.questions
@@ -168,7 +167,7 @@ defmodule PartyGame.GameRoom do
     end
   end
 
-  def next_question(%Game{} = game) do
+  def next_question(%MultipleChoice{} = game) do
     case game.questions == [] do
       true ->
         end_game(game)
@@ -222,7 +221,7 @@ defmodule PartyGame.GameRoom do
     end)
   end
 
-  defp take_next_question(%Game{} = game) do
+  defp take_next_question(%MultipleChoice{} = game) do
     [question | questions] = game.questions
     round = %Round{question: question, winner: "None", answer: question.correct}
 

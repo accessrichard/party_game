@@ -1,6 +1,6 @@
 defmodule PartyGame.MultipleChoiceGameTest do
   alias PartyGame.GameRoom
-  alias PartyGame.Game.Game
+  alias PartyGame.Game.MultipleChoice
   alias PartyGame.Game.Player
   alias PartyGame.Games.MultipleChoice.States
 
@@ -8,23 +8,23 @@ defmodule PartyGame.MultipleChoiceGameTest do
 
   describe "game" do
     test "start_game/1 starts a game" do
-      game = GameRoom.start_game(Game.new())
-      assert %Game{started: true} = game
+      game = GameRoom.start_game(MultipleChoice.new())
+      assert %MultipleChoice{started: true} = game
     end
 
     test "stop_game/1 stops a game" do
-      game = GameRoom.stop_game(Game.new())
-      assert %Game{started: false} = game
+      game = GameRoom.stop_game(MultipleChoice.new())
+      assert %MultipleChoice{started: false} = game
     end
 
     test "add_player/2 adds a player" do
-      game = GameRoom.add_player(Game.new(), "richard")
+      game = GameRoom.add_player(MultipleChoice.new(), "richard")
       [head | _] = game.players
       assert head.name == "richard"
     end
 
     test "update_player/2 update a player" do
-      game = GameRoom.add_player(Game.new(), "richard")
+      game = GameRoom.add_player(MultipleChoice.new(), "richard")
       |> GameRoom.add_player("Sue")
       |> GameRoom.update_player(%Player{name: "Sue", wins: 1})
 
@@ -34,27 +34,27 @@ defmodule PartyGame.MultipleChoiceGameTest do
     end
 
     test "add_player/2 prevents duplicate players" do
-      game = GameRoom.add_player(Game.new(), "richard")
+      game = GameRoom.add_player(MultipleChoice.new(), "richard")
       assert {:error, _} = GameRoom.add_player(game, "richard")
     end
 
     test "add_settings/2 prevents duplicate players" do
-      game = GameRoom.update_settings(PartyGame.Game.Game.new, %{question_time: 10})
+      game = GameRoom.update_settings(PartyGame.Game.MultipleChoice.new, %{question_time: 10})
       assert game.settings !== nil
     end
 
     test "add_player/2 prevents blank players" do
-      assert {:error, _} = GameRoom.add_player(Game.new(), "")
+      assert {:error, _} = GameRoom.add_player(MultipleChoice.new(), "")
     end
 
     test "add_player/2 prevents adding players during active game" do
-      game = GameRoom.start_game(Game.new(%{rounds: 3}))
+      game = GameRoom.start_game(MultipleChoice.new(%{rounds: 3}))
       assert {:error, _} = GameRoom.add_player(game, "richard")
     end
 
     test "play game" do
       game =
-        Game.new()
+        MultipleChoice.new()
         |> GameRoom.gen_room_name()
         |> GameRoom.add_questions(States.new(%{rounds: 3}), "States")
         |> GameRoom.add_player("Richard")

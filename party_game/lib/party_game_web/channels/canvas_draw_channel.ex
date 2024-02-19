@@ -81,10 +81,4 @@ defmodule PartyGameWeb.CanvasDrawChannel do
     {:noreply, socket}
   end
 
-  defp game_code(topic) do
-    [_ | code] = String.split(topic, ":")
-    [code] = code
-    code
-  end
-
 end

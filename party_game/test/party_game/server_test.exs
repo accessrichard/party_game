@@ -1,6 +1,6 @@
 defmodule PartyGame.ServerTest do
   alias PartyGame.Server
-  alias PartyGame.Game.Game
+  alias PartyGame.Game.MultipleChoice
   alias PartyGame.GameRoom
 
   use ExUnit.Case
@@ -8,7 +8,7 @@ defmodule PartyGame.ServerTest do
   describe "Game Server Tests" do
     test "start/1 starts a game" do
       game =
-        Game.new()
+        MultipleChoice.new()
         |> GameRoom.gen_room_name()
         |> GameRoom.add_player("richard")
 

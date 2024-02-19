@@ -3,7 +3,6 @@ defmodule PartyGameWeb.Router do
 
   alias PartyGameWeb.{
     GameController,
-    CreateController,
     JavaScriptSpaController,
     HomeController,
     CanvasController
@@ -25,7 +24,7 @@ defmodule PartyGameWeb.Router do
     pipe_through :api
 
     post "/game", GameController, :create
-    post "/create/validate", CreateController, :validate
+    post "/game/validate", GameController, :validate
     post "/game/join", GameController, :join
     post "/game/stop", GameController, :stop
     get "/game/list", GameController, :list

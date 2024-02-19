@@ -1,17 +1,17 @@
-defmodule PartyGame.Game.Game do
+defmodule PartyGame.Game.MultipleChoice do
   alias PartyGame.Game.Round
   alias PartyGame.Game.Question
   alias PartyGame.Game.Player
-  alias PartyGame.Game.Settings
+  alias PartyGame.Game.MultipleChoiceSettings
   alias PartyGame.EctoHelpers
 
   use Ecto.Schema
 
   @primary_key false
-  schema "games" do
+  schema "multiplechoice" do
     embeds_many(:rounds, Round, on_replace: :delete)
     embeds_many(:players, Player, on_replace: :delete)
-    embeds_one(:settings, Settings, on_replace: :delete)
+    embeds_one(:settings, MultipleChoiceSettings, on_replace: :delete)
     field(:started, :boolean, default: false)
     field(:round_started, :boolean, default: false)
     field(:room_name, :string, default: nil)
@@ -30,7 +30,7 @@ defmodule PartyGame.Game.Game do
     rounds =
       EctoHelpers.create_embedded_changesets(params, "rounds", %Round{}, &Round.changeset/2)
 
-    settings = Settings.apply_settings(Map.get(params, "settings", Settings.new()))
+    settings = MultipleChoiceSettings.apply_settings(Map.get(params, "settings", MultipleChoiceSettings.new()))
 
     players =
       EctoHelpers.create_embedded_changesets(params, "players", %Player{}, &Player.changeset/2)
@@ -64,7 +64,7 @@ defmodule PartyGame.Game.Game do
     game = __struct__(fields)
 
     if game.settings === nil do
-      %{game | settings: Settings.new()}
+      %{game | settings: MultipleChoiceSettings.new()}
     else
       game
     end
