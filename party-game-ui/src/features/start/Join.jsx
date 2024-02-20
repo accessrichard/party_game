@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { clearJoinError, joinGame } from './gameSlice';
+import { clearJoinError, joinGame } from '../game/gameSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';

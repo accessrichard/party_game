@@ -17,8 +17,8 @@ import {
     listGames,
     mergeGameList,
     startRound
-} from './gameSlice';
-import { syncPresenceDiff, syncPresenceState } from './../presence/presenceSlice';
+} from '../game/gameSlice';
+import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Chat from '../chat/Chat';
@@ -26,9 +26,9 @@ import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
 import Logo from '../common/Logo';
 import NewGamePrompt from '../common/NewGamePrompt';
-import Timer from './Timer';
+import Timer from '../common/Timer';
 import { push } from "redux-first-history";
-import { toServerSettings } from './settingsApi';
+import { toServerSettings } from '../game/settingsApi';
 
 const events = (topic) => [
     {

@@ -16,8 +16,6 @@ defmodule PartyGameWeb.GameController do
 
     with %GameRoom{} = game_room <- Lobby.add_player(GameRoom.new(), player_name) do
       game_room = Lobby.gen_room_name(game_room)
-      #TODO, dont create a multiple choice game yet
-      game_room = Lobby.set_game(game_room, MultipleChoice.new)
       Server.start(game_room)
 
       conn
@@ -32,8 +30,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def validate(conn, game_params) do
-    #TODO, hard coded to multiple choice
-    changeset = MultipleChoice.create_game_changeset(%MultipleChoice{}, game_params)
+    changeset = GameRoom.create_game_changeset(%GameRoom{}, game_params)
 
     case changeset.valid? do
       true ->

@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import useBackButtonBlock from '../useBackButtonBlock'
 import Flash from '../common/Flash';
 import { Navigate } from 'react-router-dom';
-import Timer from './Timer';
+import Timer from '../common/Timer';
 import { push } from "redux-first-history";
 import usePrevious from '../usePrevious';
-import ColorButton from '../canvas/ColorButton';
-import { word, commands, reset } from '../canvas/canvasSlice'
+import ColorButton from './ColorButton';
+import { word, commands, reset } from './canvasSlice'
 import {
     usePhoenixChannel,
     usePhoenixEvents,
@@ -21,7 +21,7 @@ import {
     handleChangeOwner,
     handleGenServerTimeout,
     startRound
-} from './gameSlice';
+} from '../game/gameSlice';
 
 const sendEvent = (topic, channelData, action) => (
     {
@@ -67,8 +67,6 @@ function canvasHeight() {
     return window.innerHeight - (window.innerHeight * .45);
 }
 
-//// Keep out of react and redux state for now...
-//// prevent too many rerenders...
 const store = {
     drawing: [],
     displays: [],

@@ -1,7 +1,12 @@
 defmodule PartyGame.MultipleChoiceGame do
+  alias PartyGame.Game.MultipleChoice
   alias PartyGame.Game.MultipleChoiceSettings
   alias PartyGame.Game.Round
   alias PartyGame.Game.GameRoom
+
+  def new(%GameRoom{} = game_room) do
+    %{game_room | game: MultipleChoice.new()}
+  end
 
   def add_questions(%GameRoom{} = game_room, questions, name \\ "Game") do
     %{game_room | game: %{game_room.game | questions: questions, name: name}}
@@ -116,7 +121,7 @@ defmodule PartyGame.MultipleChoiceGame do
         questions = game_metadata.module.new(game, Map.get(game_metadata, "options", %{}))
 
         if location == "client" ||
-             game_metadata.module === "PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt" do
+             game_metadata.module === PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do
           shuffle_questions(questions)
           |> Enum.take(num_rounds)
           |> shuffle_question_answers()

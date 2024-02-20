@@ -4,7 +4,7 @@ import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
 import { Navigate } from 'react-router-dom';
-import Timer from './Timer';
+import Timer from '../common/Timer';
 import { push } from "redux-first-history";
 import usePrevious from '../usePrevious';
 import { usePhoenixEvents } from '../phoenix/usePhoenix';

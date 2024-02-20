@@ -13,14 +13,14 @@ import Game from './features/game/Game';
 import GoogleAnalytics from './features/common/GoogleAnalytics';
 import Import from './features/creative/Import';
 import InlineFacesSprite from './features/common/InlineFacesSprite';
-import Join from './features/game/Join';
-import Landing from './features/Landing';
-import Lobby from './features/game/Lobby';
-import Canvas from './features/game/Canvas';
+import Join from './features/start/Join';
+import Landing from './features/start/Landing';
+import Lobby from './features/start/Lobby';
+import Canvas from './features/canvas/Canvas';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
 import Score from './features/game/Score';
 import Settings from './features/game/Settings';
-import Start from './features/game/Start';
+import Start from './features/start/Start';
 import { history } from './features/store';
 
 function App() {

@@ -97,6 +97,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     game_room =
       game_room
       |> Lobby.start_game()
+      |> MultipleChoiceGame.new()
       |> MultipleChoiceGame.add_questions(questions, game_name)
 
     game_room =

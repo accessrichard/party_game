@@ -1,11 +1,11 @@
-import '../App.css';
+import '../../App.css';
 
 import React, { useEffect } from 'react';
 
-import Logo from './common/Logo';
+import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { listGames } from './game/gameSlice';
+import { listGames } from '../game/gameSlice';
 
 function sliceArray(array, numCols) {
     if (array === null) {

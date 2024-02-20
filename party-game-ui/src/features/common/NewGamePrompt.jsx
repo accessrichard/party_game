@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Timer from '../game/Timer';
+import Timer from '../common/Timer';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 
 export default function NewGamePrompt(props) {

@@ -16,8 +16,7 @@ defmodule PartyGame.Lobby do
   end
 
   def start_game(%GameRoom{} = game_room) do
-    game = %{game_room.game | rounds: []}
-    %{game_room | started: true, game: game}
+    %{game_room | started: true}
   end
 
   def stop_game(%GameRoom{} = game_room) do

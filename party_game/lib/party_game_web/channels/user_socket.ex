@@ -5,6 +5,8 @@ defmodule PartyGameWeb.UserSocket do
   channel "game:*", PartyGameWeb.MultipleChoiceChannel
   channel "chat:*", PartyGameWeb.ChatChannel
   channel "canvas:*", PartyGameWeb.CanvasDrawChannel
+  channel "lobby:*", PartyGameWeb.LobbyChannel
+
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

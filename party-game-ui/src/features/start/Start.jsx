@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';
 import Logo from '../common/Logo';
-import { startNewGame } from './gameSlice';
+import { startNewGame } from '../game/gameSlice';
 
 function Create() {
     const dispatch = useDispatch();
