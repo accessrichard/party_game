@@ -28,7 +28,7 @@ const defaultState = {
 }
 
 export default function Create(props) {
-
+    const { game } = props;
     const dispatch = useDispatch();
     const formRef = useRef(null);
 
@@ -39,12 +39,12 @@ export default function Create(props) {
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
-        if (props.game) {
-            setForm(addDefaultFormErrors(props.game));
+        if (game) {
+            setForm(addDefaultFormErrors(game));
         } else {
             setForm(defaultState);
         }
-    }, [props.game]);
+    }, [game]);
 
     function handleChanges(e, index) {
         let newForm = { ...form, ...{ questions: [...form.questions] } };
@@ -73,8 +73,7 @@ export default function Create(props) {
 
     function onEditGameClick(e) {
         e.preventDefault();
-        const game = getSessionGame(editGameValue);
-        setForm(gameToForm(game));
+        setForm(gameToForm(getSessionGame(editGameValue)));
     }
 
     useEffect(() => {
