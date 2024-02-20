@@ -14,6 +14,7 @@ export const CHANNEL_JOIN_TIMEOUT = 'CHANNEL_JOIN_TIMEOUT';
 export const CHANNEL_TIMEOUT = "CHANNEL_TIMEOUT";
 export const CHANNEL_ERROR = 'CHANNEL_ERROR';
 export const CHANNEL_LEAVE = 'CHANNEL_LEAVE';
+export const CHANNEL_LEAVING = 'CHANNEL_LEAVING';
 export const CHANNEL_PUSH = 'CHANNEL_PUSH';
 export const CHANNEL_RECEIVE = 'CHANNEL_RECEIVE';
 export const CHANNEL_ON = 'CHANNEL_ON';
@@ -35,6 +36,7 @@ export const channelJoinError = payload => ({ type: CHANNEL_JOIN_ERROR, payload 
 export const channelJoinTimeout = payload => ({ type: CHANNEL_JOIN_TIMEOUT, payload });
 export const channelError = payload => ({ type: CHANNEL_ERROR, payload });
 export const channelLeave = payload => ({ type: CHANNEL_LEAVE, payload });
+export const channelLeaving = payload => ({ type: CHANNEL_LEAVING, payload });
 export const channelPush = payload => ({ type: CHANNEL_PUSH, payload });
 export const channelOn = payload => ({ type: CHANNEL_ON, payload });
 export const channelOff = payload => ({ type: CHANNEL_OFF, payload });
@@ -83,7 +85,7 @@ export function reducer(state = initialState, action = {}) {
             return {
                 ...state, initialState
             }
-        case CHANNEL_LEAVE:
+        case CHANNEL_LEAVING:
             return {
                 ...state,
                 channels: state.channels.filter(x => x.topic !== action.payload.topic)
@@ -175,7 +177,7 @@ const phoenixMiddleware = () => {
         }
 
         if (hasChannel(action.payload.topic)) {
-            console.log("Channel is already joined.");
+            console.log(`Channel is already joined: ${action.payload.topic}`);
             return;
             //// TODO: Since phoenix keeps retrying on error, or on socket disconnet
             //// have to figure out a safe way to manage erros on reconnect
@@ -205,14 +207,19 @@ const phoenixMiddleware = () => {
     }
 
     function leave(store, action) {
+        store.dispatch(channelLeaving(action.payload));
+
         if (!hasChannel(action.payload.topic)) {
             return;
         }
 
         const channel = getChannel(action.payload.topic);
+
         if (channel) {
             delete channels[action.payload.topic];
+
             channel.leave();
+            store.dispatch(channelLeave(formatPayload(channel)));
         }
     }
 
@@ -238,7 +245,7 @@ const phoenixMiddleware = () => {
         }
 
         if (!hasChannel(action.payload.topic)) {
-            throw new Error("Invalid ChannelOn event. action.payload.topic is required or topic not found!");
+            throw new Error(`Invalid ChannelOn:: ${action.payload.topic}. action.payload.topic is required, channel is not joined, or topic not found!`);
         }
 
         const channel = getChannel(action.payload.topic);

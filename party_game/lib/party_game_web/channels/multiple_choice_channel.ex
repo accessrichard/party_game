@@ -109,13 +109,11 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     if game_room.game.settings.prompt_game_start do
       Server.update_game(game_room)
-
       broadcast(socket, "handle_new_game_created", %{"settings" => game_room.game.settings})
       {:noreply, socket}
     else
       game_room = MultipleChoiceGame.start_round(game_room)
       Server.update_game(game_room)
-
       reply_with_questions(socket, %{is_new?: true, game_room: game_room})
     end
   end
@@ -237,7 +235,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   end
 
   def leave(topic, name) do
-    players = Map.keys(Presence.list(topic))
+    players = Map.keys(Presence.list("lobby:" <> game_code(topic)))
 
     if players == [] do
       Server.stop(game_code(topic))

@@ -13,7 +13,6 @@ export const canvasSlice = createSlice({
             state.word = action.payload.word;
         },
         commands(state, action) {
-            console.log(action.payload)
             state.commands = action.payload.commands;
         },
         reset(state, action) {

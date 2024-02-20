@@ -3,6 +3,7 @@ import {
     channelJoin,
     channelOn,
     channelOff,
+    channelLeave,
     socketConnect,
     hasConnectedChannel,
     hasConnectedSocket,
@@ -30,7 +31,8 @@ export function usePhoenixSocket() {
 }
 
 
-export function usePhoenixChannel(topic, channelJoinData) {
+export function usePhoenixChannel(topic, channelJoinData, opts = {}) {
+    const { persisted } = opts;
     const dispatch = useDispatch();
     const channels = useSelector(state => state.phoenix.channels);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
@@ -58,7 +60,21 @@ export function usePhoenixChannel(topic, channelJoinData) {
             topic,
             data: channelJoinData
         }));
-    }, [dispatch, topic, channelJoinData, socketStatus, channels]);
+    }, [topic, channelJoinData, socketStatus, channels]);
+
+    useEffect(() => {
+       
+        return () => {
+            if (persisted) {
+                return;
+            }
+
+            dispatch(channelLeave({
+                topic
+            }));
+
+        }
+    }, []);
 }
 
 

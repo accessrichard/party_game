@@ -7,21 +7,22 @@ import { Navigate } from 'react-router-dom';
 import Timer from '../common/Timer';
 import { push } from "redux-first-history";
 import usePrevious from '../usePrevious';
-import { usePhoenixEvents } from '../phoenix/usePhoenix';
+import { usePhoenixEvents, usePhoenixChannel } from '../phoenix/usePhoenix';
 import useBackButtonBlock from '../useBackButtonBlock';
-
-import {
-    channelPush, channelOn, channelOff
-} from '../phoenix/phoenixMiddleware';
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import { toServerSettings } from '../game/settingsApi';
+import NewGamePrompt from '../common/NewGamePrompt';
 
 import {
     clearWrongAnswer,
     setFlash,
     unansweredTimeout, handleChangeOwner,
     handleCorrectAnswer,
+    handleNewGameCreated,
     handleGenServerTimeout,
     startRound,
     handleWrongAnswer,
+    mergeGameList
 } from './gameSlice';
 
 const sendEvent = (topic, channelData, action) => (
@@ -56,7 +57,12 @@ const events = (topic) => [
         event: 'handle_room_owner_change',
         dispatcher: handleChangeOwner(),
         topic,
-    }
+    },
+    {
+        event: 'handle_new_game_created',
+        dispatcher: handleNewGameCreated(),
+        topic
+    },
 ]
 
 export default function Game() {
@@ -66,6 +72,7 @@ export default function Game() {
         isRoundStarted,
         playerName,
         gameChannel,
+        name,
         gameCode,
         isGameOwner,
         question,
@@ -85,14 +92,25 @@ export default function Game() {
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
     const [timerStartDate, setTimerStartDate] = useState(null);
+    const [isDisabled, setIsDisabled] = useState(false);
+
 
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
     const prevRound = usePrevious(round);
 
+    usePhoenixChannel(`game:${gameCode}`, { name: playerName });
     usePhoenixEvents(`game:${gameCode}`, events);
     useBackButtonBlock();
 
+    const creativeGames = useSelector(state => state.creative.games);
+    const serverGames = useSelector(state => state.game.api.list.data);
+    const serverGamesLoading = useSelector(state => state.game.api.list.loading);
+
+    useEffect(() => {
+        if (isGameOwner)
+        handleCreateGame()
+    }, [isGameOwner]);
 
     /**
      * Sets a delay timeout on wrong answers as configured in the settings.
@@ -128,6 +146,7 @@ export default function Game() {
         if (isRoundStarted && round === prevRound) {
             setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
+            setIsDisabled(false);
         } else if (round !== prevRound && isRoundStarted) {
             /// Force reset of timer when round changes
             /// since timers can go out of sync across players.
@@ -144,13 +163,15 @@ export default function Game() {
     }
 
     function onTimerCompleted() {
+        setIsDisabled(true);
+        
         if (!isGameOwner) {
             return;
         }
 
         setIsTimerActive(false);
         if (!isQuestionAnswered && isRoundStarted) {
-            dispatch(unansweredTimeout())
+            dispatch(unansweredTimeout());
             return;
         }
 
@@ -161,6 +182,10 @@ export default function Game() {
         setIsQuestionAnswered(true);
         const data = { answer, name: playerName, id: id };
         dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
+    }
+
+    function onStartGame() {
+     //   dispatch(push(url || "/game"));
     }
 
     const startClickCallback = useCallback((action, payload = {}) => {
@@ -179,6 +204,10 @@ export default function Game() {
     }
 
     useEffect(() => {
+        setIsDisabled(isQuestionAnswered || !isRoundStarted || (correct !== "" || isWrong))
+    }, [isQuestionAnswered, isRoundStarted, correct, isWrong]);
+
+    useEffect(() => {
         let timeout;
         if (isOver) {
             timeout = setTimeout(() => {
@@ -190,6 +219,27 @@ export default function Game() {
             timeout && clearTimeout(timeout);
         }
     }, [isOver, settings.nextQuestionTime]);
+
+    function handleCreateGame() {
+
+        const list = mergeGameList(serverGames, creativeGames);
+        
+
+        let game = list.find(x => x.name === name);
+
+        if (game && game.location === 'client') {
+            const creativeGame = creativeGames.find(x => x.game.name === name);
+            game = { ...game, questions: creativeGame.game.questions }
+        }
+
+        const payload = { game: game, rounds: settings.rounds };
+        const data = { name: playerName, settings: toServerSettings(settings), ...payload };
+        dispatch(channelPush({
+            topic: `game:${gameCode}`,
+            event: "new_game",
+            data: data
+        }));
+    }
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";
@@ -245,7 +295,7 @@ export default function Game() {
                         </span>
                     </div>
                     <Answers onAnswerClick={onAnswerClick}
-                        isDisabled={isQuestionAnswered || !isRoundStarted || (correct !== "" || isWrong)}
+                        isDisabled={isDisabled}
                         answers={answers}
                         correct={correct}>
                     </Answers>
@@ -257,6 +307,7 @@ export default function Game() {
                 </div>
 
             </div>
+            <NewGamePrompt onStartGame={() => onStartGame()} />
         </>
     );
 }

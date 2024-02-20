@@ -8,6 +8,9 @@ defmodule PartyGameWeb.LobbyChannel do
   alias PartyGame.ChannelWatcher
   alias PartyGame.Game.Player
   alias PartyGame.Games.GameList
+  alias PartyGame.Game.GameRoom
+  alias PartyGame.MultipleChoiceGame
+
 
   @channel_name "lobby:"
 
@@ -63,6 +66,12 @@ defmodule PartyGameWeb.LobbyChannel do
     {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("new_game", _, socket) do
+      broadcast(socket, "route_to_game", %{"url" => "/game"})
+      {:noreply, socket}
   end
 
   @impl true

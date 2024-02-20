@@ -158,6 +158,16 @@ export const gameSlice = createSlice({
                 state.startCountdown = true;
             }
         },
+        onRouteToGame(state, action) {
+            resetGame(state);
+            if (state.settings.isNewGamePrompt) {
+                state.isNewGamePrompt = true
+            } else {
+                state.isGameStarted = true;                
+            }
+
+            state.url = action.payload.url;
+        },
         handleNewGameCreated(state, action) {
             resetGame(state);
 
@@ -289,6 +299,7 @@ export const {
     handleGenServerTimeout,
     handleWrongAnswer,
     handleNewGameCreated,
+    onRouteToGame,
     handleJoin,
     changeGame,
     updateGameList,

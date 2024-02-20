@@ -13,7 +13,7 @@ import {
     handleChangeOwner,
     handleGenServerTimeout,
     handleJoin,
-    handleNewGameCreated,
+    onRouteToGame,
     listGames,
     mergeGameList,
     startRound
@@ -57,8 +57,8 @@ const events = (topic) => [
         topic,
     },
     {
-        event: 'handle_new_game_created',
-        dispatcher: handleNewGameCreated(),
+        event: 'route_to_game',
+        dispatcher: onRouteToGame(),
         topic
     },
     {
@@ -88,8 +88,8 @@ export default function Lobby() {
     const serverGamesLoading = useSelector(state => state.game.api.list.loading);
 
     usePhoenixSocket();
-    usePhoenixChannel(`game:${gameCode}`, { name: playerName });
-    usePhoenixEvents(`game:${gameCode}`, events);
+    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, {persisted: true});
+    usePhoenixEvents(`lobby:${gameCode}`, events);
 
     /**
      * Redirect to home page if there is no game code at this point.
@@ -140,40 +140,32 @@ export default function Lobby() {
         }
     }, [gameList, name]);
 
+    useEffect(() => {
+        if (url && (isGameStarted || isNewGamePrompt)) {
+            dispatch(push(url))
+        }
+
+    }, [url, isGameStarted, isNewGamePrompt])
+
     /**
      * Create and kicks off a new game:
      *   a. Send the new_game event to the server.
-     *   b. Server replies with handle_new_game_created
+     *   b. Server replies with route_to_game
      *      which is dispatched to redux via channel events.
-     *   c. Once redux handles the new game created, the 
-     *      <NewGamePrompt> element is flagged to display
-     *      an overlay and once the overlay timer is done
-     *      will trigger the game to start.
+     *   c. Game route then creates game and starts it
      */
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
             e.preventDefault();
             return;
         }
-
-        const list = mergeGameList(serverGames, creativeGames);
-
-        let game = list.find(x => x.name === name);
-
-        if (game && game.location === 'client') {
-            const creativeGame = creativeGames.find(x => x.game.name === name);
-            game = { ...game, questions: creativeGame.game.questions }
-        }
-
-        const payload = { game: game, rounds: settings.rounds };
-        const data = { name: playerName, settings: toServerSettings(settings), ...payload };
         dispatch(channelPush({
-            topic: gameChannel,
+            topic: `lobby:${gameCode}`,
             event: "new_game",
-            data: data
+            data: {}
         }));
-
         e.preventDefault();
+        return;
     }
 
     function onGameChange(e) {
@@ -183,14 +175,6 @@ export default function Lobby() {
 
     function onGenServerTimeout() {
         dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
-    }
-
-    function onStartGame() {
-        dispatch(push(url || "/game"));
-    }
-
-    if (isGameStarted) {
-        return <Navigate to="/game" />
     }
 
     return (
@@ -257,7 +241,6 @@ export default function Lobby() {
                     </div>
                 </div>}
             <Chat />
-            <NewGamePrompt onStartGame={() => onStartGame()} />
         </>
     );
 }
