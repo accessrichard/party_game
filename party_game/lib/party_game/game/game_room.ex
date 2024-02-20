@@ -1,4 +1,4 @@
-defmodule PartyGame.Game.Game do
+defmodule PartyGame.Game.GameRoom do
   alias PartyGame.Game.Player
   alias PartyGame.EctoHelpers
 

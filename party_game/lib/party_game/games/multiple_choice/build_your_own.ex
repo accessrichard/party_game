@@ -1,6 +1,5 @@
 defmodule PartyGame.Games.MultipleChoice.BuildYourOwn do
-
-  def new(game, _) do
-      game.game.questions
+  def new(game_info, _) do
+    game_info.game_room.game.questions
   end
 end

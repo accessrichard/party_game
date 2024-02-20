@@ -1,13 +1,13 @@
 defmodule PartyGame.Channels.Authorized do
-  alias PartyGame.Game.MultipleChoice
-  alias PartyGame.GameRoom
+  alias PartyGame.Lobby
   alias PartyGame.Server
+  alias PartyGame.Game.GameRoom
 
-  def authorized?(%MultipleChoice{} = game, name), do: GameRoom.player_exists?(game, name)
+  def authorized?(%GameRoom{} = game, name), do: Lobby.player_exists?(game, name)
 
   def authorized?(%{"name" => name, "room_name" => room_name}) do
     game = Server.get_game(room_name)
-    GameRoom.player_exists?(game, name)
+    Lobby.player_exists?(game, name)
   end
 
   def authorized?(_), do: false

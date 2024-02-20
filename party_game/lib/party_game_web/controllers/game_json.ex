@@ -14,18 +14,18 @@ defmodule PartyGameWeb.GameJSON do
     %{isValid: isValid}
   end
 
-  def game(%{game: game}) do
+  def game(%{game_room: game_room}) do
     %{
       data: %{
-        name: game.name,
-        is_over: game.is_over,
-        players: game.players,
-        questions: game.questions,
-        room_name: game.room_name,
-        room_owner: game.room_owner,
-        round_started: game.round_started,
-        rounds: game.rounds,
-        started: game.started
+        name: game_room.game.name,
+        is_over: game_room.is_over,
+        players: game_room.players,
+        questions: game_room.game.questions,
+        room_name: game_room.room_name,
+        room_owner: game_room.room_owner,
+        round_started: game_room.game.round_started,
+        rounds: game_room.game.rounds,
+        started: game_room.started
       }
     }
   end

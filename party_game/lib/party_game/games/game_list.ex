@@ -132,6 +132,10 @@ defmodule PartyGame.Games.GameList do
       end)
   end
 
+  def non_black_cached_list() do
+    cached_game_list() |> non_blank_game_list()
+  end
+
   def cached_game_list() do
     {_, games} =
       Cachex.fetch(
@@ -139,7 +143,6 @@ defmodule PartyGame.Games.GameList do
         "game_list",
         fn _ ->
           list()
-          |> non_blank_game_list
           |> sort_game_list
         end,
         ttl: :timer.minutes(5)

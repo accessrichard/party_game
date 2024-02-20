@@ -1,12 +1,14 @@
 defmodule PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do
 
+  alias PartyGame.Game.MultipleChoice
+
   @games_path "./lib/party_game/games/multiple_choice/prebuilt"
 
   def new(game, _) do
     name = Map.get(game, :name) || Map.get(game, "name")
     location = Enum.find(prebuilt_games(), &(&1.name === name))
     json = File.read!(location.path)
-    new_game = PartyGame.Game.MultipleChoice.create_game(PartyGame.Game.MultipleChoice.new(), Jason.decode!(json))
+    new_game = MultipleChoice.create_game(MultipleChoice.new(), Jason.decode!(json))
     new_game.questions
   end
 

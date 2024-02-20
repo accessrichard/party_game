@@ -4,10 +4,11 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   use PartyGameWeb, :channel
 
   alias PartyGameWeb.Presence
-  alias PartyGame.Server
+  alias PartyGame.{Server, Lobby}
   alias PartyGame.ChannelWatcher
-  alias PartyGame.GameRoom
+  alias PartyGame.MultipleChoiceGame
   alias PartyGame.Game.Player
+  alias PartyGame.Game.GameRoom
   alias PartyGame.Games.GameList
   alias PartyGame.Game.MultipleChoice
 
@@ -57,13 +58,13 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   @impl true
   def handle_in("start_round", _, socket) do
-    game =
+    game_room =
       Server.get_game(game_code(socket.topic))
-      |> GameRoom.start_round()
+      |> MultipleChoiceGame.start_round()
 
-    Server.update_game(%{game: game})
+    Server.update_game(game_room)
 
-    reply_with_questions(socket, %{is_new?: false, game: game})
+    reply_with_questions(socket, %{is_new?: false, game_room: game_room})
   end
 
   @impl true
@@ -74,63 +75,67 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     rounds = Map.get(payload, "rounds", 10)
     server_game = Server.get_game(game_code(socket.topic))
 
-    game =
+    game_room =
       if game_location == "client" do
-        MultipleChoice.create_game(server_game, client_form)
+        multiple_choice = MultipleChoice.create_game(MultipleChoice.new, client_form)
+        GameRoom.create_game(server_game, %{game: multiple_choice})
       else
         server_game
       end
 
     questions =
-      GameRoom.generate_questions(%{
-        name: game_name,
-        rounds: rounds,
-        location: game_location,
-        game: game
-      }, GameList.cached_game_list)
+      MultipleChoiceGame.generate_questions(
+        %{
+          name: game_name,
+          rounds: rounds,
+          location: game_location,
+          game_room: game_room
+        },
+        GameList.cached_game_list()
+      )
 
-    game =
-      game
-      |> GameRoom.start_game()
-      |> GameRoom.add_questions(questions, game_name)
+    game_room =
+      game_room
+      |> Lobby.start_game()
+      |> MultipleChoiceGame.add_questions(questions, game_name)
 
-    game =
+    game_room =
       if Map.has_key?(payload, "settings") do
-        GameRoom.update_settings(game, Map.get(payload, "settings"))
+        MultipleChoiceGame.update_settings(game_room, Map.get(payload, "settings"))
       else
-        game
+        game_room
       end
 
-    if game.settings.prompt_game_start do
-      Server.update_game(%{game: game})
+    if game_room.game.settings.prompt_game_start do
+      Server.update_game(game_room)
 
-      broadcast(socket, "handle_new_game_created", %{"settings" => game.settings})
+      broadcast(socket, "handle_new_game_created", %{"settings" => game_room.game.settings})
       {:noreply, socket}
     else
-      game = GameRoom.start_round(game)
-      Server.update_game(%{game: game})
+      game_room = MultipleChoiceGame.start_round(game_room)
+      Server.update_game(game_room)
 
-      reply_with_questions(socket, %{is_new?: true, game: game})
+      reply_with_questions(socket, %{is_new?: true, game_room: game_room})
     end
   end
 
   @impl true
   def handle_in("next_question", _, socket) do
-    game =
+    game_room =
       Server.get_game(game_code(socket.topic))
-      |> GameRoom.next_question()
-      |> GameRoom.start_round()
+      |> MultipleChoiceGame.next_question()
+      |> MultipleChoiceGame.start_round()
 
-    Server.update_game(%{game: game})
+    Server.update_game(game_room)
 
-    question = next_question(game)
+    question = next_question(game_room)
 
     broadcast(
       socket,
       "handle_next_question",
       %{
         data: %{
-          isOver: game.is_over,
+          isOver: game_room.is_over,
           question: question.question,
           answers: question.answers,
           id: question.id
@@ -143,26 +148,26 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   @impl true
   def handle_in("answer_click", payload, socket) do
-    game = Server.get_game(game_code(socket.topic))
+    game_room = Server.get_game(game_code(socket.topic))
     answer = Map.get(payload, "answer")
     guid = Map.get(payload, "id")
 
-    case GameRoom.buzz(game, socket.assigns.name, answer, guid) do
-      {:win, game} ->
+    case MultipleChoiceGame.buzz(game_room, socket.assigns.name, answer, guid) do
+      {:win, game_room} ->
         broadcast(
           socket,
           "handle_correct_answer",
           %{
             data: %{
-              rounds: if(game.is_over, do: game.rounds, else: []),
+              rounds: if(game_room.is_over, do: game_room.game.rounds, else: []),
               answer: answer,
               winner: socket.assigns.name,
-              isOver: game.is_over
+              isOver: game_room.is_over
             }
           }
         )
 
-        Server.update_game(%{game: game})
+        Server.update_game(game_room)
         {:noreply, socket}
 
       {:noreply, _} ->
@@ -200,10 +205,11 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   defp remove_player({:error, _}, _), do: :ok
 
   defp remove_player({:ok, _}, socket) do
-    game =Server.get_game(game_code(socket.topic))
-    |> GameRoom.remove_player(socket.assigns.name)
+    game_room =
+      Server.get_game(game_code(socket.topic))
+      |> Lobby.remove_player(socket.assigns.name)
 
-    Server.update_game(%{game: game})
+    Server.update_game(game_room)
 
     :ok
   end
@@ -214,13 +220,13 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     code
   end
 
-  defp reply_with_questions(socket, %{is_new?: isNew, game: game}) do
-    [question | _] = game.questions
+  defp reply_with_questions(socket, %{is_new?: isNew, game_room: game_room}) do
+    [question | _] = game_room.game.questions
     resp = %{"data" => question, "isNew" => isNew}
 
     resp =
       if isNew do
-        Map.put(resp, "settings", game.settings)
+        Map.put(resp, "settings", game_room.game.settings)
       else
         resp
       end
@@ -242,32 +248,32 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   defp player_leave({:error, _}, _, _, _), do: :ok
 
   defp player_leave({:ok, _}, name, players, topic) do
-    game = Server.get_game(game_code(topic))
-    game = GameRoom.remove_player(game, name)
+    game_room = Server.get_game(game_code(topic))
+    game_room = Lobby.remove_player(game_room, name)
 
-    game =
-      if name == game.room_owner do
-        elect_new_game_owner(players, topic, game)
+    game_room =
+      if name == game_room.room_owner do
+        elect_new_game_owner(players, topic, game_room)
       else
-        game
+        game_room
       end
 
-    Server.update_game(%{game: game})
+    Server.update_game(game_room)
   end
 
-  defp elect_new_game_owner(players, topic, game) do
+  defp elect_new_game_owner(players, topic, game_room) do
     new_owner = List.first(players)
-    game = GameRoom.update_room_owner(game, new_owner)
+    game_room = Lobby.update_room_owner(game_room, new_owner)
     PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
-    game
+    game_room
   end
 
-  defp next_question(%MultipleChoice{} = game) when game.questions == [] do
+  defp next_question(%GameRoom{} = game_room) when game_room.game.questions == [] do
     %{question: "", answers: [], id: Ecto.UUID.autogenerate()}
   end
 
-  defp next_question(%MultipleChoice{} = game) do
-    [question | _] = game.questions
+  defp next_question(%GameRoom{} = game_room) do
+    [question | _] = game_room.game.questions
     question
   end
 end

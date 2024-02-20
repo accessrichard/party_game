@@ -1,24 +1,23 @@
 defmodule PartyGame.ServerTest do
   alias PartyGame.Server
-  alias PartyGame.Game.MultipleChoice
-  alias PartyGame.GameRoom
+  alias PartyGame.Lobby
 
   use ExUnit.Case
 
   describe "Game Server Tests" do
     test "start/1 starts a game" do
-      game =
-        MultipleChoice.new()
-        |> GameRoom.gen_room_name()
-        |> GameRoom.add_player("richard")
+      game_room =
+        Lobby.new()
+        |> Lobby.gen_room_name()
+        |> Lobby.add_player("richard")
 
-      Server.start(%{game: game})
-      game = GameRoom.add_player(game, "Rick")
+      Server.start(game_room)
+      game_room = Lobby.add_player(game_room, "Rick")
 
-      Server.update_game(game.room_name, %{game: game})
-      game2 = Server.get_game(game.room_name)
+      Server.update_game(game_room.room_name, game_room)
+      game2 = Server.get_game(game_room.room_name)
 
-      assert game2.room_name == game.room_name && Enum.count(game.players) == 2
+      assert game2.room_name == game_room.room_name && Enum.count(game_room.players) == 2
     end
   end
 end

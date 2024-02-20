@@ -3,7 +3,7 @@ defmodule PartyGame.Games.MultipleChoice.BasicMath do
 
   def new(game, options \\ %{}) do
     type = Map.get(options, "type", "")
-    number_questions = Map.get(game, :rounds, 10)
+    number_questions = Map.get(game.game_room.game.settings, :rounds, 10)
 
     case type do
       "addition" ->

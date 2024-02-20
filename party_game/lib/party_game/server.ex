@@ -1,6 +1,7 @@
 defmodule PartyGame.Server do
   use GenServer, restart: :transient
-  alias PartyGame.GameRoom
+  alias PartyGame.Game.GameRoom
+  alias PartyGame.MultipleChoiceGame
 
   @registry PartyGame.Game.Registry
 
@@ -8,7 +9,7 @@ defmodule PartyGame.Server do
 
   @timeout 900_000
 
-  def start(%{game: game}) do
+  def start(%GameRoom{} = game) do
     opts = [
       game: game,
       name: {:via, Registry, {@registry, game.room_name}}
@@ -47,11 +48,11 @@ defmodule PartyGame.Server do
     GenServer.call(via_tuple(room_name), :game)
   end
 
-  def update_game(%{game: game}) do
+  def update_game(%GameRoom{} = game) do
     GenServer.call(via_tuple(game.room_name), {:update, game})
   end
 
-  def update_game(room_name, %{game: game}) do
+  def update_game(room_name, %GameRoom{} = game) do
     GenServer.call(via_tuple(room_name), {:update, game})
   end
 
@@ -91,7 +92,7 @@ defmodule PartyGame.Server do
 
   # Server (callbacks)
   @impl true
-  def handle_call({:update, game}, _from, _game) do
+  def handle_call({:update, %GameRoom{} = game}, _from, _game) do
     {:reply, game, game, @timeout}
   end
 
@@ -106,11 +107,11 @@ defmodule PartyGame.Server do
   end
 
   @impl true
-  def handle_call({:buzz, name, answer}, _from, game) do
-    with {:win, game} <- GameRoom.buzz(game, name, answer) do
-      {:reply, {:win, game}, game, @timeout}
+  def handle_call({:buzz, name, answer}, _from, game_room) do
+    with {:win, game_room} <- MultipleChoiceGame.buzz(game_room, name, answer) do
+      {:reply, {:win, game_room}, game_room, @timeout}
     else
-      {:lose, game} -> {:reply, {:lose, game}, game, @timeout}
+      {:lose, game_room} -> {:reply, {:lose, game_room}, game_room, @timeout}
     end
   end
 

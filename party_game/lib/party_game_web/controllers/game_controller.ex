@@ -3,24 +3,26 @@ defmodule PartyGameWeb.GameController do
 
   use PartyGameWeb, :controller
 
-  alias PartyGame.GameRoom
   alias PartyGame.Game.MultipleChoice
   alias PartyGame.Server
   alias PartyGame.Games.GameList
+  alias PartyGame.Game.GameRoom
+  alias PartyGame.Lobby
 
   action_fallback PartyGameWeb.FallbackController
 
   def create(conn, %{"player_name" => player_name}) do
+    Logger.info("Create game for player: #{player_name}")
 
-    Logger.info  "Create game for player: #{player_name}"
-
-    with %MultipleChoice{} = game <- GameRoom.add_player(MultipleChoice.new(), player_name) do
-      game = GameRoom.gen_room_name(game)
-      Server.start(%{game: game})
+    with %GameRoom{} = game_room <- Lobby.add_player(GameRoom.new(), player_name) do
+      game_room = Lobby.gen_room_name(game_room)
+      #TODO, dont create a multiple choice game yet
+      game_room = Lobby.set_game(game_room, MultipleChoice.new)
+      Server.start(game_room)
 
       conn
       |> put_status(:created)
-      |> render(:game, game: game)
+      |> render(:game, game_room: game_room)
     else
       {:error, reason} ->
         conn
@@ -30,6 +32,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def validate(conn, game_params) do
+    #TODO, hard coded to multiple choice
     changeset = MultipleChoice.create_game_changeset(%MultipleChoice{}, game_params)
 
     case changeset.valid? do
@@ -46,18 +49,16 @@ defmodule PartyGameWeb.GameController do
   end
 
   def join(conn, %{"player" => player, "room_name" => room_name}) do
-
-    Logger.info  "Player: #{Map.get(player, "name")} joined game room: #{room_name}"
+    Logger.info("Player: #{Map.get(player, "name")} joined game room: #{room_name}")
 
     with {:ok, pid} <- Server.lookup(room_name),
-         game = GenServer.call(pid, :game),
-         %MultipleChoice{} = game <- GameRoom.add_player(game, player) do
-
-      Server.update_game(room_name, %{game: game})
+         game_room = GenServer.call(pid, :game),
+         %GameRoom{} = game_room <- Lobby.add_player(game_room, player) do
+      Server.update_game(room_name, game_room)
 
       conn
       |> put_status(:created)
-      |> render(:game, game: game)
+      |> render(:game, game_room: game_room)
     else
       {:error, reason} ->
         conn
@@ -67,7 +68,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def list(conn, _) do
-    render(conn, :list, games: GameList.cached_game_list)
+    render(conn, :list, games: GameList.non_black_cached_list())
   end
 
   def stop(conn, %{"room_name" => room_name}) do

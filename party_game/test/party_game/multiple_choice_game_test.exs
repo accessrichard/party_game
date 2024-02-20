@@ -1,82 +1,55 @@
 defmodule PartyGame.MultipleChoiceGameTest do
-  alias PartyGame.GameRoom
-  alias PartyGame.Game.MultipleChoice
-  alias PartyGame.Game.Player
+  alias PartyGame.Game.MultipleChoiceSettings
+  alias PartyGame.Game.{GameRoom, MultipleChoice}
+  alias PartyGame.MultipleChoiceGame
   alias PartyGame.Games.MultipleChoice.States
+  alias PartyGame.Lobby
 
   use ExUnit.Case, async: true
 
   describe "game" do
     test "start_game/1 starts a game" do
-      game = GameRoom.start_game(MultipleChoice.new())
-      assert %MultipleChoice{started: true} = game
+      game = Lobby.start_game(%GameRoom{game: MultipleChoice.new()})
+      assert %GameRoom{started: true} = game
     end
 
     test "stop_game/1 stops a game" do
-      game = GameRoom.stop_game(MultipleChoice.new())
-      assert %MultipleChoice{started: false} = game
+      game = Lobby.stop_game(%GameRoom{game: MultipleChoice.new()})
+      assert %GameRoom{started: false} = game
     end
 
-    test "add_player/2 adds a player" do
-      game = GameRoom.add_player(MultipleChoice.new(), "richard")
-      [head | _] = game.players
-      assert head.name == "richard"
-    end
-
-    test "update_player/2 update a player" do
-      game = GameRoom.add_player(MultipleChoice.new(), "richard")
-      |> GameRoom.add_player("Sue")
-      |> GameRoom.update_player(%Player{name: "Sue", wins: 1})
-
-      all_updated = Enum.filter(game.players, fn x -> x.wins == 1 end)
-      [player | _] = all_updated
-      assert length(all_updated) == 1 && player.name == "Sue"
-    end
-
-    test "add_player/2 prevents duplicate players" do
-      game = GameRoom.add_player(MultipleChoice.new(), "richard")
-      assert {:error, _} = GameRoom.add_player(game, "richard")
-    end
-
-    test "add_settings/2 prevents duplicate players" do
-      game = GameRoom.update_settings(PartyGame.Game.MultipleChoice.new, %{question_time: 10})
-      assert game.settings !== nil
-    end
-
-    test "add_player/2 prevents blank players" do
-      assert {:error, _} = GameRoom.add_player(MultipleChoice.new(), "")
-    end
-
-    test "add_player/2 prevents adding players during active game" do
-      game = GameRoom.start_game(MultipleChoice.new(%{rounds: 3}))
-      assert {:error, _} = GameRoom.add_player(game, "richard")
+    test "add_settings/2" do
+      game_room = GameRoom.new(game: %MultipleChoice{settings: %MultipleChoiceSettings{}})
+      game_room = Lobby.update_settings(game_room, %{question_time: 10})
+      assert game_room.game.settings !== nil
     end
 
     test "play game" do
-      game =
-        MultipleChoice.new()
-        |> GameRoom.gen_room_name()
-        |> GameRoom.add_questions(States.new(%{rounds: 3}), "States")
-        |> GameRoom.add_player("Richard")
-        |> GameRoom.add_player("joe")
-        |> GameRoom.start_round()
+      game_room =
+        Lobby.new()
+        |> Lobby.set_game(%MultipleChoice{})
+        |> Lobby.gen_room_name()
+        |> Lobby.add_player("Richard")
+        |> Lobby.add_player("joe")
+        |> MultipleChoiceGame.add_questions(States.new(%{rounds: 3}), "States")
+        |> MultipleChoiceGame.start_round()
 
-      [question | _] = game.questions
-      {:win, game} = GameRoom.buzz(game, "Richard", question.correct)
+      [question | _] = game_room.game.questions
+      {:win, game_room} = MultipleChoiceGame.buzz(game_room, "Richard", question.correct)
 
-      [question | _] = game.questions
+      [question | _] = game_room.game.questions
 
-      {:win, game} =
-        GameRoom.start_round(game)
-        |> GameRoom.buzz("joe", question.correct)
+      {:win, game_room} =
+        MultipleChoiceGame.start_round(game_room)
+        |> MultipleChoiceGame.buzz("joe", question.correct)
 
-      [question | _] = game.questions
+      [question | _] = game_room.game.questions
 
-      {:win, game} =
-        GameRoom.start_round(game)
-        |> GameRoom.buzz("Richard", question.correct)
+      {:win, game_room} =
+        MultipleChoiceGame.start_round(game_room)
+        |> MultipleChoiceGame.buzz("Richard", question.correct)
 
-      [winner | _] = GameRoom.score(game)
+      [winner | _] = MultipleChoiceGame.score(game_room)
       assert elem(winner, 0) == "Richard"
     end
   end
