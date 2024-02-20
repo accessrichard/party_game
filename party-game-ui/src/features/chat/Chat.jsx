@@ -1,15 +1,9 @@
-import {
-  channelPush
-} from '../phoenix/phoenixMiddleware';
-import {
-  usePhoenixChannel,
-  usePhoenixEvents
-} from '../phoenix/usePhoenix';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import Players from '../game/Players';
 import { message } from './chatSlice';
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import { usePhoenixChannel, usePhoenixEvents } from '../phoenix/usePhoenix';
 
 const onEvents = (topic) => [
   {
