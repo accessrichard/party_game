@@ -66,7 +66,7 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
-  def handle_in("new_game", _, socket) do
+  def handle_in("new_game", payload, socket) do
       broadcast(socket, "route_to_game", %{"url" => "/game"})
       {:noreply, socket}
   end

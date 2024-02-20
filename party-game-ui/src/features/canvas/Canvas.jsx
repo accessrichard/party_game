@@ -103,10 +103,19 @@ const colorPallette = [
 
 export default function Canvas() {
 
+    const {
+        isGameOwner,
+        playerName,
+        gameName,        
+        gameCode       
+     } = useSelector(state => state.lobby);
+     
+     const canvasChannel = `game:${gameCode}`;
+
     useBackButtonBlock();
     usePhoenixSocket();
-    usePhoenixChannel(`canvas:J`, { name: "d" });
-    usePhoenixEvents(`canvas:J`, events);
+    usePhoenixChannel(canvasChannel, { name: playerName });
+    usePhoenixEvents(canvasChannel, events);
 
     const {
         word,

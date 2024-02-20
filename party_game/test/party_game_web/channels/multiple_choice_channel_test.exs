@@ -63,6 +63,6 @@ defmodule PartyGameWeb.MultipleChoiceChannelTest do
       }
     })
 
-    assert_broadcast "handle_next_question", %{"daata" => _}
+    assert_broadcast "handle_next_question", %{"data" => _}
   end
 end
