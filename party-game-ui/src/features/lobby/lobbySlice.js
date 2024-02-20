@@ -1,7 +1,7 @@
 import { apiState, fulfilled, pending, rejected } from '../common/thunkApiResponse';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 
-import api from '../game/gameApi';
+import api from '../multipleChoice/gameApi';
 import { push } from "redux-first-history";
 
 

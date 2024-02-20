@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import InputError from '../common/InputError';
 import { MULTIPLE_CHOICE } from '../common/questionTypes';
 import QuestionForm from './QuestionForm';
-import { changeGame } from '../start/lobbySlice';
+import { changeGame } from '../lobby/lobbySlice';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { createGame } from './creativeSlice';
 
@@ -204,8 +204,8 @@ export default function Create(props) {
                                         onChange={onEditGameChange}
                                         value={editGameValue}
                                     >
-                                        {["", ...(getGamesNames() || [])].map((val) =>
-                                            <option key={val} value={val}>{val}</option>
+                                        {["", ...(getGamesNames() || [])].map((val, idx) =>
+                                            <option key={idx} value={val}>{val}</option>
                                         )}
                                     </select>
                                     <span className="highlight"></span>

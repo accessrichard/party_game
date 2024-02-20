@@ -21,7 +21,7 @@ import {
     handleChangeOwner,
     handleGenServerTimeout,
     startRound
-} from '../game/gameSlice';
+} from '../multipleChoice/gameSlice';
 
 const sendEvent = (topic, channelData, action) => (
     {

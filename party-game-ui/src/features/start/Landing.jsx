@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { listGames } from '../start/lobbySlice';
+import { listGames } from '../lobby/lobbySlice';
 
 function sliceArray(array, numCols) {
     if (array === null) {

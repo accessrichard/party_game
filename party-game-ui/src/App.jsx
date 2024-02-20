@@ -9,18 +9,18 @@ import React from 'react';
 import AppBody from './features/common/AppBody';
 import Create from './features/creative/Create';
 import ExceptionPopup from './features/common/ExceptionPopup';
-import Game from './features/game/Game';
+import Game from './features/multipleChoice/Game';
 import GoogleAnalytics from './features/common/GoogleAnalytics';
 import Import from './features/creative/Import';
 import InlineFacesSprite from './features/common/InlineFacesSprite';
 import Join from './features/start/Join';
 import Landing from './features/start/Landing';
-import Lobby from './features/start/Lobby';
+import Lobby from './features/lobby/Lobby';
 import Canvas from './features/canvas/Canvas';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
-import Score from './features/game/Score';
-import Settings from './features/game/Settings';
-import Start from './features/start/Start';
+import Score from './features/multipleChoice/Score';
+import Settings from './features/multipleChoice/Settings';
+import Start from './features/start/Start'; 
 import { history } from './features/store';
 
 function App() {

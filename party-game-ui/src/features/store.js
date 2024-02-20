@@ -5,8 +5,8 @@ import canvasReducer from './canvas/canvasSlice';
 import { createBrowserHistory } from "history";
 import { createReduxHistoryContext } from "redux-first-history";
 import creativeReducer from './creative/creativeSlice';
-import gameReducer from './game/gameSlice';
-import lobbyReducer from './start/lobbySlice';
+import gameReducer from './multipleChoice/gameSlice';
+import lobbyReducer from './lobby/lobbySlice';
 
 import presenceReducer from './presence/presenceSlice';
 

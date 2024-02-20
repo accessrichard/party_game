@@ -10,7 +10,7 @@ import {
     onRouteToGame,
     listGames,
     mergeGameList
-} from '../start/lobbySlice';
+} from './lobbySlice';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';

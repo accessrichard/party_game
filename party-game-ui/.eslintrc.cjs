@@ -30,5 +30,13 @@ module.exports = {
     "rules": {
         "react/prop-types": 0,
         "no-unused-vars": 0
+    },
+    "settings": {
+    "react": {
+        "createClass": "createReactClass",
+        "pragma": "React",
+        "fragment": "Fragment",
+        "version": "detect", 
+      }
     }
 }

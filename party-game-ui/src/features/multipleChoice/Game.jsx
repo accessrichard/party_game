@@ -10,7 +10,7 @@ import usePrevious from '../usePrevious';
 import { usePhoenixEvents, usePhoenixChannel } from '../phoenix/usePhoenix';
 import useBackButtonBlock from '../useBackButtonBlock';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { toServerSettings } from '../game/settingsApi';
+import { toServerSettings } from '../multipleChoice/settingsApi';
 import NewGamePrompt from '../common/NewGamePrompt';
 
 import {
@@ -28,7 +28,7 @@ import {
     handleGenServerTimeout,
     mergeGameList,
     endGame
-} from '../start/lobbySlice';
+} from '../lobby/lobbySlice';
 
 const sendEvent = (channel, channelData, action) => (
     {
@@ -101,7 +101,6 @@ export default function Game() {
     const [timerStartDate, setTimerStartDate] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(settings.isNewGamePrompt);
-
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
     const prevRound = usePrevious(round);
