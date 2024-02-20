@@ -1,29 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
 import Timer from '../common/Timer';
-import { channelPush } from '../phoenix/phoenixMiddleware';
 
 export default function NewGamePrompt(props) {
-
-    const dispatch = useDispatch();
-    const { isNewGamePrompt, gameChannel, isGameOwner } = useSelector(state => state.game);
+    const {onStartGame, isNewGamePrompt } = props;
+    
     const [isTimerActive, setIsTimerActive] = useState(false);
 
     useEffect(() => {
         setIsTimerActive(isNewGamePrompt);
-    }, [isNewGamePrompt, dispatch]);
+    }, [isNewGamePrompt]);
 
-    function onTimerCompleted() {
-        if (isGameOwner) {
-            dispatch(channelPush({
-                topic: gameChannel,
-                event: "start_round"
-            }));
-        }
-
+    function onTimerCompleted() {       
         setIsTimerActive(false);
-        props && props.onStartGame();        
+        onStartGame && onStartGame();
     }
 
     return (

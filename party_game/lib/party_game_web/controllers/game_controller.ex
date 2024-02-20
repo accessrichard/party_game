@@ -3,7 +3,6 @@ defmodule PartyGameWeb.GameController do
 
   use PartyGameWeb, :controller
 
-  alias PartyGame.Game.MultipleChoice
   alias PartyGame.Server
   alias PartyGame.Games.GameList
   alias PartyGame.Game.GameRoom

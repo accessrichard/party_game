@@ -1,12 +1,6 @@
-import {
-    channelPush
-} from '../phoenix/phoenixMiddleware';
-import {
-    usePhoenixChannel,
-    usePhoenixEvents,
-    usePhoenixSocket
-} from '../phoenix/usePhoenix';
-import { NavLink, Navigate } from 'react-router-dom';
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
+import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
     changeGame,
@@ -15,20 +9,16 @@ import {
     handleJoin,
     onRouteToGame,
     listGames,
-    mergeGameList,
-    startRound
-} from '../game/gameSlice';
+    mergeGameList
+} from '../start/lobbySlice';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
-
 import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
 import Logo from '../common/Logo';
-import NewGamePrompt from '../common/NewGamePrompt';
 import Timer from '../common/Timer';
 import { push } from "redux-first-history";
-import { toServerSettings } from '../game/settingsApi';
 
 const events = (topic) => [
     {
@@ -60,11 +50,6 @@ const events = (topic) => [
         event: 'route_to_game',
         dispatcher: onRouteToGame(),
         topic
-    },
-    {
-        event: 'handle_next_question',
-        dispatcher: startRound(),
-        topic,
     }
 ]
 
@@ -75,20 +60,18 @@ export default function Lobby() {
     const {
         playerName,
         gameCode,
-        gameChannel,
-        isNewGamePrompt,
         isGameOwner,
         isGameStarted,
-        name,
-        url,
-        settings } = useSelector(state => state.game);
+        gameName,
+        url
+    } = useSelector(state => state.lobby);
 
     const creativeGames = useSelector(state => state.creative.games);
-    const serverGames = useSelector(state => state.game.api.list.data);
-    const serverGamesLoading = useSelector(state => state.game.api.list.loading);
+    const serverGames = useSelector(state => state.lobby.api.list.data);
+    const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
 
     usePhoenixSocket();
-    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, {persisted: true});
+    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
     usePhoenixEvents(`lobby:${gameCode}`, events);
 
     /**
@@ -131,21 +114,21 @@ export default function Lobby() {
      * or leave it be what the prior selection was
      */
     useEffect(() => {
-        if (name) {
+        if (gameName) {
             return;
         }
 
         if (gameList && gameList.length > 0) {
-            dispatch(changeGame({ name: gameList[0].name, location: gameList[0].url }));
+            dispatch(changeGame({ name: gameList[0].name }));
         }
-    }, [gameList, name]);
+    }, [gameList, gameName]);
 
     useEffect(() => {
-        if (url && (isGameStarted || isNewGamePrompt)) {
+        if (url && isGameStarted) {
             dispatch(push(url))
         }
 
-    }, [url, isGameStarted, isNewGamePrompt])
+    }, [url, isGameStarted])
 
     /**
      * Create and kicks off a new game:
@@ -170,7 +153,7 @@ export default function Lobby() {
 
     function onGameChange(e) {
         const game = gameList.find(x => x.name == e.target.value);
-        dispatch(changeGame({ name: game.name, url: game.url }));
+        dispatch(changeGame({ name: game.name }));
     }
 
     function onGenServerTimeout() {
@@ -209,7 +192,7 @@ export default function Lobby() {
                             <form noValidate onSubmit={handleCreateGame}>
                                 <div className="flex-row">
                                     <div className="flex-column flex-center">
-                                        <GameList defaultValue={name} value={name} onGameChange={onGameChange} games={gameList} />
+                                        <GameList defaultValue={gameName} value={gameName} onGameChange={onGameChange} games={gameList} />
                                     </div>
                                 </div>
                                 <div>
@@ -220,7 +203,7 @@ export default function Lobby() {
                                 </div>
                                 <div className="btn-box">
                                     <button className="btn btn-submit"
-                                        disabled={serverGamesLoading === 'pending' || isNewGamePrompt || isGameStarted}
+                                        disabled={serverGamesLoading === 'pending' || isGameStarted}
                                         type="submit"
                                         value="Start">
                                         Start Game

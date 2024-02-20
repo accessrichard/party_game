@@ -6,6 +6,8 @@ import { createBrowserHistory } from "history";
 import { createReduxHistoryContext } from "redux-first-history";
 import creativeReducer from './creative/creativeSlice';
 import gameReducer from './game/gameSlice';
+import lobbyReducer from './start/lobbySlice';
+
 import presenceReducer from './presence/presenceSlice';
 
 const {
@@ -19,6 +21,7 @@ const reducers = {
   phoenix: channelReducer,
   chat: chatReducer,
   game: gameReducer,
+  lobby: lobbyReducer,
   creative: creativeReducer,
   presence: presenceReducer,
   canvas: canvasReducer

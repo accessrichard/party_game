@@ -7,9 +7,6 @@ defmodule PartyGameWeb.LobbyChannel do
   alias PartyGame.{Server, Lobby}
   alias PartyGame.ChannelWatcher
   alias PartyGame.Game.Player
-  alias PartyGame.Games.GameList
-  alias PartyGame.Game.GameRoom
-  alias PartyGame.MultipleChoiceGame
 
 
   @channel_name "lobby:"

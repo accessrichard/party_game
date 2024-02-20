@@ -80,7 +80,8 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
         multiple_choice = MultipleChoice.create_game(MultipleChoice.new, client_form)
         GameRoom.create_game(server_game, %{game: multiple_choice})
       else
-        server_game
+        multiple_choice = MultipleChoice.create_game(MultipleChoice.new, %{})
+        GameRoom.create_game(server_game, %{game: multiple_choice})
       end
 
     questions =

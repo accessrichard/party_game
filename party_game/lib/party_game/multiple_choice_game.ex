@@ -118,7 +118,7 @@ defmodule PartyGame.MultipleChoiceGame do
         {:error, "Game does not exist!"}
 
       _ ->
-        questions = game_metadata.module.new(game, Map.get(game_metadata, "options", %{}))
+        questions = game_metadata.module.new(game, Map.get(game_metadata, :options, %{}))
 
         if location == "client" ||
              game_metadata.module === PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do

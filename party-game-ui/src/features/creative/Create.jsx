@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import InputError from '../common/InputError';
 import { MULTIPLE_CHOICE } from '../common/questionTypes';
 import QuestionForm from './QuestionForm';
-import { changeGame } from '../game/gameSlice';
+import { changeGame } from '../start/lobbySlice';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { createGame } from './creativeSlice';
 
@@ -35,7 +35,8 @@ export default function Create(props) {
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
     const [editGameValue, setEditGameValue] = useState("");
-    const gameChannel = useSelector(state => state.game.gameChannel);
+    const gameCode = useSelector(state => state.game.gameCode);
+    const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
         if (props.game) {

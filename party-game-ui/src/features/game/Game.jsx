@@ -15,19 +15,24 @@ import NewGamePrompt from '../common/NewGamePrompt';
 
 import {
     clearWrongAnswer,
-    setFlash,
-    unansweredTimeout, handleChangeOwner,
+    unansweredTimeout,
     handleCorrectAnswer,
     handleNewGameCreated,
-    handleGenServerTimeout,
     startRound,
     handleWrongAnswer,
-    mergeGameList
+    setFlash,
 } from './gameSlice';
 
-const sendEvent = (topic, channelData, action) => (
+import {
+    handleChangeOwner,
+    handleGenServerTimeout,
+    mergeGameList,
+    endGame
+} from '../start/lobbySlice';
+
+const sendEvent = (channel, channelData, action) => (
     {
-        topic: topic,
+        topic: channel,
         event: action,
         data: channelData
     });
@@ -70,46 +75,48 @@ export default function Game() {
     const dispatch = useDispatch();
     const {
         isRoundStarted,
-        playerName,
-        gameChannel,
-        name,
-        gameCode,
-        isGameOwner,
         question,
         id,
         answers,
-        flash,
         isWrong,
         round,
-        isOver,
         correct,
+        flash,
         roundWinner,
         settings,
-        startCountdown
+        startCountdown,
+        isOver
     } = useSelector(state => state.game);
+
+    const {
+        isGameOwner,
+        playerName,
+        gameName,        
+        gameCode       
+     } = useSelector(state => state.lobby);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
     const [timerStartDate, setTimerStartDate] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
-
+    const [isStartGamePrompt, setIsStartGamePrompt] = useState(settings.isNewGamePrompt);
 
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
     const prevRound = usePrevious(round);
+    const gameChannel = `game:${gameCode}`;
 
-    usePhoenixChannel(`game:${gameCode}`, { name: playerName });
-    usePhoenixEvents(`game:${gameCode}`, events);
+    usePhoenixChannel(gameChannel, { name: playerName });
+    usePhoenixEvents(gameChannel, events);
     useBackButtonBlock();
 
     const creativeGames = useSelector(state => state.creative.games);
-    const serverGames = useSelector(state => state.game.api.list.data);
-    const serverGamesLoading = useSelector(state => state.game.api.list.loading);
+    const serverGames = useSelector(state => state.lobby.api.list.data);
 
     useEffect(() => {
         if (isGameOwner)
-        handleCreateGame()
+            handleCreateGame()
     }, [isGameOwner]);
 
     /**
@@ -164,7 +171,7 @@ export default function Game() {
 
     function onTimerCompleted() {
         setIsDisabled(true);
-        
+
         if (!isGameOwner) {
             return;
         }
@@ -184,15 +191,11 @@ export default function Game() {
         dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
     }
 
-    function onStartGame() {
-     //   dispatch(push(url || "/game"));
-    }
-
     const startClickCallback = useCallback((action, payload = {}) => {
         setIsQuestionAnswered(false);
         const data = { name: playerName, ...payload };
         dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
-    }, [gameChannel, dispatch, playerName])
+    }, [gameCode, playerName])
 
     function onWrongAnswerTimerCompleted() {
         //// In case round ends before timer is reset.
@@ -210,6 +213,7 @@ export default function Game() {
     useEffect(() => {
         let timeout;
         if (isOver) {
+            dispatch(endGame());
             timeout = setTimeout(() => {
                 dispatch(push('/score'));
             }, 1000);
@@ -223,19 +227,19 @@ export default function Game() {
     function handleCreateGame() {
 
         const list = mergeGameList(serverGames, creativeGames);
-        
 
-        let game = list.find(x => x.name === name);
+
+        let game = list.find(x => x.name === gameName);
 
         if (game && game.location === 'client') {
-            const creativeGame = creativeGames.find(x => x.game.name === name);
+            const creativeGame = creativeGames.find(x => x.game.name === gameName);
             game = { ...game, questions: creativeGame.game.questions }
         }
 
         const payload = { game: game, rounds: settings.rounds };
         const data = { name: playerName, settings: toServerSettings(settings), ...payload };
         dispatch(channelPush({
-            topic: `game:${gameCode}`,
+            topic: gameChannel,
             event: "new_game",
             data: data
         }));
@@ -245,13 +249,26 @@ export default function Game() {
         return roundWinner === playerName && correct !== "";
     }
 
-    if (!gameChannel) {
+    if (!gameCode) {
         return <Navigate to="/" />
+    }
+
+    function onStartGame() {
+        setIsStartGamePrompt(false);
+        if (!isGameOwner) {
+            return
+        }
+
+        dispatch(channelPush({
+            topic: gameChannel,
+            event: "start_round"
+        }));
     }
 
     return (
         <>
-            <div className="full-width full-height flex-container flex-column">
+            <NewGamePrompt isNewGamePrompt={settings.isNewGamePrompt} onStartGame={() => onStartGame()} />
+            {!isStartGamePrompt && <div className="full-width full-height flex-container flex-column">
                 <header>
                     <h2 className="landscape-hidden">Buzz Game</h2>
                 </header>
@@ -306,8 +323,7 @@ export default function Game() {
                     </div>
                 </div>
 
-            </div>
-            <NewGamePrompt onStartGame={() => onStartGame()} />
+            </div>}      
         </>
     );
 }

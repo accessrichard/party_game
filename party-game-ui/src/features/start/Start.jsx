@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';
 import Logo from '../common/Logo';
-import { startNewGame } from '../game/gameSlice';
+import { startNewGame } from '../start/lobbySlice';
 
 function Create() {
     const dispatch = useDispatch();
-    const serverError = useSelector(state => state.game.api.start.error);
+    const serverError = useSelector(state => state.lobby.api.start.error);
 
     const [form, setForm] = useState({
         username: "",

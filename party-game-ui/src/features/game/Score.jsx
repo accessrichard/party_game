@@ -29,7 +29,8 @@ function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
 
-    const {isGameStarted, gameChannel, isOver, round }  = useSelector(state => state.game);
+    const {isGameStarted, gameCode, isOver, round }  = useSelector(state => state.game);
+    const gameChannel = `game:${gameCode}`;
 
     if (isGameStarted && !isOver) {
         return <Navigate to="/game" />

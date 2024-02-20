@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { clearJoinError, joinGame } from '../game/gameSlice';
+import { clearJoinError, joinGame } from '../start/lobbySlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 import InputError from '../common/InputError';
@@ -11,7 +11,7 @@ function Join() {
 
     const dispatch = useDispatch();
 
-    const gameCodeError = useSelector(state => state.game.api.join.error);    
+    const gameCodeError = useSelector(state => state.lobby.api.join.error);    
 
     const [form, setForm] = useState({
         username: "",

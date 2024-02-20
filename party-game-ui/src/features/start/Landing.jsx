@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { listGames } from '../game/gameSlice';
+import { listGames } from '../start/lobbySlice';
 
 function sliceArray(array, numCols) {
     if (array === null) {
@@ -20,7 +20,7 @@ function sliceArray(array, numCols) {
 
 function Landing() {
     const dispatch = useDispatch();
-    const serverGames = useSelector(state => state.game.api.list.data);
+    const serverGames = useSelector(state => state.lobby.api.list.data);
     const serverGameCols = sliceArray(serverGames, 3);
 
     useEffect(() => {

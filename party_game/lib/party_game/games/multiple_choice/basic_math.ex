@@ -2,9 +2,9 @@ defmodule PartyGame.Games.MultipleChoice.BasicMath do
   alias PartyGame.Game.Question
 
   def new(game, options \\ %{}) do
-    type = Map.get(options, "type", "")
-    number_questions = Map.get(game.game_room.game.settings, :rounds, 10)
+    type = Map.get(options, :type, "")
 
+    number_questions = Map.get(game.game_room.game.settings, :rounds, 10)
     case type do
       "addition" ->
         Enum.take_random(new_addition(number_questions), number_questions)

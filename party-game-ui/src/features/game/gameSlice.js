@@ -1,87 +1,21 @@
-import { apiState, fulfilled, pending, rejected } from '../common/thunkApiResponse';
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { fulfilled, pending, rejected } from '../common/thunkApiResponse';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
-import api from '../game/gameApi';
-import { push } from "redux-first-history";
 import { toClientSettings } from './settingsApi';
-
-export const listGames = createAsyncThunk(
-    'game/listGames',
-    async () => {
-        return await api.list();
-    }
-)
-
-export const startNewGame = createAsyncThunk(
-    'game/startNewGame',
-    async (playerName, thunkAPI) => {
-        const response = await api.create(playerName);
-        if (!response.error) {
-            thunkAPI.dispatch(syncGameState({ playerName: playerName, ...response.data }));
-            thunkAPI.dispatch(push('/lobby'));
-        }
-
-        return response;
-    }
-)
-
-export const joinGame = createAsyncThunk(
-    'game/joinGame',
-    async (payload, thunkAPI) => {
-        // await schema.validate({ username: playerName });
-        const response = await api.join(payload.username, payload.gameCode);
-        if (!response.error) {
-            thunkAPI.dispatch(syncGameState({ playerName: payload.username, ...response.data }));
-            thunkAPI.dispatch(push('/lobby'));
-        }
-
-        return response;
-    }
-)
-
-export const stopGame = createAsyncThunk(
-    'game/stopGame',
-    async (roomName, thunkAPI) => {
-        const response = await api.stop(roomName);
-        if (!response.error) {
-            thunkAPI.dispatch(redirect());
-        }
-
-        return response;
-    }
-)
 
 const initialState = {
     settings: { questionTime: 10, nextQuestionTime: 1, wrongAnswerTimeout: 1, rounds: 10, isNewGamePrompt: true },
     round: 0,
-    isGameStarted: false,
-    isPaused: false,
     startCountdown: false,
-    isRoundStarted: false,
-    isNewGamePrompt: false,
     isOver: false,
+    isRoundStarted: false,
     question: null,
     correct: '',
     roundWinner: '',
     isWrong: false,
     flash: {},
     answers: null,
-    events: [],
-    rounds: [],
-    playerName: null,
-    name: '',
-    url: '',
-    gameCode: null,
-    gameChannel: '',
-    players: [],
-    isGameOwner: false,
-    genServerTimeout: null,
-    api: {
-        start: { ...apiState },
-        join: { ...apiState },
-        stop: { ...apiState },
-        list: { ...apiState }
-    }
+    rounds: []
 };
 
 function resetGame(state) {
@@ -91,7 +25,6 @@ function resetGame(state) {
         url: state.url,
         gameCode: state.gameCode,
         round: 0,               
-        gameChannel: state.gameChannel,
         players: [],
         rounds: [],
         isGameOwner: state.isGameOwner,
@@ -111,20 +44,22 @@ export const gameSlice = createSlice({
         clearWrongAnswer: (state) => {
             state.isWrong = false;
         },
+        setFlash: (state, action) => {
+            state.flash = action.payload
+        },
         startRound: (state, action) => {
             if (action.payload.isNew) {
                 resetGame(state);
                 state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             }
             
-            state.isNewGamePrompt = false;
-            state.isGameStarted = !action.payload.data.isOver;
+            //state.isGameStarted = !action.payload.data.isOver;
             state.isRoundStarted = true;
             state.question = action.payload.data.question;
             state.id = action.payload.data.id;
             state.answers = action.payload.data.answers;
-            state.flash = {};
             state.startCountdown = false;
+
             state.correct = '';
             state.roundWinner = '';
             state.isWrong = false;
@@ -134,22 +69,8 @@ export const gameSlice = createSlice({
                 state.round += 1;
             }
         },        
-        stopGame: (state) => {
-            state.isGameStarted = false;
-            state.startCountdown = false;
-            state.isWrong = false;
-        },
-        setFlash: (state, action) => {
-            state.flash = action.payload
-        },
-        handleChangeOwner: (state, action) => {
-            state.isGameOwner = action.payload.room_owner === state.playerName;
-        },
         handleWrongAnswer(state, action) {
             state.isWrong = true;
-        },
-        handleGenServerTimeout(state, action) {
-            state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
         unansweredTimeout: (state, action) => {
             state.isRoundStarted = false;
@@ -158,21 +79,11 @@ export const gameSlice = createSlice({
                 state.startCountdown = true;
             }
         },
-        onRouteToGame(state, action) {
-            resetGame(state);
-            if (state.settings.isNewGamePrompt) {
-                state.isNewGamePrompt = true
-            } else {
-                state.isGameStarted = true;                
-            }
-
-            state.url = action.payload.url;
-        },
         handleNewGameCreated(state, action) {
             resetGame(state);
 
-            state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
-            if (state.settings.isNewGamePrompt) {
+            const settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
+            if (settings.isNewGamePrompt) {
                 state.isNewGamePrompt = true
             } else {
                 state.isGameStarted = true;                
@@ -197,43 +108,9 @@ export const gameSlice = createSlice({
                 state.startCountdown = true;
             }
         },
-        changeGame: (state, action) => {
-            state.name = action.payload.name;
-            state.url = action.payload.url;
-        },
-        syncGameState: (state, action) => {
-            state.playerName = action.payload.playerName;
-            state.gameCode = action.payload.room_name;
-            state.gameChannel = `game:${action.payload.room_name}`;
-            state.players = action.payload.players;
-            state.isGameOwner = action.payload.room_owner === action.payload.playerName;
-            state.name = action.payload.name || '';
-        },
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
         },
-        handleJoin(state, action) {
-            if (!state.players.filter(x => x.name === action.payload.name)) {
-                state.players.push(action.payload);
-            }
-        },
-        clearJoinError(state, action) {
-            state.api.join.error = "";
-        }
-    },
-    extraReducers: builder => { 
-        builder.addCase(startNewGame.pending, (state, action) => { pending(state.api.start, action) });
-        builder.addCase(startNewGame.fulfilled, (state, action) => { fulfilled(state.api.start, action) });
-        builder.addCase(startNewGame.rejected, (state, action) => { rejected(state.api.start, action) });
-        builder.addCase(joinGame.pending, (state, action) => { pending(state.api.join, action) });
-        builder.addCase(joinGame.fulfilled, (state, action) => { fulfilled(state.api.join, action) });
-        builder.addCase(joinGame.rejected, (state, action) => { rejected(state.api.join, action) });
-        builder.addCase(stopGame.pending, (state, action) => { pending(state.api.stop, action) });
-        builder.addCase(stopGame.fulfilled, (state, action) => { fulfilled(state.api.stop, action) });
-        builder.addCase(stopGame.rejected, (state, action) => { rejected(state.api.stop, action) });
-        builder.addCase(listGames.pending, (state, action) => { pending(state.api.list, action) });
-        builder.addCase(listGames.fulfilled, (state, action) => { fulfilled(state.api.list, action) });
-        builder.addCase(listGames.rejected, (state, action) => { rejected(state.api.list, action) });
     }
 });
 
@@ -301,7 +178,6 @@ export const {
     handleNewGameCreated,
     onRouteToGame,
     handleJoin,
-    changeGame,
     updateGameList,
     updateSettings,
     clearWrongAnswer,
