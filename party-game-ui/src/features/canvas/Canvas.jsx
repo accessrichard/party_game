@@ -16,12 +16,11 @@ import {
 import { channelPush } from '../phoenix/phoenixMiddleware';
 
 import {
-    setFlash,
-    unansweredTimeout,
     handleChangeOwner,
     handleGenServerTimeout,
-    startRound
-} from '../multipleChoice/gameSlice';
+    mergeGameList,
+    endGame
+} from '../lobby/lobbySlice';
 
 const sendEvent = (topic, channelData, action) => (
     {
@@ -31,11 +30,6 @@ const sendEvent = (topic, channelData, action) => (
     });
 
 const events = (topic) => [
-    {
-        event: 'handle_next_question',
-        dispatcher: startRound(),
-        topic,
-    },
     /*    {
             event: 'handle_game_server_idle_timeout',
             dispatcher: handleGenServerTimeout(),
@@ -110,7 +104,7 @@ export default function Canvas() {
         gameCode       
      } = useSelector(state => state.lobby);
      
-     const canvasChannel = `game:${gameCode}`;
+     const canvasChannel = `canvas:${gameCode}`;    
 
     useBackButtonBlock();
     usePhoenixSocket();
@@ -186,20 +180,20 @@ export default function Canvas() {
         draw("lineTo", store.mouseMove, "function");
         draw("stroke", null, "function");
 
-        dispatch(channelPush(sendEvent("canvas:J", { commands: store.drawing }, "commands")));
+        dispatch(channelPush(sendEvent(canvasChannel, { commands: store.drawing }, "commands")));
 
         store.reset();
     }, []);
 
     function onStartClick(e) {
-        setTimerSeconds(10);
-        setIsTimerActive(!isTimerActive);
-
-        dispatch(channelPush(sendEvent("canvas:J", {}, "word")));
+        setTimerSeconds(60);
+        setIsTimerActive(true);
+        setIsIncrement(false);
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "word")));
     }
 
     function onNextClick(e) {
-        dispatch(channelPush(sendEvent("canvas:J", {}, "word")));
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "word")));
     }
 
     function onClearClick(e) {
@@ -213,7 +207,7 @@ export default function Canvas() {
         };
 
         context.clearRect(0, 0, canvas.width, canvas.height);
-        dispatch(channelPush(sendEvent("canvas:J", command, "commands")));
+        dispatch(channelPush(sendEvent(canvasChannel, command, "commands")));
     }
 
     function onSaveClick(e) {

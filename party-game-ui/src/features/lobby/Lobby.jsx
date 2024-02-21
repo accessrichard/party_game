@@ -145,7 +145,7 @@ export default function Lobby() {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "new_game",
-            data: {}
+            data: {name: gameName, url: url}
         }));
         e.preventDefault();
         return;
@@ -153,7 +153,7 @@ export default function Lobby() {
 
     function onGameChange(e) {
         const game = gameList.find(x => x.name == e.target.value);
-        dispatch(changeGame({ name: game.name }));
+        dispatch(changeGame({ name: game.name, url: game.url}));
     }
 
     function onGenServerTimeout() {

@@ -110,6 +110,7 @@ export const lobbySlice = createSlice({
         },       
         changeGame: (state, action) => {
             state.gameName = action.payload.name;
+            state.url = action.payload.url;
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
