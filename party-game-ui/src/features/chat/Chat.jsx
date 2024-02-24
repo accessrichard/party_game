@@ -25,8 +25,8 @@ const Chat = () => {
   const dispatch = useDispatch();
   const messages = useSelector(state => state.chat.messages);
   const chatBottomRef = useRef(null);
-  const player = useSelector(state => state.game.playerName);
-  const gameCode = useSelector(state => state.game.gameCode);
+  const player = useSelector(state => state.lobby.playerName);
+  const gameCode = useSelector(state => state.lobby.gameCode);
   const [text, setText] = useState("");
   const [isUserTyping, setIsUserTyping] = useState(false);
 

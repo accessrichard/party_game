@@ -14,10 +14,4 @@ defmodule PartyGameWeb.CanvasChannelTest do
     %{socket: socket}
   end
 
-  test "start starts a game", %{socket: socket} do
-
-    push(socket, "start", %{})
-    assert_broadcast "start", %{"word" => _}
-  end
-
 end

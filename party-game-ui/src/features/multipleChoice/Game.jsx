@@ -91,9 +91,9 @@ export default function Game() {
     const {
         isGameOwner,
         playerName,
-        gameName,        
-        gameCode       
-     } = useSelector(state => state.lobby);
+        gameName,
+        gameCode
+    } = useSelector(state => state.lobby);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
@@ -266,63 +266,63 @@ export default function Game() {
 
     return (
         <>
-            <NewGamePrompt isNewGamePrompt={settings.isNewGamePrompt} onStartGame={() => onStartGame()} />
-            {!isStartGamePrompt && <div className="full-width full-height flex-container flex-column">
-                <header>
-                    <h2 className="landscape-hidden">Buzz Game</h2>
-                </header>
-                <div className='flex-column'>
-                    {isOver && <span>Game Over</span>}
-                    {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
+            <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
+                <div className="full-width full-height flex-container flex-column">
+                    <header>
+                        <h2 className="landscape-hidden">Buzz Game</h2>
+                    </header>
+                    <div className='flex-column'>
+                        {isOver && <span>Game Over</span>}
+                        {(isHappy() || isWrong) && <Faces isHappy={!isWrong} className="no-pointer flex-column" />}
+                    </div>
+                    <div className='flex-coumn empty-space offset-phone-addressbar'>
+                        <Flash flash={flash}></Flash>
+
+                        {isWrong &&
+                            <span>Wrong{!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
+
+                                <Timer key={"wrongAnswer" + isWrong + settings.wrongAnswerTimeout}
+                                    isActive={isWrong}
+                                    isVisible={!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1}
+                                    timeFormat={"seconds"}
+                                    onTimerCompleted={onWrongAnswerTimerCompleted}
+                                    isIncrement={false}
+                                    numberSeconds={settings.wrongAnswerTimeout}>
+                                </Timer>
+                                {!canRetryWrongAnswer && isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
+                            </span>
+                        }
+                        <div className={(question || "").length < 40 ? "question question-big" : "question question-small"}>
+                            {question}
+                        </div>
+                        <div>
+                            <span className="font-14px">
+                                {startCountdown && "Game starts in "}
+                                {!startCountdown && isRoundStarted && "Round ends in "}
+
+                                {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
+                                    isActive={isTimerActive}
+                                    timeIncrement={-1}
+                                    onStartDateSet={setTimerStartDate}
+                                    isIncrement={false}
+                                    onTimerCompleted={onTimerCompleted}
+                                    timeFormat={"seconds"}
+                                    numberSeconds={timerSeconds} />}
+                            </span>
+                        </div>
+                        <Answers onAnswerClick={onAnswerClick}
+                            isDisabled={isDisabled}
+                            answers={answers}
+                            correct={correct}>
+                        </Answers>
+
+                        <div className="flex-column">
+                            {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
+                                <a className="app-link" href="/#" onClick={startClick}>Next</a>}
+                        </div>
+                    </div>
                 </div>
-                <div className='flex-coumn empty-space offset-phone-addressbar'>
-                    <Flash flash={flash}></Flash>
-
-                    {isWrong &&
-                        <span>Wrong{!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
-
-                            <Timer key={"wrongAnswer" + isWrong + settings.wrongAnswerTimeout}
-                                isActive={isWrong}
-                                isVisible={!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1}
-                                timeFormat={"seconds"}
-                                onTimerCompleted={onWrongAnswerTimerCompleted}
-                                isIncrement={false}
-                                numberSeconds={settings.wrongAnswerTimeout}>
-                            </Timer>
-                            {!canRetryWrongAnswer && isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
-                        </span>
-                    }
-                    <div className={(question || "").length < 40 ? "question question-big" : "question question-small"}>
-                        {question}
-                    </div>
-                    <div>
-                        <span className="font-14px">
-                            {startCountdown && "Game starts in "}
-                            {!startCountdown && isRoundStarted && "Round ends in "}
-
-                            {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
-                                isActive={isTimerActive}
-                                timeIncrement={-1}
-                                onStartDateSet={setTimerStartDate}
-                                isIncrement={false}
-                                onTimerCompleted={onTimerCompleted}
-                                timeFormat={"seconds"}
-                                numberSeconds={timerSeconds} />}
-                        </span>
-                    </div>
-                    <Answers onAnswerClick={onAnswerClick}
-                        isDisabled={isDisabled}
-                        answers={answers}
-                        correct={correct}>
-                    </Answers>
-
-                    <div className="flex-column">
-                        {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
-                            <a className="app-link" href="/#" onClick={startClick}>Next</a>}
-                    </div>
-                </div>
-
-            </div>}      
+            </NewGamePrompt>
         </>
     );
 }

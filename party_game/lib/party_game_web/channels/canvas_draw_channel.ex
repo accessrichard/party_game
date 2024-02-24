@@ -7,7 +7,7 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   alias PartyGame.Game.Player
   alias PartyGame.ChannelWatcher
   alias PartyGame.Lobby
-  alias PartyGame.Games.CanvasDraw.CanvasGame
+  alias PartyGame.Games.Canvas.CanvasGame
 
   @channel_name "canvas:"
 

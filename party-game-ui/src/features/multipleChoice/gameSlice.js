@@ -53,13 +53,12 @@ export const gameSlice = createSlice({
                 state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             }
             
-            //state.isGameStarted = !action.payload.data.isOver;
             state.isRoundStarted = true;
             state.question = action.payload.data.question;
             state.id = action.payload.data.id;
             state.answers = action.payload.data.answers;
             state.startCountdown = false;
-
+            state.flash = '';
             state.correct = '';
             state.roundWinner = '';
             state.isWrong = false;

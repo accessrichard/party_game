@@ -30,6 +30,8 @@ export default function NewGamePrompt(props) {
                     </h2>
                 </div>
             </div>}
+
+            {!isTimerActive && props.children}
         </>
     );
 }

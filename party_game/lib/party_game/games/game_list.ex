@@ -1,7 +1,7 @@
 defmodule PartyGame.Games.GameList do
   alias PartyGame.Games.MultipleChoice
   alias PartyGame.Game.GameMetaData
-  alias PartyGame.Games.CanvasDraw
+  alias PartyGame.Games.Canvas
 
   def list() do
     games = [
@@ -82,7 +82,7 @@ defmodule PartyGame.Games.GameList do
         location: "server",
         url: "/canvas",
         options: %{type: "draw_togather"},
-        module: CanvasDraw.CanvasGame
+        module: Canvas.CanvasGame
       },
       %GameMetaData{
         name: "Guess The Drawing",
@@ -91,7 +91,7 @@ defmodule PartyGame.Games.GameList do
         location: "server",
         url: "/canvas",
         options: %{type: "guessing_game"},
-        module: CanvasDraw.CanvasGame
+        module: Canvas.CanvasGame
       },
       %GameMetaData{
         name: "Alternating Draw Togather",
@@ -100,7 +100,7 @@ defmodule PartyGame.Games.GameList do
         location: "server",
         url: "/canvas",
         options: %{type: "alternate_draw"},
-        module: CanvasDraw.CanvasGame
+        module: Canvas.CanvasGame
       },
       %GameMetaData{
         name: "Free Draw Togather",
@@ -109,7 +109,7 @@ defmodule PartyGame.Games.GameList do
         location: "server",
         url: "/canvas",
         options: %{type: "free_draw"},
-        module: CanvasDraw.CanvasGame
+        module: Canvas.CanvasGame
       },
       %GameMetaData{
         name: "",
