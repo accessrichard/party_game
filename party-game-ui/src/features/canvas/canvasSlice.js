@@ -2,7 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     word: "",
-    commands: []
+    commands: [],
+    turn: "",
+    startTimerTime: null
 };
 
 export const canvasSlice = createSlice({
@@ -15,6 +17,15 @@ export const canvasSlice = createSlice({
         commands(state, action) {
             state.commands = action.payload.commands;
         },
+        handleNewGame(state, action) {
+            state.commands = [];
+            if (state.word !== action.payload.word && action.payload.word !== undefined){
+                state.startTimerTime = new Date().toISOString();
+            }
+
+            state.word = action.payload.word;
+            state.turn = action.payload.turn;
+        },
         reset(state, action) {
             state.commands = [];
             state.word = "";
@@ -22,5 +33,5 @@ export const canvasSlice = createSlice({
     }
 });
 
-export const { word, commands, reset } = canvasSlice.actions;
+export const { word, commands, reset, handleNewGame } = canvasSlice.actions;
 export default canvasSlice.reducer;

@@ -2,12 +2,10 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useBackButtonBlock from '../useBackButtonBlock'
 import Flash from '../common/Flash';
-import { Navigate } from 'react-router-dom';
 import Timer from '../common/Timer';
 import { push } from "redux-first-history";
-import usePrevious from '../usePrevious';
 import ColorButton from './ColorButton';
-import { word, commands, reset } from './canvasSlice'
+import { word, commands, reset, handleNewGame } from './canvasSlice'
 import {
     usePhoenixChannel,
     usePhoenixEvents,
@@ -18,7 +16,6 @@ import { channelPush } from '../phoenix/phoenixMiddleware';
 import {
     handleChangeOwner,
     handleGenServerTimeout,
-    mergeGameList,
     endGame
 } from '../lobby/lobbySlice';
 
@@ -30,12 +27,11 @@ const sendEvent = (topic, channelData, action) => (
     });
 
 const events = (topic) => [
-    /*    {
-            event: 'handle_game_server_idle_timeout',
-            dispatcher: handleGenServerTimeout(),
-            topic,
-        },
-    */
+    {
+        event: 'handle_game_server_idle_timeout',
+        dispatcher: handleGenServerTimeout(),
+        topic,
+    },
     {
         event: 'handle_room_owner_change',
         dispatcher: handleChangeOwner(),
@@ -44,6 +40,11 @@ const events = (topic) => [
     {
         event: 'word',
         dispatcher: word(),
+        topic,
+    },
+    {
+        event: 'handle_new_game',
+        dispatcher: handleNewGame(),
         topic,
     },
     {
@@ -100,33 +101,50 @@ export default function Canvas() {
     const {
         isGameOwner,
         playerName,
-        gameName,        
-        gameCode       
-     } = useSelector(state => state.lobby);
-     
-     const canvasChannel = `canvas:${gameCode}`;    
+        gameName,
+        gameCode
+    } = useSelector(state => state.lobby);
 
-    useBackButtonBlock();
+    const canvasChannel = `canvas:${gameCode}`;
+
     usePhoenixSocket();
     usePhoenixChannel(canvasChannel, { name: playerName });
     usePhoenixEvents(canvasChannel, events);
 
     const {
         word,
-        commands
+        commands,
+        turn,
+        startTimerTime
     } = useSelector(state => state.canvas);
 
     const [activeColorIndex, setActiveColorIndex] = useState(0);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(10);
     const [isIncrement, setIsIncrement] = useState(true);
+    const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
+    useBackButtonBlock(isBackButtonBlocked);
 
     const dispatch = useDispatch();
     const canvasRef = useRef(null);
 
+    if (!gameCode) {
+        dispatch(push('/'))
+    }
+
     useEffect(() => {
-        return () => {store.reset(); dispatch(reset())}; 
+        return () => { store.reset(); dispatch(reset()) };
     }, []);
+
+
+    useEffect(() => {
+        setIsIncrement(false);
+        setTimerSeconds(60);
+        setIsTimerActive(false);
+        if (startTimerTime) {
+            setIsTimerActive(true)
+        }
+    }, [startTimerTime])
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -186,14 +204,12 @@ export default function Canvas() {
     }, []);
 
     function onStartClick(e) {
-        setTimerSeconds(60);
-        setIsTimerActive(true);
-        setIsIncrement(false);
-        dispatch(channelPush(sendEvent(canvasChannel, {}, "word")));
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
     }
 
     function onNextClick(e) {
-        dispatch(channelPush(sendEvent(canvasChannel, {}, "word")));
+        onClearClick(e);
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }
 
     function onClearClick(e) {
@@ -220,7 +236,9 @@ export default function Canvas() {
     }
 
     function onBackClick(e) {
-        dispatch(push("/lobby"));
+        dispatch(endGame());
+        setIsBackButtonBlocked(false);
+        dispatch(push('/lobby'))
     }
 
     function onColorButtonClick(e) {
@@ -284,7 +302,6 @@ export default function Canvas() {
 
         let colors = document.getElementsByClassName('color-button');
         Array.from(colors).forEach((color, idx) => {
-
             let colorButton = window.getComputedStyle(color).backgroundColor;
             if (toHex(colorButton) === context.strokeStyle) {
                 setActiveColorIndex(idx);
@@ -295,18 +312,19 @@ export default function Canvas() {
     return (
         <>
             <div className="container">
-                <h1 id="word-game">Drawing Game - {word}</h1>
+                <h1 id="word-game">Drawing Game - {playerName == turn && word}</h1>
             </div>
             <div id="canvas-overlay"><div id="visible-area">Visible Area</div></div>
             <canvas ref={canvasRef} ></canvas>
             <div className="container">
                 <div>
-                <Timer
-                    isActive={isTimerActive}
-                    onTimerCompleted={() => {}}
-                    timeIncrement={isIncrement ? 1 : -1}
-                    isIncrement={isIncrement}
-                    numberSeconds={timerSeconds} />
+                    <Timer key={startTimerTime}
+                        restartKey={startTimerTime}
+                        isActive={isTimerActive}
+                        onTimerCompleted={() => { }}
+                        timeIncrement={isIncrement ? 1 : -1}
+                        isIncrement={isIncrement}
+                        numberSeconds={timerSeconds} />
                 </div>
                 <div className="break"></div>
                 <div>
@@ -322,8 +340,11 @@ export default function Canvas() {
                 </div>
                 <div className="break"></div>
                 <div>
+
                     <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>
-                    <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next</button>
+                    {isGameOwner && <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next</button>}
+
+
                     <button id="back" className="btn-default" type="button" onClick={onBackClick}>Back</button>
                     <button id="clear" className="btn-default" type="button" onClick={onClearClick}>Clear</button>
                     <button id="save" className="btn-default" type="button" onClick={onSaveClick}>Save</button>

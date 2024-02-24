@@ -16,10 +16,18 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     %{game_room | game: %{game_room.game | turn: turn.name }}
   end
 
-  def chanage_word(%GameRoom{} = game_room) do
-    %{game_room | game: %{game_room.game | word: Enum.at(word(1), 0) }}
+  def change_word(%GameRoom{} = game_room) do
+    word = Enum.at(word(1), 0)
+    %{game_room | game: %{game_room.game | word: word }}
   end
 
+  def start_round(%GameRoom{} = game_room) do
+    %{game_room | game: %{game_room.game | round_started: true }}
+  end
+
+  def stop_round(%GameRoom{} = game_room) do
+    %{game_room | game: %{game_room.game | round_started: false }}
+  end
 
   def word(count) do
     json = File.read!(Path.join(@word_path, "drawings.json"))

@@ -2,9 +2,13 @@ import { useEffect } from 'react';
 import { history } from './store';
 
 
-export default function useBackButtonBlock() {
+export default function useBackButtonBlock(isEnabled) {
     useEffect(() => {
         const unblock = history.block((tx) => {
+            if (!isEnabled) {
+                return true;
+            }
+
             if (tx.action === "POP" && tx.location.pathname === "/lobby") {
                 return false;
             }
@@ -23,6 +27,6 @@ export default function useBackButtonBlock() {
         return () => {
             unblock();
         };
-    }, []);
+    }, [isEnabled]);
 }
 

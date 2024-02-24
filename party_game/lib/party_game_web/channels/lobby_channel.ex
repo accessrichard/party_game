@@ -7,6 +7,7 @@ defmodule PartyGameWeb.LobbyChannel do
   alias PartyGame.{Server, Lobby}
   alias PartyGame.ChannelWatcher
   alias PartyGame.Game.Player
+  import PartyGameWeb.GameUtils
 
 
   @channel_name "lobby:"
@@ -48,7 +49,6 @@ defmodule PartyGameWeb.LobbyChannel do
 
     push(socket, "presence_state", Presence.list(socket))
     player = Player.add_player(socket.assigns.name)
-
     broadcast_from(socket, "handle_join", player)
     {:noreply, socket}
   end
@@ -92,12 +92,6 @@ defmodule PartyGameWeb.LobbyChannel do
     Server.update_game(game_room)
 
     :ok
-  end
-
-  defp game_code(topic) do
-    [_ | code] = String.split(topic, ":")
-    [code] = code
-    code
   end
 
   def leave(topic, name) do

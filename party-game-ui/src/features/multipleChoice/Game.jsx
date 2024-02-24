@@ -24,11 +24,11 @@ import {
 } from './gameSlice';
 
 import {
-    handleChangeOwner,
-    handleGenServerTimeout,
     mergeGameList,
     endGame
 } from '../lobby/lobbySlice';
+
+import  useLobbyEvents  from '../lobby/useLobbyEvents';
 
 const sendEvent = (channel, channelData, action) => (
     {
@@ -54,21 +54,12 @@ const events = (topic) => [
         topic,
     },
     {
-        event: 'handle_game_server_idle_timeout',
-        dispatcher: handleGenServerTimeout(),
-        topic,
-    },
-    {
-        event: 'handle_room_owner_change',
-        dispatcher: handleChangeOwner(),
-        topic,
-    },
-    {
         event: 'handle_new_game_created',
         dispatcher: handleNewGameCreated(),
         topic
-    },
+    }
 ]
+
 
 export default function Game() {
 
@@ -103,20 +94,28 @@ export default function Game() {
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(settings.isNewGamePrompt);
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
+    const [isGameCreated, setIsGameCreated] = useState(false);
+
+
     const prevRound = usePrevious(round);
     const gameChannel = `game:${gameCode}`;
 
     usePhoenixChannel(gameChannel, { name: playerName });
     usePhoenixEvents(gameChannel, events);
-    useBackButtonBlock();
+    useLobbyEvents();
+    useBackButtonBlock(true);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
 
     useEffect(() => {
-        if (isGameOwner)
-            handleCreateGame()
-    }, [isGameOwner]);
+        if (isGameOwner && !isGameCreated)
+        {
+            handleCreateGame();
+        }   
+
+        setIsGameCreated(true);
+    }, [isGameOwner, isGameCreated]);
 
     /**
      * Sets a delay timeout on wrong answers as configured in the settings.

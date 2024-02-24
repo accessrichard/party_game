@@ -8,6 +8,8 @@ import Scores from '../common/Scores';
 import { getScores } from './gameSlice';
 import { push } from "redux-first-history";
 import { Confetti } from '@neoconfetti/react';
+import  useLobbyEvents  from '../lobby/useLobbyEvents';
+
 
 
 function displayWinner(scores) {
@@ -28,12 +30,15 @@ function displayWinner(scores) {
 function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
+    useLobbyEvents();
 
-    const {isGameStarted, gameCode, isOver, round }  = useSelector(state => state.game);
+    const {isGameStarted, gameCode, url }  = useSelector(state => state.lobby);
+    const {isOver, round }  = useSelector(state => state.game);
+
     const gameChannel = `game:${gameCode}`;
 
-    if (isGameStarted && !isOver) {
-        return <Navigate to="/game" />
+    if (isGameStarted) {
+        return dispatch(push(url || '/game'))
     }
 
     if (!gameChannel) {

@@ -11,6 +11,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   alias PartyGame.Game.GameRoom
   alias PartyGame.Games.GameList
   alias PartyGame.Game.MultipleChoice
+  import PartyGameWeb.GameUtils
 
   @channel_name "game:"
 
@@ -40,19 +41,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
-    :ok =
-      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
-
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.name, %{
-        online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
-        typing: false
-      })
-
-    push(socket, "presence_state", Presence.list(socket))
-    player = Player.add_player(socket.assigns.name)
-
-    broadcast_from(socket, "handle_join", player)
     {:noreply, socket}
   end
 
@@ -78,10 +66,10 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     game_room =
       if game_location == "client" do
         multiple_choice = MultipleChoice.create_game(MultipleChoice.new, client_form)
-        GameRoom.create_game(server_game, %{game: multiple_choice})
+        %{server_game | game: multiple_choice}
       else
         multiple_choice = MultipleChoice.create_game(MultipleChoice.new, %{})
-        GameRoom.create_game(server_game, %{game: multiple_choice})
+        %{server_game | game: multiple_choice}
       end
 
     questions =
@@ -197,29 +185,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     {:noreply, socket}
   end
 
-  @impl true
-  def terminate(_reason, socket) do
-    remove_player(Server.lookup(game_code(socket.topic)), socket)
-  end
-
-  defp remove_player({:error, _}, _), do: :ok
-
-  defp remove_player({:ok, _}, socket) do
-    game_room =
-      Server.get_game(game_code(socket.topic))
-      |> Lobby.remove_player(socket.assigns.name)
-
-    Server.update_game(game_room)
-
-    :ok
-  end
-
-  defp game_code(topic) do
-    [_ | code] = String.split(topic, ":")
-    [code] = code
-    code
-  end
-
   defp reply_with_questions(socket, %{is_new?: isNew, game_room: game_room}) do
     [question | _] = game_room.game.questions
     resp = %{"data" => question, "isNew" => isNew}
@@ -235,38 +200,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     {:noreply, socket}
   end
 
-  def leave(topic, name) do
-    players = Map.keys(Presence.list("lobby:" <> game_code(topic)))
-
-    if players == [] do
-      Server.stop(game_code(topic))
-    else
-      player_leave(Server.lookup(game_code(topic)), name, players, topic)
-    end
-  end
-
-  defp player_leave({:error, _}, _, _, _), do: :ok
-
-  defp player_leave({:ok, _}, name, players, topic) do
-    game_room = Server.get_game(game_code(topic))
-    game_room = Lobby.remove_player(game_room, name)
-
-    game_room =
-      if name == game_room.room_owner do
-        elect_new_game_owner(players, topic, game_room)
-      else
-        game_room
-      end
-
-    Server.update_game(game_room)
-  end
-
-  defp elect_new_game_owner(players, topic, game_room) do
-    new_owner = List.first(players)
-    game_room = Lobby.update_room_owner(game_room, new_owner)
-    PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
-    game_room
-  end
 
   defp next_question(%GameRoom{} = game_room) when game_room.game.questions == [] do
     %{question: "", answers: [], id: Ecto.UUID.autogenerate()}

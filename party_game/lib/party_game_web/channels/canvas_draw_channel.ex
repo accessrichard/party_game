@@ -2,12 +2,13 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   require Logger
   use PartyGameWeb, :channel
 
-  alias PartyGameWeb.Presence
   alias PartyGame.Server
   alias PartyGame.Game.Player
   alias PartyGame.ChannelWatcher
   alias PartyGame.Lobby
   alias PartyGame.Games.Canvas.CanvasGame
+
+  import PartyGameWeb.GameUtils
 
   @channel_name "canvas:"
 
@@ -19,7 +20,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
       {:ok, _} ->
         name = Map.get(payload, "name")
         socket = assign(socket, :name, name)
-        send(self(), {:after_join})
         {:ok, socket}
 
       _ ->
@@ -31,25 +31,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
     broadcast(socket, "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_info({:after_join}, socket) do
-    :ok =
-      ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
-
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.name, %{
-        online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
-        typing: false
-      })
-
-    push(socket, "presence_state", Presence.list(socket))
-    player = Player.add_player(socket.assigns.name)
-
-    broadcast_from(socket, "handle_join", player)
     {:noreply, socket}
   end
 
@@ -77,42 +58,29 @@ defmodule PartyGameWeb.CanvasDrawChannel do
     {:noreply, socket}
   end
 
-  def leave(topic, name) do
-    players = Map.keys(Presence.list("lobby:" <> game_code(topic)))
-
-    if players == [] do
-      Server.stop(game_code(topic))
-    else
-      player_leave(Server.lookup(game_code(topic)), name, players, topic)
-    end
-  end
-
-  defp player_leave({:error, _}, _, _, _), do: :ok
-
-  defp player_leave({:ok, _}, name, players, topic) do
-    game_room = Server.get_game(game_code(topic))
-    game_room = Lobby.remove_player(game_room, name)
-
+  def handle_in("new_game", _, socket) do
     game_room =
-      if name == game_room.room_owner do
-        elect_new_game_owner(players, topic, game_room)
-      else
-        game_room
-      end
+      Server.get_game(game_code(socket.topic))
+      |> Lobby.set_game(CanvasGame.new(%{name: "free_draw"}))
+      |> CanvasGame.change_word()
+      |> CanvasGame.change_turn()
+      |> CanvasGame.start_round()
+      |> Server.update_game()
 
-    Server.update_game(game_room)
+    broadcast(socket, "handle_new_game", %{"turn" => game_room.game.turn, "word" => game_room.game.word})
+
+    {:noreply, socket}
   end
 
-  defp elect_new_game_owner(players, topic, game_room) do
-    new_owner = List.first(players)
-    game_room = Lobby.update_room_owner(game_room, new_owner)
-    PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
-    game_room
-  end
+  def handle_in("next_turn", _, socket) do
+    game_room =
+      Server.get_game(game_code(socket.topic))
+      |> CanvasGame.change_word()
+      |> CanvasGame.change_turn()
+      |> Server.update_game()
 
-  defp game_code(topic) do
-    [_ | code] = String.split(topic, ":")
-    [code] = code
-    code
+    broadcast(socket, "handle_new_game", %{"turn" => game_room.game.turn, "word" => game_room.game.word})
+
+    {:noreply, socket}
   end
 end

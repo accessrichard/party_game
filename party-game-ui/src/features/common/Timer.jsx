@@ -34,16 +34,23 @@ export default function Timer(props) {
         isActive = false,
         onTimerCompleted,
         timeFormat,
-        onStartDateSet
+        onStartDateSet,
+        restartKey
     } = props;
 
     const [seconds, setSeconds] = useState(isIncrement ? 0 : numberSeconds);
     const [startDate, setStartDate] = useState(null);
-
     const prevActive = usePrevious(isActive);
 
+    /// If you:
+    ///  setIsActive(true); setIsActive(false); setIsActive(true); 
+    /// react will batch those ops and the result will be a skipping
+    /// of the value false. prevRestartKey is a hack to force re-render
+    /// by assigning a new rand value like new Date().toISOString
+    const prevRestartKey = usePrevious(restartKey);
+
     useEffect(() => {
-        if (!prevActive && isActive) {
+        if ((!prevActive && isActive) || prevRestartKey !== restartKey) {
             const date = new Date();
             if (isIncrement) {
                 date.setSeconds(date.getSeconds() - 1);

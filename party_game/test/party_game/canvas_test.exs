@@ -27,10 +27,10 @@ defmodule PartyGame.CanvasTest do
       game_room =
         Lobby.new()
         |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe"}))
-        |> CanvasGame.chanage_word()
+        |> CanvasGame.change_word()
 
         word = game_room.game.word
-        assert word !==  CanvasGame.chanage_word(game_room).game.word
+        assert word !==  CanvasGame.change_word(game_room).game.word
     end
 
 
