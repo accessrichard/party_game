@@ -5,8 +5,9 @@ const initialState = {
     commands: [],
     guesses: [],
     turn: "",
-    startTimerTime: null
-};
+    startTimerTime: null,
+    minSize: []
+}
 
 export const canvasSlice = createSlice({
     name: 'canvas',
@@ -20,21 +21,22 @@ export const canvasSlice = createSlice({
         },
         handleNewGame(state, action) {
             state.commands = [];
-            if (state.word !== action.payload.word && action.payload.word !== undefined){
+            if (state.word !== action.payload.word && action.payload.word !== undefined) {
                 state.startTimerTime = new Date().toISOString();
             }
 
             state.word = action.payload.word;
             state.turn = action.payload.turn;
+            state.minSize = action.payload.size;
         },
         handleGuess(state, action) {
-            console.log(action.payload.guess)
             state.guesses.push(action.payload.guess);
         },
         reset(state, action) {
             state.commands = [];
             state.word = "";
             state.guesses = [];
+            state.displays = [];
         }
     }
 });

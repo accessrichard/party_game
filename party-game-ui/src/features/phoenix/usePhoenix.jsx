@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 export function usePhoenixSocket() {
     const dispatch = useDispatch();
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    
+
     /**
      * Make a socket connection to the server.
      */
@@ -22,7 +22,7 @@ export function usePhoenixSocket() {
         if (hasConnectedSocket(socketStatus)) {
             return;
         }
-        
+
         dispatch(socketConnect({
             host: import.meta.env.VITE_SOCKET_URL || '/socket',
             params: {}
@@ -36,7 +36,7 @@ export function usePhoenixChannel(topic, channelJoinData, opts = {}) {
     const dispatch = useDispatch();
     const channels = useSelector(state => state.phoenix.channels);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    
+
     /**
     * Join the games channel over the socket.
     * 
@@ -63,26 +63,19 @@ export function usePhoenixChannel(topic, channelJoinData, opts = {}) {
     }, [topic, channelJoinData, socketStatus, channels]);
 
     useEffect(() => {
-       
         return () => {
-            if (persisted) {
-                return;
+            if (!persisted) {
+                dispatch(channelLeave({ topic }));
             }
-
-            dispatch(channelLeave({
-                topic
-            }));
-
         }
     }, []);
 }
-
 
 export function usePhoenixEvents(topic, channelOnEvents) {
     const dispatch = useDispatch();
     const channels = useSelector(state => state.phoenix.channels);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    
+
     /**
      * Subscribe to events in a channel over a socket.
      * 
@@ -91,8 +84,8 @@ export function usePhoenixEvents(topic, channelOnEvents) {
      *  b. The channel is joined.
      */
     useEffect(() => {
-        if (!hasConnectedSocket(socketStatus) 
-         || !hasConnectedChannel(channels, topic)) {
+        if (!hasConnectedSocket(socketStatus)
+            || !hasConnectedChannel(channels, topic)) {
             return
         }
 
@@ -101,3 +94,10 @@ export function usePhoenixEvents(topic, channelOnEvents) {
         return () => { channelOnEvents(topic).forEach((e) => dispatch(channelOff(e))) }
     }, [topic, channels, socketStatus, channelOnEvents]);
 }
+
+export const sendEvent = (topic, channelData, action) => (
+    {
+        topic: topic,
+        event: action,
+        data: channelData
+    });

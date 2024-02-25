@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useBackButtonBlock from '../useBackButtonBlock'
 import useLobbyEvents from '../lobby/useLobbyEvents';
@@ -7,24 +7,11 @@ import GuessInput from './GuessInput';
 import { push } from "redux-first-history";
 import ColorPallette from './ColorPallette';
 import { word, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
-import {
-    usePhoenixChannel,
-    usePhoenixEvents,
-    usePhoenixSocket
-} from '../phoenix/usePhoenix';
+import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import NewGamePrompt from '../common/NewGamePrompt';
+import { endGame } from '../lobby/lobbySlice';
 
-import {
-    endGame
-} from '../lobby/lobbySlice';
-
-const sendEvent = (topic, channelData, action) => (
-    {
-        topic: topic,
-        event: action,
-        data: channelData
-    });
 
 const events = (topic) => [
     {
@@ -78,8 +65,13 @@ function move(value) {
     store.mouseMove.push(value);
 }
 
+const displaySize = [canvasWidth(), canvasHeight()]
+
+
 export default function Canvas() {
 
+    const dispatch = useDispatch();    
+    const canvasRef = useRef(null);
     const {
         isGameOwner,
         playerName,
@@ -87,10 +79,10 @@ export default function Canvas() {
         gameCode
     } = useSelector(state => state.lobby);
 
-    const canvasChannel = `canvas:${gameCode || "J"}`;
+    const canvasChannel = `canvas:${gameCode}`;
 
     usePhoenixSocket();
-    usePhoenixChannel(canvasChannel, { name: playerName });
+    usePhoenixChannel(canvasChannel, { name: playerName, size: displaySize });
     usePhoenixEvents(canvasChannel, events);
     useLobbyEvents();
 
@@ -101,7 +93,6 @@ export default function Canvas() {
         startTimerTime
     } = useSelector(state => state.canvas);
 
-    const [activeColorIndex, setActiveColorIndex] = useState(0);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(10);
     const [isIncrement, setIsIncrement] = useState(true);
@@ -112,8 +103,7 @@ export default function Canvas() {
 
     useBackButtonBlock(isBackButtonBlocked);
 
-    const dispatch = useDispatch();
-    const canvasRef = useRef(null);
+ 
 
     if (!gameCode) {
         dispatch(push('/'))
@@ -122,7 +112,6 @@ export default function Canvas() {
     useEffect(() => {
         return () => { store.reset(); dispatch(reset()) };
     }, []);
-
 
     useEffect(() => {
         setIsIncrement(false);
@@ -166,7 +155,7 @@ export default function Canvas() {
     }
 
 
-    function mouseMove(event){
+    function mouseMove(event) {
         if (!store.isDrawing) {
             return;
         }
@@ -244,7 +233,7 @@ export default function Canvas() {
     useEffect(() => {
         const context = canvasRef.current.getContext("2d");
 
-        let tempStrokeStyle =  strokeStyle;
+        let tempStrokeStyle = strokeStyle;
 
         commands.forEach(command => onCommand(command));
 
@@ -332,9 +321,9 @@ export default function Canvas() {
                 <div className="break"></div>
 
                 {turn != playerName &&
-                <GuessInput onSubmit={onGuessSubmit} />}
+                    <GuessInput onSubmit={onGuessSubmit} />}
                 <div className="break"></div>
-                <ColorPallette onColorChange={onColorChange} strokeStyle={strokeStyle}/>
+                <ColorPallette onColorChange={onColorChange} strokeStyle={strokeStyle} />
                 <div className="break"></div>
                 <div>
                     <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>

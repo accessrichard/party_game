@@ -18,6 +18,7 @@ defmodule PartyGameWeb.CanvasDrawChannel do
       {:ok, _} ->
         name = Map.get(payload, "name")
         socket = assign(socket, :name, name)
+        send(self(), {:after_join, payload})
         {:ok, socket}
 
       _ ->
@@ -33,8 +34,26 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   end
 
   @impl true
+  def handle_info({:after_join, payload}, socket) do
+    size = Map.get(payload, "size", [])
+    name = Map.get(payload, "name", "")
+
+    Server.get_game(game_code(socket.topic))
+    |> CanvasGame.add_size(name, size)
+    |> Server.update_game()
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_in("commands", payload, socket) do
     broadcast_from(socket, "commands", payload)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("size", payload, socket) do
+    broadcast_from(socket, "handle_size", payload)
     {:noreply, socket}
   end
 
@@ -59,8 +78,8 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   @impl true
   def handle_in("guess", payload, socket) do
     Server.get_game(game_code(socket.topic))
-      |> CanvasGame.add_guess(Map.get(payload, "guess"))
-      |> Server.update_game()
+    |> CanvasGame.add_guess(Map.get(payload, "guess"))
+    |> Server.update_game()
 
     broadcast(socket, "handle_guess", payload)
     {:noreply, socket}
@@ -75,7 +94,11 @@ defmodule PartyGameWeb.CanvasDrawChannel do
       |> CanvasGame.start_round()
       |> Server.update_game()
 
-    broadcast(socket, "handle_new_game", %{"turn" => game_room.game.turn, "word" => game_room.game.word})
+    broadcast(socket, "handle_new_game", %{
+      "turn" => game_room.game.turn,
+      "word" => game_room.game.word,
+      "size" => CanvasGame.min_size(game_room)
+    })
 
     {:noreply, socket}
   end
@@ -87,7 +110,10 @@ defmodule PartyGameWeb.CanvasDrawChannel do
       |> CanvasGame.change_turn()
       |> Server.update_game()
 
-    broadcast(socket, "handle_new_game", %{"turn" => game_room.game.turn, "word" => game_room.game.word})
+    broadcast(socket, "handle_new_game", %{
+      "turn" => game_room.game.turn,
+      "word" => game_room.game.word
+    })
 
     {:noreply, socket}
   end

@@ -13,25 +13,25 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     index = if index == nil, do: 0, else: index + 1
     index = if index > length(game_room.players) - 1, do: 0, else: index
     turn = Enum.at(game_room.players, index)
-    %{game_room | game: %{game_room.game | turn: turn.name }}
+    %{game_room | game: %{game_room.game | turn: turn.name}}
   end
 
   def change_word(%GameRoom{} = game_room) do
     word = Enum.at(word(1), 0)
-    %{game_room | game: %{game_room.game | word: word }}
+    %{game_room | game: %{game_room.game | word: word}}
   end
 
   def start_round(%GameRoom{} = game_room) do
-    %{game_room | game: %{game_room.game | round_started: true }}
+    %{game_room | game: %{game_room.game | round_started: true}}
   end
 
   def stop_round(%GameRoom{} = game_room) do
-    %{game_room | game: %{game_room.game | round_started: false }}
+    %{game_room | game: %{game_room.game | round_started: false}}
   end
 
   def add_guess(%GameRoom{} = game_room, guess) do
     guesses = Map.get(game_room.game, :guesses, [])
-    %{game_room | game: %{game_room.game | guesses: [guess | guesses] }}
+    %{game_room | game: %{game_room.game | guesses: [guess | guesses]}}
   end
 
   def word(count) do
@@ -39,4 +39,26 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     list = Jason.decode!(json)
     Enum.take_random(list, count)
   end
+
+  def add_size(%GameRoom{} = game_room, name, size) do
+    player = Enum.find(game_room.players, &(&1.name == name))
+
+    case player do
+      nil ->
+        game_room
+
+      p ->
+        updated = PartyGame.Game.Player.apply_changeset(p, %{display_size: size})
+        PartyGame.Lobby.update_player(game_room, updated)
+    end
+  end
+
+  def min_size(%GameRoom{} = game_room) do
+    Enum.reduce(game_room.players, [nil,nil], fn player, acc ->
+      [x | [y | _]] = if player.display_size == [], do: [nil, nil], else: player.display_size
+      [acc_x | [acc_y | _]] = acc
+      [min(x, acc_x), min(y, acc_y)]
+    end)
+  end
+
 end

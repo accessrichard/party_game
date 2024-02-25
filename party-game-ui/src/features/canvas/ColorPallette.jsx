@@ -17,6 +17,7 @@ export default function ColorPallette(props) {
     const [activeColorIndex, setActiveColorIndex] = useState(0);
 
     function onColorButtonClick(e) {
+        /// TODO: no longer needed
         setActiveColorIndex(e.target.getAttribute("data-id"));
         const color = colorPallette[e.target.getAttribute("data-id")];
         props.onColorChange && props.onColorChange(color);

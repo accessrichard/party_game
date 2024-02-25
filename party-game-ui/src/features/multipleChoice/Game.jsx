@@ -1,19 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
-import { Navigate } from 'react-router-dom';
 import Timer from '../common/Timer';
-import { push } from "redux-first-history";
 import usePrevious from '../usePrevious';
-import { usePhoenixEvents, usePhoenixChannel } from '../phoenix/usePhoenix';
 import useBackButtonBlock from '../useBackButtonBlock';
-import { channelPush } from '../phoenix/phoenixMiddleware';
-import { toServerSettings } from '../multipleChoice/settingsApi';
 import NewGamePrompt from '../common/NewGamePrompt';
 import useLobbyEvents from '../lobby/useLobbyEvents';
-
+import { Navigate } from 'react-router-dom';
+import { push } from "redux-first-history";
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import { toServerSettings } from '../multipleChoice/settingsApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { mergeGameList, endGame } from '../lobby/lobbySlice';
+import { usePhoenixEvents, usePhoenixChannel, sendEvent } from '../phoenix/usePhoenix';
 import {
     clearWrongAnswer,
     unansweredTimeout,
@@ -23,18 +23,6 @@ import {
     handleWrongAnswer,
     setFlash,
 } from './gameSlice';
-
-import {
-    mergeGameList,
-    endGame
-} from '../lobby/lobbySlice';
-
-const sendEvent = (channel, channelData, action) => (
-    {
-        topic: channel,
-        event: action,
-        data: channelData
-    });
 
 const events = (topic) => [
     {
@@ -85,6 +73,8 @@ export default function Game() {
         gameCode
     } = useSelector(state => state.lobby);
 
+    const creativeGames = useSelector(state => state.creative.games);
+    const serverGames = useSelector(state => state.lobby.api.list.data);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
@@ -92,9 +82,7 @@ export default function Game() {
     const [isDisabled, setIsDisabled] = useState(false);
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(settings.isNewGamePrompt);
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
-
     const [isGameCreated, setIsGameCreated] = useState(false);
-
 
     const prevRound = usePrevious(round);
     const gameChannel = `game:${gameCode}`;
@@ -103,9 +91,6 @@ export default function Game() {
     usePhoenixEvents(gameChannel, events);
     useLobbyEvents();
     useBackButtonBlock(true);
-
-    const creativeGames = useSelector(state => state.creative.games);
-    const serverGames = useSelector(state => state.lobby.api.list.data);
 
     useEffect(() => {
         if (isGameOwner && !isGameCreated)
@@ -210,7 +195,9 @@ export default function Game() {
     useEffect(() => {
         let timeout;
         if (isOver) {
+            
             dispatch(endGame());
+            
             timeout = setTimeout(() => {
                 dispatch(push('/score'));
             }, 1000);
@@ -222,10 +209,7 @@ export default function Game() {
     }, [isOver, settings.nextQuestionTime]);
 
     function handleCreateGame() {
-
         const list = mergeGameList(serverGames, creativeGames);
-
-
         let game = list.find(x => x.name === gameName);
 
         if (game && game.location === 'client') {
@@ -235,11 +219,8 @@ export default function Game() {
 
         const payload = { game: game, rounds: settings.rounds };
         const data = { name: playerName, settings: toServerSettings(settings), ...payload };
-        dispatch(channelPush({
-            topic: gameChannel,
-            event: "new_game",
-            data: data
-        }));
+
+        dispatch(channelPush(sendEvent(gameChannel, data, "new_game")));
     }
 
     function isHappy() {
@@ -256,10 +237,7 @@ export default function Game() {
             return
         }
 
-        dispatch(channelPush({
-            topic: gameChannel,
-            event: "start_round"
-        }));
+        dispatch(channelPush(sendEvent(gameChannel, null, "star_round")));
     }
 
     return (

@@ -44,6 +44,35 @@ defmodule PartyGame.CanvasTest do
         assert guess === "test2"
     end
 
+    test "add_size/2 adds a player display size" do
+      game_room =
+        Lobby.new()
+        |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe"}))
+        |> Lobby.add_player("rich1")
+        |> Lobby.add_player("rich2")
+        |> CanvasGame.add_size("rich1", [520.3, 835.94])
+
+        player = Enum.find(game_room.players, &(&1.name == "rich1"))
+        [h | [t | _]] = assert player.display_size
+
+        assert h == 520.3 && t == 835.94
+    end
+
+    test "min_size/2 gets min display size" do
+      min_size =
+        Lobby.new()
+        |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe"}))
+        |> Lobby.add_player("rich1")
+        |> Lobby.add_player("rich2")
+        |> Lobby.add_player("rich3")
+        |> CanvasGame.add_size("rich1", [520.3, 835.94])
+        |> CanvasGame.add_size("rich2", [50, 8333.94])
+        |> CanvasGame.add_size("rich3", [400, 500])
+        |> CanvasGame.min_size()
+
+        [h | [t | _]] = min_size
+        assert h == 50 && t == 500
+    end
 
   end
 end
