@@ -237,7 +237,7 @@ export default function Game() {
             return
         }
 
-        dispatch(channelPush(sendEvent(gameChannel, null, "star_round")));
+        dispatch(channelPush(sendEvent(gameChannel, null, "start_round")));
     }
 
     return (
