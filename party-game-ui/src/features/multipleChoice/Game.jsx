@@ -12,6 +12,7 @@ import useBackButtonBlock from '../useBackButtonBlock';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { toServerSettings } from '../multipleChoice/settingsApi';
 import NewGamePrompt from '../common/NewGamePrompt';
+import useLobbyEvents from '../lobby/useLobbyEvents';
 
 import {
     clearWrongAnswer,
@@ -27,8 +28,6 @@ import {
     mergeGameList,
     endGame
 } from '../lobby/lobbySlice';
-
-import  useLobbyEvents  from '../lobby/useLobbyEvents';
 
 const sendEvent = (channel, channelData, action) => (
     {

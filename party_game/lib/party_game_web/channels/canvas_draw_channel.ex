@@ -3,8 +3,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   use PartyGameWeb, :channel
 
   alias PartyGame.Server
-  alias PartyGame.Game.Player
-  alias PartyGame.ChannelWatcher
   alias PartyGame.Lobby
   alias PartyGame.Games.Canvas.CanvasGame
 
@@ -55,6 +53,16 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   @impl true
   def handle_in("start", _, socket) do
     broadcast(socket, "start", %{"word" => CanvasGame.word(1) |> Enum.at(0)})
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("guess", payload, socket) do
+    Server.get_game(game_code(socket.topic))
+      |> CanvasGame.add_guess(Map.get(payload, "guess"))
+      |> Server.update_game()
+
+    broadcast(socket, "handle_guess", payload)
     {:noreply, socket}
   end
 

@@ -5,9 +5,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   alias PartyGameWeb.Presence
   alias PartyGame.{Server, Lobby}
-  alias PartyGame.ChannelWatcher
   alias PartyGame.MultipleChoiceGame
-  alias PartyGame.Game.Player
   alias PartyGame.Game.GameRoom
   alias PartyGame.Games.GameList
   alias PartyGame.Game.MultipleChoice

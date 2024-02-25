@@ -29,6 +29,11 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     %{game_room | game: %{game_room.game | round_started: false }}
   end
 
+  def add_guess(%GameRoom{} = game_room, guess) do
+    guesses = Map.get(game_room.game, :guesses, [])
+    %{game_room | game: %{game_room.game | guesses: [guess | guesses] }}
+  end
+
   def word(count) do
     json = File.read!(Path.join(@word_path, "drawings.json"))
     list = Jason.decode!(json)

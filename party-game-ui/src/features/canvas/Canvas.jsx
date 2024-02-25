@@ -1,21 +1,21 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useBackButtonBlock from '../useBackButtonBlock'
-import Flash from '../common/Flash';
+import useLobbyEvents from '../lobby/useLobbyEvents';
 import Timer from '../common/Timer';
+import GuessInput from './GuessInput';
 import { push } from "redux-first-history";
-import ColorButton from './ColorButton';
-import { word, commands, reset, handleNewGame } from './canvasSlice'
+import ColorPallette from './ColorPallette';
+import { word, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
 import {
     usePhoenixChannel,
     usePhoenixEvents,
     usePhoenixSocket
 } from '../phoenix/usePhoenix';
 import { channelPush } from '../phoenix/phoenixMiddleware';
+import NewGamePrompt from '../common/NewGamePrompt';
 
 import {
-    handleChangeOwner,
-    handleGenServerTimeout,
     endGame
 } from '../lobby/lobbySlice';
 
@@ -28,16 +28,6 @@ const sendEvent = (topic, channelData, action) => (
 
 const events = (topic) => [
     {
-        event: 'handle_game_server_idle_timeout',
-        dispatcher: handleGenServerTimeout(),
-        topic,
-    },
-    {
-        event: 'handle_room_owner_change',
-        dispatcher: handleChangeOwner(),
-        topic,
-    },
-    {
         event: 'word',
         dispatcher: word(),
         topic,
@@ -45,6 +35,11 @@ const events = (topic) => [
     {
         event: 'handle_new_game',
         dispatcher: handleNewGame(),
+        topic,
+    },
+    {
+        event: 'handle_guess',
+        dispatcher: handleGuess(),
         topic,
     },
     {
@@ -67,9 +62,7 @@ const store = {
     displays: [],
     mouseMove: [],
     isDrawing: false,
-    isColorShared: false,
-    strokeStyle: 'black',
-
+    isColorShared: true,
     reset: function () {
         this.mouseMove = [];
         this.drawing = [];
@@ -85,17 +78,6 @@ function move(value) {
     store.mouseMove.push(value);
 }
 
-function toHex(rgb) {
-    rgb = rgb.replace(/[^\d,]/g, '').split(',')
-    return "#" + (1 << 24 | rgb[0] << 16 | rgb[1] << 8 | rgb[2]).toString(16).slice(1);
-}
-
-const colorPallette = [
-    "Black", "Gray", "Red",
-    "Orange", "Green", "Blue",
-    "Yellow", "Purple"
-];
-
 export default function Canvas() {
 
     const {
@@ -105,11 +87,12 @@ export default function Canvas() {
         gameCode
     } = useSelector(state => state.lobby);
 
-    const canvasChannel = `canvas:${gameCode}`;
+    const canvasChannel = `canvas:${gameCode || "J"}`;
 
     usePhoenixSocket();
     usePhoenixChannel(canvasChannel, { name: playerName });
     usePhoenixEvents(canvasChannel, events);
+    useLobbyEvents();
 
     const {
         word,
@@ -122,7 +105,11 @@ export default function Canvas() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(10);
     const [isIncrement, setIsIncrement] = useState(true);
+    const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
+
+    const [strokeStyle, setStrokeStyle] = useState("black");
+
     useBackButtonBlock(isBackButtonBlocked);
 
     const dispatch = useDispatch();
@@ -152,7 +139,7 @@ export default function Canvas() {
         canvas.height = canvasHeight();
 
         const context = canvas.getContext("2d");
-        context.strokeStyle = 'black';
+        context.strokeStyle = strokeStyle;
         context.lineWidth = 2;
 
         canvas.addEventListener('mousedown', mouseDown);
@@ -166,7 +153,7 @@ export default function Canvas() {
         }
     }, []);
 
-    const mouseDown = useCallback((event) => {
+    function mouseDown(event) {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
         store.isDrawing = true;
@@ -174,12 +161,12 @@ export default function Canvas() {
         context.beginPath();
         context.moveTo(event.layerX, event.layerY);
 
-        draw("strokeStyle", context.strokeStyle, "assign");
         draw("beginPath", null, "function");
         draw("moveTo", [event.layerX, event.layerY], "function");
-    }, []);
+    }
 
-    const mouseMove = useCallback((event) => {
+
+    function mouseMove(event){
         if (!store.isDrawing) {
             return;
         }
@@ -189,9 +176,9 @@ export default function Canvas() {
         context.lineTo(event.layerX, event.layerY);
         context.stroke();
         move([event.layerX, event.layerY]);
-    }, []);
+    }
 
-    const mouseUp = useCallback((event) => {
+    function mouseUp(event) {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
 
@@ -201,10 +188,16 @@ export default function Canvas() {
         dispatch(channelPush(sendEvent(canvasChannel, { commands: store.drawing }, "commands")));
 
         store.reset();
-    }, []);
+    }
+
+    function onTimerCompleted() {
+        setIsTimerActive(false);
+    }
 
     function onStartClick(e) {
+        setIsNewGamePrompt(true);
         dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
+        setIsNewGamePrompt(false)
     }
 
     function onNextClick(e) {
@@ -241,28 +234,50 @@ export default function Canvas() {
         dispatch(push('/lobby'))
     }
 
-    function onColorButtonClick(e) {
-        setActiveColorIndex(e.target.getAttribute("data-id"));
+    function onColorChange(color) {
         const context = canvasRef.current.getContext('2d');
-        const color = colorPallette[e.target.getAttribute("data-id")];
-        context.strokeStyle = colorPallette[e.target.getAttribute("data-id")];
+        setStrokeStyle(color);
+        context.strokeStyle = color;
         store.drawing.push({ command: "strokeStyle", value: color, op: "assign" });
     }
 
     useEffect(() => {
         const context = canvasRef.current.getContext("2d");
 
-        store.strokeStyle = context.strokeStyle;
+        let tempStrokeStyle =  strokeStyle;
 
         commands.forEach(command => onCommand(command));
 
-        syncColors();
+        preventSyncStrokeStyle(context, tempStrokeStyle)
     }, [commands]);
+
+    /**
+     * Revert the stroke style of the drawing
+     * canvas so this canvas user can continue...
+     */
+    function preventSyncStrokeStyle(context, color) {
+        if (!store.isColorShared) {
+            setStrokeStyle(color);
+            context.strokeStyle = color;
+        }
+    }
+
+    /**
+     * Stroke style uses state since context.strokeStyle
+     * comes back as rgb which requires conversion to figure
+     * out what it is in relation to the pallette
+     */
+    function specialAssign(command) {
+        if (command.command == 'strokeStyle') {
+            setStrokeStyle(command.value);
+        }
+    }
 
     function onCommand(command) {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
         if (command.op === "assign") {
+            specialAssign(command, context);
             context[command.command] = command.value;
             return;
         }
@@ -291,26 +306,14 @@ export default function Canvas() {
         }
     }
 
-    function syncColors() {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d");
-
-        if (store.isColorShared) {
-            context.strokeStyle = store.strokeStyle;
-            return;
-        }
-
-        let colors = document.getElementsByClassName('color-button');
-        Array.from(colors).forEach((color, idx) => {
-            let colorButton = window.getComputedStyle(color).backgroundColor;
-            if (toHex(colorButton) === context.strokeStyle) {
-                setActiveColorIndex(idx);
-            }
-        });
+    function onGuessSubmit(guess) {
+        dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
     }
 
     return (
         <>
+            <NewGamePrompt isNewGamePrompt={isNewGamePrompt} onStartGame={onStartClick} />
+
             <div className="container">
                 <h1 id="word-game">Drawing Game - {playerName == turn && word}</h1>
             </div>
@@ -321,30 +324,21 @@ export default function Canvas() {
                     <Timer key={startTimerTime}
                         restartKey={startTimerTime}
                         isActive={isTimerActive}
-                        onTimerCompleted={() => { }}
+                        onTimerCompleted={onTimerCompleted}
                         timeIncrement={isIncrement ? 1 : -1}
                         isIncrement={isIncrement}
                         numberSeconds={timerSeconds} />
                 </div>
                 <div className="break"></div>
-                <div>
-                    {colorPallette.map((color, index) =>
-                        <ColorButton
-                            className={`color-button color-button-size ${color.toLowerCase()} light-text`}
-                            onClick={onColorButtonClick}
-                            color={color}
-                            index={index}
-                            active={activeColorIndex == index}
-                            key={index}></ColorButton>)
-                    }
-                </div>
+
+                {turn != playerName &&
+                <GuessInput onSubmit={onGuessSubmit} />}
+                <div className="break"></div>
+                <ColorPallette onColorChange={onColorChange} strokeStyle={strokeStyle}/>
                 <div className="break"></div>
                 <div>
-
                     <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>
                     {isGameOwner && <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next</button>}
-
-
                     <button id="back" className="btn-default" type="button" onClick={onBackClick}>Back</button>
                     <button id="clear" className="btn-default" type="button" onClick={onClearClick}>Clear</button>
                     <button id="save" className="btn-default" type="button" onClick={onSaveClick}>Save</button>
