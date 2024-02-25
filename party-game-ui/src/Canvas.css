@@ -143,6 +143,8 @@ canvas {
   position: absolute;
   border: 5px dashed #e0e0e0;
   display: none;
+  z-index: 1;
+  pointer-events: none;
 }
 
 #visible-area {

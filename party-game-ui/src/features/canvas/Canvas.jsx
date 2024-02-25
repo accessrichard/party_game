@@ -70,7 +70,7 @@ const displaySize = [canvasWidth(), canvasHeight()]
 
 export default function Canvas() {
 
-    const dispatch = useDispatch();    
+    const dispatch = useDispatch();
     const canvasRef = useRef(null);
     const {
         isGameOwner,
@@ -90,7 +90,8 @@ export default function Canvas() {
         word,
         commands,
         turn,
-        startTimerTime
+        startTimerTime,
+        minSize
     } = useSelector(state => state.canvas);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -102,8 +103,6 @@ export default function Canvas() {
     const [strokeStyle, setStrokeStyle] = useState("black");
 
     useBackButtonBlock(isBackButtonBlocked);
-
- 
 
     if (!gameCode) {
         dispatch(push('/'))
@@ -167,15 +166,10 @@ export default function Canvas() {
         move([event.layerX, event.layerY]);
     }
 
-    function mouseUp(event) {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-
+    function mouseUp() {
         draw("lineTo", store.mouseMove, "function");
         draw("stroke", null, "function");
-
         dispatch(channelPush(sendEvent(canvasChannel, { commands: store.drawing }, "commands")));
-
         store.reset();
     }
 
@@ -186,12 +180,26 @@ export default function Canvas() {
     function onStartClick(e) {
         setIsNewGamePrompt(true);
         dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
-        setIsNewGamePrompt(false)
+        setIsNewGamePrompt(false);
     }
+
+    useEffect(() => {
+        resizeCanvas()
+    }, [turn]);
 
     function onNextClick(e) {
         onClearClick(e);
         dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
+    }
+
+    function resizeCanvas() {
+        const canvas = canvasRef.current;
+        if (minSize[0] > 0) {
+            canvas.width = minSize[0]
+        }
+        if (minSize[1] > 0) {
+            canvas.height = minSize[1];
+        }
     }
 
     function onClearClick(e) {
@@ -306,8 +314,10 @@ export default function Canvas() {
             <div className="container">
                 <h1 id="word-game">Drawing Game - {playerName == turn && word}</h1>
             </div>
-            <div id="canvas-overlay"><div id="visible-area">Visible Area</div></div>
-            <canvas ref={canvasRef} ></canvas>
+            <div>
+                <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div>
+                <canvas id="paint-canvas" ref={canvasRef} ></canvas>
+            </div>
             <div className="container">
                 <div>
                     <Timer key={startTimerTime}
@@ -327,7 +337,7 @@ export default function Canvas() {
                 <div className="break"></div>
                 <div>
                     <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>
-                    {isGameOwner && <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next</button>}
+                    <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next</button>
                     <button id="back" className="btn-default" type="button" onClick={onBackClick}>Back</button>
                     <button id="clear" className="btn-default" type="button" onClick={onClearClick}>Clear</button>
                     <button id="save" className="btn-default" type="button" onClick={onSaveClick}>Save</button>

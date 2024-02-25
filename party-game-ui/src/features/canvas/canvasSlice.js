@@ -6,7 +6,7 @@ const initialState = {
     guesses: [],
     turn: "",
     startTimerTime: null,
-    minSize: []
+    minSize: [0,0]
 }
 
 export const canvasSlice = createSlice({
@@ -27,7 +27,13 @@ export const canvasSlice = createSlice({
 
             state.word = action.payload.word;
             state.turn = action.payload.turn;
-            state.minSize = action.payload.size;
+
+            if (action.payload.size 
+                && action.payload.size.length == 2
+                && action.payload.size[0] > 100
+                && action.payload.size[1] > 100) {
+                    state.minSize = action.payload.size;
+            }
         },
         handleGuess(state, action) {
             state.guesses.push(action.payload.guess);
