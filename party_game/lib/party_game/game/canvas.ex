@@ -8,6 +8,7 @@ defmodule PartyGame.Game.Canvas do
     field(:turn, :string, default: nil)
     field(:word, :string, default: nil)
     field(:guesses, {:array, :string}, default: [])
+    field(:winner, :string, default: nil)
   end
 
   def create_game(game, params \\ %{}) do
@@ -22,7 +23,8 @@ defmodule PartyGame.Game.Canvas do
       :name,
       :turn,
       :word,
-      :guesses
+      :guesses,
+      :winner
     ])
   end
 

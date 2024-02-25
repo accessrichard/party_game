@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import Timer from '../common/Timer';
+import ColorPallette from './ColorPallette';
+import GuessInput from './GuessInput';
+import GuessList from './GuessList';
+import NewGamePrompt from '../common/NewGamePrompt';
 import useBackButtonBlock from '../useBackButtonBlock'
 import useLobbyEvents from '../lobby/useLobbyEvents';
-import Timer from '../common/Timer';
-import GuessInput from './GuessInput';
 import { push } from "redux-first-history";
-import ColorPallette from './ColorPallette';
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import { endGame } from '../lobby/lobbySlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { word, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
-import { channelPush } from '../phoenix/phoenixMiddleware';
-import NewGamePrompt from '../common/NewGamePrompt';
-import { endGame } from '../lobby/lobbySlice';
-
 
 const events = (topic) => [
     {
@@ -91,7 +91,9 @@ export default function Canvas() {
         commands,
         turn,
         startTimerTime,
-        minSize
+        minSize,
+        guesses,
+        winner
     } = useSelector(state => state.canvas);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -141,6 +143,16 @@ export default function Canvas() {
         }
     }, []);
 
+    useEffect(() => {
+        resizeCanvas()
+    }, [turn]);
+
+    useEffect(() => {
+        if (winner) {
+            setIsTimerActive(false);
+        }
+    }, [winner])
+
     function mouseDown(event) {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
@@ -152,7 +164,6 @@ export default function Canvas() {
         draw("beginPath", null, "function");
         draw("moveTo", [event.layerX, event.layerY], "function");
     }
-
 
     function mouseMove(event) {
         if (!store.isDrawing) {
@@ -182,10 +193,6 @@ export default function Canvas() {
         dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
         setIsNewGamePrompt(false);
     }
-
-    useEffect(() => {
-        resizeCanvas()
-    }, [turn]);
 
     function onNextClick(e) {
         onClearClick(e);
@@ -312,8 +319,11 @@ export default function Canvas() {
             <NewGamePrompt isNewGamePrompt={isNewGamePrompt} onStartGame={onStartClick} />
 
             <div className="container">
-                <h1 id="word-game">Drawing Game - {playerName == turn && word}</h1>
+                {winner && <h1>{winner} Won!!!</h1>}
+                {!winner && playerName == turn && <h1 id="word-game">Draw: {word}</h1>}                
+                {!winner && playerName != turn && <h1 id="word-game">Guessing word for {turn}</h1>}
             </div>
+            <div>&nbsp;{guesses.length > 0 && <> {guesses.slice(-1)}</>}</div>
             <div>
                 <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div>
                 <canvas id="paint-canvas" ref={canvasRef} ></canvas>
@@ -332,16 +342,24 @@ export default function Canvas() {
 
                 {turn != playerName &&
                     <GuessInput onSubmit={onGuessSubmit} />}
+
                 <div className="break"></div>
-                <ColorPallette onColorChange={onColorChange} strokeStyle={strokeStyle} />
-                <div className="break"></div>
-                <div>
-                    <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>
-                    <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next</button>
-                    <button id="back" className="btn-default" type="button" onClick={onBackClick}>Back</button>
-                    <button id="clear" className="btn-default" type="button" onClick={onClearClick}>Clear</button>
-                    <button id="save" className="btn-default" type="button" onClick={onSaveClick}>Save</button>
-                </div>
+                
+                {turn == playerName && <>
+                    <div className="break"></div>
+                    <ColorPallette onColorChange={onColorChange} strokeStyle={strokeStyle} />
+                </>}
+
+                    <div className="break"></div>
+                    <div>
+                        {false && <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>}
+                        {turn == playerName && <>
+                            <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next Round</button>
+                            <button id="clear" className="btn-default" type="button" onClick={onClearClick}>Clear</button>
+                        </>}
+                         <button id="back" className="btn-default" type="button" onClick={onBackClick}>Quit</button>
+                         <button id="save" className="btn-default" type="button" onClick={onSaveClick}>Save Image</button>
+                    </div>
             </div>
         </>
     );

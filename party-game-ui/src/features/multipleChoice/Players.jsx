@@ -7,15 +7,13 @@ const Players = () => {
     const playerName = useSelector(state => state.game.playerName);
 
     return (
-        <>
-            <ul className="players ul-nostyle">                
-                {players.map((val, key) =>
-                    <li key={key}>                        
-                        {val.name} {val.name !== playerName && val.isTyping && <i className='smallest-font'> - typing</i>}
-                    </li>
-                )}
-            </ul>
-        </>
+        <ul className="players ul-nostyle">
+            {players.map((val, key) =>
+                <li key={key}>
+                    {val.name} {val.name !== playerName && val.isTyping && <i className='smallest-font'> - typing</i>}
+                </li>
+            )}
+        </ul>
     );
 }
 

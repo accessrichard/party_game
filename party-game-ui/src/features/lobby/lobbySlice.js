@@ -73,7 +73,7 @@ const initialState = {
 
 if (import.meta.env.VITE_DEVELOP_MODE) {
     initialState.gameCode = "zzzz";
-    initialState.playerName = "rich" + Math.floor(Math.random() * 2)
+    initialState.playerName = "rich" + (Math.floor(Math.random() * 2) + 1)
 }
 
 function resetGame(state) {

@@ -13,25 +13,43 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     index = if index == nil, do: 0, else: index + 1
     index = if index > length(game_room.players) - 1, do: 0, else: index
     turn = Enum.at(game_room.players, index)
-    %{game_room | game: %{game_room.game | turn: turn.name}}
+    %{game_room | game: %{game_room.game | turn: turn.name, winner: nil}}
   end
 
   def change_word(%GameRoom{} = game_room) do
     word = Enum.at(word(1), 0)
-    %{game_room | game: %{game_room.game | word: word}}
+    %{game_room | game: %{game_room.game | word: word, winner: nil}}
   end
 
   def start_round(%GameRoom{} = game_room) do
-    %{game_room | game: %{game_room.game | round_started: true}}
+    %{game_room | game: %{game_room.game | round_started: true, winner: nil}}
   end
 
   def stop_round(%GameRoom{} = game_room) do
     %{game_room | game: %{game_room.game | round_started: false}}
   end
 
-  def add_guess(%GameRoom{} = game_room, guess) do
+  def guess(%GameRoom{} = game_room, guess, player_name) do
     guesses = Map.get(game_room.game, :guesses, [])
-    %{game_room | game: %{game_room.game | guesses: [guess | guesses]}}
+
+    cond do
+      equal(game_room.game.word, guess) ->
+        %{
+          game_room
+          | game: %{game_room.game | guesses: [guess | guesses],
+            winner: player_name,
+            round_started: false}
+        }
+
+      true ->
+        %{game_room | game: %{game_room.game | guesses: [guess | guesses]}}
+    end
+  end
+
+  defp equal(word1, word2) do
+    w1 = word1 |> String.downcase |> String.trim()
+    w2 = word2 |> String.downcase |> String.trim()
+    w1 == w2
   end
 
   def word(count) do
@@ -54,11 +72,10 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
   end
 
   def min_size(%GameRoom{} = game_room) do
-    Enum.reduce(game_room.players, [nil,nil], fn player, acc ->
+    Enum.reduce(game_room.players, [nil, nil], fn player, acc ->
       [x | [y | _]] = if player.display_size == [], do: [nil, nil], else: player.display_size
       [acc_x | [acc_y | _]] = acc
       [min(x, acc_x), min(y, acc_y)]
     end)
   end
-
 end

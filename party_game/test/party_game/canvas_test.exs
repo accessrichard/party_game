@@ -33,16 +33,27 @@ defmodule PartyGame.CanvasTest do
         assert word !==  CanvasGame.change_word(game_room).game.word
     end
 
-    test "add_guess/2 adds a guess" do
+    test "guess/3 adds a guess" do
       game_room =
         Lobby.new()
         |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe"}))
-        |> CanvasGame.add_guess("test")
-        |> CanvasGame.add_guess("test2")
+        |> CanvasGame.guess("test", "joe")
+        |> CanvasGame.guess("test2", "joe")
 
         [guess | _] = game_room.game.guesses
         assert guess === "test2"
     end
+
+    test "guess/3 sets game winner" do
+      game_room =
+        Lobby.new()
+        |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe", word: "test"}))
+        |> CanvasGame.guess("test", "joe")
+        |> CanvasGame.guess("test2", "joe2")
+
+        assert "joe" == game_room.game.winner
+    end
+
 
     test "add_size/2 adds a player display size" do
       game_room =

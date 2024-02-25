@@ -58,12 +58,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   end
 
   @impl true
-  def handle_in("resize", payload, socket) do
-    broadcast_from(socket, "resize", payload)
-    {:noreply, socket}
-  end
-
-  @impl true
   def handle_in("word", _, socket) do
     broadcast(socket, "word", %{"word" => CanvasGame.word(1) |> Enum.at(0)})
     {:noreply, socket}
@@ -77,11 +71,13 @@ defmodule PartyGameWeb.CanvasDrawChannel do
 
   @impl true
   def handle_in("guess", payload, socket) do
-    Server.get_game(game_code(socket.topic))
-    |> CanvasGame.add_guess(Map.get(payload, "guess"))
-    |> Server.update_game()
+    game_room =
+      Server.get_game(game_code(socket.topic))
+      |> CanvasGame.guess(Map.get(payload, "guess"), socket.assigns.name)
+      |> Server.update_game()
 
-    broadcast(socket, "handle_guess", payload)
+    resp = Map.put(payload, "winner", game_room.game.winner)
+    broadcast(socket, "handle_guess", resp)
     {:noreply, socket}
   end
 
