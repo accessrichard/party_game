@@ -55,7 +55,7 @@ function Settings() {
         <div className="offset-bottom center-65">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
             <div className="wrapper card flex-center">
-                <form onSubmit={handleSubmit} noValidate>
+                <form className='form' onSubmit={handleSubmit} noValidate>
                     <h3>Settings</h3>
                     <div className="group">
                         <input required

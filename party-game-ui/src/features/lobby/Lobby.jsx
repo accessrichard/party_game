@@ -74,26 +74,17 @@ export default function Lobby() {
     usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
     usePhoenixEvents(`lobby:${gameCode}`, events);
 
-    /**
-     * Redirect to home page if there is no game code at this point.
-     */
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
         }
     }, [gameCode]);
 
-    /**
-     * Display a count-up timer of lobby wait time.
-     */
     useEffect(() => {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };
     }, []);
 
-    /**
-     * Load the server game list drop-down.
-     */
     useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {
             dispatch(listGames());
@@ -110,8 +101,7 @@ export default function Lobby() {
     }, [creativeGames, serverGames, setGameList]);
 
     /**
-     * Set the game to the first game in the list
-     * or leave it be what the prior selection was
+     * Default the selected game on first page visit.
      */
     useEffect(() => {
         if (gameName) {
@@ -130,13 +120,6 @@ export default function Lobby() {
 
     }, [url, isGameStarted])
 
-    /**
-     * Create and kicks off a new game:
-     *   a. Send the new_game event to the server.
-     *   b. Server replies with route_to_game
-     *      which is dispatched to redux via channel events.
-     *   c. Game route then creates game and starts it
-     */
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
             e.preventDefault();
@@ -145,7 +128,7 @@ export default function Lobby() {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "new_game",
-            data: {name: gameName, url: url || '/game'}
+            data: { name: gameName, url: url || '/game' }
         }));
         e.preventDefault();
         return;
@@ -153,7 +136,7 @@ export default function Lobby() {
 
     function onGameChange(e) {
         const game = gameList.find(x => x.name == e.target.value);
-        dispatch(changeGame({ name: game.name, url: game.url}));
+        dispatch(changeGame({ name: game.name, url: game.url }));
     }
 
     function onGenServerTimeout() {
@@ -189,7 +172,7 @@ export default function Lobby() {
                     <div className='flex-item full-width '>
                         <div className='item card text-align-left'>
                             <h3>Select Game</h3>
-                            <form noValidate onSubmit={handleCreateGame}>
+                            <form className='form' noValidate onSubmit={handleCreateGame}>
                                 <div className="flex-row">
                                     <div className="flex-column flex-center">
                                         <GameList defaultValue={gameName} value={gameName} onGameChange={onGameChange} games={gameList} />
@@ -211,13 +194,10 @@ export default function Lobby() {
                                 </div>
                             </form>
                             <div>
-                                <span>
-                                    {isGameOwner &&
-                                        <span className="flex-row flex-center">
-                                            <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
-                                            <NavLink className="pd-5-lr" to="/import">Import</NavLink>
-                                            <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
-                                        </span>}
+                                <span className="flex-row flex-center">
+                                    <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
+                                    <NavLink className="pd-5-lr" to="/import">Import</NavLink>
+                                    <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
                                 </span>
                             </div>
                         </div>

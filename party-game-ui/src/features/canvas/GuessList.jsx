@@ -1,16 +1,20 @@
 import React from 'react';
 
 const GuessList = (props) => {
-    const { guesses } = props;
+    const { guesses, className } = props;
 
     return (
-        <ul className="ul-nostyle">
-            {guesses.map((val, key) =>
-                <li key={key}>
-                    {val}
-                </li>
-            )}
-        </ul>
+        <div className='flex-row'>
+            <div className='flex-column align-right'>Guesses:&nbsp;</div>
+            <div className='flex-column align-left'>
+                <ul className={className}>
+                    {guesses.map((val, key) =>
+                        <li key={key}>
+                            {val}{key == guesses.length - 1 ? '' : ', '}
+                        </li>
+                    )}
+                </ul></div>
+        </div>
     );
 }
 

@@ -59,7 +59,7 @@ function Join() {
                 <div className="item card">
 
                     <h3>Join Game</h3>
-                    <form onSubmit={handleSubmit}>
+                    <form className='form' onSubmit={handleSubmit}>
                         <div className="group">
                             <input required
                                 autoComplete="off"

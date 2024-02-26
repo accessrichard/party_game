@@ -49,7 +49,7 @@ function Create() {
                 <div className="item card">
                     <h3>New Game</h3>
                     <div className='error'>{serverError && "Can not communicate with server. Please try again later."}</div>
-                    <form onSubmit={handleSubmit}>
+                    <form className='form' onSubmit={handleSubmit}>
                         <div className="group">
                             <input required
                                 autoComplete="off"

@@ -82,7 +82,7 @@ export default function Canvas() {
     const canvasChannel = `canvas:${gameCode}`;
 
     usePhoenixSocket();
-    usePhoenixChannel(canvasChannel, { name: playerName, size: displaySize });
+    usePhoenixChannel(canvasChannel, { name: playerName, size: displaySize }, { persisted: true });
     usePhoenixEvents(canvasChannel, events);
     useLobbyEvents();
 
@@ -98,7 +98,7 @@ export default function Canvas() {
 
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(10);
-    const [isIncrement, setIsIncrement] = useState(true);
+    const [isIncrement, setIsIncrement] = useState(false);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
 
@@ -115,8 +115,6 @@ export default function Canvas() {
     }, []);
 
     useEffect(() => {
-        setIsIncrement(false);
-        setTimerSeconds(60);
         setIsTimerActive(false);
         if (startTimerTime) {
             setIsTimerActive(true)
@@ -132,16 +130,18 @@ export default function Canvas() {
         context.strokeStyle = strokeStyle;
         context.lineWidth = 2;
 
-        canvas.addEventListener('mousedown', mouseDown);
-        canvas.addEventListener('mousemove', mouseMove);
-        canvas.addEventListener('mouseup', mouseUp);
+        if (playerName == turn) {
+            canvas.addEventListener('mousedown', mouseDown);
+            canvas.addEventListener('mousemove', mouseMove);
+            canvas.addEventListener('mouseup', mouseUp);
+        }
 
         return () => {
             canvas.removeEventListener('mousedown', mouseDown);
             canvas.removeEventListener('mousemove', mouseMove);
             canvas.removeEventListener('mouseup', mouseUp);
         }
-    }, []);
+    }, [playerName, turn]);
 
     useEffect(() => {
         resizeCanvas()
@@ -150,6 +150,7 @@ export default function Canvas() {
     useEffect(() => {
         if (winner) {
             setIsTimerActive(false);
+            setIsNewGamePrompt(true);
         }
     }, [winner])
 
@@ -186,11 +187,16 @@ export default function Canvas() {
 
     function onTimerCompleted() {
         setIsTimerActive(false);
+        setIsNewGamePrompt(true);
     }
 
-    function onStartClick(e) {
-        setIsNewGamePrompt(true);
-        dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
+    function onStartClick() {
+        if (isGameOwner && winner == "") {
+            dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
+        } else if (isGameOwner) {
+            dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
+        }
+
         setIsNewGamePrompt(false);
     }
 
@@ -225,6 +231,10 @@ export default function Canvas() {
 
     function onSaveClick(e) {
         var imageName = prompt('Please enter image name');
+        if (imageName == null) {
+            return;
+        }
+
         var canvasDataURL = canvasRef.current.toDataURL();
         var a = document.createElement('a');
         a.href = canvasDataURL;
@@ -232,7 +242,7 @@ export default function Canvas() {
         a.click();
     }
 
-    function onBackClick(e) {
+    function onBackClick() {
         dispatch(endGame());
         setIsBackButtonBlocked(false);
         dispatch(push('/lobby'))
@@ -286,11 +296,6 @@ export default function Canvas() {
             return;
         }
 
-        if (command.command === "resize") {
-            // resize(command.value, store.displays, canvas);
-            return;
-        }
-
         if (command.command === "lineTo") {
             command.value.forEach((val) => {
                 context.lineTo(val[0], val[1]);
@@ -316,16 +321,21 @@ export default function Canvas() {
 
     return (
         <>
-            <NewGamePrompt isNewGamePrompt={isNewGamePrompt} onStartGame={onStartClick} />
+            <NewGamePrompt isNewGamePrompt={isNewGamePrompt} onStartGame={onStartClick}> </NewGamePrompt>
 
             <div className="container">
-                {winner && <h1>{winner} Won!!!</h1>}
-                {!winner && playerName == turn && <h1 id="word-game">Draw: {word}</h1>}                
-                {!winner && playerName != turn && <h1 id="word-game">Guessing word for {turn}</h1>}
+                {winner && <h2>{winner} Won!!!</h2>}
+                {!winner && playerName == turn && <h2 id="word-game">Draw: {word}</h2>}
+                {!winner && playerName != turn && <h2 id="word-game">Guessing word for {turn}</h2>}
             </div>
-            <div>&nbsp;{guesses.length > 0 && <> {guesses.slice(-1)}</>}</div>
+            <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />
             <div>
-                <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div>
+
+                {/*
+                An overlay to see viewport of canvas across players without resizing the canvas
+                <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div> 
+                */}
+
                 <canvas id="paint-canvas" ref={canvasRef} ></canvas>
             </div>
             <div className="container">
@@ -340,27 +350,27 @@ export default function Canvas() {
                 </div>
                 <div className="break"></div>
 
-                {turn != playerName &&
+                {turn != playerName && isTimerActive &&
                     <GuessInput onSubmit={onGuessSubmit} />}
 
                 <div className="break"></div>
-                
+
                 {turn == playerName && <>
                     <div className="break"></div>
                     <ColorPallette onColorChange={onColorChange} strokeStyle={strokeStyle} />
                 </>}
 
-                    <div className="break"></div>
-                    <div>
-                        {false && <button id="start" className="btn-default" type="button" onClick={onStartClick}>Start</button>}
-                        {turn == playerName && <>
-                            <button id="next" className="btn-default" type="button" onClick={onNextClick}>Next Round</button>
-                            <button id="clear" className="btn-default" type="button" onClick={onClearClick}>Clear</button>
-                        </>}
-                         <button id="back" className="btn-default" type="button" onClick={onBackClick}>Quit</button>
-                         <button id="save" className="btn-default" type="button" onClick={onSaveClick}>Save Image</button>
-                    </div>
+                <div className="break"></div>
+                <div>
+                    {turn == playerName && word == "" && <button id="start" className="btn md-5" type="button" onClick={onStartClick}>Start</button>}
+                    {turn == playerName && word != "" && <button id="next" className="btn md-5" type="button" onClick={onNextClick}>Next</button>}
+                    {turn == playerName && <button id="clear" className="btn md-5" type="button" onClick={onClearClick}>Clear</button>}
+                    
+                    <button id="back" className="btn md-5" type="button" onClick={onBackClick}>Quit</button>
+                    <button id="save" className="btn md-5" type="button" onClick={onSaveClick}>Save Image</button>
+                </div>
             </div>
+
         </>
     );
 }

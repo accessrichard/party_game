@@ -9,8 +9,8 @@ defmodule PartyGameWeb.WebDev do
       |> PartyGame.Server.start()
   end
 
-  def get() do
-    PartyGame.Server.get_game("zzzz")
+  def get(code \\ "zzzz") do
+    PartyGame.Server.get_game(code)
   end
 
   defp add_room_name(%PartyGame.Game.GameRoom{} = room) do

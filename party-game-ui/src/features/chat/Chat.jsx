@@ -103,7 +103,7 @@ const Chat = () => {
               </ul>
             </div>
             <div>
-              <form noValidate onSubmit={(e) => e.preventDefault()}>
+              <form className='form' noValidate onSubmit={(e) => e.preventDefault()}>
                 <div className="group">
                   <input
                     autoComplete="off"

@@ -143,7 +143,7 @@ export default function Create(props) {
     return (
         <>
             <div className="wrapper center-65 flex-center flex-grid">
-                <form ref={formRef}>
+                <form className='form' ref={formRef}>
                     <div className="empty-space">
                         <div className="flex-row">
                             <div className="flex-column card pd-25">

@@ -71,7 +71,7 @@ const initialState = {
     }
 };
 
-if (import.meta.env.VITE_DEVELOP_MODE) {
+if (import.meta.env.VITE_DEVELOP_MODE === 'true') {
     initialState.gameCode = "zzzz";
     initialState.playerName = "rich" + (Math.floor(Math.random() * 2) + 1)
 }

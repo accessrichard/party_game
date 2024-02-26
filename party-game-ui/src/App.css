@@ -9,6 +9,7 @@ body {
   flex-direction: column;
   margin: 0px;
   height: 100%;
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
 }
 
 .app {
@@ -139,6 +140,12 @@ body {
   padding: 0;
 }
 
+
+.list-inline > li {
+	display: inline-block;
+  padding-right: 5px;
+}
+
 .scroll-flex>* {
   overflow-y: auto;
 }
@@ -160,6 +167,14 @@ body {
 
 .align-center {
   align-items: center;
+}
+
+.align-left {
+  align-items: baseline;
+}
+
+.align-right {
+  align-items: end;
 }
 
 .flex-center {
@@ -439,11 +454,6 @@ body {
     overflow: none;
   }
 
-  .card-slim {
-    padding: 1px 30px;
-    position: relative;
-  }
-
   .card {
     padding: 1px 30px;
     position: relative;
@@ -669,9 +679,14 @@ body {
   color: #333;
 }
 
-form {
+.form {
   width: 100%;
   margin: 45px auto;
+}
+
+.form-compact {
+  width: 100%;
+  margin: 20px auto;
 }
 
 .group {
@@ -783,7 +798,8 @@ label.pointer-events {
 
 .btn {
   background: #fff;
-  color: #959595;
+  color: #000000;
+  font-weight: bold;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -793,7 +809,7 @@ label.pointer-events {
   text-decoration: none;
   outline: none;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);    
 }
 
 .btn:disabled, .btn.btn-submit:disabled {
@@ -802,7 +818,7 @@ label.pointer-events {
 }
 
 .btn:hover:not([disabled]) {
-  color: #8b8b8b;
+  color: #000000;
   box-shadow: 0 7px 14px rgba(0, 0, 0, 0.18), 0 5px 5px rgba(0, 0, 0, 0.12);
 }
 
