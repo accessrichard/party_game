@@ -3,38 +3,46 @@ import Timer from '../common/Timer';
 
 export default function NewGamePrompt(props) {
     const {
-        onStartGame, 
-        isNewGamePrompt, 
+        onStartGame,
+        isNewGamePrompt,
         text = "Game Starts In: ",
         header = "" } = props;
-    
+
     const [isTimerActive, setIsTimerActive] = useState(false);
 
     useEffect(() => {
         setIsTimerActive(isNewGamePrompt);
     }, [isNewGamePrompt]);
 
-    function onTimerCompleted() {       
+    function onTimerCompleted() {
         setIsTimerActive(false);
         onStartGame && onStartGame();
     }
 
     return (
         <>
+            {/**
+         *  
+         */}
             {isTimerActive && <div className='overlay'>
-                <div className='flex-center align-center flex-container full-height'>
-                    <h2>{header}</h2>
-                    <h2>{text} 
-                        <Timer numberSeconds={3}
-                            isIncrement={false}
-                            isVisible={true}
-                            isActive={isTimerActive}
-                            timeFormat="seconds"
-                            onTimerCompleted={onTimerCompleted}
-                        />
-                    </h2>
+                <div className='flex-grid flex-center align-center app'>
+                    <div className='flex-row flex-center'>
+                        <h2 className=''>{header}</h2>
+                    </div>
+                    <div className='flex-row flex-center'>
+                        <h2>{text}
+                            <Timer numberSeconds={3}
+                                isIncrement={false}
+                                isVisible={true}
+                                isActive={isTimerActive}
+                                timeFormat="seconds"
+                                onTimerCompleted={onTimerCompleted}
+                            />
+                        </h2>
+                    </div>
                 </div>
-            </div>}
+            </div>
+            }
 
             {!isTimerActive && props.children}
         </>

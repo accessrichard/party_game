@@ -8,6 +8,7 @@ import NewGamePrompt from '../common/NewGamePrompt';
 import useBackButtonBlock from '../useBackButtonBlock'
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { push } from "redux-first-history";
+import { getPresences } from '../presence/presenceSlice';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { endGame } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
@@ -41,12 +42,8 @@ const events = (topic) => [
 export default function CanvasGame() {
 
     const dispatch = useDispatch();
-    const {
-        isGameOwner,
-        playerName,
-        gameName,
-        gameCode
-    } = useSelector(state => state.lobby);
+    const { isGameOwner, playerName, gameCode } = useSelector(state => state.lobby);
+    const players = useSelector(getPresences);
 
     const canvasChannel = `canvas:${gameCode}`;
 
@@ -105,6 +102,10 @@ export default function CanvasGame() {
     }, [winner])
 
     function onDraw(commands) {
+        if (players.length <= 1) {
+            return;
+        }
+
         dispatch(channelPush(sendEvent(canvasChannel, { commands }, "commands")));
     }
 
@@ -213,7 +214,6 @@ export default function CanvasGame() {
                     <button id="save" className="btn md-5" type="button" onClick={onSaveClick}>Save Image</button>
                 </div>
             </div>
-
         </>
     );
 }
