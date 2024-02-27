@@ -103,6 +103,9 @@ export default function Game() {
 
     /**
      * Sets a delay timeout on wrong answers as configured in the settings.
+     * 
+     * Synchronizes with the round timer so the wrong answer timeout doesn't
+     * override the round timer. 
      */
     useEffect(() => {
         if (timerStartDate === null) {
@@ -115,8 +118,9 @@ export default function Game() {
     }, [timerStartDate, isWrong, settings.wrongAnswerTimeout]);
 
     /**
-     * Sets a countdown timer until the question can no longer be answered
-     * or until the next question is displayed as configured in settings.
+     * Sets a countdown timer after a question is answered
+     * correctly or timed out...allowing users to see the
+     * correct answer.
      */
     useEffect(() => {
         if (startCountdown) {
@@ -129,7 +133,8 @@ export default function Game() {
 
 
     /**
-     * Activates the timer when a round is started.
+     * Ensures the timer is going when a round is started
+     * and reset on new rounds.
      */
     useEffect(() => {
         if (isRoundStarted && round === prevRound) {

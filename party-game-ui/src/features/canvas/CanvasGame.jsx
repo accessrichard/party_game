@@ -7,6 +7,7 @@ import GuessList from './GuessList';
 import NewGamePrompt from '../common/NewGamePrompt';
 import useBackButtonBlock from '../useBackButtonBlock'
 import useLobbyEvents from '../lobby/useLobbyEvents';
+import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { getPresences } from '../presence/presenceSlice';
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -153,7 +154,7 @@ export default function CanvasGame() {
     }
 
     if (!gameCode) {
-        dispatch(push('/'))
+        return <Navigate to="/"/>
     }
 
     return (
