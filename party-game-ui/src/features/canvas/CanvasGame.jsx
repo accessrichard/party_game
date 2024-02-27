@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Timer from '../common/Timer';
 import ColorPallette from './ColorPallette';
-import CanvasTest from './Canvas';
+import Canvas from './Canvas';
 import GuessInput from './GuessInput';
 import GuessList from './GuessList';
 import NewGamePrompt from '../common/NewGamePrompt';
@@ -10,6 +10,7 @@ import useLobbyEvents from '../lobby/useLobbyEvents';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { endGame } from '../lobby/lobbySlice';
+import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { word, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
@@ -37,16 +38,7 @@ const events = (topic) => [
     }
 ]
 
-
-function canvasWidth() {
-    return window.innerWidth - (window.innerWidth * .02);
-}
-
-function canvasHeight() {
-    return window.innerHeight - (window.innerHeight * .45);
-}
-
-export default function CanvasTest2() {
+export default function CanvasGame() {
 
     const dispatch = useDispatch();
     const {
@@ -82,24 +74,15 @@ export default function CanvasTest2() {
     const [width, setWidth] = useState(0);
     const [isClearRequest, setIsClearRequest] = useState(false);
     const [isEditable, setIsEditable] = useState(true);
-    const [strokeStyle, setStrokeStyle] = useState("black");
+    const [strokeStyle, setStrokeStyle] = useState("#000000");
 
     useBackButtonBlock(isBackButtonBlocked);
 
-    if (!gameCode) {
-        dispatch(push('/'))
-    }
-
     useEffect(() => {
-        return () => { dispatch(reset()) };
+        return () => { dispatch(reset()); setIsTimerActive(false); };
     }, []);
 
-    useEffect(() => {
-        setIsTimerActive(false);
-        if (startTimerTime) {
-            setIsTimerActive(true)
-        }
-    }, [startTimerTime])
+
 
     useEffect(() => {
         if (minSize[0] > 0) {
@@ -110,10 +93,9 @@ export default function CanvasTest2() {
         }
 
         setIsEditable(playerName == turn);
-        setStrokeStyle(strokeStyle);
-
+        setStrokeStyle("#000000");
     }, [turn]);
-  
+
 
     useEffect(() => {
         if (winner) {
@@ -124,7 +106,6 @@ export default function CanvasTest2() {
 
     function onDraw(commands) {
         dispatch(channelPush(sendEvent(canvasChannel, { commands }, "commands")));
-        
     }
 
     function onTimerCompleted() {
@@ -133,11 +114,10 @@ export default function CanvasTest2() {
     }
 
     function onStartClick() {
+        setIsTimerActive(true);
         onClearClick()
-        if (isGameOwner && winner == "") {
-            dispatch(channelPush(sendEvent(canvasChannel, {}, "new_game")));
-        } else if (isGameOwner) {
-            dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
+        if (isGameOwner) {
+            dispatch(channelPush(sendEvent(canvasChannel, {}, winner == "" ? "new_game" : "next_turn")));
         }
 
         setIsNewGamePrompt(false);
@@ -148,31 +128,13 @@ export default function CanvasTest2() {
         dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }
 
-    function onClearedClick(command) {
-        dispatch(channelPush(sendEvent(canvasChannel, command, "commands")));
-    }
-
     function onClearClick() {
-        setIsClearRequest(true);
+        clearCanvas('paint-canvas');
+        dispatch(channelPush(sendEvent(canvasChannel, clearCommand, "commands")));
     }
-
-
-    useEffect(() => {
-        setIsClearRequest(false);
-    }, [isClearRequest]);
 
     function onSaveClick(e) {
-        var imageName = prompt('Please enter image name');
-        if (imageName == null) {
-            return;
-        }
-
-        const canvas = document.getElementById("paint-canvas");
-        var canvasDataURL = canvas.toDataURL();
-        var a = document.createElement('a');
-        a.href = canvasDataURL;
-        a.download = imageName || 'drawing';
-        a.click();
+        saveCanvas('paint-canvas');
     }
 
     function onBackClick() {
@@ -182,17 +144,25 @@ export default function CanvasTest2() {
     }
 
     function onColorChange(color) {
-        setStrokeStyle(color);        
+        setStrokeStyle(color);
     }
-
 
     function onGuessSubmit(guess) {
         dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
     }
 
+    if (!gameCode) {
+        dispatch(push('/'))
+    }
+
     return (
         <>
-            <NewGamePrompt isNewGamePrompt={isNewGamePrompt} onStartGame={onStartClick}> </NewGamePrompt>
+            <NewGamePrompt
+                isNewGamePrompt={isNewGamePrompt}
+                onStartGame={onStartClick}
+                header={winner != "" && `${winner} won!!!`}
+                text={winner != "" ? "Next round starts in: " : "Game Starts in: "}
+            />
 
             <div className="container">
                 {winner && <h2>{winner} Won!!!</h2>}
@@ -200,15 +170,15 @@ export default function CanvasTest2() {
                 {!winner && playerName != turn && <h2 id="word-game">Guessing word for {turn}</h2>}
             </div>
             <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />
-            <CanvasTest
+            <Canvas
                 color={strokeStyle}
                 commands={commands}
                 height={height}
                 width={width}
                 isEditable={isEditable}
-                isClearRequest={isClearRequest}                
-                onCleared={onClearedClick}
+                isClearRequest={isClearRequest}
                 onDraw={onDraw}
+                onColorChange={(color) => setStrokeStyle(color)}
             />
 
             <div className="container">

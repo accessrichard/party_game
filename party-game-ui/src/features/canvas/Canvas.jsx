@@ -1,19 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-
-function canvasWidth() {
-    return window.innerWidth - (window.innerWidth * .02);
-}
-
-function canvasHeight() {
-    return window.innerHeight - (window.innerHeight * .45);
-}
+import { canvasWidth, canvasHeight } from './canvasUtils';
 
 const store = {
     drawing: [],
     displays: [],
     mouseMove: [],
-    isDrawing: false,
-    isColorShared: true,
+    isDrawing: false,    
     reset: function () {
         this.mouseMove = [];
         this.drawing = [];
@@ -21,18 +13,9 @@ const store = {
     }
 }
 
-function draw(command, value, op) {
-    store.drawing.push({ command, value, op });
-}
+export default function Canvas({ color, isEditable, onDraw, width, height, commands, onColorChange }) {
 
-function move(value) {
-    store.mouseMove.push(value);
-}
-
-export default function CanvasTest({ isClearRequest, onCleared, color, isEditable, onDraw, width, height, onCreated, commands }) {
-
-    const canvasRef = useRef(null);
-    const [strokeStyle, setStrokeStyle] = useState("black");
+    const canvasRef = useRef(null);    
 
     useEffect(() => {
         return () => { store.reset(); };
@@ -45,8 +28,8 @@ export default function CanvasTest({ isClearRequest, onCleared, color, isEditabl
         canvas.height = canvasHeight();
 
         const context = canvas.getContext("2d");
-        context.strokeStyle = strokeStyle;
-        context.lineWidth = 2;      
+        context.strokeStyle = color;
+        context.lineWidth = 2;
     }, []);
 
 
@@ -66,31 +49,28 @@ export default function CanvasTest({ isClearRequest, onCleared, color, isEditabl
     }, [isEditable]);
 
     function mouseDown(event) {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
         store.isDrawing = true;
-
+        const context = canvasRef.current.getContext("2d");
         context.beginPath();
         context.moveTo(event.layerX, event.layerY);
-        draw("beginPath", null, "function");
-        draw("moveTo", [event.layerX, event.layerY], "function");
+        store.drawing.push({ command: "beginPath", value: null, op: "function" });
+        store.drawing.push({ command: "moveTo", value: [event.layerX, event.layerY], op: "function" });
     }
 
     function mouseMove(event) {
-        if (!store.isDrawing) {            
+        if (!store.isDrawing) {
             return;
         }
 
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
+        const context = canvasRef.current.getContext("2d");
         context.lineTo(event.layerX, event.layerY);
         context.stroke();
-        move([event.layerX, event.layerY]);
-    }    
+        store.mouseMove.push([event.layerX, event.layerY]);
+    }
 
     function mouseUp() {
-        draw("lineTo", store.mouseMove, "function");
-        draw("stroke", null, "function");
+        store.drawing.push({ command: "lineTo", value: store.mouseMove, op: "function" });
+        store.drawing.push({ command: "stroke", value: null, op: "function" });
         onDraw && onDraw(store.drawing)
         store.reset();
     }
@@ -103,44 +83,14 @@ export default function CanvasTest({ isClearRequest, onCleared, color, isEditabl
         if (height > 100) {
             canvas.height = height;
         }
-    }, [width, height])
+    }, [width, height])    
 
     useEffect(() => {
-        if (!isClearRequest) {
-            return;
-        }
-
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        const command = {
-            commands: [{
-                command: "clearRect",
-                value: [0, 0, canvas.width, canvas.height], op: "function"
-            }]
-        };
-
-        onCleared && onCleared(command);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-    }, [isClearRequest])
-
-    useEffect(() => {
-        const context = canvasRef.current.getContext('2d');
-        setStrokeStyle(color);
+        const context = canvasRef.current.getContext('2d');        
         context.strokeStyle = color;
         store.drawing.push({ command: "strokeStyle", value: color, op: "assign" });
     }, [color]);
 
-
-    /**
-     * Revert the stroke style of the drawing
-     * canvas so this canvas user can continue...
-     */
-    function preventSyncStrokeStyle(context, color) {
-        if (!store.isColorShared) {
-            setStrokeStyle(color);
-            context.strokeStyle = color;
-        }
-    }
 
     /**
      * Stroke style uses state since context.strokeStyle
@@ -149,18 +99,13 @@ export default function CanvasTest({ isClearRequest, onCleared, color, isEditabl
      */
     function specialAssign(command) {
         if (command.command == 'strokeStyle') {
-            setStrokeStyle(command.value);
+            onColorChange && onColorChange(command.value);
         }
     }
 
     useEffect(() => {
         const context = canvasRef.current.getContext("2d");
-
-        let tempStrokeStyle = strokeStyle;
-
         commands.forEach(command => onCommand(command));
-
-        preventSyncStrokeStyle(context, tempStrokeStyle)
     }, [commands]);
 
     function onCommand(command) {
@@ -197,7 +142,7 @@ export default function CanvasTest({ isClearRequest, onCleared, color, isEditabl
             {/*
                 An overlay to see viewport of canvas across players without resizing the canvas
                 <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div> 
-                */}
+            */}
 
             <canvas id="paint-canvas" ref={canvasRef} ></canvas>
         </div>
