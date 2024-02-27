@@ -17,4 +17,16 @@ defmodule PartyGameWeb.WebDev do
     %{room | room_name: "zzzz"}
   end
 
+  def observe() do
+    Mix.ensure_application!(:wx)
+    Mix.ensure_application!(:runtime_tools)
+    Mix.ensure_application!(:observer)
+  end
+
+  def count_children() do
+    DynamicSupervisor.count_children(PartyGame.Game.Supervisor)
+  end
+
+
+
 end

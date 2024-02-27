@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ColorButton from './ColorButton';
 
 const colorPallette = [
-    "Black", "Gray", "Red",
-    "Orange", "Green", "Blue",
-    "Yellow", "Purple"
+    "#000000", "#808080", "#ff0000",
+    "#ffa500", "#008000", "#0000ff",
+    "#ffff00", "#800080" 
 ];
 
 function toHex(rgb) {
@@ -14,36 +14,19 @@ function toHex(rgb) {
 
 export default function ColorPallette({ strokeStyle, onColorChange }) {
 
-    const [activeColorIndex, setActiveColorIndex] = useState(0);
-
-    function onColorButtonClick(e, idx, color) {
-        setActiveColorIndex(idx);
+    function onColorButtonClick(e, color) {
         onColorChange && onColorChange(color);
     }
 
-    useEffect(() => {
-        if (!strokeStyle) {
-            return;
-        }
-
-        colorPallette.forEach((color, idx) => {
-            if (color === strokeStyle) {
-                setActiveColorIndex(idx);
-            }
-        });
-    }, [strokeStyle])
-
-
     return (
         <div>
-            {colorPallette.map((color, index) =>
+            {colorPallette.map((color, index) =>                
                 <ColorButton
-                    className={`color-button color-button-size ${color.toLowerCase()} light-text`}
-                    onClick={(e) => onColorButtonClick(e, index, color)}
+                    className="color-button color-button-size"
+                    onClick={(e) => onColorButtonClick(e, color)}
                     color={color}
-                    index={index}
-                    active={activeColorIndex == index}
-                    key={index}></ColorButton>)
+                    active={color == strokeStyle}
+                    key={index}></ColorButton>)            
             }
         </div>
     );

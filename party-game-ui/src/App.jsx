@@ -16,7 +16,7 @@ import InlineFacesSprite from './features/common/InlineFacesSprite';
 import Join from './features/start/Join';
 import Landing from './features/start/Landing';
 import Lobby from './features/lobby/Lobby';
-import Canvas from './features/canvas/Canvas';
+import Canvasgame from './features/canvas/CanvasGame';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
 import Score from './features/multipleChoice/Score';
 import Settings from './features/multipleChoice/Settings';
@@ -37,7 +37,7 @@ function App() {
             <Route element={<ExceptionPopup />}>
               <Route exact path="/lobby" element={<Lobby />} />
               <Route exact path="/settings" element={<Settings />} />
-              <Route exact path="/canvas" element={<Canvas />} />
+              <Route exact path="/canvas" element={<Canvasgame />} />
               <Route element={<InlineFacesSprite />}>
                 <Route exact path="/score" element={<Score />} />
                 <Route exact path="/game" element={<Game />} />
