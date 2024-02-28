@@ -79,7 +79,6 @@ export const gameSlice = createSlice({
             }
         },
         resetGame(state, action) {
-            console.log("RESET IS HERE")
             _resetGame(state);
         },
         handleNewGameCreated(state, action) {

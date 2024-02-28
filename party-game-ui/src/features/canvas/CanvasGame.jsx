@@ -166,7 +166,7 @@ export default function CanvasGame() {
                 {!winner && playerName == turn && <h2 id="word-game">Draw: {word}</h2>}
                 {!winner && playerName != turn && <h2 id="word-game">Guessing word for {turn}</h2>}
             </div>
-            <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />
+            {players.length > 1 && <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />}
             <Canvas
                 color={strokeStyle}
                 commands={commands}
