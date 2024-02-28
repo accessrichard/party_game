@@ -117,26 +117,7 @@ function Settings() {
                         <span className="bar"></span>
                         <label>Wrong Answer Timeout (seconds):</label>
                         <InputError className="error shake" errors={[form.errors.wrongAnswerTimeout]} />
-                    </div>
-                    <div>
-                        <span>Enable start game countdown: </span>
-                        <label className='pointer-events'>
-                            <input type="radio"
-                                name="isNewGamePrompt"
-                                value={true}
-                                checked={form.isNewGamePrompt}
-                                onChange={onBoolChange} />
-                            <span>Yes</span>
-                        </label>
-                        <label className='pointer-events'>
-                            <input type="radio"
-                                name="isNewGamePrompt"
-                                value={false}
-                                checked={!form.isNewGamePrompt}
-                                onChange={onBoolChange} />
-                            <span>No</span>
-                        </label>
-                    </div>
+                    </div>                   
                     <div className="btn-box">
                         <button className="btn btn-submit" type="submit">Save</button>
                     </div>

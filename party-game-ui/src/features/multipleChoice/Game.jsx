@@ -81,9 +81,8 @@ export default function Game() {
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
     const [timerStartDate, setTimerStartDate] = useState(null);
     const [isDisabled, setIsDisabled] = useState(false);
-    const [isStartGamePrompt, setIsStartGamePrompt] = useState(settings.isNewGamePrompt);
+    const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
-    const [isGameCreated, setIsGameCreated] = useState(false);
 
     const prevRound = usePrevious(round);
     const gameChannel = `game:${gameCode}`;
@@ -94,20 +93,9 @@ export default function Game() {
     useBackButtonBlock(true);
 
     useEffect(() => {
-        if (isGameCreated) 
-        {
-            return;
-        }
-
-        if (isGameOwner)
-        {
-            handleCreateGame();
-        } else {
-            dispatch(resetGame());
-        }
-
-        setIsGameCreated(true);
-    }, [isGameOwner, isGameCreated]);
+        dispatch(resetGame());
+        setIsStartGamePrompt(true);
+    }, []);
 
     /**
      * Sets a delay timeout on wrong answers as configured in the settings.
@@ -144,20 +132,25 @@ export default function Game() {
      * Ensures the timer is going when a round is started
      * and reset on new rounds.
      */
-    useEffect(() => {
-        if (isRoundStarted && round === prevRound) {
+    useEffect(() => {                
+        if (isRoundStarted) {
+            setIsStartGamePrompt(false);
+        }
+
+        if (isRoundStarted && round === prevRound) {                        
             setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
             setIsDisabled(false);
         } else if (round !== prevRound && isRoundStarted) {
             /// Force reset of timer when round changes
             /// since timers can go out of sync across players.
+            setIsStartGamePrompt(false);
             setIsTimerActive(new Date());
-            setIsQuestionAnswered(false);
+            setIsQuestionAnswered(false);            
         }
 
         return () => { setIsTimerActive(false); };
-    }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);
+    }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);    
 
     function startClick(e) {
         e && e.preventDefault();
@@ -244,12 +237,10 @@ export default function Game() {
     }
 
     function onStartGame() {
-        setIsStartGamePrompt(false);
-        if (!isGameOwner) {
-            return
+        if (isGameOwner)
+        {
+            handleCreateGame();
         }
-
-        dispatch(channelPush(sendEvent(gameChannel, null, "start_round")));
     }
 
     return (

@@ -5,6 +5,7 @@ export default function NewGamePrompt(props) {
     const {
         onStartGame,
         isNewGamePrompt,
+        seconds = 3,
         text = "Game Starts In: ",
         header = "" } = props;
 
@@ -31,7 +32,7 @@ export default function NewGamePrompt(props) {
                     </div>
                     <div className='flex-row flex-center'>
                         <h2>{text}
-                            <Timer numberSeconds={3}
+                            <Timer numberSeconds={seconds}
                                 isIncrement={false}
                                 isVisible={true}
                                 isActive={isTimerActive}

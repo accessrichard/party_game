@@ -87,17 +87,10 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
       |> MultipleChoiceGame.new()
       |> MultipleChoiceGame.add_questions(questions, game_name)
       |> MultipleChoiceGame.update_settings(settings)
+      |> MultipleChoiceGame.start_round()
+      |> Server.update_game()
 
-
-    if game_room.game.settings.prompt_game_start do
-      Server.update_game(game_room)
-      broadcast(socket, "handle_new_game_created", %{"settings" => game_room.game.settings})
-      {:noreply, socket}
-    else
-      game_room = MultipleChoiceGame.start_round(game_room)
-      Server.update_game(game_room)
       reply_with_questions(socket, %{is_new?: true, game_room: game_room})
-    end
   end
 
   @impl true
