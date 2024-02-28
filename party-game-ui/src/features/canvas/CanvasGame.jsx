@@ -64,13 +64,11 @@ export default function CanvasGame() {
     } = useSelector(state => state.canvas);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [timerSeconds, setTimerSeconds] = useState(1000);
-    const [isIncrement, setIsIncrement] = useState(false);
+    const [timerSeconds, setTimerSeconds] = useState(1000);    
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);
-    const [isClearRequest, setIsClearRequest] = useState(false);
+    const [width, setWidth] = useState(0);    
     const [isEditable, setIsEditable] = useState(true);
     const [strokeStyle, setStrokeStyle] = useState("#000000");
 
@@ -80,35 +78,12 @@ export default function CanvasGame() {
         return () => { dispatch(reset()); setIsTimerActive(false); };
     }, []);
 
-
-
-    useEffect(() => {
-        if (minSize[0] > 0) {
-            setWidth(minSize[0]);
-        }
-        if (minSize[1] > 0) {
-            setHeight(minSize[1])
-        }
-
-        setIsEditable(playerName == turn);
-        setStrokeStyle("#000000");
-    }, [turn]);
-
-
     useEffect(() => {
         if (winner) {
             setIsTimerActive(false);
             setIsNewGamePrompt(true);
         }
     }, [winner])
-
-    function onDraw(commands) {
-        if (players.length <= 1) {
-            return;
-        }
-
-        dispatch(channelPush(sendEvent(canvasChannel, { commands }, "commands")));
-    }
 
     function onTimerCompleted() {
         setIsTimerActive(false);
@@ -130,6 +105,22 @@ export default function CanvasGame() {
         dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }
 
+    function onGuessSubmit(guess) {
+        dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
+    }
+
+    useEffect(() => {
+        if (minSize[0] > 0) {
+            setWidth(minSize[0]);
+        }
+        if (minSize[1] > 0) {
+            setHeight(minSize[1])
+        }
+
+        setIsEditable(playerName == turn);
+        setStrokeStyle("#000000");
+    }, [turn]);
+
     function onClearClick() {
         clearCanvas('paint-canvas');
         dispatch(channelPush(sendEvent(canvasChannel, clearCommand, "commands")));
@@ -149,8 +140,12 @@ export default function CanvasGame() {
         setStrokeStyle(color);
     }
 
-    function onGuessSubmit(guess) {
-        dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
+    function onDraw(commands) {
+        if (players.length <= 1) {
+            return;
+        }
+
+        dispatch(channelPush(sendEvent(canvasChannel, { commands }, "commands")));
     }
 
     if (!gameCode) {
@@ -178,7 +173,6 @@ export default function CanvasGame() {
                 height={height}
                 width={width}
                 isEditable={isEditable}
-                isClearRequest={isClearRequest}
                 onDraw={onDraw}
                 onColorChange={(color) => setStrokeStyle(color)}
             />
@@ -189,8 +183,8 @@ export default function CanvasGame() {
                         restartKey={startTimerTime}
                         isActive={isTimerActive}
                         onTimerCompleted={onTimerCompleted}
-                        timeIncrement={isIncrement ? 1 : -1}
-                        isIncrement={isIncrement}
+                        timeIncrement={-1}
+                        isIncrement={false}
                         numberSeconds={timerSeconds} />
                 </div>
                 <div className="break"></div>

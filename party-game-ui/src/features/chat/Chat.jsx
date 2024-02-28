@@ -30,15 +30,16 @@ const Chat = () => {
   const [text, setText] = useState("");
   const [isUserTyping, setIsUserTyping] = useState(false);
 
-  usePhoenixChannel(`chat:${gameCode}`, { name: player });
-  usePhoenixEvents(`chat:${gameCode}`, onEvents);
+  const topic = `chat:${gameCode}`
+
+  usePhoenixChannel(topic, { name: player });
+  usePhoenixEvents(topic, onEvents);
 
   useEffect(() => {
     chatBottomRef.current.scrollTop = chatBottomRef.current.scrollHeight + window.innerHeight;
   });
 
   function send() {
-    const topic = `chat:${gameCode}`
     dispatch(channelPush({
       topic,
       event: topic,
@@ -59,12 +60,12 @@ const Chat = () => {
       return;
     }
 
+    const lobbyChannel = `lobby:${gameCode}`;
     setIsUserTyping(true);
-    const presence = `game:${gameCode}`;
-    dispatch(channelPush(typingEvent(presence, true)));
+    dispatch(channelPush(typingEvent(lobbyChannel, true)));
 
     setTimeout(() => {
-      dispatch(channelPush(typingEvent(presence, false)));
+      dispatch(channelPush(typingEvent(lobbyChannel, false)));
       setIsUserTyping(false);
     }, 1000 * 2);
   }

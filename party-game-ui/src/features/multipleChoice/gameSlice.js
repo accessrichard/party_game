@@ -18,7 +18,7 @@ const initialState = {
     rounds: []
 };
 
-function resetGame(state) {
+function _resetGame(state) {
     const savedState = {
         playerName: state.playerName,
         name: state.name,
@@ -49,7 +49,7 @@ export const gameSlice = createSlice({
         },
         startRound: (state, action) => {
             if (action.payload.isNew) {
-                resetGame(state);
+                _resetGame(state);
                 state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             }
             
@@ -78,8 +78,12 @@ export const gameSlice = createSlice({
                 state.startCountdown = true;
             }
         },
+        resetGame(state, action) {
+            console.log("RESET IS HERE")
+            _resetGame(state);
+        },
         handleNewGameCreated(state, action) {
-            resetGame(state);
+            _resetGame(state);
 
             const settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             if (settings.isNewGamePrompt) {
@@ -182,6 +186,7 @@ export const {
     clearWrongAnswer,
     syncGameState,
     clearJoinError,
-    setFlash } = gameSlice.actions;
+    setFlash, 
+    resetGame} = gameSlice.actions;
 
 export default gameSlice.reducer;

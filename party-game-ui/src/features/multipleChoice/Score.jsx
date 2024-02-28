@@ -1,16 +1,12 @@
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import Faces from '../common/Faces';
 import { Navigate } from 'react-router-dom';
-import NewGamePrompt from '../common/NewGamePrompt';
-import React from 'react';
 import Scores from '../common/Scores';
 import { getScores } from './gameSlice';
 import { push } from "redux-first-history";
 import { Confetti } from '@neoconfetti/react';
-import  useLobbyEvents  from '../lobby/useLobbyEvents';
-
-
+import useLobbyEvents from '../lobby/useLobbyEvents';
 
 function displayWinner(scores) {
     const winners = scores.winners.filter(x => x.name !== "None");
@@ -22,7 +18,7 @@ function displayWinner(scores) {
         return winners.map(x => x.name).join(" and ") + " tied!"
     }
 
-    if (winners.length === 1){
+    if (winners.length === 1) {
         return scores.winners[0].name + " won!";
     }
 }
@@ -32,13 +28,13 @@ function Score() {
     const scores = useSelector(getScores);
     useLobbyEvents();
 
-    const {isGameStarted, gameCode, url }  = useSelector(state => state.lobby);
-    const {isOver, round }  = useSelector(state => state.game);
+    const { isGameStarted, gameCode, url } = useSelector(state => state.lobby);
+    const { round } = useSelector(state => state.game);
 
     const gameChannel = `game:${gameCode}`;
 
     if (isGameStarted) {
-        return dispatch(push(url || '/game'))
+        return <Navigate to={url || '/game'}/>
     }
 
     if (!gameChannel) {
@@ -49,13 +45,12 @@ function Score() {
         e.preventDefault();
         dispatch(push('/lobby'));
     }
-    
     return (
         <>
-            <NewGamePrompt/>
             <div className="pd-25 md-5 large-title">{displayWinner(scores)}</div>
             <Faces isHappy={true} className="small-logo spin" />
-            <Confetti/>
+            <Confetti />
+
             <Scores scores={scores.scores} rounds={round} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>
         </>

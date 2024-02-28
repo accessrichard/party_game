@@ -3,7 +3,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   use PartyGameWeb, :channel
 
-  alias PartyGameWeb.Presence
   alias PartyGame.{Server, Lobby}
   alias PartyGame.MultipleChoiceGame
   alias PartyGame.Game.GameRoom
@@ -58,7 +57,8 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     client_form = Map.get(payload, "game")
     game_name = Map.get(client_form, "name")
     game_location = Map.get(client_form, "location")
-    rounds = Map.get(payload, "rounds", 10)
+    settings = Map.get(payload, "settings")
+    rounds = Map.get(settings, "rounds", 10)
     server_game = Server.get_game(game_code(socket.topic))
 
     game_room =
@@ -86,13 +86,8 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
       |> Lobby.start_game()
       |> MultipleChoiceGame.new()
       |> MultipleChoiceGame.add_questions(questions, game_name)
+      |> MultipleChoiceGame.update_settings(settings)
 
-    game_room =
-      if Map.has_key?(payload, "settings") do
-        MultipleChoiceGame.update_settings(game_room, Map.get(payload, "settings"))
-      else
-        game_room
-      end
 
     if game_room.game.settings.prompt_game_start do
       Server.update_game(game_room)
@@ -163,18 +158,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
         push(socket, "handle_wrong_answer", %{isCorrect: false})
         {:noreply, socket}
     end
-  end
-
-  @impl true
-  def handle_in("user:typing", payload, socket) do
-    metas =
-      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
-      |> List.first()
-      |> Map.merge(%{typing: Map.get(payload, "typing")})
-
-    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
-
-    {:noreply, socket}
   end
 
   @impl true

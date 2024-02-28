@@ -22,6 +22,7 @@ import {
     startRound,
     handleWrongAnswer,
     setFlash,
+    resetGame
 } from './gameSlice';
 
 const events = (topic) => [
@@ -93,10 +94,17 @@ export default function Game() {
     useBackButtonBlock(true);
 
     useEffect(() => {
-        if (isGameOwner && !isGameCreated)
+        if (isGameCreated) 
+        {
+            return;
+        }
+
+        if (isGameOwner)
         {
             handleCreateGame();
-        }   
+        } else {
+            dispatch(resetGame());
+        }
 
         setIsGameCreated(true);
     }, [isGameOwner, isGameCreated]);
@@ -222,8 +230,7 @@ export default function Game() {
             game = { ...game, questions: creativeGame.game.questions }
         }
 
-        const payload = { game: game, rounds: settings.rounds };
-        const data = { name: playerName, settings: toServerSettings(settings), ...payload };
+        const data = { name: playerName, settings: toServerSettings(settings), game: game };
 
         dispatch(channelPush(sendEvent(gameChannel, data, "new_game")));
     }

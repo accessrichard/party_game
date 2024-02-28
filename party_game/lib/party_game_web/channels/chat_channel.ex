@@ -39,4 +39,5 @@ defmodule PartyGameWeb.ChatChannel do
     broadcast(socket, "chat", payload)
     {:noreply, socket}
   end
+
 end
