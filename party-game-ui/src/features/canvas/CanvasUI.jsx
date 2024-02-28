@@ -5,11 +5,11 @@ import Canvas from './Canvas';
 import GuessInput from './GuessInput';
 import GuessList from './GuessList';
 import NewGamePrompt from '../common/NewGamePrompt';
+import WinnerList from './WinnerList';
 import useBackButtonBlock from '../useBackButtonBlock'
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
-import { getPresences } from '../presence/presenceSlice';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { endGame } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
@@ -41,18 +41,21 @@ const events = (topic) => [
 ]
 
 export default function CanvasUI({
-    onTimerCompleted, 
-    onGuessSubmit,
-    onStartClick, 
-    onNextClick,
-    isEditable,
-    isNewGamePrompt,
-    timerSeconds
+    onTimerCompleted = () => {}, 
+    onGuessSubmit = () => {},
+    onStartClick = () => {}, 
+    onNextClick = () => {},
+    isEditable = true,
+    isNewGamePrompt = false,
+    timerSeconds = 30,
+    isGuessInputDisplayed = false,
+    isTimerActive = false,
+    isGuessListDisplayed = false,
+    players = []
 }) {
 
     const dispatch = useDispatch();
     const { playerName, gameCode } = useSelector(state => state.lobby);
-    const players = useSelector(getPresences);
 
     const canvasChannel = `canvas:${gameCode}`;
 
@@ -68,10 +71,10 @@ export default function CanvasUI({
         startTimerTime,
         minSize,
         guesses,
-        winner
+        winner,
+        winners
     } = useSelector(state => state.canvas);
-
-    const [isTimerActive, setIsTimerActive] = useState(false);
+    
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);        
@@ -80,7 +83,7 @@ export default function CanvasUI({
     useBackButtonBlock(isBackButtonBlocked);
 
     useEffect(() => {
-        return () => { dispatch(reset()); setIsTimerActive(false); };
+        return () => { dispatch(reset()); };
     }, []); 
 
     useEffect(() => {
@@ -134,13 +137,13 @@ export default function CanvasUI({
                 header={winner != "" && `${winner} won!!!`}
                 text={winner != "" ? "Next round starts in: " : "Game Starts in: "}
             />
-
+            <WinnerList winners={winners}/>
             <div className="container">
                 {winner && <h2>{winner} Won!!!</h2>}
                 {!winner && playerName == turn && <h2 id="word-game">Draw: {word}</h2>}
                 {!winner && playerName != turn && <h2 id="word-game">Guessing word for {turn}</h2>}
             </div>
-            {players.length > 1 && <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />}
+            {isGuessListDisplayed && <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />}
             <Canvas
                 color={strokeStyle}
                 commands={commands}
@@ -163,7 +166,7 @@ export default function CanvasUI({
                 </div>
                 <div className="break"></div>
 
-                {turn != playerName && isTimerActive &&
+                {isGuessInputDisplayed &&
                     <GuessInput onSubmit={onGuessSubmit} />}
 
                 <div className="break"></div>

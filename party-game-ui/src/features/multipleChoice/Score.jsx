@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Faces from '../common/Faces';
 import { Navigate } from 'react-router-dom';
@@ -26,12 +26,18 @@ function displayWinner(scores) {
 function Score() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
+    const [confetti, setConfetti] = useState(new Date().toISOString())
     useLobbyEvents();
 
     const { isGameStarted, gameCode, url } = useSelector(state => state.lobby);
     const { round } = useSelector(state => state.game);
 
     const gameChannel = `game:${gameCode}`;
+    
+    useEffect(() => {
+        setConfetti(new Date().toISOString());
+    }, []);
+
 
     if (isGameStarted) {
         return <Navigate to={url || '/game'}/>
@@ -49,7 +55,7 @@ function Score() {
         <>
             <div className="pd-25 md-5 large-title">{displayWinner(scores)}</div>
             <Faces isHappy={true} className="small-logo spin" />
-            <Confetti />
+            <Confetti key={confetti} />
 
             <Scores scores={scores.scores} rounds={round} />
             <a href="/" className="app-link slidein-right pd-25" onClick={playAgain}>Play Again</a>

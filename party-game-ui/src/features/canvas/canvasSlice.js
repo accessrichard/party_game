@@ -7,7 +7,8 @@ const initialState = {
     turn: "",
     startTimerTime: null,
     minSize: [0,0],
-    winner: ""
+    winner: "",
+    winners: []
 }
 
 export const canvasSlice = createSlice({
@@ -42,6 +43,16 @@ export const canvasSlice = createSlice({
             state.guesses.push(action.payload.guess);
             state.guesses = state.guesses.slice(-10)
             state.winner = action.payload.winner;
+            if (action.payload.winner) {
+                let wins = state.winners.find(x => x.name == action.payload.winner);
+                if (!wins) {
+                    state.winners.push({name: action.payload.winner, wins: 1});
+                } else {
+                    wins.wins += 1;
+                }
+
+                state.winners = state.winners.sort((x, y) => x.wins < y.wins);
+            }
         },
         reset(state, action) {
             state.commands = [];
