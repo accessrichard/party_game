@@ -37,7 +37,7 @@ const events = (topic) => [
         event: 'commands',
         dispatcher: commands(),
         topic,
-    }
+    }    
 ]
 
 export default function CanvasUI({
@@ -51,7 +51,12 @@ export default function CanvasUI({
     isGuessInputDisplayed = false,
     isTimerActive = false,
     isGuessListDisplayed = false,
-    players = []
+    players = [],
+    playerWaitMessage = "",
+    turn,
+    word,
+    winner,
+    playerDrawMessage
 }) {
 
     const dispatch = useDispatch();
@@ -65,13 +70,10 @@ export default function CanvasUI({
     useLobbyEvents();
 
     const {
-        word,
         commands,
-        turn,
         startTimerTime,
         minSize,
         guesses,
-        winner,
         winners
     } = useSelector(state => state.canvas);
     
@@ -128,7 +130,6 @@ export default function CanvasUI({
     if (!gameCode) {
         return <Navigate to="/"/>
     }
-
     return (
         <>
             <NewGamePrompt
@@ -140,8 +141,8 @@ export default function CanvasUI({
             <WinnerList winners={winners}/>
             <div className="container">
                 {winner && <h2>{winner} Won!!!</h2>}
-                {!winner && playerName == turn && <h2 id="word-game">Draw: {word}</h2>}
-                {!winner && playerName != turn && <h2 id="word-game">Guessing word for {turn}</h2>}
+                {!winner && playerName == turn && <h2 id="word-game">{playerDrawMessage}</h2>}
+                {!winner && playerName != turn && <h2 id="word-game">{playerWaitMessage}</h2>}
             </div>
             {isGuessListDisplayed && <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />}
             <Canvas

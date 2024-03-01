@@ -20,28 +20,20 @@ export default function CanvasDrawGame() {
     } = useSelector(state => state.canvas);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [isEditable, setIsEditable] = useState(true);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
-
+   
     useEffect(() => {
-        if (winner) {
-            setIsTimerActive(false);
-            setIsNewGamePrompt(true);
-        }
-    }, [winner])
+        setIsTimerActive(false);
+        setIsTimerActive(true);
+    }, [turn]);
 
     function onTimerCompleted() {
         setIsTimerActive(false);
-        setIsNewGamePrompt(true);
-    }
-
-    function onGuessSubmit(guess) {
-        dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
-    }
-
-    useEffect(() => {
-        setIsEditable(playerName == turn);        
-    }, [turn]);
+        if (isGameOwner) {
+            dispatch(channelPush(sendEvent(canvasChannel, {}, "switch_editable")));
+        }
+        
+    }    
 
     function onStartClick() {
         setIsTimerActive(true);
@@ -55,7 +47,7 @@ export default function CanvasDrawGame() {
 
     function onNextClick(e) {
         onClearClick();
-        dispatch(channelPush(sendEvent(canvasChannel, {}, "switch_editable")));
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }
 
     function onClearClick() {
@@ -66,23 +58,22 @@ export default function CanvasDrawGame() {
     return (
         <>
             <CanvasUI
-                onTimerCompleted={onTimerCompleted}
-                onGuessSubmit={onGuessSubmit}
-                isEditable={isEditable}
+                onTimerCompleted={onTimerCompleted}                
+                isEditable={playerName == turn}
                 setIsNewGamePrompt={setIsNewGamePrompt}
                 isTimerActive={isTimerActive}
-                timerSeconds={45}
+                timerSeconds={20}
                 onStartClick={onStartClick}
                 onClearClick={onClearClick}
                 isNewGamePrompt={isNewGamePrompt}
                 onNextClick={onNextClick}
-                isGuessInputDisplayed={playerName != turn}
-                isGuessListDisplayed={players.length > 1}
+                isGuessInputDisplayed={false}
+                isGuessListDisplayed={false}
                 players={players}
-                playerWaitMessage={`Guessing word for: ${turn}`}
-                playerDrawMessage={`Draw: ${word}`}
-                word={word}
+                playerWaitMessage={`${turn}'s turn to draw: ${word}`}                
+                playerDrawMessage={`Your turn to draw: ${word}`}
                 turn={turn}
+                word={word}
                 winner={winner}
             />
         </>)

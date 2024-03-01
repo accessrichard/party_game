@@ -100,9 +100,25 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   end
 
   def handle_in("next_turn", _, socket) do
+
     game_room =
       Server.get_game(game_code(socket.topic))
       |> CanvasGame.change_word()
+      |> CanvasGame.change_turn()
+      |> Server.update_game()
+
+    broadcast(socket, "handle_new_game", %{
+      "turn" => game_room.game.turn,
+      "word" => game_room.game.word
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("switch_editable", _, socket) do
+
+    game_room =
+      Server.get_game(game_code(socket.topic))
       |> CanvasGame.change_turn()
       |> Server.update_game()
 

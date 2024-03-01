@@ -76,15 +76,6 @@ defmodule PartyGame.Games.GameList do
         module: MultipleChoice.States
       },
       %GameMetaData{
-        name: "Draw Togather",
-        category: "Drawing",
-        type: "canvas",
-        location: "server",
-        url: "/canvas",
-        options: %{type: "draw_togather"},
-        module: Canvas.CanvasGame
-      },
-      %GameMetaData{
         name: "Guess The Drawing",
         category: "Drawing",
         type: "canvas",
@@ -98,17 +89,8 @@ defmodule PartyGame.Games.GameList do
         category: "Drawing",
         type: "canvas",
         location: "server",
-        url: "/canvas",
+        url: "/canvas_alternate",
         options: %{type: "alternate_draw"},
-        module: Canvas.CanvasGame
-      },
-      %GameMetaData{
-        name: "Free Draw Togather",
-        category: "Drawing",
-        type: "canvas",
-        location: "server",
-        url: "/canvas",
-        options: %{type: "free_draw"},
         module: Canvas.CanvasGame
       },
       %GameMetaData{
