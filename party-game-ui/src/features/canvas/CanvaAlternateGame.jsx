@@ -31,8 +31,7 @@ export default function CanvasDrawGame() {
         setIsTimerActive(false);
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, {}, "switch_editable")));
-        }
-        
+        }        
     }    
 
     function onStartClick() {

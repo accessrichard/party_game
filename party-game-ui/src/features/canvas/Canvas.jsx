@@ -21,7 +21,6 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
         return () => { store.reset(); };
     }, []);
 
-
     useEffect(() => {
         const canvas = canvasRef.current;
         canvas.width = canvasWidth();
@@ -31,7 +30,6 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
         context.strokeStyle = color;
         context.lineWidth = 2;
     }, []);
-
 
     useEffect(() => {
         const canvas = canvasRef.current;

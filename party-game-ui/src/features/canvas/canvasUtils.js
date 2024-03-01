@@ -6,7 +6,6 @@ export function canvasHeight() {
     return window.innerHeight - (window.innerHeight * .45);
 }
 
-
 export function saveCanvas(id) {
     var imageName = prompt('Please enter image name');
     if (imageName == null) {
@@ -26,7 +25,6 @@ export function clearCanvas(id) {
     const context = canvas.getContext('2d');
     context.clearRect(0, 0, canvas.width, canvas.height);
 }
-
 
 export const clearCommand = {
     commands: [{

@@ -13,7 +13,8 @@ const GuessList = (props) => {
                             {val}{key == guesses.length - 1 ? '' : ', '}
                         </li>
                     )}
-                </ul></div>
+                </ul>
+            </div>
         </div>
     );
 }

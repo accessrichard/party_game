@@ -10,6 +10,6 @@ export default function ColorButton({ color, className, onClick, active }) {
             className={className} 
             style={{backgroundColor: color}}
             onClick={onClick}>
-                </button>
+        </button>
     );
 }

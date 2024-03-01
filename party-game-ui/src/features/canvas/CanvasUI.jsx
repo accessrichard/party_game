@@ -130,6 +130,7 @@ export default function CanvasUI({
     if (!gameCode) {
         return <Navigate to="/"/>
     }
+    
     return (
         <>
             <NewGamePrompt
