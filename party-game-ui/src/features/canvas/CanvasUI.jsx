@@ -37,6 +37,11 @@ const events = (topic) => [
         event: 'commands',
         dispatcher: commands(),
         topic,
+    },
+    {
+        event: 'handle_quit',
+        dispatcher: endGame(),
+        topic,
     }    
 ]
 
@@ -60,7 +65,7 @@ export default function CanvasUI({
 }) {
 
     const dispatch = useDispatch();
-    const { playerName, gameCode } = useSelector(state => state.lobby);
+    const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
 
     const canvasChannel = `canvas:${gameCode}`;
 
@@ -99,6 +104,13 @@ export default function CanvasUI({
         setStrokeStyle("#000000");
     }, [turn]);
 
+    useEffect(() => {
+        if (!isGameStarted) {
+            setIsBackButtonBlocked(false);
+            dispatch(push('/lobby'))
+        }
+
+    }, [isGameStarted])
 
     function onClearClick() {
         clearCanvas('paint-canvas');
@@ -110,6 +122,7 @@ export default function CanvasUI({
     }
 
     function onBackClick() {
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "end_game")))
         dispatch(endGame());
         setIsBackButtonBlocked(false);
         dispatch(push('/lobby'))

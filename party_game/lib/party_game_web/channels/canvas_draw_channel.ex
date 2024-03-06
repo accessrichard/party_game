@@ -58,6 +58,12 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   end
 
   @impl true
+  def handle_in("end_game", payload, socket) do
+    broadcast_from(socket, "handle_quit", payload)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_in("word", _, socket) do
     broadcast(socket, "word", %{"word" => CanvasGame.word(1) |> Enum.at(0)})
     {:noreply, socket}

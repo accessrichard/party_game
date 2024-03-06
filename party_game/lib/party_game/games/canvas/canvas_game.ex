@@ -46,12 +46,6 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     end
   end
 
-  defp equal(word1, word2) do
-    w1 = word1 |> String.downcase |> String.trim()
-    w2 = word2 |> String.downcase |> String.trim()
-    w1 == w2
-  end
-
   def word(count) do
     json = File.read!(Path.join(@word_path, "drawings.json"))
     list = Jason.decode!(json)
@@ -77,5 +71,11 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
       [acc_x | [acc_y | _]] = acc
       [min(x, acc_x), min(y, acc_y)]
     end)
+  end
+
+  defp equal(word1, word2) do
+    w1 = word1 |> String.downcase |> String.trim()
+    w2 = word2 |> String.downcase |> String.trim()
+    w1 == w2
   end
 end
