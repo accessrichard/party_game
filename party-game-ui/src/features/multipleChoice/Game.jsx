@@ -95,6 +95,7 @@ export default function Game() {
     useEffect(() => {
         dispatch(resetGame());
         setIsStartGamePrompt(true);
+        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "multiple_choice"}, "user:location")));    
     }, []);
 
     /**

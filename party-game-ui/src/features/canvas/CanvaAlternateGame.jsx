@@ -23,6 +23,11 @@ export default function CanvasDrawGame() {
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
    
     useEffect(() => {
+        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "canvas_alternate"}, "user:location")));
+    }, []);
+
+
+    useEffect(() => {
         setIsTimerActive(false);
         setIsTimerActive(true);
     }, [turn]);
@@ -74,6 +79,7 @@ export default function CanvasDrawGame() {
                 turn={turn}
                 word={word}
                 winner={winner}
+                game="canvas_alternate"
             />
         </>)
 }

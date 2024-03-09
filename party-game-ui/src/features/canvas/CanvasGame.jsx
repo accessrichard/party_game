@@ -40,6 +40,11 @@ export default function CanvasDrawGame() {
     }
 
     useEffect(() => {
+        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "canvas_game"}, "user:location")));
+    }, []);
+
+
+    useEffect(() => {
         setIsEditable(playerName == turn);        
     }, [turn]);
 
@@ -84,6 +89,7 @@ export default function CanvasDrawGame() {
                 word={word}
                 turn={turn}
                 winner={winner}
+                game="canvas_game"
             />
         </>)
 }

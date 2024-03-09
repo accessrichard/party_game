@@ -1,5 +1,5 @@
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
+import { sendEvent, usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
@@ -83,6 +83,10 @@ export default function Lobby() {
     useEffect(() => {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };
+    }, []);
+
+    useEffect(() => {
+        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "lobby"}, "user:location")))        
     }, []);
 
     useEffect(() => {

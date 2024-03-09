@@ -59,8 +59,24 @@ defmodule PartyGameWeb.CanvasDrawChannel do
 
   @impl true
   def handle_in("end_game", payload, socket) do
-    broadcast_from(socket, "handle_quit", payload)
-    {:noreply, socket}
+    advance_turn = Map.get(payload, "advance_turn", false)
+    players = PartyGameWeb.Presence.list("lobby:" <> game_code(socket.topic))
+    metas = Enum.map(players, fn {_, v} -> v.metas |> List.first() end)
+    count = Enum.filter(metas, fn x -> x.location == "canvas_alternate" end) |> Enum.count()
+
+    cond do
+      # player calling end_game is included in count...
+      count <= 2 ->
+        broadcast_from(socket, "handle_quit", payload)
+        {:noreply, socket}
+
+      count > 2 ->
+        handle_in(if(advance_turn, do: "next_turn", else: "switch_editable"), payload, socket)
+        {:noreply, socket}
+
+      true ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
@@ -106,7 +122,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   end
 
   def handle_in("next_turn", _, socket) do
-
     game_room =
       Server.get_game(game_code(socket.topic))
       |> CanvasGame.change_word()
@@ -122,7 +137,6 @@ defmodule PartyGameWeb.CanvasDrawChannel do
   end
 
   def handle_in("switch_editable", _, socket) do
-
     game_room =
       Server.get_game(game_code(socket.topic))
       |> CanvasGame.change_turn()

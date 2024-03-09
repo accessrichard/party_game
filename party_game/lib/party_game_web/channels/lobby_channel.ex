@@ -44,7 +44,8 @@ defmodule PartyGameWeb.LobbyChannel do
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
         online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
-        typing: false
+        typing: false,
+        location: "lobby"
       })
 
     push(socket, "presence_state", Presence.list(socket))
@@ -59,6 +60,18 @@ defmodule PartyGameWeb.LobbyChannel do
       Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
       |> List.first()
       |> Map.merge(%{typing: Map.get(payload, "typing")})
+
+    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("user:location", payload, socket) do
+    metas =
+      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
+      |> List.first()
+      |> Map.merge(%{location: Map.get(payload, "location")})
 
     {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
 

@@ -42,14 +42,14 @@ const events = (topic) => [
         event: 'handle_quit',
         dispatcher: endGame(),
         topic,
-    }    
+    }
 ]
 
 export default function CanvasUI({
-    onTimerCompleted = () => {}, 
-    onGuessSubmit = () => {},
-    onStartClick = () => {}, 
-    onNextClick = () => {},
+    onTimerCompleted = () => { },
+    onGuessSubmit = () => { },
+    onStartClick = () => { },
+    onNextClick = () => { },
     isEditable = true,
     isNewGamePrompt = false,
     timerSeconds = 30,
@@ -61,7 +61,8 @@ export default function CanvasUI({
     turn,
     word,
     winner,
-    playerDrawMessage
+    playerDrawMessage,
+    game = ""
 }) {
 
     const dispatch = useDispatch();
@@ -81,17 +82,17 @@ export default function CanvasUI({
         guesses,
         winners
     } = useSelector(state => state.canvas);
-    
+
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);        
+    const [width, setWidth] = useState(0);
     const [strokeStyle, setStrokeStyle] = useState("#000000");
 
     useBackButtonBlock(isBackButtonBlocked);
 
     useEffect(() => {
         return () => { dispatch(reset()); };
-    }, []); 
+    }, []);
 
     useEffect(() => {
         if (minSize[0] > 0) {
@@ -122,7 +123,8 @@ export default function CanvasUI({
     }
 
     function onBackClick() {
-        dispatch(channelPush(sendEvent(canvasChannel, {}, "end_game")))
+        dispatch(channelPush(sendEvent(canvasChannel,
+            { advance_turn: turn == playerName, game }, "end_game")))
         dispatch(endGame());
         setIsBackButtonBlocked(false);
         dispatch(push('/lobby'))
@@ -141,9 +143,9 @@ export default function CanvasUI({
     }
 
     if (!gameCode) {
-        return <Navigate to="/"/>
+        return <Navigate to="/" />
     }
-    
+
     return (
         <>
             <NewGamePrompt
@@ -152,7 +154,7 @@ export default function CanvasUI({
                 header={winner != "" && `${winner} won!!!`}
                 text={winner != "" ? "Next round starts in: " : "Game Starts in: "}
             />
-            <WinnerList winners={winners}/>
+            <WinnerList winners={winners} />
             <div className="container">
                 {winner && <h2>{winner} Won!!!</h2>}
                 {!winner && playerName == turn && <h2 id="word-game">{playerDrawMessage}</h2>}
