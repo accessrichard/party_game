@@ -21,11 +21,6 @@ export default function CanvasDrawGame() {
 
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
-   
-    useEffect(() => {
-        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "canvas_alternate"}, "user:location")));
-    }, []);
-
 
     useEffect(() => {
         setIsTimerActive(false);

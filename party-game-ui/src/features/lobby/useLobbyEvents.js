@@ -4,6 +4,7 @@ import {
     handleGenServerTimeout,
     onRouteToGame
 } from '../lobby/lobbySlice';
+import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { usePhoenixEvents } from '../phoenix/usePhoenix';
 import { useSelector } from 'react-redux';
 
@@ -22,6 +23,16 @@ const events = (topic) => [
     {
         event: 'route_to_game',
         dispatcher: onRouteToGame(),
+        topic
+    },
+    {
+        event: 'presence_state',
+        dispatcher: syncPresenceState(),
+        topic
+    },
+    {
+        event: 'presence_diff',
+        dispatcher: syncPresenceDiff(),
         topic
     }
 ]

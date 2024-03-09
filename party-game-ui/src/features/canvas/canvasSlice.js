@@ -15,7 +15,7 @@ export const canvasSlice = createSlice({
     name: 'canvas',
     initialState: initialState,
     reducers: {
-        word(state, action) {
+        updateWord(state, action) {
             state.word = action.payload.word;
         },
         commands(state, action) {
@@ -64,5 +64,5 @@ export const canvasSlice = createSlice({
     }
 });
 
-export const { word, commands, reset, handleNewGame, handleGuess } = canvasSlice.actions;
+export const { updateWord, commands, reset, handleNewGame, handleGuess } = canvasSlice.actions;
 export default canvasSlice.reducer;

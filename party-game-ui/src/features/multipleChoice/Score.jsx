@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Faces from '../common/Faces';
 import { Navigate } from 'react-router-dom';
 import Scores from '../common/Scores';
-import { getScores } from './gameSlice';
+import { getScores, resetGame } from './gameSlice';
 import { push } from "redux-first-history";
 import { Confetti } from '@neoconfetti/react';
 import useLobbyEvents from '../lobby/useLobbyEvents';
@@ -40,6 +40,7 @@ function Score() {
 
 
     if (isGameStarted) {
+        dispatch(resetGame());
         return <Navigate to={url || '/game'}/>
     }
 
@@ -49,6 +50,7 @@ function Score() {
 
     function playAgain(e) {
         e.preventDefault();
+        dispatch(resetGame());
         dispatch(push('/lobby'));
     }
     return (

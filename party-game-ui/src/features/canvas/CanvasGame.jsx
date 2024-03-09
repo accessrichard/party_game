@@ -40,17 +40,12 @@ export default function CanvasDrawGame() {
     }
 
     useEffect(() => {
-        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "canvas_game"}, "user:location")));
-    }, []);
-
-
-    useEffect(() => {
         setIsEditable(playerName == turn);        
     }, [turn]);
 
     function onStartClick() {
         setIsTimerActive(true);
-        onClearClick()
+        
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, {}, winner == "" ? "new_game" : "next_turn")));
         }

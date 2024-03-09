@@ -67,18 +67,6 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
-  def handle_in("user:location", payload, socket) do
-    metas =
-      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
-      |> List.first()
-      |> Map.merge(%{location: Map.get(payload, "location")})
-
-    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
-
-    {:noreply, socket}
-  end
-
-  @impl true
   def handle_in("new_game", payload, socket) do
       broadcast(socket, "route_to_game", %{"url" => Map.get(payload, "url", "/game")})
       {:noreply, socket}

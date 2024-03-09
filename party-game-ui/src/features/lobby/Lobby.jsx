@@ -86,10 +86,6 @@ export default function Lobby() {
     }, []);
 
     useEffect(() => {
-        dispatch(channelPush(sendEvent(`lobby:${gameCode}`, {location: "lobby"}, "user:location")))        
-    }, []);
-
-    useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {
             dispatch(listGames());
         }

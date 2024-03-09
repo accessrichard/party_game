@@ -4,6 +4,7 @@ import ColorPallette from './ColorPallette';
 import Canvas from './Canvas';
 import GuessInput from './GuessInput';
 import GuessList from './GuessList';
+import usePrevious from '../usePrevious';
 import NewGamePrompt from '../common/NewGamePrompt';
 import WinnerList from './WinnerList';
 import useBackButtonBlock from '../useBackButtonBlock'
@@ -14,13 +15,13 @@ import { channelPush } from '../phoenix/phoenixMiddleware';
 import { endGame } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
 import { useDispatch, useSelector } from 'react-redux';
-import { word, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
+import { updateWord, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 
 const events = (topic) => [
     {
         event: 'word',
-        dispatcher: word(),
+        dispatcher: updateWord(),
         topic,
     },
     {
@@ -80,7 +81,7 @@ export default function CanvasUI({
         startTimerTime,
         minSize,
         guesses,
-        winners
+        winners,
     } = useSelector(state => state.canvas);
 
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
@@ -90,9 +91,19 @@ export default function CanvasUI({
 
     useBackButtonBlock(isBackButtonBlocked);
 
+    const prevWord = usePrevious(word || '')
+
+
     useEffect(() => {
         return () => { dispatch(reset()); };
     }, []);
+
+    useEffect(() => {
+        if (prevWord != '' && word !='' && prevWord != word) {
+            clearCanvas('paint-canvas');
+        }
+        
+    }, [word, prevWord]);
 
     useEffect(() => {
         if (minSize[0] > 0) {
