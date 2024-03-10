@@ -72,7 +72,7 @@ export default function CanvasUI({
     const canvasChannel = `canvas:${gameCode}`;
 
     usePhoenixSocket();
-    usePhoenixChannel(canvasChannel, { name: playerName, size: [canvasWidth(), canvasHeight()] }, { persisted: true });
+    usePhoenixChannel(canvasChannel, { name: playerName, size: [canvasWidth(), canvasHeight()] }, { persisted: false });
     usePhoenixEvents(canvasChannel, events);
     useLobbyEvents();
 
@@ -93,16 +93,27 @@ export default function CanvasUI({
 
     const prevWord = usePrevious(word || '')
 
+    function notifyLeave() {
+        dispatch(channelPush(sendEvent(canvasChannel,
+            { advance_turn: turn == playerName, game }, "end_game")))
+    }
+    
+    useEffect(() => {
+        window.addEventListener("beforeunload", notifyLeave);
+        return () => {
+            window.removeEventListener("beforeunload", notifyLeave);
+        };
+    }, []);
 
     useEffect(() => {
         return () => { dispatch(reset()); };
     }, []);
 
     useEffect(() => {
-        if (prevWord != '' && word !='' && prevWord != word) {
+        if (prevWord != '' && word != '' && prevWord != word) {
             clearCanvas('paint-canvas');
         }
-        
+
     }, [word, prevWord]);
 
     useEffect(() => {
@@ -134,8 +145,7 @@ export default function CanvasUI({
     }
 
     function onBackClick() {
-        dispatch(channelPush(sendEvent(canvasChannel,
-            { advance_turn: turn == playerName, game }, "end_game")))
+        notifyLeave();
         dispatch(endGame());
         setIsBackButtonBlocked(false);
         dispatch(push('/lobby'))

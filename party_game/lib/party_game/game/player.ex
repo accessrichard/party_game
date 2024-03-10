@@ -7,6 +7,7 @@ defmodule PartyGame.Game.Player do
   schema "player" do
     field(:name, :string, default: nil)
     field(:wins, :integer, default: 0)
+    field(:location, :string, default: nil)
     field(:display_size, {:array, :float}, default: [])
   end
 
@@ -15,7 +16,8 @@ defmodule PartyGame.Game.Player do
     |> Ecto.Changeset.cast(params, [
       :name,
       :wins,
-      :display_size
+      :display_size,
+      :location
     ])
     |> Ecto.Changeset.validate_required([:name])
   end
@@ -23,7 +25,6 @@ defmodule PartyGame.Game.Player do
   def apply_changeset(player, params \\ %{}) do
     changeset(player, params) |> Ecto.Changeset.apply_changes()
   end
-
 
   def add_player(%{} = params) do
     %PartyGame.Game.Player{}

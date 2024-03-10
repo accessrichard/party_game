@@ -8,7 +8,7 @@ defmodule PartyGameWeb.CanvasChannelTest do
     {:ok, _, socket} =
       PartyGameWeb.UserSocket
       |> socket("name", %{name: "test"})
-      |> subscribe_and_join(PartyGameWeb.CanvasDrawChannel, "canvas:test")
+      |> subscribe_and_join(PartyGameWeb.CanvasChannel, "canvas:test")
 
     Server.start(%GameRoom{room_name: "test"})
     %{socket: socket}

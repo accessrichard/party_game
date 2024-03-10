@@ -77,5 +77,25 @@ defmodule PartyGame.LobbyTest do
       [player | _] = all_updated
       assert length(all_updated) == 1 && player.name == "Sue"
     end
+
+    test "update_player_location/3 updates a player location" do
+      game =
+        Lobby.add_player(GameRoom.new(), "richard")
+        |> Lobby.add_player("Sue")
+        |> Lobby.update_player_location("Sue", "test")
+
+      player = Enum.find(game.players, fn x -> x.location == "test" end)
+      assert player.location == "test"
+    end
+
+    test "update_all_player_locations/2 updates all player locations" do
+      game =
+        Lobby.add_player(GameRoom.new(), "richard")
+        |> Lobby.add_player("Sue")
+        |> Lobby.update_all_player_locations("test")
+
+      players = Enum.filter(game.players, fn x -> x.location != "test" end)
+      assert length(players) == 0
+    end
   end
 end

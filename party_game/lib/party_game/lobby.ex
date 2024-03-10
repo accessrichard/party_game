@@ -61,6 +61,20 @@ defmodule PartyGame.Lobby do
     end
   end
 
+  def update_player_location(%GameRoom{} = game_room, player_name, location) do
+    player = get_player(game_room, player_name)
+    if player == nil do
+      game_room
+    else
+      update_player(game_room, %{player | location: location})
+    end
+  end
+
+  def update_all_player_locations(%GameRoom{} = game_room, location) do
+    players = Enum.map(game_room.players, &(%{&1 | location: location}))
+    %{game_room | players: players}
+  end
+
   def update_settings(%GameRoom{} = game_room, settings) do
     %{game_room | game: %{game_room.game | settings: settings}}
   end
@@ -97,8 +111,12 @@ defmodule PartyGame.Lobby do
     %{game | room_owner: owner}
   end
 
-  def get_player(%GameRoom{} = game, player) do
+  def get_player(%GameRoom{} = game, %Player{} = player) do
     Enum.find(game.players, &(&1.name == player.name))
+  end
+
+  def get_player(%GameRoom{} = game, player_name) when is_bitstring(player_name) do
+    Enum.find(game.players, &(&1.name == player_name))
   end
 
   defp game_stopped(%{started: true}), do: {:error, "Game is already started."}

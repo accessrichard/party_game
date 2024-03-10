@@ -1,4 +1,4 @@
-defmodule PartyGameWeb.CanvasDrawChannel do
+defmodule PartyGameWeb.CanvasChannel do
   require Logger
   use PartyGameWeb, :channel
 
@@ -59,8 +59,22 @@ defmodule PartyGameWeb.CanvasDrawChannel do
 
   @impl true
   def handle_in("end_game", payload, socket) do
-    broadcast_from(socket, "handle_quit", payload)
-    {:noreply, socket}
+    advance_turn = Map.get(payload, "advance_turn", false)
+    players = Map.keys(PartyGameWeb.Presence.list("lobby:" <> game_code(socket.topic)))
+    count = Enum.count(players)
+
+    cond do
+      count <= 1 ->
+        broadcast_from(socket, "handle_quit", payload)
+        {:noreply, socket}
+
+      count > 1 ->
+        handle_in(if(advance_turn, do: "next_turn", else: "switch_editable"), payload, socket)
+        {:noreply, socket}
+
+      true ->
+        {:noreply, socket}
+    end
   end
 
   @impl true
@@ -132,5 +146,20 @@ defmodule PartyGameWeb.CanvasDrawChannel do
     })
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def terminate(_reason, socket) do
+    remove_player(Server.lookup(game_code(socket.topic)), socket)
+  end
+
+  defp remove_player({:error, _}, _), do: :ok
+
+  defp remove_player({:ok, _}, socket) do
+      Server.get_game(game_code(socket.topic))
+      |> Lobby.update_player_location(socket.assigns.name, "lobby")
+      |> Server.update_game()
+
+    :ok
   end
 end

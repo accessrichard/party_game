@@ -15,7 +15,6 @@ defmodule PartyGameWeb.MultipleChoiceChannelTest do
   end
 
   test "new_game with game prompt broadcasts game created", %{socket: socket} do
-
     push(socket, "new_game", %{
       "game" => %{
         "category" => "Math",
@@ -34,17 +33,20 @@ defmodule PartyGameWeb.MultipleChoiceChannelTest do
       }
     })
 
-    assert_broadcast "handle_new_game_created", %{"settings" => %PartyGame.Game.MultipleChoiceSettings{
-      next_question_time: 1,
-      prompt_game_start: true,
-      question_time: 10,
-      rounds: 10,
-      wrong_answer_timeout: 1
-    }}
+    assert_broadcast "handle_next_question", %{
+      "data" => _,
+      "isNew" => true,
+      "settings" => %PartyGame.Game.MultipleChoiceSettings{
+        question_time: 10,
+        next_question_time: 1,
+        wrong_answer_timeout: 1,
+        rounds: 10,
+        prompt_game_start: true
+      }
+    }
   end
 
   test "new_game without game prompt starts game", %{socket: socket} do
-
     push(socket, "new_game", %{
       "game" => %{
         "category" => "Math",

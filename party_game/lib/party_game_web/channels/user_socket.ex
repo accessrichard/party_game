@@ -4,7 +4,7 @@ defmodule PartyGameWeb.UserSocket do
   ## Channels
   channel "game:*", PartyGameWeb.MultipleChoiceChannel
   channel "chat:*", PartyGameWeb.ChatChannel
-  channel "canvas:*", PartyGameWeb.CanvasDrawChannel
+  channel "canvas:*", PartyGameWeb.CanvasChannel
   channel "lobby:*", PartyGameWeb.LobbyChannel
 
 

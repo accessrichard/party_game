@@ -36,7 +36,7 @@ defmodule PartyGame.CanvasTest do
     test "guess/3 adds a guess" do
       game_room =
         Lobby.new()
-        |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe"}))
+        |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", turn: "joe", word: "abc"}))
         |> CanvasGame.guess("test", "joe")
         |> CanvasGame.guess("test2", "joe")
 
