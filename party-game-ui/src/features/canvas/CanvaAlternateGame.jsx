@@ -36,7 +36,7 @@ export default function CanvasDrawGame() {
 
     function onStartClick() {
         setIsTimerActive(true);
-        onClearClick()
+
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, {}, winner == "" ? "new_game" : "next_turn")));
         }

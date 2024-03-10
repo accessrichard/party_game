@@ -40,6 +40,7 @@ defmodule PartyGameWeb.CanvasChannel do
 
     Server.get_game(game_code(socket.topic))
     |> CanvasGame.add_size(name, size)
+    |> Lobby.update_player_location(name, "canvas")
     |> Server.update_game()
 
     {:noreply, socket}
@@ -60,15 +61,16 @@ defmodule PartyGameWeb.CanvasChannel do
   @impl true
   def handle_in("end_game", payload, socket) do
     advance_turn = Map.get(payload, "advance_turn", false)
-    players = Map.keys(PartyGameWeb.Presence.list("lobby:" <> game_code(socket.topic)))
-    count = Enum.count(players)
+    game = Server.get_game(game_code(socket.topic))
+    game_players = Enum.filter(game.players, &(&1.location == "canvas"))
+    count_active = Enum.count(game_players)
 
     cond do
-      count <= 1 ->
+      count_active <= 2 ->
         broadcast_from(socket, "handle_quit", payload)
         {:noreply, socket}
 
-      count > 1 ->
+        count_active > 2 ->
         handle_in(if(advance_turn, do: "next_turn", else: "switch_editable"), payload, socket)
         {:noreply, socket}
 
