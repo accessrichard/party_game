@@ -2,6 +2,7 @@ defmodule PartyGameWeb.CanvasChannel do
   require Logger
   use PartyGameWeb, :channel
 
+  alias PartyGame.Game.GameRoom
   alias PartyGame.Server
   alias PartyGame.Lobby
   alias PartyGame.Games.Canvas.CanvasGame
@@ -60,22 +61,23 @@ defmodule PartyGameWeb.CanvasChannel do
 
   @impl true
   def handle_in("end_game", payload, socket) do
-    advance_turn = Map.get(payload, "advance_turn", false)
     game = Server.get_game(game_code(socket.topic))
-    game_players = Enum.filter(game.players, &(&1.location == "canvas"))
-    count_active = Enum.count(game_players)
+     |> Lobby.update_player_location(socket.assigns.name, "lobby")
+     |> Server.update_game()
+
+    player_names = players(game)
+    count_active = Enum.count(player_names)
+    advance_turn = Map.get(payload, "advance_turn", false)
 
     cond do
-      count_active <= 2 ->
-        broadcast_from(socket, "handle_quit", payload)
+      game.room_owner == socket.assigns.name ->
+        broadcast_from(socket, "handle_quit", %{})
         {:noreply, socket}
-
-        count_active > 2 ->
-        handle_in(if(advance_turn, do: "next_turn", else: "switch_editable"), payload, socket)
+      count_active < 1 ->
+        broadcast_from(socket, "handle_quit", %{})
         {:noreply, socket}
-
       true ->
-        {:noreply, socket}
+        handle_in(if(advance_turn, do: "next_turn", else: "switch_editable"), %{}, socket)
     end
   end
 
@@ -103,6 +105,7 @@ defmodule PartyGameWeb.CanvasChannel do
     {:noreply, socket}
   end
 
+  @impl true
   def handle_in("new_game", _, socket) do
     game_room =
       Server.get_game(game_code(socket.topic))
@@ -115,12 +118,14 @@ defmodule PartyGameWeb.CanvasChannel do
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
       "word" => game_room.game.word,
-      "size" => CanvasGame.min_size(game_room)
+      "size" => CanvasGame.min_size(game_room),
+      "players" => players(game_room)
     })
 
     {:noreply, socket}
   end
 
+  @impl true
   def handle_in("next_turn", _, socket) do
     game_room =
       Server.get_game(game_code(socket.topic))
@@ -130,12 +135,14 @@ defmodule PartyGameWeb.CanvasChannel do
 
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
-      "word" => game_room.game.word
+      "word" => game_room.game.word,
+      "players" => players(game_room)
     })
 
     {:noreply, socket}
   end
 
+  @impl true
   def handle_in("switch_editable", _, socket) do
     game_room =
       Server.get_game(game_code(socket.topic))
@@ -144,24 +151,17 @@ defmodule PartyGameWeb.CanvasChannel do
 
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
-      "word" => game_room.game.word
+      "word" => game_room.game.word,
+      "players" => players(game_room)
     })
 
     {:noreply, socket}
   end
 
-  @impl true
-  def terminate(_reason, socket) do
-    remove_player(Server.lookup(game_code(socket.topic)), socket)
+  defp players(%GameRoom{} = game_room) do
+    game_room.players
+    |> Enum.filter(&(&1.location == "canvas"))
+    |> Enum.map(& &1.name)
   end
 
-  defp remove_player({:error, _}, _), do: :ok
-
-  defp remove_player({:ok, _}, socket) do
-      Server.get_game(game_code(socket.topic))
-      |> Lobby.update_player_location(socket.assigns.name, "lobby")
-      |> Server.update_game()
-
-    :ok
-  end
 end

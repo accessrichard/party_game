@@ -8,7 +8,8 @@ const initialState = {
     startTimerTime: null,
     minSize: [0,0],
     winner: "",
-    winners: []
+    winners: [],
+    players: []
 }
 
 export const canvasSlice = createSlice({
@@ -31,6 +32,7 @@ export const canvasSlice = createSlice({
             state.turn = action.payload.turn;
             state.winner = ""
             state.guesses = []
+            state.players = action.payload.players;
 
             if (action.payload.size 
                 && action.payload.size.length == 2
@@ -59,7 +61,7 @@ export const canvasSlice = createSlice({
             state.word = "";
             state.guesses = [];
             state.displays = [];
-            state.winner = "";
+            state.winner = "";            
         }
     }
 });

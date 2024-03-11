@@ -4,7 +4,6 @@ import { channelPush } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendEvent } from '../phoenix/usePhoenix';
 import { clearCanvas, clearCommand } from './canvasUtils';
-import { getPresences } from '../presence/presenceSlice';
 
 export default function CanvasDrawGame() {
 
@@ -12,7 +11,7 @@ export default function CanvasDrawGame() {
     const { isGameOwner, playerName, gameCode } = useSelector(state => state.lobby);
 
     const canvasChannel = `canvas:${gameCode}`;
-    const players = useSelector(getPresences);
+    const { players } = useSelector(state => state.canvas);
     const {
         turn,
         winner,

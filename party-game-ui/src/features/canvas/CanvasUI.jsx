@@ -81,7 +81,7 @@ export default function CanvasUI({
         startTimerTime,
         minSize,
         guesses,
-        winners,
+        winners
     } = useSelector(state => state.canvas);
 
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
@@ -114,7 +114,7 @@ export default function CanvasUI({
             clearCanvas('paint-canvas');
         }
 
-    }, [word, prevWord]);
+    }, [word, prevWord]);    
 
     useEffect(() => {
         if (minSize[0] > 0) {
@@ -168,7 +168,7 @@ export default function CanvasUI({
     }
 
     return (
-        <>
+        <>           
             <NewGamePrompt
                 isNewGamePrompt={isNewGamePrompt}
                 onStartGame={onStartClick}
@@ -224,6 +224,18 @@ export default function CanvasUI({
                     <button id="save" className="btn md-5" type="button" onClick={onSaveClick}>Save Image</button>
                 </div>
             </div>
+                
+            {players.length > 1  &&
+            <ul className="ul-nostyle">
+                <span>Players</span>
+                {players.map((player, key) =>
+                  <li className="smallest-font" key={key}>
+                      {player}
+                  </li>
+                )}
+              </ul>
+              }
+            {players.length == 1 && "Playing Alone!"}
         </>
     );
 }
