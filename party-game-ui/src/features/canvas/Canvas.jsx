@@ -34,15 +34,15 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
     useEffect(() => {
         const canvas = canvasRef.current;
         if (isEditable) {
-            canvas.addEventListener('mousedown', mouseDown);
-            canvas.addEventListener('mousemove', mouseMove);
-            canvas.addEventListener('mouseup', mouseUp);
+            canvas.addEventListener('pointerdown', mouseDown);
+            canvas.addEventListener('pointermove', mouseMove);
+            canvas.addEventListener('pointerup', mouseUp);
         }
 
         return () => {
-            canvas.removeEventListener('mousedown', mouseDown);
-            canvas.removeEventListener('mousemove', mouseMove);
-            canvas.removeEventListener('mouseup', mouseUp);
+            canvas.removeEventListener('pointerdown', mouseDown);
+            canvas.removeEventListener('pointermove', mouseMove);
+            canvas.removeEventListener('pointerup', mouseUp);
         }
     }, [isEditable]);
 
@@ -53,6 +53,7 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
         context.moveTo(event.layerX, event.layerY);
         store.drawing.push({ command: "beginPath", value: null, op: "function" });
         store.drawing.push({ command: "moveTo", value: [event.layerX, event.layerY], op: "function" });
+        event.preventDefault();
     }
 
     function mouseMove(event) {
@@ -64,13 +65,15 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
         context.lineTo(event.layerX, event.layerY);
         context.stroke();
         store.mouseMove.push([event.layerX, event.layerY]);
+        event.preventDefault();
     }
 
-    function mouseUp() {
+    function mouseUp(event) {
         store.drawing.push({ command: "lineTo", value: store.mouseMove, op: "function" });
         store.drawing.push({ command: "stroke", value: null, op: "function" });
         onDraw && onDraw(store.drawing)
         store.reset();
+        event.preventDefault();
     }
 
     useEffect(() => {
@@ -142,7 +145,8 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
                 <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div> 
             */}
 
-            <canvas id="paint-canvas" ref={canvasRef} ></canvas>
+            <canvas id="paint-canvas" ref={canvasRef} >Your browser does not support canvas element.
+</canvas>
         </div>
     );
 }

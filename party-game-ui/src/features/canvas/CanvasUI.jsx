@@ -97,7 +97,7 @@ export default function CanvasUI({
         dispatch(channelPush(sendEvent(canvasChannel,
             { advance_turn: turn == playerName, game }, "end_game")))
     }
-    
+
     useEffect(() => {
         window.addEventListener("beforeunload", notifyLeave);
         return () => {
@@ -114,7 +114,7 @@ export default function CanvasUI({
             clearCanvas('paint-canvas');
         }
 
-    }, [word, prevWord]);    
+    }, [word, prevWord]);
 
     useEffect(() => {
         if (minSize[0] > 0) {
@@ -168,7 +168,7 @@ export default function CanvasUI({
     }
 
     return (
-        <>           
+        <>
             <NewGamePrompt
                 isNewGamePrompt={isNewGamePrompt}
                 onStartGame={onStartClick}
@@ -224,18 +224,30 @@ export default function CanvasUI({
                     <button id="save" className="btn md-5" type="button" onClick={onSaveClick}>Save Image</button>
                 </div>
             </div>
-                
-            {players.length > 1  &&
-            <ul className="ul-nostyle">
-                <span>Players</span>
-                {players.map((player, key) =>
-                  <li className="smallest-font" key={key}>
-                      {player}
-                  </li>
-                )}
-              </ul>
-              }
-            {players.length == 1 && "Playing Alone!"}
+
+
+
+            <div className='flex-grid center-30'>
+                <div className='flex-item flex-2-col-sidebar '>
+                    <div className='item card '>
+                        <h3>Players</h3>
+                        <div className='player-container'>
+                            {players.length > 1 &&
+                                <ul className="ul-nostyle">
+
+                                    {[...Array(20).keys()].map((player, key) =>
+                                        <li className="smallest-font" key={key}>
+                                            {"testing123" + player}
+                                        </li>
+                                    )}
+                                </ul>
+                            }
+                            {players.length == 1 && "Playing Alone!"}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </>
     );
 }
