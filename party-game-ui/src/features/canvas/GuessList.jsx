@@ -5,7 +5,6 @@ const GuessList = (props) => {
 
     return (
         <div className='flex-row'>
-            <div className='flex-column align-right'>Guesses:&nbsp;</div>
             <div className='flex-column align-left'>
                 <ul className={className}>
                     {guesses.map((val, key) =>

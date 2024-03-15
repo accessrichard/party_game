@@ -83,7 +83,7 @@ const Chat = () => {
         <div className='flex-item flex-2-col-sidebar '>
           <div className='item card '>
             <h3>Players</h3>
-            <div className='player-container'>
+            <div className='height-275 auto-scroll'>
               <Players />
             </div>
           </div>
@@ -91,7 +91,7 @@ const Chat = () => {
         <div className='flex-item flex-2-col-main'>
           <div className='item card'>
             <h3>Chat</h3>
-            <div className="chat-container" ref={chatBottomRef}>
+            <div className="height-200 auto-scroll" ref={chatBottomRef}>
               <ul className="ul-nostyle">
                 {messages.map((message, key) =>
                   <li key={key} className={`pd-5-lr text-align-${message.align}`}>

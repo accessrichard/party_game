@@ -167,21 +167,27 @@ export default function CanvasUI({
         return <Navigate to="/" />
     }
 
+    if (isNewGamePrompt) {
+        return (
+            <>
+                <NewGamePrompt
+                    isNewGamePrompt={isNewGamePrompt}
+                    onStartGame={onStartClick}
+                    header={winner != "" && `${winner || "Nobody"} won!!!`}
+                    text={winner != "" ? "Next round starts in: " : "Game Starts in: "}
+                />
+            </>
+        )
+    }
+
     return (
         <>
-            <NewGamePrompt
-                isNewGamePrompt={isNewGamePrompt}
-                onStartGame={onStartClick}
-                header={winner != "" && `${winner} won!!!`}
-                text={winner != "" ? "Next round starts in: " : "Game Starts in: "}
-            />
             <WinnerList winners={winners} />
             <div className="container">
                 {winner && <h2>{winner} Won!!!</h2>}
                 {!winner && playerName == turn && <h2 id="word-game">{playerDrawMessage}</h2>}
                 {!winner && playerName != turn && <h2 id="word-game">{playerWaitMessage}</h2>}
             </div>
-            {isGuessListDisplayed && <GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-3)} />}
             <Canvas
                 color={strokeStyle}
                 commands={commands}
@@ -225,29 +231,34 @@ export default function CanvasUI({
                 </div>
             </div>
 
+            <div className='flex-grid center-65'>
+                {players.length == 1 && <div className='flex-center full-width'>Playing Alone!</div>}
 
+                {isGuessListDisplayed &&
+                    <div className='flex-item  flex-2-col-main'>
+                        <div className='item card'>
+                            <h3>Guesses</h3>
+                            <div className='auto-scroll height-275' >
+                                {<GuessList className="ul-nostyle list-inline" guesses={guesses.slice(-50)} />}
+                            </div>
+                        </div>
+                    </div>}
 
-            <div className='flex-grid center-30'>
-                <div className='flex-item flex-2-col-sidebar '>
-                    <div className='item card '>
+                {players.length > 1 && <div className='flex-item flex-2-col-sidebar'>
+                    <div className='item card'>
                         <h3>Players</h3>
-                        <div className='player-container'>
-                            {players.length > 1 &&
-                                <ul className="ul-nostyle">
-
-                                    {[...Array(20).keys()].map((player, key) =>
-                                        <li className="smallest-font" key={key}>
-                                            {"testing123" + player}
-                                        </li>
-                                    )}
-                                </ul>
-                            }
-                            {players.length == 1 && "Playing Alone!"}
+                        <div className='height-275 auto-scroll'>
+                            <ul className="ul-nostyle">
+                                {players.length > 1 && players.map((player, key) =>
+                                    <li className="smallest-font" key={key}>
+                                        {player} {turn == player && " - turn"}
+                                    </li>
+                                )}
+                            </ul>
                         </div>
                     </div>
-                </div>
+                </div>}
             </div>
-
         </>
     );
 }

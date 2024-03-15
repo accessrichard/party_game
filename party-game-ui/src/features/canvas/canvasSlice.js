@@ -40,10 +40,10 @@ export const canvasSlice = createSlice({
                 && action.payload.size[1] > 100) {
                     state.minSize = action.payload.size;
             }
-        },
+        },      
         handleGuess(state, action) {
-            state.guesses.push(action.payload.guess);
-            state.guesses = state.guesses.slice(-10)
+            state.guesses.unshift(action.payload.guess);
+            state.guesses = state.guesses.slice(0, 50);
             state.winner = action.payload.winner;
             if (action.payload.winner) {
                 let wins = state.winners.find(x => x.name == action.payload.winner);

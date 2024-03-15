@@ -3,13 +3,6 @@ import React, { useState } from 'react';
 export default function GuessInput({ onSubmit }) {
     const [text, setText] = useState("");
 
-    function onKeyDown(e) {
-        if (e.key === 'Enter' && text.trim() !== '') {
-            onSubmit && onSubmit(text);
-            setText("")
-        }
-    }
-
     function onClick() {
         onSubmit && onSubmit(text);
         setText("")
@@ -17,7 +10,7 @@ export default function GuessInput({ onSubmit }) {
 
     return (
         <>
-            <div className='card flex-row'>
+            <div className='card flex-row md-5'>
                 <form className='form-compact' noValidate onSubmit={(e) => e.preventDefault()}>
                     <div className="group-compact">
                         <input

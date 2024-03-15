@@ -23,8 +23,8 @@ export default function CanvasDrawGame() {
 
     useEffect(() => {
         setIsTimerActive(false);
-        setIsTimerActive(true);
-    }, [turn]);
+        setIsTimerActive(!isNewGamePrompt);
+    }, [turn, isNewGamePrompt]);
 
     function onTimerCompleted() {
         setIsTimerActive(false);
