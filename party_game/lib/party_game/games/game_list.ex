@@ -10,6 +10,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
+        options: %{settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -17,7 +18,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "addition"},
+        options: %{type: "addition", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -25,7 +26,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "subtraction"},
+        options: %{type: "subtraction", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -33,7 +34,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "multiplication"},
+        options: %{type: "multiplication", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -41,7 +42,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "fraction_multiply"},
+        options: %{type: "fraction_multiply", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -49,7 +50,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "division"},
+        options: %{type: "division", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -57,7 +58,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "fraction_divide"},
+        options: %{type: "fraction_divide", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -65,7 +66,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multi_choice",
         location: "server",
-        options: %{type: "equation"},
+        options: %{type: "equation", settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
@@ -73,6 +74,7 @@ defmodule PartyGame.Games.GameList do
         category: "United States",
         type: "multi_choice",
         location: "server",
+        options: %{settingsSlug: "mc"},
         module: MultipleChoice.States
       },
       %GameMetaData{
@@ -81,7 +83,7 @@ defmodule PartyGame.Games.GameList do
         type: "canvas",
         location: "server",
         url: "/canvas",
-        options: %{type: "guessing_game"},
+        options: %{settingsSlug: "canvas"},
         module: Canvas.CanvasGame
       },
       %GameMetaData{
@@ -90,7 +92,7 @@ defmodule PartyGame.Games.GameList do
         type: "canvas",
         location: "server",
         url: "/canvas_alternate",
-        options: %{type: "alternate_draw"},
+        options: %{settingsSlug: "canvas"},
         module: Canvas.CanvasGame
       },
       %GameMetaData{
@@ -98,6 +100,7 @@ defmodule PartyGame.Games.GameList do
         category: "User Games",
         type: "custom",
         location: "client",
+        options: %{settingsSlug: "mc"},
         module: MultipleChoice.BuildYourOwn
       }
     ]
@@ -109,12 +112,13 @@ defmodule PartyGame.Games.GameList do
           module: MultipleChoice.BuildYourOwnPrebuilt,
           type: "multi_choice",
           location: "server",
+          options: %{settingsSlug: "mc"},
           category: x.category
         }
       end)
   end
 
-  def non_black_cached_list() do
+  def non_blank_cached_list() do
     cached_game_list() |> non_blank_game_list()
   end
 
@@ -139,6 +143,5 @@ defmodule PartyGame.Games.GameList do
   defp sort_game_list(game_list) do
     Enum.sort(game_list, &(&1.category > &2.category))
   end
-
 
 end

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Faces from '../common/Faces';
 import { Navigate } from 'react-router-dom';
 import Scores from '../common/Scores';
-import { getScores, resetGame } from './gameSlice';
+import { getScores, resetGame } from './multipleChoiceSlice';
 import { push } from "redux-first-history";
 import { Confetti } from '@neoconfetti/react';
 import useLobbyEvents from '../lobby/useLobbyEvents';
@@ -30,7 +30,7 @@ function Score() {
     useLobbyEvents();
 
     const { isGameStarted, gameCode, url } = useSelector(state => state.lobby);
-    const { round } = useSelector(state => state.game);
+    const { round } = useSelector(state => state.multipleChoice);
 
     const gameChannel = `game:${gameCode}`;
     
@@ -41,7 +41,7 @@ function Score() {
 
     if (isGameStarted) {
         dispatch(resetGame());
-        return <Navigate to={url || '/game'}/>
+        return <Navigate to={url || '/multiple_choice'}/>
     }
 
     if (!gameChannel) {

@@ -63,7 +63,8 @@ export default function Lobby() {
         isGameOwner,
         isGameStarted,
         gameName,
-        url
+        url,
+        settingsSlug
     } = useSelector(state => state.lobby);
 
     const creativeGames = useSelector(state => state.creative.games);
@@ -109,7 +110,7 @@ export default function Lobby() {
         }
 
         if (gameList && gameList.length > 0) {
-            dispatch(changeGame({ name: gameList[0].name }));
+            selectGame(gameList[0].name);
         }
     }, [gameList, gameName]);
 
@@ -128,21 +129,27 @@ export default function Lobby() {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "new_game",
-            data: { name: gameName, url: url || '/game' }
+            data: { name: gameName, url: url || '/multiple_choice' }
         }));
         e.preventDefault();
         return;
     }
 
     function onGameChange(e) {
-        const game = gameList.find(x => x.name == e.target.value);
-        dispatch(changeGame({ name: game.name, url: game.url }));
+        selectGame(e.target.value)
+    }
+
+    function selectGame(name) {
+        const game = gameList.find(x => x.name == name);
+        if (game) {
+            dispatch(changeGame({ name: game.name, url: game.url, settingsSlug: game.options && game.options.settingsSlug }));
+        }
     }
 
     function onGenServerTimeout() {
         dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
-    }
-
+    }   
+    
     return (
         <>
             <header className="full-width">
@@ -197,7 +204,7 @@ export default function Lobby() {
                                 <span className="flex-row flex-center">
                                     <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
                                     <NavLink className="pd-5-lr" to="/import">Import</NavLink>
-                                    <NavLink className="pd-5-lr" to="/settings" >Settings</NavLink>
+                                    {settingsSlug && <NavLink className="pd-5-lr" to={`/settings/${settingsSlug}`}>Settings</NavLink>}
                                 </span>
                             </div>
                         </div>

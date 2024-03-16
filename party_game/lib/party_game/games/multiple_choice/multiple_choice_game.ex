@@ -1,4 +1,4 @@
-defmodule PartyGame.MultipleChoiceGame do
+defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
   alias PartyGame.Game.MultipleChoice
   alias PartyGame.Game.MultipleChoiceSettings
   alias PartyGame.Game.Round

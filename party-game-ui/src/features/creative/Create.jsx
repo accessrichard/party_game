@@ -35,7 +35,7 @@ export default function Create(props) {
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
     const [editGameValue, setEditGameValue] = useState("");
-    const gameCode = useSelector(state => state.game.gameCode);
+    const gameCode = useSelector(state => state.multipleChoice.gameCode);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
@@ -127,9 +127,8 @@ export default function Create(props) {
 
         saveSessionStorage(form);
         const serverSideGame = toServerSideGame(form);
-        dispatch(changeGame(serverSideGame.name));
+        dispatch(changeGame({ name: serverSideGame.name, url: serverSideGame.url, settingsSlug: serverSideGame.options && serverSideGame.options.settingsSlug }));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
-
     }
 
     function getType(index) {

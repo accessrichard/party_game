@@ -7,7 +7,7 @@ import { socketDisconnect } from '../phoenix/phoenixMiddleware';
 export default function GenServerTimeout(props) {
 
     const dispatch = useDispatch();
-    const genServerTimeout = useSelector(state => state.game.genServerTimeout);
+    const genServerTimeout = useSelector(state => state.multipleChoice.genServerTimeout);
 
     useEffect(() => {
         if (!genServerTimeout) {

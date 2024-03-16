@@ -1,7 +1,7 @@
 defmodule PartyGame.Server do
   use GenServer, restart: :transient
   alias PartyGame.Game.GameRoom
-  alias PartyGame.MultipleChoiceGame
+  alias PartyGame.MultipleChoice.MultipleChoiceGame
 
   @registry PartyGame.Game.Registry
 

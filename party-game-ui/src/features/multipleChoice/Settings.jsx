@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import InputError from '../common/InputError';
 import Logo from '../common/Logo';
 import { push } from "redux-first-history";
-import { updateSettings } from './gameSlice';
+import { updateSettings } from './multipleChoiceSlice';
 
 function Settings() {
 
     const dispatch = useDispatch();
-    const { settings } = useSelector(state => state.game);
+    const { settings } = useSelector(state => state.multipleChoice);
     const [form, setForm] = useState({
         ...settings, errors: {
             rounds: "",
@@ -36,16 +36,6 @@ function Settings() {
             ...form,
             [name]: parseInt(value, 10) || "",
             errors: { ...form.errors, [name]: validationMessage }
-        };
-
-        setForm(newForm);
-    }
-
-    function onBoolChange(e) {
-        const { name, value } = e.target;
-        let newForm = {
-            ...form,
-            [name]: value === 'true'
         };
 
         setForm(newForm);

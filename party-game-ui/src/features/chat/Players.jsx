@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 const Players = () => {
     const players = useSelector(getPresences);
-    const playerName = useSelector(state => state.game.playerName);
+    const playerName = useSelector(state => state.multipleChoice.playerName);
 
     return (
         <ul className="players ul-nostyle">

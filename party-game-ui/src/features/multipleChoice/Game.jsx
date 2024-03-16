@@ -23,7 +23,7 @@ import {
     handleWrongAnswer,
     setFlash,
     resetGame
-} from './gameSlice';
+} from './multipleChoiceSlice';
 
 const events = (topic) => [
     {
@@ -65,7 +65,7 @@ export default function Game() {
         settings,
         startCountdown,
         isOver
-    } = useSelector(state => state.game);
+    } = useSelector(state => state.multipleChoice);
 
     const {
         isGameOwner,

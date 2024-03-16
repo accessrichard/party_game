@@ -1,7 +1,7 @@
 defmodule PartyGame.MultipleChoiceGameTest do
   alias PartyGame.Game.MultipleChoiceSettings
   alias PartyGame.Game.{GameRoom, MultipleChoice}
-  alias PartyGame.MultipleChoiceGame
+  alias PartyGame.MultipleChoice.MultipleChoiceGame
   alias PartyGame.Games.MultipleChoice.States
   alias PartyGame.Lobby
 

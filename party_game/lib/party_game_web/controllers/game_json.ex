@@ -30,7 +30,8 @@ defmodule PartyGameWeb.GameJSON do
         category: x.category,
         location: x.location,
         name: x.name,
-        url: x.url
+        url: x.url,
+        options: x.options
       }
     end)}
   end

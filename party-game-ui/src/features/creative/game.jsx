@@ -20,7 +20,9 @@ export const question = {
 
 export const game = {
     name: "",
-    questions: [question]
+    questions: [question],
+    options: { settingsSlug: "mc" },
+    url: "/multiple_choice"
 }
 
 export const errors = {

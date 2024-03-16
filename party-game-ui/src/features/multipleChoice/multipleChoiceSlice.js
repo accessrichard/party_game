@@ -1,4 +1,3 @@
-import { fulfilled, pending, rejected } from '../common/thunkApiResponse';
 import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { toClientSettings } from './settingsApi';
@@ -37,7 +36,7 @@ function _resetGame(state) {
     Object.assign(state, { ...initialState, ...savedState});
 }
 
-export const gameSlice = createSlice({
+export const multipleChoiceSlice = createSlice({
     name: 'game',
     initialState: initialState,
     reducers: {       
@@ -116,7 +115,7 @@ export const gameSlice = createSlice({
     }
 });
 
-const rounds = state => state.game.rounds;
+const rounds = state => state.multipleChoice.rounds;
 const presencePlayers = state => state.presence.presence;
 const getWinners = (rounds, presence) => {
     const groupByWinner = rounds.reduce((total, val) => {
@@ -186,6 +185,6 @@ export const {
     syncGameState,
     clearJoinError,
     setFlash, 
-    resetGame} = gameSlice.actions;
+    resetGame} = multipleChoiceSlice.actions;
 
-export default gameSlice.reducer;
+export default multipleChoiceSlice.reducer;

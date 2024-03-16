@@ -4,7 +4,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   use PartyGameWeb, :channel
 
   alias PartyGame.{Server, Lobby}
-  alias PartyGame.MultipleChoiceGame
+  alias PartyGame.MultipleChoice.MultipleChoiceGame
   alias PartyGame.Game.GameRoom
   alias PartyGame.Games.GameList
   alias PartyGame.Game.MultipleChoice

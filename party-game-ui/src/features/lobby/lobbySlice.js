@@ -59,6 +59,7 @@ const initialState = {
     playerName: null,
     gameName: '',
     url: '',
+    settingsSlug: '',
     gameCode: null,
     players: [],
     isGameOwner: false,
@@ -84,6 +85,7 @@ function resetGame(state) {
         gameCode: state.gameCode,
         isGameOwner: state.isGameOwner,
         api: state.api,
+        settingsSlug: state.settingsSlug,
         settings: {
             ...state.settings
         }
@@ -116,6 +118,7 @@ export const lobbySlice = createSlice({
         changeGame: (state, action) => {
             state.gameName = action.payload.name;
             state.url = action.payload.url;
+            state.settingsSlug = action.payload.settingsSlug;            
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
@@ -159,7 +162,8 @@ export const mergeGameList = (serverGames, clientGames) => {
         const mapped = clientGames.map((x) => ({
             name: x.game.name,
             location: "client",
-            type: "custom"
+            type: "custom",
+            options: x.options
         }));
 
         return mapped.concat([...list]);

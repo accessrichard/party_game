@@ -93,7 +93,7 @@ export function toServerSideGame(form) {
                 delete q[key];
             });
     });
-
+        
     return exportForm;
 }
 
