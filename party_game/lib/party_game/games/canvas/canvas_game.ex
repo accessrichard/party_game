@@ -46,8 +46,8 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     end
   end
 
-  def word(count) do
-    json = File.read!(Path.join(@word_path, "drawings.json"))
+  def word(count, file \\ "drawings.json") do
+    json = File.read!(Path.join(@word_path, file))
     list = Jason.decode!(json)
     Enum.take_random(list, count)
   end
@@ -77,5 +77,7 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     w1 = word1 |> String.downcase |> String.trim()
     w2 = word2 |> String.downcase |> String.trim()
     w1 == w2
+    or w1 == String.replace_suffix(w2, "s", "")
+    or w2 == String.replace_suffix(w1, "s", "")
   end
 end
