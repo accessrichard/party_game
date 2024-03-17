@@ -58,8 +58,7 @@ const initialState = {
     flash: {},
     playerName: null,
     gameName: '',
-    url: '',
-    settingsSlug: '',
+    type: '',
     gameCode: null,
     players: [],
     isGameOwner: false,
@@ -81,11 +80,10 @@ function resetGame(state) {
     const savedState = {
         playerName: state.playerName,
         gameName: state.gameName,
-        url: state.url,
         gameCode: state.gameCode,
         isGameOwner: state.isGameOwner,
         api: state.api,
-        settingsSlug: state.settingsSlug,
+        type: state.type,
         settings: {
             ...state.settings
         }
@@ -113,12 +111,11 @@ export const lobbySlice = createSlice({
         onRouteToGame(state, action) {
             resetGame(state);
             state.isGameStarted = true;                
-            state.url = action.payload.url;
+            state.type = action.payload.type;
         },       
         changeGame: (state, action) => {
             state.gameName = action.payload.name;
-            state.url = action.payload.url;
-            state.settingsSlug = action.payload.settingsSlug;            
+            state.type = action.payload.type;            
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
@@ -162,7 +159,7 @@ export const mergeGameList = (serverGames, clientGames) => {
         const mapped = clientGames.map((x) => ({
             name: x.game.name,
             location: "client",
-            type: "custom",
+            type: x.type,
             options: x.options
         }));
 

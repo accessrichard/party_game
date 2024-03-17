@@ -31,7 +31,7 @@ defmodule PartyGameWeb.GameJSON do
         location: x.location,
         name: x.name,
         url: x.url,
-        options: x.options
+        type: x.type
       }
     end)}
   end

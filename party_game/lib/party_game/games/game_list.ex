@@ -8,73 +8,70 @@ defmodule PartyGame.Games.GameList do
       %GameMetaData{
         name: "Basic Math",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{settingsSlug: "mc"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Addition",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "addition", settingsSlug: "mc"},
+        options: %{type: "addition"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Subtraction",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "subtraction", settingsSlug: "mc"},
+        options: %{type: "subtraction"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Multiplication",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "multiplication", settingsSlug: "mc"},
+        options: %{type: "multiplication"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Multiplication - Fractions",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "fraction_multiply", settingsSlug: "mc"},
+        options: %{type: "fraction_multiply"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Division",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "division", settingsSlug: "mc"},
+        options: %{type: "division"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Division - Fractions",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "fraction_divide", settingsSlug: "mc"},
+        options: %{type: "fraction_divide"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "Equations",
         category: "Math",
-        type: "multi_choice",
+        type: "multiple_choice",
         location: "server",
-        options: %{type: "equation", settingsSlug: "mc"},
+        options: %{type: "equation"},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{
         name: "U.S. State Capitals",
         category: "United States",
-        type: "multi_choice",
         location: "server",
-        options: %{settingsSlug: "mc"},
         module: MultipleChoice.States
       },
       %GameMetaData{
@@ -82,25 +79,20 @@ defmodule PartyGame.Games.GameList do
         category: "Drawing",
         type: "canvas",
         location: "server",
-        url: "/canvas",
-        options: %{settingsSlug: "canvas"},
         module: Canvas.CanvasGame
       },
       %GameMetaData{
         name: "Alternating Draw Togather",
         category: "Drawing",
-        type: "canvas",
+        type: "canvas_alternate",
         location: "server",
-        url: "/canvas_alternate",
-        options: %{settingsSlug: "canvas"},
         module: Canvas.CanvasGame
       },
       %GameMetaData{
         name: "",
         category: "User Games",
-        type: "custom",
+        type: "multiple_choice",
         location: "client",
-        options: %{settingsSlug: "mc"},
         module: MultipleChoice.BuildYourOwn
       }
     ]
@@ -110,9 +102,8 @@ defmodule PartyGame.Games.GameList do
         %GameMetaData{
           name: x.name,
           module: MultipleChoice.BuildYourOwnPrebuilt,
-          type: "multi_choice",
+          type: "multiple_choice",
           location: "server",
-          options: %{settingsSlug: "mc"},
           category: x.category
         }
       end)

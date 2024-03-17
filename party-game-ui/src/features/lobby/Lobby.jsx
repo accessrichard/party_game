@@ -1,5 +1,5 @@
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { sendEvent, usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
+import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
@@ -11,6 +11,7 @@ import {
     listGames,
     mergeGameList
 } from './lobbySlice';
+import { getGameMetadata } from './games';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
@@ -63,13 +64,13 @@ export default function Lobby() {
         isGameOwner,
         isGameStarted,
         gameName,
-        url,
-        settingsSlug
+        type
     } = useSelector(state => state.lobby);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
+    const gameMetaData = getGameMetadata(type);
 
     usePhoenixSocket();
     usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
@@ -115,11 +116,11 @@ export default function Lobby() {
     }, [gameList, gameName]);
 
     useEffect(() => {
-        if (url && isGameStarted) {
-            dispatch(push(url))
+        if (gameMetaData.url && isGameStarted) {
+            dispatch(push(gameMetaData.url))
         }
 
-    }, [url, isGameStarted])
+    }, [gameMetaData.url, isGameStarted])
 
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
@@ -129,7 +130,7 @@ export default function Lobby() {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "new_game",
-            data: { name: gameName, url: url || '/multiple_choice' }
+            data: { name: gameName, type: type || '/multiple_choice' }
         }));
         e.preventDefault();
         return;
@@ -142,7 +143,7 @@ export default function Lobby() {
     function selectGame(name) {
         const game = gameList.find(x => x.name == name);
         if (game) {
-            dispatch(changeGame({ name: game.name, url: game.url, settingsSlug: game.options && game.options.settingsSlug }));
+            dispatch(changeGame({ name: game.name, type: game.type }));
         }
     }
 
@@ -202,9 +203,9 @@ export default function Lobby() {
                             </form>
                             <div>
                                 <span className="flex-row flex-center">
-                                    <NavLink className="pd-5-lr" to="/create">Create Your Own</NavLink>
-                                    <NavLink className="pd-5-lr" to="/import">Import</NavLink>
-                                    {settingsSlug && <NavLink className="pd-5-lr" to={`/settings/${settingsSlug}`}>Settings</NavLink>}
+                                    {gameMetaData.create && <NavLink className="pd-5-lr" to={`${gameMetaData.url}/create/`}>Create Your Own</NavLink>}
+                                    {gameMetaData.import && <NavLink className="pd-5-lr" to={`${gameMetaData.url}/import/`}>Import</NavLink>}
+                                    {gameMetaData.settings && <NavLink className="pd-5-lr" to={`${gameMetaData.url}/settings/`}>Settings</NavLink>}
                                 </span>
                             </div>
                         </div>

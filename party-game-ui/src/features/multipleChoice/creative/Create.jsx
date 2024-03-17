@@ -127,7 +127,7 @@ export default function Create(props) {
 
         saveSessionStorage(form);
         const serverSideGame = toServerSideGame(form);
-        dispatch(changeGame({ name: serverSideGame.name, url: serverSideGame.url, settingsSlug: serverSideGame.options && serverSideGame.options.settingsSlug }));
+        dispatch(changeGame({ name: serverSideGame.name, url: serverSideGame.url, type: serverSideGame.type }));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
     }
 

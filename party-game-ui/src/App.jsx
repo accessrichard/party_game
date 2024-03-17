@@ -38,16 +38,16 @@ function App() {
             <Route index element={<Landing />} />
             <Route element={<ExceptionPopup />}>
               <Route exact path="/lobby" element={<Lobby />} />
-              <Route exact path="/settings/mc" element={<Settings />} />
-              <Route exact path="/settings/canvas" element={<CanvasSettings />} />
+              <Route exact path="/multiple_choice/settings" element={<Settings />} />
+              <Route exact path="/canvas/settings" element={<CanvasSettings />} />
               <Route exact path="/canvas" element={<CanvasGame />} />
               <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />              
               <Route element={<InlineFacesSprite />}>
-                <Route exact path="/score" element={<Score />} />
+                <Route exact path="/multiple_choice/score" element={<Score />} />
                 <Route exact path="/multiple_choice" element={<Game />} />
               </Route>
-              <Route exact path="/create" element={<Create />} />
-              <Route exact path="/import" element={<Import />} />
+              <Route exact path="/multiple_choice/create" element={<Create />} />
+              <Route exact path="/multiple_choice/import" element={<Import />} />
             </Route>
           </Route>
         </Route>

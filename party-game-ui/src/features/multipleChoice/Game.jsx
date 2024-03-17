@@ -205,7 +205,7 @@ export default function Game() {
             dispatch(endGame());
             
             timeout = setTimeout(() => {
-                dispatch(push('/score'));
+                dispatch(push('/multiple_choice/score'));
             }, 1000);
         }
 

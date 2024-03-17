@@ -157,7 +157,7 @@ export const mergeGameList = (serverGames, clientGames) => {
         const mapped = clientGames.map((x) => ({
             name: x.game.name,
             location: "client",
-            type: "custom"
+            type: x.game.type
         }));
 
         return mapped.concat([...list]);
