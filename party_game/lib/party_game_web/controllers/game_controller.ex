@@ -30,7 +30,6 @@ defmodule PartyGameWeb.GameController do
 
   def validate(conn, game_params) do
     changeset = GameRoom.create_game_changeset(%GameRoom{}, game_params)
-
     case changeset.valid? do
       true ->
         conn

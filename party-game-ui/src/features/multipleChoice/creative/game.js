@@ -21,8 +21,7 @@ export const question = {
 export const game = {
     name: "",
     questions: [question],
-    type: "multiple_choice",
-    url: "/multiple_choice"
+    type: "multiple_choice"
 }
 
 export const errors = {

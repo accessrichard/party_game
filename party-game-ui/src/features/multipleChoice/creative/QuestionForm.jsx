@@ -7,20 +7,20 @@ import TrueFalse from './TrueFalse';
 import TypeRadio from './TypeRadio';
 import { answer } from './game';
 
-export default function QuestionForm(props) {
+export default function QuestionForm({index, errors, onChange, value, type }) {
 
     function handleChange(e) {
-        props.onChange && props.onChange(e);
+        onChange && onChange(e);
     }
 
     function hasError(field) {
-        return props.errors && props.errors[field]
-            && typeof props.errors[field][props.index] !== 'undefined';
+        return errors && errors[field]
+            && typeof errors[field][index] !== 'undefined';
     }
 
     function getQuestionErrors() {
         if (hasError("questions")) {
-            return props.errors.questions[props.index].question;
+            return errors.questions[index].question;
         }
 
         return "";
@@ -28,7 +28,7 @@ export default function QuestionForm(props) {
 
     function getAnswerErrors() {
         if (hasError("questions")) {
-            return props.errors.questions[props.index];
+            return errors.questions[index];
         }
 
         return answer;
@@ -45,33 +45,33 @@ export default function QuestionForm(props) {
                             onInvalid={handleChange}
                             onChange={handleChange}
                             onBlur={handleChange}
-                            value={props.value.question}
-                            id={"question" + props.index}
+                            value={value.question}
+                            id={"question" + index}
                         />
                         <span className="highlight"></span>
                         <span className="bar"></span>
-                        <label>{"Question " + (props.index + 1)}</label>
+                        <label>{"Question " + (index + 1)}</label>
                         <InputError className="error shake" errors={[getQuestionErrors()]} />
                     </div>
                 </div>
             </div>
             <div className="flex-row margin-bottom-30">
                 <TypeRadio
-                    errors={props.errors && props.errors.type}
-                    index={props.index}
+                    errors={errors && errors.type}
+                    index={index}
                     onChange={handleChange}
-                    value={props.value.type}></TypeRadio>
+                    value={value.type}></TypeRadio>
 
-                {props.type === TRUE_FALSE &&
-                    <TrueFalse index={props.index} value={props.value.correct} onChange={handleChange}></TrueFalse>
+                {type === TRUE_FALSE &&
+                    <TrueFalse index={index} value={value.correct} onChange={handleChange}></TrueFalse>
                 }
             </div>
 
-            {props.type === MULTIPLE_CHOICE &&
+            {type === MULTIPLE_CHOICE &&
                 <AnswerInput errors={getAnswerErrors()}
-                    index={props.index}
-                    type={props.value.type}
-                    value={props.value}
+                    index={index}
+                    type={value.type}
+                    value={value}
                     onBlur={handleChange}
                     onChange={handleChange}>
                 </AnswerInput>}

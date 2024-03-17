@@ -1,16 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+    gameToForm,
+    toServerSideGame,
+    updateQuestion
+} from './creative';
+import {
     addDefaultFormErrors,
     download,
-    gameToForm,
     getGamesNames,
     getSessionGame,
     saveSessionStorage,
     toErrorObject,
-    toFieldObject,
-    toServerSideGame,
-    updateQuestion
-} from './creative';
+    toFieldObject
+} from '../../creative/creative';
 import { errors, game, question, questionErrors } from './game';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -35,7 +37,7 @@ export default function MultipleChoiceCreate(props) {
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
     const [editGameValue, setEditGameValue] = useState("");
-    const gameCode = useSelector(state => state.multipleChoice.gameCode);
+    const gameCode = useSelector(state => state.lobby.gameCode);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
@@ -95,7 +97,8 @@ export default function MultipleChoiceCreate(props) {
 
     function addQuestion(e) {
         if (formRef.current.reportValidity()) {
-            saveSessionStorage(form);
+            const game = toServerSideGame(form);
+            saveSessionStorage(game);
             setForm({ ...form, questions: [...form.questions, question] });
         }
 
@@ -107,6 +110,8 @@ export default function MultipleChoiceCreate(props) {
         newForm.questions.splice(index, 1);
         newForm.errors.questions.splice(index, 1);
         setForm(newForm);
+        const game = toServerSideGame(newForm);
+        saveSessionStorage(game);
     }
 
     function downloadGame(e) {
@@ -125,9 +130,10 @@ export default function MultipleChoiceCreate(props) {
             return;
         }
 
-        saveSessionStorage(form);
         const serverSideGame = toServerSideGame(form);
-        dispatch(changeGame({ name: serverSideGame.name, url: serverSideGame.url, type: serverSideGame.type }));
+        saveSessionStorage(serverSideGame);
+
+        dispatch(changeGame({ name: serverSideGame.name, type: serverSideGame.type }));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
     }
 
@@ -164,7 +170,7 @@ export default function MultipleChoiceCreate(props) {
                         </div>
                     </div>
                     {form.questions.map((elem, index) => (
-                        <div key={index} className="card  margin-bottom-30 pd-25">
+                        <div key={index} className="card margin-bottom-30 pd-25">
                             {(index > 0 || (index === 0 && form.questions.length > 1)) &&
                                 <button className="btn-nostyle close" onClick={() => removeQuestion(index)}>&times;</button>
                             }
