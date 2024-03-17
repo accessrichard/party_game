@@ -1,4 +1,4 @@
-import { QUESTION_TYPES, TRUE_FALSE } from '../common/questionTypes';
+import { QUESTION_TYPES, TRUE_FALSE } from '../../common/questionTypes';
 
 export function nameValidator(gameObj) {
     return [{

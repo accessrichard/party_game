@@ -7,11 +7,11 @@ import {
 import React from 'react';
 
 import AppBody from './features/common/AppBody';
-import Create from './features/creative/Create';
+import Create from './features/multipleChoice/creative/Create';
 import ExceptionPopup from './features/common/ExceptionPopup';
 import Game from './features/multipleChoice/Game';
 import GoogleAnalytics from './features/common/GoogleAnalytics';
-import Import from './features/creative/Import';
+import Import from './features/multipleChoice/creative/Import';
 import InlineFacesSprite from './features/common/InlineFacesSprite';
 import Join from './features/start/Join';
 import Landing from './features/start/Landing';

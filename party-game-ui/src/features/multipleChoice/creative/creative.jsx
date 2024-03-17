@@ -1,6 +1,6 @@
-import { getErrors, validate } from '../common/validator';
+import { getErrors, validate } from '../../common/validator';
 
-import { TRUE_FALSE } from '../common/questionTypes';
+import { TRUE_FALSE } from '../../common/questionTypes';
 import { errors } from './game';
 import { questionValidators } from './gameValidator';
 

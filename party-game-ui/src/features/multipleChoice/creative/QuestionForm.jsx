@@ -1,7 +1,7 @@
-import { MULTIPLE_CHOICE, TRUE_FALSE } from '../common/questionTypes';
+import { MULTIPLE_CHOICE, TRUE_FALSE } from '../../common/questionTypes';
 
 import AnswerInput from './AnswerInput';
-import InputError from '../common/InputError';
+import InputError from '../../common/InputError';
 import React from 'react';
 import TrueFalse from './TrueFalse';
 import TypeRadio from './TypeRadio';

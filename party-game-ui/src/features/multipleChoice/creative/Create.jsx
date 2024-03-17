@@ -14,12 +14,12 @@ import {
 import { errors, game, question, questionErrors } from './game';
 import { useDispatch, useSelector } from 'react-redux';
 
-import InputError from '../common/InputError';
-import { MULTIPLE_CHOICE } from '../common/questionTypes';
+import InputError from '../../common/InputError';
+import { MULTIPLE_CHOICE } from '../../common/questionTypes';
 import QuestionForm from './QuestionForm';
-import { changeGame } from '../lobby/lobbySlice';
-import { channelPush } from '../phoenix/phoenixMiddleware';
-import { createGame } from './creativeSlice';
+import { changeGame } from '../../lobby/lobbySlice';
+import { channelPush } from '../../phoenix/phoenixMiddleware';
+import { createGame } from '../../creative/creativeSlice';
 
 const defaultState = {
     ...{ ...game, questions: [question] },

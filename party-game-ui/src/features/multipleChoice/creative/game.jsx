@@ -1,4 +1,4 @@
-import { MULTIPLE_CHOICE } from '../common/questionTypes';
+import { MULTIPLE_CHOICE } from '../../common/questionTypes';
 
 export const answer = {
     answer1: "",

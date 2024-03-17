@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { gameToForm, mergeErrors, removeUnwantedJson, validateQuestions } from './creative';
 
 import Create from './Create';
-import InputError from '../common/InputError';
+import InputError from '../../common/InputError';
 import { gameValidators } from './gameValidator';
 import { errors as initialErrors } from './game';
-import { validate } from '../common/validator';
+import { validate } from '../../common/validator';
 
 export default function Import(props) {
 
