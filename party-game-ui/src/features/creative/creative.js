@@ -86,3 +86,16 @@ export function toErrorObject(e) {
         [removeIndexFromName(name)]: validationMessage
     };
 }
+
+export function hasError(errors, field, index) {
+    return errors && errors[field]
+        && typeof errors[field][index] !== 'undefined';
+}
+
+export function getError(errors, field, index) {
+    if (hasError(errors, field, index)) {            
+        return errors[field][index];
+    }
+
+    return "";
+}

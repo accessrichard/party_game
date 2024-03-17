@@ -1,18 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { useDispatch } from 'react-redux';
+import CreativeControls from '../../creative/CreativeControls';
 import InputError from '../../common/InputError';
 import { changeGame } from '../../lobby/lobbySlice';
-import { channelPush } from '../../phoenix/phoenixMiddleware';
 import { createGame } from '../../creative/creativeSlice';
 import {
-    addDefaultFormErrors,
     download,
     getGamesNames,
     getSessionGame,
     saveSessionStorage,
     toErrorObject,
-    toFieldObject
+    toFieldObject,
+    getError
 } from '../../creative/creative';
 
 const defaultState = {
@@ -26,10 +25,7 @@ const defaultState = {
 export default function MultipleChoiceCreate() {
     const dispatch = useDispatch();
     const formRef = useRef(null);
-
     const [form, setForm] = useState(defaultState);
-    const gameCode = useSelector(state => state.lobby.gameCode);
-    const [editGameValue, setEditGameValue] = useState("");
 
     useEffect(() => {
         setForm(defaultState);
@@ -39,8 +35,6 @@ export default function MultipleChoiceCreate() {
         const input = toFieldObject(e);
         const error = toErrorObject(e);
         let newForm = { ...form };
-        console.log({input, error, index, newForm, i: newForm.words[index]});
-
         
         if (index !== undefined && newForm.words.length > index) {
             newForm.words[index] = input.word;
@@ -87,13 +81,10 @@ export default function MultipleChoiceCreate() {
         e.preventDefault();
     }
 
-    function onEditGameChange(e) {
-        setEditGameValue(e.target.value);
-    }
-
-    function onEditGameClick(e) {
+ 
+    function onEditGameClick(e, name) {
         e.preventDefault();
-        const game = getSessionGame(editGameValue)
+        const game = getSessionGame(name)
         game.errors.words = [...Array(game.words.length).keys()].map(x => "")
         setForm(game);
     }
@@ -119,22 +110,6 @@ export default function MultipleChoiceCreate() {
         dispatch(changeGame({ name: game.name, type: game.type }));
         dispatch(createGame({ game: game, redirect: true }));
     }
-
-    /// Remove as dup
-    function hasError(field, index) {
-        return form.errors && form.errors[field]
-            && typeof form.errors[field][index] !== 'undefined';
-    }
-
-    /// Remove as dup
-    function getError(field, index) {
-        if (hasError(field, index)) {            
-            return form.errors.words[index];
-        }
-
-        return "";
-    }
-
 
     return (
         <>
@@ -181,55 +156,20 @@ export default function MultipleChoiceCreate() {
                                         <span className="highlight"></span>
                                         <span className="bar"></span>
                                         <label>{"Word " + (index + 1)}</label>
-                                        <InputError className="error shake" errors={[getError("words", index)]} />
+                                        <InputError className="error shake" errors={[getError(form.errors, "words", index)]} />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ))}
 
-                    <div className='card'>
-                        <div className="flex-row flex-center">
-                            <div className="btn-box pd-5">
-                                <button className="btn btn-submit" type="submit" onClick={addWord}>Add Word</button>
-                            </div>
-                            <div className="btn-box pd-5">
-                                <button className="btn btn-submit" type="submit" onClick={downloadGame}>Download Game</button>
-                            </div>
-                            <div className="btn-box pd-5">
-                                <button className="btn btn-submit" type="submit" onClick={play}>Play</button>
-                            </div>
-                        </div>
-                        <span>Games are not saved, however you can download and import them later on...</span>
-                        {getGamesNames().length > 0 &&
-                            <div className="flex-row">
-                                <div className="group flex-inline-form-field">
-                                    <select
-                                        autoComplete="off"
-                                        name="edit-games"
-                                        onChange={onEditGameChange}
-                                        value={editGameValue}
-                                    >
-                                        {["", ...(getGamesNames() || [])].map((val, idx) =>
-                                            <option key={idx} value={val}>{val}</option>
-                                        )}
-                                    </select>
-                                    <span className="highlight"></span>
-                                    <span className="bar"></span>
-                                    <label>Edit Game From Session</label>
-                                </div>
-                                <div className="pd-5-lr flex-inline-form-button">
-                                    <button
-                                        className="btn btn-submit"
-                                        disabled={editGameValue === ''}
-                                        type="submit"
-                                        onClick={onEditGameClick}>
-                                        Edit Game
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
+                    <CreativeControls
+                         gameNames={getGamesNames()} 
+                         onAdd={addWord}
+                         onDownload={downloadGame}
+                         onPlay={play}
+                         onEditGameClick={onEditGameClick}
+                    />
                 </form>
             </div>
         </>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import CreativeControls from '../../creative/CreativeControls';
 import {
     gameToForm,
     toServerSideGame,
@@ -73,9 +74,9 @@ export default function MultipleChoiceCreate(props) {
         setEditGameValue(e.target.value);
     }
 
-    function onEditGameClick(e) {
+    function onEditGameClick(e, name) {
         e.preventDefault();
-        setForm(gameToForm(getSessionGame(editGameValue)));
+        setForm(gameToForm(getSessionGame(name)));
     }
 
     useEffect(() => {
@@ -185,49 +186,13 @@ export default function MultipleChoiceCreate(props) {
                             </QuestionForm>
                         </div>
                     ))}
-
-                    <div className='card'>
-                        <div className="flex-row flex-center">
-                            <div className="btn-box pd-5">
-                                <button className="btn btn-submit" type="submit" onClick={addQuestion}>Add Question</button>
-                            </div>
-                            <div className="btn-box pd-5">
-                                <button className="btn btn-submit" type="submit" onClick={downloadGame}>Download Game</button>
-                            </div>
-                            <div className="btn-box pd-5">
-                                <button className="btn btn-submit" type="submit" onClick={play}>Play</button>
-                            </div>
-                        </div>
-                        <span>Games are not saved, however you can download and import them later on...</span>
-                        {getGamesNames().length > 0 &&
-                            <div className="flex-row">
-                                <div className="group flex-inline-form-field">
-                                    <select
-                                        autoComplete="off"
-                                        name="edit-games"
-                                        onChange={onEditGameChange}
-                                        value={editGameValue}
-                                    >
-                                        {["", ...(getGamesNames() || [])].map((val, idx) =>
-                                            <option key={idx} value={val}>{val}</option>
-                                        )}
-                                    </select>
-                                    <span className="highlight"></span>
-                                    <span className="bar"></span>
-                                    <label>Edit Game From Session</label>
-                                </div>
-                                <div className="pd-5-lr flex-inline-form-button">
-                                    <button
-                                        className="btn btn-submit"
-                                        disabled={editGameValue === ''}
-                                        type="submit"
-                                        onClick={onEditGameClick}>
-                                        Edit Game
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
+                     <CreativeControls
+                         gameNames={getGamesNames()} 
+                         onAdd={addQuestion}
+                         onDownload={downloadGame}
+                         onPlay={play}
+                         onEditGameClick={onEditGameClick}
+                    />
                 </form>
             </div>
         </>

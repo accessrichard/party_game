@@ -1,37 +1,16 @@
 import { MULTIPLE_CHOICE, TRUE_FALSE } from '../../common/questionTypes';
-
 import AnswerInput from './AnswerInput';
 import InputError from '../../common/InputError';
 import React from 'react';
 import TrueFalse from './TrueFalse';
 import TypeRadio from './TypeRadio';
 import { answer } from './game';
+import {  getError } from '../../creative/creative';
 
 export default function QuestionForm({index, errors, onChange, value, type }) {
 
     function handleChange(e) {
         onChange && onChange(e);
-    }
-
-    function hasError(field) {
-        return errors && errors[field]
-            && typeof errors[field][index] !== 'undefined';
-    }
-
-    function getQuestionErrors() {
-        if (hasError("questions")) {
-            return errors.questions[index].question;
-        }
-
-        return "";
-    }
-
-    function getAnswerErrors() {
-        if (hasError("questions")) {
-            return errors.questions[index];
-        }
-
-        return answer;
     }
 
     return (
@@ -51,7 +30,7 @@ export default function QuestionForm({index, errors, onChange, value, type }) {
                         <span className="highlight"></span>
                         <span className="bar"></span>
                         <label>{"Question " + (index + 1)}</label>
-                        <InputError className="error shake" errors={[getQuestionErrors()]} />
+                        <InputError className="error shake" errors={[getError(errors, "questions", index).question]} />
                     </div>
                 </div>
             </div>
@@ -68,7 +47,7 @@ export default function QuestionForm({index, errors, onChange, value, type }) {
             </div>
 
             {type === MULTIPLE_CHOICE &&
-                <AnswerInput errors={getAnswerErrors()}
+                <AnswerInput errors={getError(errors, "questions", index)}
                     index={index}
                     type={value.type}
                     value={value}
