@@ -10,7 +10,7 @@ import useLobbyEvents from '../lobby/useLobbyEvents';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { toServerSettings } from '../multipleChoice/settingsApi';
+import { toServerSettings } from './settingsApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { mergeGameList, endGame } from '../lobby/lobbySlice';
 import { usePhoenixEvents, usePhoenixChannel, sendEvent } from '../phoenix/usePhoenix';
@@ -49,7 +49,7 @@ const events = (topic) => [
 ]
 
 
-export default function Game() {
+export default function MultipleChoiceGame() {
 
     const dispatch = useDispatch();
     const {

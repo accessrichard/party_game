@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { gameToForm, mergeErrors, removeUnwantedJson, validateQuestions } from './creative';
 
-import Create from './Create';
+import MultipleChoiceCreate from './MultipleChoiceCreate';
 import InputError from '../../common/InputError';
 import { gameValidators } from './gameValidator';
 import { errors as initialErrors } from './game';
 import { validate } from '../../common/validator';
 
-export default function Import(props) {
+export default function MultipleChoiceImport(props) {
 
     const [game, setGame] = useState(props.game || "");
     const [errors, setErrors] = useState([]);
@@ -83,7 +83,7 @@ export default function Import(props) {
                     </div>
                 </div>
             }
-            {gameForm && <Create game={gameForm}></Create>}
+            {gameForm && <MultipleChoiceCreate game={gameForm}></MultipleChoiceCreate>}
         </>
     );
 }

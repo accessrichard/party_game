@@ -7,11 +7,11 @@ import {
 import React from 'react';
 
 import AppBody from './features/common/AppBody';
-import Create from './features/multipleChoice/creative/Create';
+import MultipleChoiceCreate from './features/multipleChoice/creative/MultipleChoiceCreate';
 import ExceptionPopup from './features/common/ExceptionPopup';
-import Game from './features/multipleChoice/Game';
+import MultipleChoiceGame from './features/multipleChoice/MultipleChoiceGame';
 import GoogleAnalytics from './features/common/GoogleAnalytics';
-import Import from './features/multipleChoice/creative/Import';
+import MultipleChoiceImport from './features/multipleChoice/creative/MultipleChoiceImport';
 import InlineFacesSprite from './features/common/InlineFacesSprite';
 import Join from './features/start/Join';
 import Landing from './features/start/Landing';
@@ -19,9 +19,9 @@ import Lobby from './features/lobby/Lobby';
 import CanvasGame from './features/canvas/CanvasGame';
 import CanvasAlternateGame from './features/canvas/CanvaAlternateGame';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
-import Score from './features/multipleChoice/Score';
-import Settings from './features/multipleChoice/Settings';
-import CanvasSettings from './features/multipleChoice/Settings';
+import MultipleChoiceScore from './features/multipleChoice/MultipleChoiceScore';
+import MultipleChoiceSettings from './features/multipleChoice/MultipleChoiceSettings';
+import CanvasSettings from './features/canvas/CanvasSettings';
 import Start from './features/start/Start'; 
 import { history } from './features/store';
 
@@ -38,16 +38,16 @@ function App() {
             <Route index element={<Landing />} />
             <Route element={<ExceptionPopup />}>
               <Route exact path="/lobby" element={<Lobby />} />
-              <Route exact path="/multiple_choice/settings" element={<Settings />} />
+              <Route exact path="/multiple_choice/settings" element={<MultipleChoiceSettings />} />
               <Route exact path="/canvas/settings" element={<CanvasSettings />} />
               <Route exact path="/canvas" element={<CanvasGame />} />
               <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />              
               <Route element={<InlineFacesSprite />}>
-                <Route exact path="/multiple_choice/score" element={<Score />} />
-                <Route exact path="/multiple_choice" element={<Game />} />
+                <Route exact path="/multiple_choice/score" element={<MultipleChoiceScore />} />
+                <Route exact path="/multiple_choice" element={<MultipleChoiceGame />} />
               </Route>
-              <Route exact path="/multiple_choice/create" element={<Create />} />
-              <Route exact path="/multiple_choice/import" element={<Import />} />
+              <Route exact path="/multiple_choice/create" element={<MultipleChoiceCreate />} />
+              <Route exact path="/multiple_choice/import" element={<MultipleChoiceImport />} />
             </Route>
           </Route>
         </Route>

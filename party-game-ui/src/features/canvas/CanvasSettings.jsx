@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { push } from "redux-first-history";
-import { updateSettings } from './multipleChoiceSlice';
 
-function Settings() {
+
+function CanvasSettings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.canvas);
@@ -18,7 +18,6 @@ function Settings() {
         e.preventDefault();
 
         if (e.target.checkValidity()) {
-            dispatch(updateSettings(form));
             dispatch(push("/lobby"));
         }
     }
@@ -30,4 +29,4 @@ function Settings() {
     );
 }
 
-export default Settings;
+export default CanvasSettings;

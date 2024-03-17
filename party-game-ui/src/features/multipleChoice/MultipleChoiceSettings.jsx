@@ -6,7 +6,7 @@ import Logo from '../common/Logo';
 import { push } from "redux-first-history";
 import { updateSettings } from './multipleChoiceSlice';
 
-function Settings() {
+function MultipleChoiceSettings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.multipleChoice);
@@ -117,4 +117,4 @@ function Settings() {
     );
 }
 
-export default Settings;
+export default MultipleChoiceSettings;

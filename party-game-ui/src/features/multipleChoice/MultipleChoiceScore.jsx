@@ -23,7 +23,7 @@ function displayWinner(scores) {
     }
 }
 
-function Score() {
+function MultipleChoiceScore() {
     const dispatch = useDispatch();
     const scores = useSelector(getScores);
     const [confetti, setConfetti] = useState(new Date().toISOString())
@@ -65,4 +65,4 @@ function Score() {
     );
 }
 
-export default Score;
+export default MultipleChoiceScore;

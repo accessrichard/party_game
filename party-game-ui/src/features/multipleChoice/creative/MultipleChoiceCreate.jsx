@@ -27,7 +27,7 @@ const defaultState = {
     id: Date.now()
 }
 
-export default function Create(props) {
+export default function MultipleChoiceCreate(props) {
     const { game } = props;
     const dispatch = useDispatch();
     const formRef = useRef(null);
