@@ -6,10 +6,11 @@ const initialState = {
     guesses: [],
     turn: "",
     startTimerTime: null,
-    minSize: [0,0],
+    minSize: [0, 0],
     winner: "",
     winners: [],
-    players: []
+    players: [],
+    settings: { roundTime: 45, alternateRoundTime: 20, difficulty: "easy" },
 }
 
 export const canvasSlice = createSlice({
@@ -34,13 +35,13 @@ export const canvasSlice = createSlice({
             state.guesses = []
             state.players = action.payload.players;
 
-            if (action.payload.size 
+            if (action.payload.size
                 && action.payload.size.length == 2
                 && action.payload.size[0] > 100
                 && action.payload.size[1] > 100) {
-                    state.minSize = action.payload.size;
+                state.minSize = action.payload.size;
             }
-        },      
+        },
         handleGuess(state, action) {
             state.guesses.unshift(action.payload.guess);
             state.guesses = state.guesses.slice(0, 50);
@@ -48,7 +49,7 @@ export const canvasSlice = createSlice({
             if (action.payload.winner) {
                 let wins = state.winners.find(x => x.name == action.payload.winner);
                 if (!wins) {
-                    state.winners.push({name: action.payload.winner, wins: 1});
+                    state.winners.push({ name: action.payload.winner, wins: 1 });
                 } else {
                     wins.wins += 1;
                 }
@@ -56,15 +57,18 @@ export const canvasSlice = createSlice({
                 state.winners = state.winners.sort((x, y) => x.wins < y.wins);
             }
         },
+        updateSettings(state, action) {
+            state.settings = Object.assign(state.settings, action.payload);
+        },
         reset(state, action) {
             state.commands = [];
             state.word = "";
             state.guesses = [];
             state.displays = [];
-            state.winner = "";            
+            state.winner = "";
         }
     }
 });
 
-export const { updateWord, commands, reset, handleNewGame, handleGuess } = canvasSlice.actions;
+export const { updateWord, commands, reset, handleNewGame, handleGuess, updateSettings } = canvasSlice.actions;
 export default canvasSlice.reducer;

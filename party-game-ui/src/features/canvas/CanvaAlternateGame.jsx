@@ -11,7 +11,7 @@ export default function CanvasDrawGame() {
     const { isGameOwner, playerName, gameCode } = useSelector(state => state.lobby);
 
     const canvasChannel = `canvas:${gameCode}`;
-    const { players } = useSelector(state => state.canvas);
+    const { players, settings } = useSelector(state => state.canvas);
     const {
         turn,
         winner,
@@ -60,7 +60,7 @@ export default function CanvasDrawGame() {
                 isEditable={playerName == turn}
                 setIsNewGamePrompt={setIsNewGamePrompt}
                 isTimerActive={isTimerActive}
-                timerSeconds={20}
+                timerSeconds={settings.alternateRoundTime}
                 onStartClick={onStartClick}
                 onClearClick={onClearClick}
                 isNewGamePrompt={isNewGamePrompt}

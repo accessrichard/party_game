@@ -10,7 +10,7 @@ export default function CanvasDrawGame() {
     const dispatch = useDispatch();
     const { isGameOwner, playerName, gameCode } = useSelector(state => state.lobby);
 
-    const { players } = useSelector(state => state.canvas);
+    const { players, settings } = useSelector(state => state.canvas);
 
     const canvasChannel = `canvas:${gameCode}`;
     
@@ -72,7 +72,7 @@ export default function CanvasDrawGame() {
                 isEditable={isEditable}
                 setIsNewGamePrompt={setIsNewGamePrompt}
                 isTimerActive={isTimerActive}
-                timerSeconds={45}
+                timerSeconds={settings.roundTime}
                 onStartClick={onStartClick}
                 onClearClick={onClearClick}
                 isNewGamePrompt={isNewGamePrompt}

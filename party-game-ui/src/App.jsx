@@ -38,16 +38,23 @@ function App() {
             <Route index element={<Landing />} />
             <Route element={<ExceptionPopup />}>
               <Route exact path="/lobby" element={<Lobby />} />
-              <Route exact path="/multiple_choice/settings" element={<MultipleChoiceSettings />} />
-              <Route exact path="/canvas/settings" element={<CanvasSettings />} />
-              <Route exact path="/canvas" element={<CanvasGame />} />
-              <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />              
               <Route element={<InlineFacesSprite />}>
-                <Route exact path="/multiple_choice/score" element={<MultipleChoiceScore />} />
                 <Route exact path="/multiple_choice" element={<MultipleChoiceGame />} />
+                <Route exact path="/multiple_choice/score" element={<MultipleChoiceScore />} />
               </Route>
+              <Route exact path="/multiple_choice/settings" element={<MultipleChoiceSettings />} />
               <Route exact path="/multiple_choice/create" element={<MultipleChoiceCreate />} />
               <Route exact path="/multiple_choice/import" element={<MultipleChoiceImport />} />
+              
+              <Route exact path="/canvas" element={<CanvasGame />} />
+              <Route exact path="/canvas/settings" element={<CanvasSettings />} />
+              <Route exact path="/canvas/create" element={<MultipleChoiceCreate />} />
+              <Route exact path="/canvas/import" element={<MultipleChoiceImport />} />
+              
+              <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />              
+              <Route exact path="/canvas_alternate/settings" element={<CanvasSettings />} />              
+              <Route exact path="/canvas_alternate/create" element={<MultipleChoiceCreate />} />
+              <Route exact path="/canvas_alternate/import" element={<MultipleChoiceImport />} />              
             </Route>
           </Route>
         </Route>
