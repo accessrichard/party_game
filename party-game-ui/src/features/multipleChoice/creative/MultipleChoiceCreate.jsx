@@ -37,7 +37,7 @@ export default function MultipleChoiceCreate(props) {
 
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
-    const gameCode = useSelector(state => state.lobby.gameCode);
+    const { gameCode, type} = useSelector(state => state.lobby);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
@@ -182,7 +182,7 @@ export default function MultipleChoiceCreate(props) {
                         </div>
                     ))}
                      <CreativeControls
-                         gameNames={getGamesNames()} 
+                         gameNames={getGamesNames(type)} 
                          onAdd={addQuestion}
                          onDownload={downloadGame}
                          onPlay={play}

@@ -7,6 +7,7 @@ defmodule PartyGame.Game.Canvas do
     field(:round_started, :boolean, default: false)
     field(:turn, :string, default: nil)
     field(:word, :string, default: nil)
+    field(:type, :string, default: nil)
     field(:words, {:array, :string}, default: [])
     field(:guesses, {:array, :string}, default: [])
     field(:winner, :string, default: nil)

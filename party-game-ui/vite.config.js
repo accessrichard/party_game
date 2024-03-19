@@ -15,7 +15,7 @@ export default defineConfig({
     },
     port: 5180,
     proxy: {
-      "/api": "http://localhost:4000",
+      "/api": "http://localhost:4000/",
       '/api_debug': {
         target: 'http://localhost:4000/',
         changeOrigin: true,

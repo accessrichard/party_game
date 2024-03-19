@@ -17,19 +17,15 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
   end
 
   def change_word(%GameRoom{} = game_room) do
-
-
-
-    word = if game_room.game.words == [] do
+    word = if game_room.game.words == []  do
       Enum.at(word(1), 0)
     else
-      game_room.game.words
-      |> Enum.with_index()
-      |> Enum.find(fn {w, _} -> w == game_room.game.word end)
+      index = get_index(game_room.game.words, Map.get(game_room.game, :word, ""))
+      Enum.at(game_room.game.words, index)
     end
 
     %{game_room | game: %{game_room.game | word: word, winner: nil}}
-  end
+  end 
 
   def start_round(%GameRoom{} = game_room) do
     %{game_room | game: %{game_room.game | round_started: true, winner: nil}}
@@ -89,5 +85,13 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     w1 == w2
     or w1 == String.replace_suffix(w2, "s", "")
     or w2 == String.replace_suffix(w1, "s", "")
+  end
+
+  defp get_index(words, word) when is_list(words) do
+    index = words |> Enum.with_index() |> Enum.find(fn {w, _} -> w == word end)
+    case index do
+      {_, idx} ->  if idx >= length(words) - 1, do: 0, else: idx + 1
+      nil -> 0
+    end
   end
 end

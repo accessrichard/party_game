@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CreativeControls from '../../creative/CreativeControls';
 import InputError from '../../common/InputError';
 import { changeGame } from '../../lobby/lobbySlice';
@@ -26,16 +26,18 @@ export default function MultipleChoiceCreate() {
     const dispatch = useDispatch();
     const formRef = useRef(null);
     const [form, setForm] = useState(defaultState);
+    const { type } = useSelector(state => state.lobby);
+
 
     useEffect(() => {
-        setForm(defaultState);
-    }, []);
+        setForm({...defaultState, ...{type, words: [""]}});        
+    }, [type]);
 
     function handleChanges(e, index) {
         const input = toFieldObject(e);
         const error = toErrorObject(e);
         let newForm = { ...form };
-        
+
         if (index !== undefined && newForm.words.length > index) {
             newForm.words[index] = input.word;
             newForm.errors.words[index] = error.word;
@@ -44,8 +46,8 @@ export default function MultipleChoiceCreate() {
             newForm.errors.words.push(error.word);
 
         } else {
-            newForm = { ...newForm, ...input};
-            newForm.errors = {...newForm.errors, ...error};
+            newForm = { ...newForm, ...input };
+            newForm.errors = { ...newForm.errors, ...error };
         }
         setForm(newForm);
         if (e.type === 'invalid') {
@@ -55,7 +57,7 @@ export default function MultipleChoiceCreate() {
 
     function removeWord(e, index) {
         e.preventDefault();
-        const newForm = {...form};
+        const newForm = { ...form };
         newForm.words.splice(index, 1);
         newForm.errors.words.splice(index, 1);
         setForm(newForm);
@@ -73,15 +75,15 @@ export default function MultipleChoiceCreate() {
         if (formRef.current.reportValidity()) {
             const game = toServerSideGame(form)
             saveSessionStorage(game);
-            const newForm = {...form};
+            const newForm = { ...form };
             newForm.words.push("");
             setForm(newForm);
         }
-        
+
         e.preventDefault();
     }
 
- 
+
     function onEditGameClick(e, name) {
         e.preventDefault();
         const game = getSessionGame(name)
@@ -164,11 +166,11 @@ export default function MultipleChoiceCreate() {
                     ))}
 
                     <CreativeControls
-                         gameNames={getGamesNames()} 
-                         onAdd={addWord}
-                         onDownload={downloadGame}
-                         onPlay={play}
-                         onEditGameClick={onEditGameClick}
+                        gameNames={getGamesNames(type)}
+                        onAdd={addWord}
+                        onDownload={downloadGame}
+                        onPlay={play}
+                        onEditGameClick={onEditGameClick}
                     />
                 </form>
             </div>

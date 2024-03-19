@@ -12,7 +12,13 @@ export function getSessionStorage() {
 
 }
 
-export function getGamesNames() {
+export function getGamesNames(gameType) {
+    if (gameType) {
+        return getSessionStorage()
+        .filter(game => game.type == gameType)
+        .map(game => game.name);
+    }
+    
     return getSessionStorage().map((game) => game.name);
 }
 

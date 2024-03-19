@@ -8,9 +8,10 @@ import { clearCanvas, clearCommand } from './canvasUtils';
 export default function CanvasDrawGame() {
 
     const dispatch = useDispatch();
-    const { isGameOwner, playerName, gameCode } = useSelector(state => state.lobby);
+    const { isGameOwner, playerName, gameCode, gameName } = useSelector(state => state.lobby);
+    const { players, settings, words } = useSelector(state => state.canvas);
+    const { games } = useSelector(state => state.creative);
 
-    const { players, settings } = useSelector(state => state.canvas);
 
     const canvasChannel = `canvas:${gameCode}`;
     
@@ -48,7 +49,7 @@ export default function CanvasDrawGame() {
         setIsTimerActive(true);
         
         if (isGameOwner) {
-            dispatch(channelPush(sendEvent(canvasChannel, {}, winner == "" ? "new_game" : "next_turn")));
+            dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner == "" ? "new_game" : "next_turn")));
         }
 
         setIsNewGamePrompt(false);
@@ -56,12 +57,19 @@ export default function CanvasDrawGame() {
 
     function onNextClick(e) {
         onClearClick();
-        dispatch(channelPush(sendEvent(canvasChannel, {}, "switch_editable")));
+        dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }
 
     function onClearClick() {
         clearCanvas('paint-canvas');
         dispatch(channelPush(sendEvent(canvasChannel, clearCommand, "commands")));
+    }
+
+    function getGame() {
+        const matching = games.find(x => x.game.name == gameName);
+        return typeof matching === 'undefined'
+            ? {}
+            : {type: matching.game.type, name: gameName, words: matching.game.words }
     }
 
     return (
