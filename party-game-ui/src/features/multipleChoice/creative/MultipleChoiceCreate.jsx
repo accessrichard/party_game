@@ -37,7 +37,6 @@ export default function MultipleChoiceCreate(props) {
 
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
-    const [editGameValue, setEditGameValue] = useState("");
     const gameCode = useSelector(state => state.lobby.gameCode);
     const gameChannel = `game:${gameCode}`;
 
@@ -68,10 +67,6 @@ export default function MultipleChoiceCreate(props) {
         if (!isGenServerDebounced) {
             setIsGenServerDebounced(true);    
         }
-    }
-
-    function onEditGameChange(e) {
-        setEditGameValue(e.target.value);
     }
 
     function onEditGameClick(e, name) {

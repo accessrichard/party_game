@@ -17,7 +17,17 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
   end
 
   def change_word(%GameRoom{} = game_room) do
-    word = Enum.at(word(1), 0)
+
+
+
+    word = if game_room.game.words == [] do
+      Enum.at(word(1), 0)
+    else
+      game_room.game.words
+      |> Enum.with_index()
+      |> Enum.find(fn {w, _} -> w == game_room.game.word end)
+    end
+
     %{game_room | game: %{game_room.game | word: word, winner: nil}}
   end
 

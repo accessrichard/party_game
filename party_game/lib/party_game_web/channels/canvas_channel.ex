@@ -106,10 +106,14 @@ defmodule PartyGameWeb.CanvasChannel do
   end
 
   @impl true
-  def handle_in("new_game", _, socket) do
+  def handle_in("new_game", payload, socket) do
+    type = Map.get(payload, "type", "canvas")
+    words = Map.get(payload, "words", [])
+
+
     game_room =
       Server.get_game(game_code(socket.topic))
-      |> Lobby.set_game(CanvasGame.new(%{name: "free_draw"}))
+      |> Lobby.set_game(CanvasGame.new(%{name: "free_draw", type: type, words: words}))
       |> CanvasGame.change_word()
       |> CanvasGame.change_turn()
       |> CanvasGame.start_round()
