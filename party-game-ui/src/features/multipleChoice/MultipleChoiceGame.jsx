@@ -90,6 +90,7 @@ export default function MultipleChoiceGame() {
     usePhoenixChannel(gameChannel, { name: playerName });
     usePhoenixEvents(gameChannel, events);
     useLobbyEvents();
+
     useBackButtonBlock(true);
 
     useEffect(() => {

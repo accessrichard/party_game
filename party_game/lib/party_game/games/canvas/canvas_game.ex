@@ -18,14 +18,14 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
 
   def change_word(%GameRoom{} = game_room) do
     word = if game_room.game.words == []  do
-      Enum.at(word(1), 0)
+      Enum.at(word(1, game_room.game.settings.difficulty), 0)
     else
       index = get_index(game_room.game.words, Map.get(game_room.game, :word, ""))
       Enum.at(game_room.game.words, index)
     end
 
     %{game_room | game: %{game_room.game | word: word, winner: nil}}
-  end 
+  end
 
   def start_round(%GameRoom{} = game_room) do
     %{game_room | game: %{game_room.game | round_started: true, winner: nil}}
@@ -52,7 +52,9 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     end
   end
 
-  def word(count, file \\ "drawings.json") do
+  def word(count, difficulty) do
+    file = if difficulty == "hard", do: "drawing_two_word.json", else: "drawings.json"
+
     json = File.read!(Path.join(@word_path, file))
     list = Jason.decode!(json)
     Enum.take_random(list, count)

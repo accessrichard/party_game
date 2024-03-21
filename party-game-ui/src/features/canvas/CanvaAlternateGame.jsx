@@ -30,8 +30,8 @@ export default function CanvasDrawGame() {
         setIsTimerActive(false);
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, {}, "switch_editable")));
-        }        
-    }    
+        }
+    }
 
     function onStartClick() {
         setIsTimerActive(true);
@@ -56,14 +56,14 @@ export default function CanvasDrawGame() {
     function getGame() {
         const matching = games.find(x => x.game.name == gameName);
         return typeof matching === 'undefined'
-            ? {}
-            : {type: matching.game.type, name: gameName, words: matching.game.words }
+            ? { settings: { difficulty: settings.difficulty } }
+            : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
     }
 
     return (
         <>
             <CanvasUI
-                onTimerCompleted={onTimerCompleted}                
+                onTimerCompleted={onTimerCompleted}
                 isEditable={playerName == turn}
                 setIsNewGamePrompt={setIsNewGamePrompt}
                 isTimerActive={isTimerActive}
@@ -75,7 +75,7 @@ export default function CanvasDrawGame() {
                 isGuessInputDisplayed={false}
                 isGuessListDisplayed={false}
                 players={players}
-                playerWaitMessage={`${turn}'s turn to draw: ${word}`}                
+                playerWaitMessage={`${turn}'s turn to draw: ${word}`}
                 playerDrawMessage={`Your turn to draw: ${word}`}
                 turn={turn}
                 word={word}

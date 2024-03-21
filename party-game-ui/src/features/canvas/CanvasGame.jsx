@@ -14,7 +14,7 @@ export default function CanvasDrawGame() {
 
 
     const canvasChannel = `canvas:${gameCode}`;
-    
+
     const {
         turn,
         winner,
@@ -42,12 +42,12 @@ export default function CanvasDrawGame() {
     }
 
     useEffect(() => {
-        setIsEditable(playerName == turn);        
+        setIsEditable(playerName == turn);
     }, [turn]);
 
     function onStartClick() {
         setIsTimerActive(true);
-        
+
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner == "" ? "new_game" : "next_turn")));
         }
@@ -68,8 +68,8 @@ export default function CanvasDrawGame() {
     function getGame() {
         const matching = games.find(x => x.game.name == gameName);
         return typeof matching === 'undefined'
-            ? {}
-            : {type: matching.game.type, name: gameName, words: matching.game.words }
+            ? { settings: { difficulty: settings.difficulty } }
+            : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
     }
 
     return (

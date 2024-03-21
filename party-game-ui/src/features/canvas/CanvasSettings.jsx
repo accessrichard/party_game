@@ -11,9 +11,8 @@ function CanvasSettings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.canvas);
-    const { type } = useSelector(state => state.lobby );
-
-    const [form, setForm] = useState({...settings, errors: { roundTime: "", alternateRoundTime: ""} });
+    const { type } = useSelector(state => state.lobby);
+    const [form, setForm] = useState({ ...settings, errors: { roundTime: "", alternateRoundTime: "", difficulty: "easy" } });
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -36,7 +35,19 @@ function CanvasSettings() {
         setForm(newForm);
     }
 
-    
+    function onChange(e) {
+        e.preventDefault();
+        const { name, value, validationMessage } = e.target;
+        let newForm = {
+            ...form,
+            [name]: value || "",
+            errors: { ...form.errors, [name]: validationMessage }
+        };
+
+        setForm(newForm);
+    }
+
+
     return (
         <div className="offset-bottom center-65">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
@@ -58,7 +69,25 @@ function CanvasSettings() {
                         <label>Round Time In Seconds:</label>
                         <InputError className="error shake" errors={[form.errors.roundTime]} />
 
-                    </div>   
+                    </div>
+
+                    <div className="flex-row">
+                        <div className="group flex-inline-form-field">
+                            <select
+                                autoComplete="off"
+                                name="difficulty"
+                                onChange={onChange}
+                                value={form.difficulty}
+                            >
+                                <option value="easy">Easy - One Word</option>
+                                <option value="hard">Hard - Two Words</option>
+                            </select>
+                            <span className="highlight"></span>
+                            <span className="bar"></span>
+                            <label>Difficulty</label>
+                        </div>
+                    </div>
+
                     <div className="btn-box">
                         <button className="btn btn-submit" type="submit">Save</button>
                     </div>

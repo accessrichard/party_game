@@ -72,16 +72,16 @@ export default function Lobby() {
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
     const gameMetaData = getGameMetadata(type);
 
-    usePhoenixSocket();
-    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
-    usePhoenixEvents(`lobby:${gameCode}`, events);
-
     useEffect(() => {
         if (!gameCode) {
             dispatch(push('/'));
         }
     }, [gameCode]);
 
+    usePhoenixSocket();
+    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
+    usePhoenixEvents(`lobby:${gameCode}`, events);
+    
     useEffect(() => {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };

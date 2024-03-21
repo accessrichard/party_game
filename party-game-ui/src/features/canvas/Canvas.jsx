@@ -145,7 +145,7 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
                 <div id="canvas-overlay" style={{ width: minSize[0], height: minSize[1] }}><div id="visible-area">Visible Area</div></div> 
             */}
 
-            <canvas id="paint-canvas" ref={canvasRef} >Your browser does not support canvas element.
+            <canvas id="paint-canvas" className={isEditable ? "cross-hair" : ""} ref={canvasRef} >Your browser does not support canvas element.
 </canvas>
         </div>
     );

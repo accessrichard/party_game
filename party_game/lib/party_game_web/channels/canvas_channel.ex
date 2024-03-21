@@ -83,13 +83,15 @@ defmodule PartyGameWeb.CanvasChannel do
 
   @impl true
   def handle_in("word", _, socket) do
-    broadcast(socket, "word", %{"word" => CanvasGame.word(1) |> Enum.at(0)})
+    game_room = Server.get_game(game_code(socket.topic))
+    broadcast(socket, "word", %{"word" => CanvasGame.word(1, game_room.game.settings.difficulty) |> Enum.at(0)})
     {:noreply, socket}
   end
 
   @impl true
   def handle_in("start", _, socket) do
-    broadcast(socket, "start", %{"word" => CanvasGame.word(1) |> Enum.at(0)})
+    game_room = Server.get_game(game_code(socket.topic))
+    broadcast(socket, "start", %{"word" => CanvasGame.word(1, game_room.game.settings.difficulty) |> Enum.at(0)})
     {:noreply, socket}
   end
 
@@ -110,10 +112,11 @@ defmodule PartyGameWeb.CanvasChannel do
     type = Map.get(payload, "type", "canvas")
     name = Map.get(payload, "name", "canvas_game")
     words = Map.get(payload, "words", [])
+    settings = Map.get(payload, "settings", %{})
 
     game_room =
       Server.get_game(game_code(socket.topic))
-      |> Lobby.set_game(CanvasGame.new(%{name: name, type: type, words: words}))
+      |> Lobby.set_game(CanvasGame.new(%{name: name, type: type, words: words, settings: settings}))
       |> CanvasGame.change_word()
       |> CanvasGame.change_turn()
       |> CanvasGame.start_round()

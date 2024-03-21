@@ -5,9 +5,12 @@ canvas {
   background-color: white;
 }
 
-#paint-canvas {
-  cursor: crosshair;
+#paint-canvas {  
   touch-action: none;
+}
+
+.cross-hair {
+  cursor: crosshair;
 }
 
 .color-button {

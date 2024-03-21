@@ -1,6 +1,8 @@
 defmodule PartyGame.Game.Canvas do
   use Ecto.Schema
 
+  alias PartyGame.Game.CanvasSettings
+
   @primary_key false
   embedded_schema do
     field(:name, :string, default: nil)
@@ -11,6 +13,7 @@ defmodule PartyGame.Game.Canvas do
     field(:words, {:array, :string}, default: [])
     field(:guesses, {:array, :string}, default: [])
     field(:winner, :string, default: nil)
+    embeds_one(:settings, CanvasSettings, on_replace: :delete)
   end
 
   def create_game(game, params \\ %{}) do
@@ -19,6 +22,8 @@ defmodule PartyGame.Game.Canvas do
   end
 
   def create_changeset(game, params \\ %{}) do
+    settings = CanvasSettings.apply_settings(CanvasSettings.new, Map.get(params, :settings, %{}))
+
     game
     |> Ecto.Changeset.cast(params, [
       :round_started,
@@ -28,8 +33,8 @@ defmodule PartyGame.Game.Canvas do
       :word,
       :words,
       :guesses,
-      :winner
-    ])
+      :winner])
+      |> Ecto.Changeset.put_embed(:settings, settings)
   end
 
   def new(fields \\ []) do
