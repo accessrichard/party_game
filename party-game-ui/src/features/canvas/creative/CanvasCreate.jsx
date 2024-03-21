@@ -22,15 +22,22 @@ const defaultState = {
     errors: { words: [], name: "" }
 }
 
-export default function MultipleChoiceCreate() {
+export default function MultipleChoiceCreate({ game }) {
     const dispatch = useDispatch();
     const formRef = useRef(null);
     const [form, setForm] = useState(defaultState);
     const { type } = useSelector(state => state.lobby);
 
+    useEffect(() => {
+        if (game) {
+            setForm({ ...game, errors: defaultState.errors });
+        } else {
+            setForm({ ...defaultState, ...{ type, words: [""] } });
+        }
+    }, [game]);
 
     useEffect(() => {
-        setForm({...defaultState, ...{type, words: [""]}});        
+        setForm({ ...defaultState, ...{ type, words: [""] } });
     }, [type]);
 
     function handleChanges(e, index) {

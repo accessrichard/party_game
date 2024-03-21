@@ -19,6 +19,7 @@ import Lobby from './features/lobby/Lobby';
 import CanvasGame from './features/canvas/CanvasGame';
 import CanvasAlternateGame from './features/canvas/CanvaAlternateGame';
 import CanvasCreate from './features/canvas/creative/CanvasCreate';
+import CanvasImport from './features/canvas/creative/CanvasImport';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
 import MultipleChoiceScore from './features/multipleChoice/MultipleChoiceScore';
 import MultipleChoiceSettings from './features/multipleChoice/MultipleChoiceSettings';
@@ -50,12 +51,12 @@ function App() {
               <Route exact path="/canvas" element={<CanvasGame />} />
               <Route exact path="/canvas/settings" element={<CanvasSettings />} />
               <Route exact path="/canvas/create" element={<CanvasCreate />} />
-              <Route exact path="/canvas/import" element={<MultipleChoiceImport />} />
+              <Route exact path="/canvas/import" element={<CanvasImport />} />
               
               <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />              
               <Route exact path="/canvas_alternate/settings" element={<CanvasSettings />} />              
               <Route exact path="/canvas_alternate/create" element={<CanvasCreate />} />
-              <Route exact path="/canvas_alternate/import" element={<MultipleChoiceImport />} />              
+              <Route exact path="/canvas_alternate/import" element={<CanvasImport />} />
             </Route>
           </Route>
         </Route>
