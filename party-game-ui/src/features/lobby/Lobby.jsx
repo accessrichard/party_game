@@ -130,7 +130,7 @@ export default function Lobby() {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "new_game",
-            data: { name: gameName, type: type || '/multiple_choice' }
+            data: { name: gameName, type: type }
         }));
         e.preventDefault();
         return;

@@ -34,11 +34,8 @@ export default function MultipleChoiceCreate({ game }) {
         } else {
             setForm({ ...defaultState, ...{ type, words: [""] } });
         }
-    }, [game]);
-
-    useEffect(() => {
-        setForm({ ...defaultState, ...{ type, words: [""] } });
-    }, [type]);
+        
+    }, [type, game]);
 
     function handleChanges(e, index) {
         const input = toFieldObject(e);
@@ -89,7 +86,6 @@ export default function MultipleChoiceCreate({ game }) {
 
         e.preventDefault();
     }
-
 
     function onEditGameClick(e, name) {
         e.preventDefault();

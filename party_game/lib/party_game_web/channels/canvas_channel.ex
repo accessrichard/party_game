@@ -143,7 +143,8 @@ defmodule PartyGameWeb.CanvasChannel do
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
       "word" => game_room.game.word,
-      "players" => players(game_room)
+      "players" => players(game_room),
+      "isOver" => game_room.game.is_over
     })
 
     {:noreply, socket}

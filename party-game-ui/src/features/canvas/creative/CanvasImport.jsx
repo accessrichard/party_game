@@ -28,7 +28,6 @@ export default function CanvasImport(props) {
 
     function importGame() {
         try {
-            console.log("called")
             if (!game || game.trim() === "") {
                 setErrors(["Can't import empty game."]);
                 return;
@@ -37,7 +36,6 @@ export default function CanvasImport(props) {
             setErrors([]);
 
             const gameObj = JSON.parse(game);
-            console.log(gameObj)
             const gameErrors = validate(gameValidators(gameObj));
             const validations = getErrors(gameErrors).map(x => x.error);
             setErrors(validations);
@@ -46,14 +44,12 @@ export default function CanvasImport(props) {
                 return;
             }
 
-           // const cleanGame = removeUnwantedJson(gameObj);
             setGame(JSON.stringify(gameObj, null, 2));            
             setGameForm({ ...gameObj, errors: { ...initialErrors } });
         } catch (err) {
             setErrors([err.message]);
         }
     }
-
 
     return (
         <>
@@ -90,7 +86,7 @@ export default function CanvasImport(props) {
                     </div>
                 </div>
             }
-            {gameForm && <CanvasCreate game={gameForm}></CanvasCreate>}
+            {gameForm && <CanvasCreate game={gameForm}/>}
         </>
     );
 }

@@ -13,6 +13,7 @@ defmodule PartyGame.Game.Canvas do
     field(:words, {:array, :string}, default: [])
     field(:guesses, {:array, :string}, default: [])
     field(:winner, :string, default: nil)
+    field(:is_over, :boolean, default: false)
     embeds_one(:settings, CanvasSettings, on_replace: :delete)
   end
 
@@ -33,7 +34,8 @@ defmodule PartyGame.Game.Canvas do
       :word,
       :words,
       :guesses,
-      :winner])
+      :winner,
+      :is_over])
       |> Ecto.Changeset.put_embed(:settings, settings)
   end
 

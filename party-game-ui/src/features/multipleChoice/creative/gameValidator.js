@@ -1,13 +1,5 @@
 import { QUESTION_TYPES, TRUE_FALSE } from '../../common/questionTypes';
-
-export function nameValidator(gameObj) {
-    return [{
-        validators: ['required'],
-        field: "name",
-        value: gameObj.name,
-        name: "Game Name"
-    }];
-}
+import { nameValidator } from '../../common/importValidator';
 
 export function gameValidators(gameObj) {
     return [       

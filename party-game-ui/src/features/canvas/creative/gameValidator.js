@@ -1,11 +1,4 @@
-export function nameValidator(gameObj) {
-    return [{
-        validators: ['required'],
-        field: "name",
-        value: gameObj.name,
-        name: "Game Name"
-    }];
-}
+import { nameValidator } from "../../common/importValidator"
 
 export function gameValidators(gameObj) {
     return [       
@@ -24,5 +17,5 @@ export function gameValidators(gameObj) {
             minLength: 5
         }
         
-    ]
+    ].concat(nameValidator(gameObj))
 }

@@ -9,22 +9,21 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
   end
 
   def change_turn(%GameRoom{} = game_room) do
-    index = Enum.find_index(game_room.players, &(game_room.game.turn == &1.name))
-    index = if index == nil, do: 0, else: index + 1
-    index = if index > length(game_room.players) - 1, do: 0, else: index
+    index = find_index_round_robin(game_room.players, &(game_room.game.turn == &1.name))
     turn = Enum.at(game_room.players, index)
     %{game_room | game: %{game_room.game | turn: turn.name, winner: nil}}
   end
 
   def change_word(%GameRoom{} = game_room) do
-    word = if game_room.game.words == []  do
-      Enum.at(word(1, game_room.game.settings.difficulty), 0)
+    if game_room.game.words == []  do
+      word = Enum.at(word(1, game_room.game.settings.difficulty), 0)
+      %{game_room | game: %{game_room.game | word: word, winner: nil}}
     else
-      index = get_index(game_room.game.words, Map.get(game_room.game, :word, ""))
-      Enum.at(game_room.game.words, index)
+      index = find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
+      is_over = game_room.game.word != nil && index == 0
+      word = Enum.at(game_room.game.words, index)
+      %{game_room | game: %{game_room.game | word: word, winner: nil, is_over: is_over}}
     end
-
-    %{game_room | game: %{game_room.game | word: word, winner: nil}}
   end
 
   def start_round(%GameRoom{} = game_room) do
@@ -89,11 +88,16 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     or w2 == String.replace_suffix(w1, "s", "")
   end
 
-  defp get_index(words, word) when is_list(words) do
-    index = words |> Enum.with_index() |> Enum.find(fn {w, _} -> w == word end)
-    case index do
-      {_, idx} ->  if idx >= length(words) - 1, do: 0, else: idx + 1
-      nil -> 0
+  def find_index_round_robin(enumerable, fun) do
+    result =
+      Enumerable.reduce(enumerable, {:cont, {:not_found, 0}}, fn entry, {_, index} ->
+        if fun.(entry), do: {:halt, {:found, index}}, else: {:cont, {:not_found, index + 1}}
+      end)
+
+    case elem(result, 1) do
+      {:found, index} -> if index >= length(enumerable) - 1, do: 0, else: index + 1
+      {:not_found, _} -> 0
     end
   end
+
 end

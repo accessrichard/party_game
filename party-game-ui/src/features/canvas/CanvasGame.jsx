@@ -9,7 +9,7 @@ export default function CanvasDrawGame() {
 
     const dispatch = useDispatch();
     const { isGameOwner, playerName, gameCode, gameName } = useSelector(state => state.lobby);
-    const { players, settings, words } = useSelector(state => state.canvas);
+    const { players, settings, isOver } = useSelector(state => state.canvas);
     const { games } = useSelector(state => state.creative);
 
 
@@ -55,7 +55,7 @@ export default function CanvasDrawGame() {
         setIsNewGamePrompt(false);
     }
 
-    function onNextClick(e) {
+    function onNextClick() {
         onClearClick();
         dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }
@@ -74,6 +74,7 @@ export default function CanvasDrawGame() {
 
     return (
         <>
+            {isOver && <div>No More words for creative game!</div>}
             <CanvasUI
                 onTimerCompleted={onTimerCompleted}
                 onGuessSubmit={onGuessSubmit}

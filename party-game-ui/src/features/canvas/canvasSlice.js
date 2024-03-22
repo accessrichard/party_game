@@ -11,6 +11,7 @@ const initialState = {
     winners: [],
     players: [],
     settings: { roundTime: 45, alternateRoundTime: 20, difficulty: "easy" },
+    isOver: false
 }
 
 export const canvasSlice = createSlice({
@@ -34,7 +35,7 @@ export const canvasSlice = createSlice({
             state.winner = ""
             state.guesses = []
             state.players = action.payload.players;
-
+            state.isOver = action.payload.isOver;
             if (action.payload.size
                 && action.payload.size.length == 2
                 && action.payload.size[0] > 100
@@ -66,6 +67,7 @@ export const canvasSlice = createSlice({
             state.guesses = [];
             state.displays = [];
             state.winner = "";
+            state.isOver = false;
         }
     }
 });
