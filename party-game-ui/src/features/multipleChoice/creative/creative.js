@@ -139,6 +139,8 @@ export function validateQuestions(gameObj) {
  */
 export function removeUnwantedJson(gameObj) {
     let cleanGame = {};
+    cleanGame.type = gameObj.type;
+    cleanGame.id = gameObj.id;
     cleanGame.name = gameObj.name;
     cleanGame.questions = [];
     gameObj.questions.forEach((question) => {

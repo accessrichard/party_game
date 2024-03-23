@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import CreativeControls from '../../creative/CreativeControls';
+import SelectGameType from '../../creative/SelectGameType';
+import { getGameFromPath } from '../../lobby/games';
+import { push } from 'redux-first-history';
 import InputError from '../../common/InputError';
 import { changeGame } from '../../lobby/lobbySlice';
 import { createGame } from '../../creative/creativeSlice';
@@ -22,20 +25,20 @@ const defaultState = {
     errors: { words: [], name: "" }
 }
 
-export default function MultipleChoiceCreate({ game }) {
+export default function CanvasCreate({ game }) {
     const dispatch = useDispatch();
     const formRef = useRef(null);
     const [form, setForm] = useState(defaultState);
-    const { type } = useSelector(state => state.lobby);
+    
 
     useEffect(() => {
         if (game) {
             setForm({ ...game, errors: defaultState.errors });
         } else {
-            setForm({ ...defaultState, ...{ type, words: [""] } });
+            setForm({ ...defaultState, ...{ words: [""] } });
         }
-        
-    }, [type, game]);
+
+    }, [game]);
 
     function handleChanges(e, index) {
         const input = toFieldObject(e);
@@ -111,15 +114,26 @@ export default function MultipleChoiceCreate({ game }) {
         }
 
         const game = toServerSideGame(form);
-        saveSessionStorage(game);
-        dispatch(changeGame({ name: game.name, type: game.type }));
+        saveSessionStorage(game);        
+        dispatch(changeGame({ name: game.name, type:  getGameFromPath().type }));
         dispatch(createGame({ game: game, redirect: true }));
+    }
+
+    function onSelectGameType(e) {
+        dispatch(push(e.url + '/create'))
     }
 
     return (
         <>
             <div className="wrapper center-65 flex-center flex-grid">
                 <form className='form' ref={formRef}>
+
+                    <div className="empty-space">
+                        <div className="card">
+                            <SelectGameType value={getGameFromPath().type} onSelectGameType={onSelectGameType} />
+                        </div>
+                    </div>
+
                     <div className="empty-space">
                         <div className="flex-row">
                             <div className="flex-column card pd-25">
@@ -169,7 +183,7 @@ export default function MultipleChoiceCreate({ game }) {
                     ))}
 
                     <CreativeControls
-                        gameNames={getGamesNames(type)}
+                        gameNames={getGamesNames(getGameFromPath().type)}
                         onAdd={addWord}
                         onDownload={downloadGame}
                         onPlay={play}

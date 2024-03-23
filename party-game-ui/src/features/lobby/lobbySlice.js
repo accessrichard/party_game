@@ -115,7 +115,7 @@ export const lobbySlice = createSlice({
         },       
         changeGame: (state, action) => {
             state.gameName = action.payload.name;
-            state.type = action.payload.type;            
+            state.type = action.payload.type;
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;

@@ -19,7 +19,7 @@ export const question = {
 }
 
 export const game = {
-    name: "",
+    name: "",    
     questions: [question],
     type: "multiple_choice"
 }

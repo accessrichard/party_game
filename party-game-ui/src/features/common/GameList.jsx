@@ -1,10 +1,9 @@
 import React from 'react';
 
-export default function GameList(props) {
-    const { games, value } = props;
+export default function GameList({ games, value, onGameChange }) {
 
-    function onGameChange(e) {
-        props.onGameChange && props.onGameChange(e);
+    function onChange(e) {
+        onGameChange && onGameChange(e);
     }
 
     const groupedGames = games.reduce((acc, game) => {
@@ -24,7 +23,7 @@ export default function GameList(props) {
                     autoComplete="off"
                     id="game-list"
                     name="games"
-                    onChange={onGameChange}
+                    onChange={onChange}
                     value={value}
                 >
                     {

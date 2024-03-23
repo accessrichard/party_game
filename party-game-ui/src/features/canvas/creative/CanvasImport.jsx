@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import CanvasCreate from './CanvasCreate';
-import InputError from '../../common/InputError';
 import { gameValidators } from './gameValidator';
 import { validate, getErrors } from '../../common/validator';
+import ImportGame from '../../creative/ImportGame';
+import { getGameFromPath, getGameMetadata } from '../../lobby/games';
+import { useDispatch } from 'react-redux';
+import { push } from 'redux-first-history';
+
 
 const initialErrors = {
     words: "",
@@ -10,83 +14,66 @@ const initialErrors = {
     type: ""
 }
 
-export default function CanvasImport(props) {
+export default function CanvasImport() {
+    const [gameForm, setGameForm] = useState({ errors: initialErrors });
+    const [gameJson, setGameJson] = useState("");
+    const dispatch = useDispatch();
+    
 
-    const [game, setGame] = useState(props.game || "");
-    const [errors, setErrors] = useState([]);
-    const [gameForm, setGameForm] = useState(null);
-
-    useEffect(() => setGame(props.game), [props.game]);
-
-    function handleChange(e) {
-        setGame(e.target.value);
-
-        if (errors.length !== 0) {
-            setErrors([]);
-        }
-    }
-
-    function importGame() {
+    function importGame(json) {
         try {
-            if (!game || game.trim() === "") {
-                setErrors(["Can't import empty game."]);
+            
+            setGameJson(json);
+            if (!json || json.trim() === "") {
+                setGameForm({ ...gameForm, errors: ["Can't import empty game."] });
                 return;
             }
 
-            setErrors([]);
 
-            const gameObj = JSON.parse(game);
+            setGameForm({ ...gameForm, errors: [] });
+
+            const gameObj = JSON.parse(json);
+            const gameUrl = getGameFromPath();
+            if (gameUrl.game !== gameObj.type) {                
+                const gameMeta = getGameMetadata(gameObj.type);
+                
+                if (gameMeta) {
+                    dispatch(push(gameMeta.url + '/import'))
+                } else {
+                    setGameForm({ ...gameForm, errors: ["Invalid game type."] });
+                }
+
+                return;
+            }
+
             const gameErrors = validate(gameValidators(gameObj));
             const validations = getErrors(gameErrors).map(x => x.error);
-            setErrors(validations);
+            setGameForm({ ...gameForm, errors: validations });
 
             if (validations.length > 0) {
                 return;
             }
 
-            setGame(JSON.stringify(gameObj, null, 2));            
+            setGameJson(JSON.stringify(gameObj, null, 2));
             setGameForm({ ...gameObj, errors: { ...initialErrors } });
         } catch (err) {
-            setErrors([err.message]);
+            setGameForm({ ...gameForm, errors: [err.message] });
         }
     }
 
+
     return (
         <>
-            {!gameForm &&
-                <div className='flex-grid center-65'>
-                    <div className="flex-row flex-item">
-                        <div className='item card'>
-                            <div className="group">
-                                <textarea required
-                                    autoComplete="off"
-                                    name="import-game"
-                                    rows="15"
-                                    cols="50"
-                                    value={game}
-                                    onChange={handleChange}
-                                />
-                                <span className="highlight"></span>
-                                <span className="bar"></span>
-                                <label>{props.text || "Paste your game here:"}</label>
-                                <InputError className="error shake" errors={errors || [""]} />
-                                {false && <ul className="error shake">
-                                    {errors.map((err, idx) => {
-                                        return <li className="input-error-text red" key={idx}>{err}</li>
-                                    })}
-                                </ul>}
-                            </div>
+            {!gameForm.id &&
+                <ImportGame
+                    onImportGame={importGame}
+                    form={gameForm}
+                    json={gameJson}
+                />}
 
-                            {!props.hideSubmit &&
-                                <div className="btn-box">
-                                    <button className="btn btn-submit" type="Import" onClick={importGame}>Import Game</button>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-            {gameForm && <CanvasCreate game={gameForm}/>}
+            {gameForm.id && <CanvasCreate game={gameForm} />}
+
+
         </>
     );
 }

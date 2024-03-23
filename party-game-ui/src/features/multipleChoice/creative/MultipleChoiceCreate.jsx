@@ -16,9 +16,12 @@ import {
 } from '../../creative/creative';
 import { errors, game, question, questionErrors } from './game';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { getGameFromPath } from '../../lobby/games';
+import { push } from 'redux-first-history';
 import InputError from '../../common/InputError';
 import { MULTIPLE_CHOICE } from '../../common/questionTypes';
+import SelectGameType from '../../creative/SelectGameType';
+
 import QuestionForm from './QuestionForm';
 import { changeGame } from '../../lobby/lobbySlice';
 import { channelPush } from '../../phoenix/phoenixMiddleware';
@@ -37,7 +40,7 @@ export default function MultipleChoiceCreate(props) {
 
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
-    const { gameCode, type} = useSelector(state => state.lobby);
+    const { gameCode, type } = useSelector(state => state.lobby);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
@@ -65,7 +68,7 @@ export default function MultipleChoiceCreate(props) {
         }
 
         if (!isGenServerDebounced) {
-            setIsGenServerDebounced(true);    
+            setIsGenServerDebounced(true);
         }
     }
 
@@ -128,7 +131,6 @@ export default function MultipleChoiceCreate(props) {
 
         const serverSideGame = toServerSideGame(form);
         saveSessionStorage(serverSideGame);
-
         dispatch(changeGame({ name: serverSideGame.name, type: serverSideGame.type }));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
     }
@@ -141,10 +143,21 @@ export default function MultipleChoiceCreate(props) {
             || MULTIPLE_CHOICE;
     }
 
+    function onSelectGameType(e) {
+        dispatch(push(e.url + '/create'))
+    }
+
     return (
         <>
             <div className="wrapper center-65 flex-center flex-grid">
                 <form className='form' ref={formRef}>
+
+                    <div className="empty-space">
+                        <div className="card">
+                            <SelectGameType value={getGameFromPath().type} onSelectGameType={onSelectGameType} />
+                        </div>
+                    </div>
+
                     <div className="empty-space">
                         <div className="flex-row">
                             <div className="flex-column card pd-25">
@@ -181,12 +194,12 @@ export default function MultipleChoiceCreate(props) {
                             </QuestionForm>
                         </div>
                     ))}
-                     <CreativeControls
-                         gameNames={getGamesNames(type)} 
-                         onAdd={addQuestion}
-                         onDownload={downloadGame}
-                         onPlay={play}
-                         onEditGameClick={onEditGameClick}
+                    <CreativeControls
+                        gameNames={getGamesNames(type)}
+                        onAdd={addQuestion}
+                        onDownload={downloadGame}
+                        onPlay={play}
+                        onEditGameClick={onEditGameClick}
                     />
                 </form>
             </div>

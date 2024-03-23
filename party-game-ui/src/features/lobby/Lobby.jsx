@@ -183,7 +183,7 @@ export default function Lobby() {
                             <form className='form' noValidate onSubmit={handleCreateGame}>
                                 <div className="flex-row">
                                     <div className="flex-column flex-center">
-                                        <GameList defaultValue={gameName} value={gameName} onGameChange={onGameChange} games={gameList} />
+                                        <GameList value={gameName} onGameChange={onGameChange} games={gameList} />
                                     </div>
                                 </div>
                                 <div>

@@ -1,89 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { gameToForm, mergeErrors, removeUnwantedJson, validateQuestions } from './creative';
-
 import MultipleChoiceCreate from './MultipleChoiceCreate';
-import InputError from '../../common/InputError';
+import { getGameFromPath, getGameMetadata } from '../../lobby/games';
 import { gameValidators } from './gameValidator';
 import { errors as initialErrors } from './game';
 import { validate } from '../../common/validator';
+import { useDispatch } from 'react-redux';
+import { push } from 'redux-first-history';
+import ImportGame from '../../creative/ImportGame';
 
-export default function MultipleChoiceImport(props) {
+export default function MultipleChoiceImport({text, hideSubmit}) {
 
-    const [game, setGame] = useState(props.game || "");
-    const [errors, setErrors] = useState([]);
-    const [gameForm, setGameForm] = useState(null);
+    const [gameForm, setGameForm] = useState({ errors: initialErrors });
+    const [gameJson, setGameJson] = useState("");
 
-    useEffect(() => setGame(props.game), [props.game]);
+    const dispatch = useDispatch();
 
-    function handleChange(e) {
-        setGame(e.target.value);
 
-        if (errors.length !== 0) {
-            setErrors([]);
-        }
-    }
-
-    function importGame() {
+    function importGame(json) {
+        setGameJson(json);
         try {
-            if (!game || game.trim() === "") {
-                setErrors(["Can't import empty game."]);
+            if (!json || json.trim() === "") {
+                setGameForm({ ...gameForm, errors: ["Can't import empty game."] });
                 return;
             }
 
-            setErrors([]);
+            setGameForm({ ...gameForm, errors: [] });
 
-            const gameObj = JSON.parse(game);
+            const gameObj = JSON.parse(json);
+            const gameUrl = getGameFromPath();
+            if (gameUrl.game !== gameObj.type) {                
+                const gameMeta = getGameMetadata(gameObj.type);
+                
+                if (gameMeta) {
+                    dispatch(push(gameMeta.url + '/import'))
+                } else {
+                    setGameForm({ ...gameForm, errors: ["Invalid game type."] });
+                }
+
+                return;
+            }
+
             const gameErrors = validate(gameValidators(gameObj));
             const questionErrors = validateQuestions(gameObj);
             const merged = mergeErrors(gameErrors, questionErrors)
-
-            setErrors(merged);
+            
+            setGameForm({ ...gameForm, errors: merged.map(x => x.error && x.error || x ) });
+            if (merged.length > 0) {
+                return;
+            }
 
             const cleanGame = removeUnwantedJson(gameObj);
-            setGame(JSON.stringify(cleanGame, null, 2));            
+            setGameJson(JSON.stringify(cleanGame, null, 2));            
             setGameForm({ ...gameToForm(cleanGame), errors: { ...initialErrors } });
         } catch (err) {
-            setErrors([err.message]);
+            setGameForm({ ...gameForm, errors: [err.message] });
         }
     }
 
 
     return (
         <>
-            {!gameForm &&
-                <div className='flex-grid center-65'>
-                    <div className="flex-row flex-item">
-                        <div className='item card'>
-                            <div className="group">
-                                <textarea required
-                                    autoComplete="off"
-                                    name="import-game"
-                                    rows="15"
-                                    cols="50"
-                                    value={game}
-                                    onChange={handleChange}
-                                />
-                                <span className="highlight"></span>
-                                <span className="bar"></span>
-                                <label>{props.text || "Paste your game here:"}</label>
-                                <InputError className="error shake" errors={[errors || ""]} />
-                                {false && <ul className="error shake">
-                                    {errors.map((err, idx) => {
-                                        return <li className="input-error-text red" key={idx}>{err}</li>
-                                    })}
-                                </ul>}
-                            </div>
+            {!gameForm.id &&
+                <ImportGame
+                    onImportGame={importGame}
+                    form={gameForm}
+                    json={gameJson}
+                />}
 
-                            {!props.hideSubmit &&
-                                <div className="btn-box">
-                                    <button className="btn btn-submit" type="Import" onClick={importGame}>Import Game</button>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-            {gameForm && <MultipleChoiceCreate game={gameForm}></MultipleChoiceCreate>}
+            {gameForm.id && <MultipleChoiceCreate game={gameForm} />}
         </>
     );
 }

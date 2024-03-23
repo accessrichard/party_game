@@ -4,7 +4,7 @@ defmodule PartyGameWeb.HomeHTML do
   def render(_, assigns) do
     ~H"""
       <div class="text-align-center max-width app-blue app">
-            <div class="flex-center app pd-5-lr">
+            <div class="flex-center app pd-5-lr full-width">
               <.logo/>
               <div>
                 <div class="large-title slidein-right">Buzz Games</div>

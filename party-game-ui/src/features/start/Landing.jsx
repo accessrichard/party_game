@@ -33,7 +33,7 @@ function Landing() {
 
     return (
         <>
-            <div className='flex-center app pd-5-lr'>
+            <div className='flex-center app pd-5-lr full-width'>
                 <Logo logoClass="app-logo bouncy" showSubtitle={true} titleClass="large-title slidein-right" />
                 <p className="slidein-left">
                     Create&nbsp;
