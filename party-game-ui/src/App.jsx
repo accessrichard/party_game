@@ -20,6 +20,7 @@ import CanvasGame from './features/canvas/CanvasGame';
 import CanvasAlternateGame from './features/canvas/CanvaAlternateGame';
 import CanvasCreate from './features/canvas/creative/CanvasCreate';
 import CanvasImport from './features/canvas/creative/CanvasImport';
+import HangmanGame from './features/hangman/HangmanGame';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
 import MultipleChoiceScore from './features/multipleChoice/MultipleChoiceScore';
 import MultipleChoiceSettings from './features/multipleChoice/MultipleChoiceSettings';
@@ -57,6 +58,8 @@ function App() {
               <Route exact path="/canvas_alternate/settings" element={<CanvasSettings />} />              
               <Route exact path="/canvas_alternate/create" element={<CanvasCreate />} />
               <Route exact path="/canvas_alternate/import" element={<CanvasImport />} />
+
+              <Route exact path="/hangman" element={<HangmanGame />} />
             </Route>
           </Route>
         </Route>
