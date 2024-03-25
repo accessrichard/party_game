@@ -22,8 +22,7 @@ const events = (topic) => [
     }
 ]
 
-export default function HangmanGame({ text, hideSubmit, onImportGame, form = null, json = "" }) {
-    const [game, setGame] = useState(json);
+export default function HangmanGame() {
 
     const dispatch = useDispatch();
 
@@ -35,10 +34,6 @@ export default function HangmanGame({ text, hideSubmit, onImportGame, form = nul
     usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(hangmanChannel, events);
     useLobbyEvents();
-
-    function handleChange(e) {
-        setGame(e.target.value);
-    }
 
     useEffect(() => { draw() }, [])
 

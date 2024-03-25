@@ -69,6 +69,13 @@ const initialState = {
     channels: []
 };
 
+const connectionErrors = { 
+    channelJoin: 0,
+    socketConnect: 0,
+    socketError: 0,
+    channelError: 0
+}
+
 export function reducer(state = initialState, action = {}) {
     switch (action.type) {
         case SOCKET_CONNECTED:
@@ -97,6 +104,11 @@ export function reducer(state = initialState, action = {}) {
         case CHANNEL_PUSH_ERROR:
         case CHANNEL_PUSH_TIMEOUT: {
             if (!action.payload.topic) {
+                return state;
+            }
+            
+            if (action.payload.topic.includes(":null")) {
+                console.log("Channel topic includes null subtopic")
                 return state;
             }
 
@@ -192,11 +204,17 @@ const phoenixMiddleware = () => {
                 store.dispatch(channelJoined(formatPayload(channel, e)))
             })
             .receive("error", e => {
+                connectionErrors.channelJoin+= 1;
+                       
+                if (e.reason && e.reason == "unmatched topic") {
+                    channel.rejoinTimer.reset();
+                }
+
+                if (connectionErrors.channelJoin > 10) {
+                    channel.rejoinTimer.reset();
+                }
+
                 store.dispatch(channelJoinError(formatPayload(channel, e)));
-                //// Phoenix keeps re-trying errors. This means on channel join if
-                //// auth fails, phoenix will retry every second. For simplicity
-                //// leaving channel on error. 
-                store.dispatch(channelLeave(formatPayload(channel)));
             })
             .receive("timeout", e => {
                 store.dispatch(channelJoinTimeout(formatPayload(channel, e)));
