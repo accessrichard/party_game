@@ -7,6 +7,7 @@ import { createReduxHistoryContext } from "redux-first-history";
 import creativeReducer from './creative/creativeSlice';
 import multipleChoiceReducer from './multipleChoice/multipleChoiceSlice';
 import lobbyReducer from './lobby/lobbySlice';
+import hangmanReducer from './hangman/hangmanSlice';
 
 import presenceReducer from './presence/presenceSlice';
 
@@ -24,7 +25,8 @@ const reducers = {
   lobby: lobbyReducer,
   creative: creativeReducer,
   presence: presenceReducer,
-  canvas: canvasReducer
+  canvas: canvasReducer,
+  hangman: hangmanReducer
 };
 
 const combinedReducer = combineReducers(reducers);
