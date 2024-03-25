@@ -15,9 +15,8 @@ const hangman = {
     centerY:  500 / 2,
     radius: 20,
     lineHeight: 30,
-
-    default: this.centerX + this.centerXOffset,
-    defaultY: this.centerY + this.centerYOffset
+    get defaultX() {return this.centerX + this.centerXOffset},
+    get defaultY() {return this.centerY + this.centerYOffset}
 };
 
 
@@ -51,24 +50,25 @@ export default function HangmanGame() {
     useLobbyEvents();
 
     useEffect(() => { 
-        draw()
+        draw(hangman)
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "new_game")))
      }, [])
 
      useEffect(() => { 
-        const lineHeight = 30;
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
+        context.clearRect(0, 0, canvas.height, canvas.width)
+        
+        draw(hangman)
+
         context.fillStyle = "red";
         context.letterSpacing = "6px";
-        displayText(context, word, 50, 10, lineHeight, canvas.width);
-        
-        
-        //context.clearRect(0, 0, canvas.height, canvas.width)
-        
+        displayText(context, word, 50, 10, 30, canvas.width);
+
         context.fillStyle = "black";
         context.letterSpacing = "0px";
-        displayText(context, (guesses || []).join(" "), canvas.height - 50, 0, lineHeight, canvas.width)
+        displayText(context, (guesses || []).join(" "), canvas.height - 50, 0, hangman.lineHeight, canvas.width)
+
 
      }, [word, guesses])
 
@@ -87,7 +87,6 @@ export default function HangmanGame() {
         for (var i = 1; i < words.length; i++) {
             var word = words[i];
             var width = ctx.measureText(currentLine + " " + word).width;
-            console.log(width)
             if (width < maxWidth) {
                 currentLine += " " + word;
             } else {
@@ -99,61 +98,61 @@ export default function HangmanGame() {
         return lines;
     }
 
-    function drawHanger(context, centerX, centerXOffset, centerY, centerYoffset) {
+    function drawHanger(context, coords) {
         //hangman top line
         context.beginPath();
-        context.moveTo(centerX + centerXOffset - 100, centerY + centerYoffset - 100)
-        context.lineTo(centerX + centerXOffset, centerY + centerYoffset - 100)
+        context.moveTo(coords.defaultX - 100, coords.defaultY - 100)
+        context.lineTo(coords.defaultX, coords.defaultY - 100)
         context.stroke();
 
         //hangman side line
         context.beginPath();
-        context.moveTo(centerX + centerXOffset - 100, centerY + centerYoffset - 100)
-        context.lineTo(centerX + centerXOffset - 100, centerY + centerYoffset + 125)
+        context.moveTo(coords.defaultX - 100, coords.defaultY - 100)
+        context.lineTo(coords.defaultX - 100, coords.defaultY + 125)
         context.stroke();
 
         //hangman bottom line
         context.beginPath();
-        context.moveTo(centerX + centerXOffset - 150, centerY + centerYoffset + 125)
-        context.lineTo(centerX + centerXOffset + 75, centerY + centerYoffset + 125)
+        context.moveTo(coords.defaultX - 150, coords.defaultY + 125)
+        context.lineTo(coords.defaultX + 75, coords.defaultY + 125)
         context.stroke();
     }
 
-    function drawNoose(context, centerX, centerXOffset, centerY, centerYoffset) {
+    function drawNoose(context, coords) {
         //hangman noose 
         context.beginPath();
-        context.moveTo(centerX + centerXOffset, centerY + centerYoffset - 100)
-        context.lineTo(centerX + centerXOffset, centerY + centerYoffset - 40)
+        context.moveTo(coords.defaultX, coords.defaultY - 100)
+        context.lineTo(coords.defaultX, coords.defaultY - 40)
         context.stroke();
 
         // noose circle
         context.beginPath();
-        context.ellipse(centerX + centerXOffset, centerY + centerYoffset - 20, 2, 5, Math.PI / 2, 0, 2 * Math.PI)
-        context.ellipse(centerX + centerXOffset, centerY + centerYoffset - 18, 2, 5, Math.PI / 2, 0, 2 * Math.PI)
-        context.ellipse(centerX + centerXOffset, centerY + centerYoffset - 16, 2, 5, Math.PI / 2, 0, 2 * Math.PI)
+        context.ellipse(coords.defaultX, coords.defaultY - 20, 2, 5, Math.PI / 2, 0, 2 * Math.PI)
+        context.ellipse(coords.defaultX, coords.defaultY - 18, 2, 5, Math.PI / 2, 0, 2 * Math.PI)
+        context.ellipse(coords.defaultX, coords.defaultY - 16, 2, 5, Math.PI / 2, 0, 2 * Math.PI)
         context.stroke();
     }
 
-    function drawLeftEye(context, centerX, centerXOffset, centerY, centerYoffset) {
+    function drawLeftEye(context, coords) {
         context.beginPath();
-        context.arc(centerX + centerXOffset - 5, centerY + centerYoffset - 55, 5, 0, 2 * Math.PI, false);
+        context.arc(coords.defaultX - 5, coords.defaultY - 55, 5, 0, 2 * Math.PI, false);
         context.stroke();
     }
 
-    function drawRightEye(context, centerX, centerXOffset, centerY, centerYoffset) {
+    function drawRightEye(context, coords) {
         context.beginPath();
-        context.arc(centerX + centerXOffset + 5, centerY + centerYoffset - 55, 5, 0, 2 * Math.PI, false);
+        context.arc(coords.defaultX + 5, coords.defaultY - 55, 5, 0, 2 * Math.PI, false);
         context.stroke();
     }
 
-    function drawMouth(context, centerX, centerXOffset, centerY, centerYoffset) {
+    function drawMouth(context, coords) {
         context.beginPath();
-        context.ellipse(centerX + centerXOffset, centerY + centerYoffset - 38, 4, 10, Math.PI / 2, 0, 2 * Math.PI)
+        context.ellipse(coords.defaultX, coords.defaultY - 38, 4, 10, Math.PI / 2, 0, 2 * Math.PI)
     }
 
-    function drawHead(context, centerX, centerXOffset, centerY, centerYoffset, radius) {
+    function drawHead(context, coords) {
         context.beginPath();
-        context.arc(centerX + centerXOffset, centerY + centerYoffset - 50, radius, 0, 2 * Math.PI, false);
+        context.arc(coords.defaultX, coords.defaultY - 50, coords.radius, 0, 2 * Math.PI, false);
         context.fillStyle = 'white';
         context.fill();
         context.lineWidth = 1;
@@ -161,66 +160,51 @@ export default function HangmanGame() {
         context.stroke();
     }
 
-    function drawLeftLeg(context, centerX, centerXOffset, centerY, centerYoffset) {
-        context.moveTo(centerX + centerXOffset, centerY + centerYoffset + 50);
-        context.lineTo(centerX + centerXOffset + 50, centerY + centerYoffset + 100);
+    function drawLeftLeg(context, coords) {
+        context.moveTo(coords.defaultX, coords.defaultY + 50);
+        context.lineTo(coords.defaultX + 50, coords.defaultY + 100);
         context.stroke();
     }
 
-    function drawRightLeg(context, centerX, centerXOffset, centerY, centerYoffset) {
-        console.log({
-            centerX, centerY, centerXOffset, centerYoffset
-        })
-        context.moveTo(centerX + centerXOffset, centerY + centerYoffset + 50);
-        context.lineTo(centerX + centerXOffset - 50, centerY + centerYoffset + 100);
+    function drawRightLeg(context, coords) {
+        
+        context.moveTo(coords.defaultX, coords.defaultY + 50);
+        context.lineTo(coords.defaultX - 50, coords.defaultY + 100);
         context.stroke();
     }
 
-    function drawRigthArm(context, centerX, centerXOffset, centerY, centerYoffset) {
-        context.moveTo(centerX + centerXOffset, centerY + centerYoffset - 10);
-        context.lineTo(centerX + centerXOffset + 50, centerY + centerYoffset - 10);
+    function drawRigthArm(context, coords) {
+        context.moveTo(coords.defaultX, coords.defaultY - 10);
+        context.lineTo(coords.defaultX + 50, coords.defaultY - 10);
         context.stroke();
     }
 
-    function drawLeftArm(context, centerX, centerXOffset, centerY, centerYoffset) {
-        context.moveTo(centerX + centerXOffset, centerY + centerYoffset - 10);
-        context.lineTo(centerX + centerXOffset - 50, centerY + centerYoffset - 10);
+    function drawLeftArm(context, coords) {
+        context.moveTo(coords.defaultX, coords.defaultY - 10);
+        context.lineTo(coords.defaultX - 50, coords.defaultY - 10);
         context.stroke();
     }
 
-    function drawBody(context, centerX, centerXOffset, centerY, centerYoffset, radius) {
-        context.moveTo(centerX + centerXOffset, centerY + radius + centerYoffset - 50);
-        context.lineTo(centerX + centerXOffset, centerY + centerYoffset + 50);
+    function drawBody(context, coords) {
+        context.moveTo(coords.defaultX, coords.defaultY + coords.radius  - 50);
+        context.lineTo(coords.defaultX, coords.defaultY + 50);
         context.stroke();
     }
 
  
-    function draw() {
+    function draw(coords) {
         const canvas = document.getElementById('hangman-canvas');
         canvas.setAttribute('width', coords.width);
         canvas.setAttribute('height', coords.height);
 
         const context = canvas.getContext('2d');
-        const centerX = coords.centerX;
-        const centerY = canvas.height / 2;
-        const radius = 20;
-        const centerYoffset = 10;
-        const centerXOffset = -30
-        const lineHeight = 30;
+       
+        context.font = coords.lineHeight + "px Arial";                      
 
-        setCoords({
-            centerX,
-            centerXOffset,
-            centerY,
-            centerYoffset,
-            radius
-        });
-        context.font = lineHeight + "px Arial";                      
+        drawHanger(context, coords);
+        drawNoose(context, coords);
 
-        drawHanger(context, centerX, centerXOffset, centerY, centerYoffset);
-        drawNoose(context, centerX, centerXOffset, centerY, centerYoffset);
-
-        hang(context, centerX, centerXOffset, centerY, centerYoffset, radius)
+        hang(context, coords)
 
         context.stroke();
     }
@@ -240,9 +224,9 @@ export default function HangmanGame() {
         ];
     }
 
-    function hang(context, centerX, centerXOffset, centerY, centerYoffset, radius) {
+    function hang(context, coords) {
             bodyParts().forEach(func => {
-                func(context, centerX, centerXOffset, centerY, centerYoffset, radius);
+                func(context, coords);
             });
     }
 
