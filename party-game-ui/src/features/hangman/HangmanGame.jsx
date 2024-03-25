@@ -1,15 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateWord, handleGuess, handleNewGame } from '../canvas/canvasSlice';
+import { handleGuess, handleNewGame } from './hangmanSlice';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 import useLobbyEvents from '../lobby/useLobbyEvents';
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import GuessInput from './../canvas/GuessInput';
+
+const hangman = {
+    width: 400,
+    height: 500,
+    centerX: 400 / 2,
+    centerXOffset: -30,
+    centerYOffset: 10,
+    centerY:  500 / 2,
+    radius: 20,
+    lineHeight: 30,
+
+    default: this.centerX + this.centerXOffset,
+    defaultY: this.centerY + this.centerYOffset
+};
+
 
 const events = (topic) => [
-    {
-        event: 'word',
-        dispatcher: updateWord(),
-        topic,
-    },
     {
         event: 'handle_new_game',
         dispatcher: handleNewGame(),
@@ -25,19 +37,42 @@ const events = (topic) => [
 export default function HangmanGame() {
 
     const dispatch = useDispatch();
+    const canvasRef = useRef(null);    
+
 
     const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
-
+    const { word, guesses } = useSelector(state => state.hangman);
+    
     const hangmanChannel = `hangman:${gameCode}`;
 
     usePhoenixSocket();
-    usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
+    usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: true });
     usePhoenixEvents(hangmanChannel, events);
     useLobbyEvents();
 
-    useEffect(() => { draw() }, [])
+    useEffect(() => { 
+        draw()
+        dispatch(channelPush(sendEvent(hangmanChannel, {}, "new_game")))
+     }, [])
 
-    function word(context, text, height, width, lineHeight, maxWidth) {
+     useEffect(() => { 
+        const lineHeight = 30;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+        context.fillStyle = "red";
+        context.letterSpacing = "6px";
+        displayText(context, word, 50, 10, lineHeight, canvas.width);
+        
+        
+        //context.clearRect(0, 0, canvas.height, canvas.width)
+        
+        context.fillStyle = "black";
+        context.letterSpacing = "0px";
+        displayText(context, (guesses || []).join(" "), canvas.height - 50, 0, lineHeight, canvas.width)
+
+     }, [word, guesses])
+
+    function displayText(context, text, height, width, lineHeight, maxWidth) {
         const lines = getLines(context, text, maxWidth);
         lines.forEach((line, index) => {
             context.fillText(line, width, height + (index * lineHeight));
@@ -133,6 +168,9 @@ export default function HangmanGame() {
     }
 
     function drawRightLeg(context, centerX, centerXOffset, centerY, centerYoffset) {
+        console.log({
+            centerX, centerY, centerXOffset, centerYoffset
+        })
         context.moveTo(centerX + centerXOffset, centerY + centerYoffset + 50);
         context.lineTo(centerX + centerXOffset - 50, centerY + centerYoffset + 100);
         context.stroke();
@@ -156,30 +194,28 @@ export default function HangmanGame() {
         context.stroke();
     }
 
-    function guess(context, canvas, lineHeight, letter) {
-        context.fillStyle = "black";
-        word(context, "T A B C D E F G H I I A B C D E ", canvas.height - 50, 0, lineHeight, canvas.width)
-    }
-
+ 
     function draw() {
         const canvas = document.getElementById('hangman-canvas');
-        canvas.setAttribute('width', '400');
-        canvas.setAttribute('height', '500');
+        canvas.setAttribute('width', coords.width);
+        canvas.setAttribute('height', coords.height);
 
         const context = canvas.getContext('2d');
-        const centerX = canvas.width / 2;
+        const centerX = coords.centerX;
         const centerY = canvas.height / 2;
         const radius = 20;
         const centerYoffset = 10;
         const centerXOffset = -30
-
         const lineHeight = 30;
-        context.font = lineHeight + "px Arial";
-        context.fillStyle = "red";
-        word(context, "Hello world this is wrapping text so be it a wrap", 50, 0, lineHeight, canvas.width)
 
-        guess(context, canvas, lineHeight);
-        
+        setCoords({
+            centerX,
+            centerXOffset,
+            centerY,
+            centerYoffset,
+            radius
+        });
+        context.font = lineHeight + "px Arial";                      
 
         drawHanger(context, centerX, centerXOffset, centerY, centerYoffset);
         drawNoose(context, centerX, centerXOffset, centerY, centerYoffset);
@@ -210,11 +246,17 @@ export default function HangmanGame() {
             });
     }
 
+    function onGuessSubmit(guess) {
+        dispatch(channelPush(sendEvent(hangmanChannel, {guess}, "guess")));
+    }
+
     return (
         <>
             <h3>Hangman</h3>
-            <canvas id="hangman-canvas">Your browser does not support canvas element.
+            <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
             </canvas>
+
+            <GuessInput onSubmit={onGuessSubmit} />
         </>
     )
 }

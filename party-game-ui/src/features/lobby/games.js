@@ -19,6 +19,13 @@ export const games = {
         import: true,
         create: true,
         name: "Alternate Draw Togather"
+    },
+    hangman: {
+        url: "/hangman",
+        settings: true,
+        import: true,
+        create: true,
+        name: "Hangman"
     }
 }
 

@@ -17,10 +17,7 @@ export const hangmanSlice = createSlice({
             state.isOver = action.payload.isOver;
         },
         handleGuess(state, action) {
-            if (action.payload.guess) {
-                state.guesses.push(action.payload.guess);
-            }
-            
+            state.guesses = action.payload.guesses;
             state.word = action.payload.word;
             state.isOver = action.payload.isOver;
         },

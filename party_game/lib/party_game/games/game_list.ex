@@ -2,6 +2,7 @@ defmodule PartyGame.Games.GameList do
   alias PartyGame.Games.MultipleChoice
   alias PartyGame.Game.GameMetaData
   alias PartyGame.Games.Canvas
+  alias PartyGame.Games.Hangman
 
   def list() do
     games = [
@@ -87,6 +88,13 @@ defmodule PartyGame.Games.GameList do
         type: "canvas_alternate",
         location: "server",
         module: Canvas.CanvasGame
+      },
+      %GameMetaData{
+        name: "Hangman",
+        category: "Hangman",
+        type: "hangman",
+        location: "server",
+        module: Hangman.HangmanGame
       },
       %GameMetaData{
         name: "",

@@ -170,7 +170,7 @@ const phoenixMiddleware = () => {
         socket = new Socket(action.payload.host, { ...action.payload.params });
         socket.connect();
         socket.onOpen(e => store.dispatch(socketConnected(e)));
-        socket.onError(e => store.dispatch(socketError(e)));
+        socket.onError(e => store.dispatch(socketError({type: e.type})));
         socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));
     }
 
