@@ -5,13 +5,14 @@ import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import GuessInput from './../canvas/GuessInput';
+import { Navigate } from 'react-router-dom';
 
 const hangman = {
     width: 400,
     height: 500,
     centerX: 400 / 2,
     centerXOffset: -30,
-    centerYOffset: 10,
+    centerYOffset: 0,
     centerY: 500 / 2,
     radius: 20,
     lineHeight: 30,
@@ -40,7 +41,7 @@ export default function HangmanGame() {
 
 
     const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
-    const { word, guesses } = useSelector(state => state.hangman);
+    const { word, guesses, isWinner } = useSelector(state => state.hangman);
 
     const hangmanChannel = `hangman:${gameCode}`;
 
@@ -55,8 +56,18 @@ export default function HangmanGame() {
     }, [])
 
     useEffect(() => {
+
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
+
+        if (guesses.length >= bodyParts().length) {
+            drawNoose(context, hangman);
+            alert("you lost")
+            return;
+        }
+
+
+
         context.clearRect(0, 0, canvas.height, canvas.width)
 
         draw(hangman)
@@ -67,10 +78,17 @@ export default function HangmanGame() {
 
         context.fillStyle = "black";
         context.letterSpacing = "0px";
-        displayText(context, (guesses || []).join(" "), canvas.height - 50, 0, hangman.lineHeight, canvas.width)
+        displayText(context, (guesses || []).join(" "), canvas.height - 90, 5, hangman.lineHeight, canvas.width)
 
 
-    }, [word, guesses])
+    }, [word, guesses]);
+
+    useEffect(() => {
+        if (isWinner) {
+            alert("YOU WON")
+        }
+
+    }, [isWinner])
 
     function displayText(context, text, height, width, lineHeight, maxWidth) {
         const lines = getLines(context, text, maxWidth);
@@ -122,7 +140,7 @@ export default function HangmanGame() {
         //hangman noose 
         context.beginPath();
         context.moveTo(coords.defaultX, coords.defaultY - 100)
-        context.lineTo(coords.defaultX, coords.defaultY - 40)
+        context.lineTo(coords.defaultX, coords.defaultY - 70)
         context.stroke();
 
         // noose circle
@@ -173,11 +191,24 @@ export default function HangmanGame() {
         context.stroke();
     }
 
-    function drawRigthArm(context, coords) {
+    function drawRightArm(context, coords, motion) {
         context.moveTo(coords.defaultX, coords.defaultY - 10);
-        context.lineTo(coords.defaultX + 50, coords.defaultY - 10);
+        context.lineTo(coords.defaultX + 50, coords.defaultY - 10 + motion);
         context.stroke();
     }
+
+    function drawRightHand(context, coords) {
+        context.beginPath();
+        context.arc(coords.defaultX + 55, coords.defaultY - 10, 5, 0, 2 * Math.PI, false);
+        context.stroke();
+    }
+
+    function drawLeftHand(context, coords) {
+        context.beginPath();
+        context.arc(coords.defaultX - 55, coords.defaultY - 10, 5, 0, 2 * Math.PI, false);
+        context.stroke();
+    }
+
 
     function drawLeftArm(context, coords) {
         context.moveTo(coords.defaultX, coords.defaultY - 10);
@@ -202,7 +233,19 @@ export default function HangmanGame() {
         context.font = coords.lineHeight + "px Arial";
 
         drawHanger(context, coords);
-    
+        context.stroke();
+    }
+
+    function draw2(coords) {
+        const canvas = document.getElementById('hangman-canvas');
+        canvas.setAttribute('width', coords.width);
+        canvas.setAttribute('height', coords.height);
+
+        const context = canvas.getContext('2d');
+
+        context.font = coords.lineHeight + "px Arial";
+
+        drawHanger(context, coords);
 
         hang(context, coords, guesses.length)
 
@@ -210,18 +253,21 @@ export default function HangmanGame() {
     }
 
 
+
     function bodyParts() {
         return [
             drawHead,
             drawBody,
             drawLeftArm,
-            drawRigthArm,
+           
             drawLeftLeg,
             drawRightLeg,
             drawLeftEye,
             drawRightEye,
             drawMouth,
-            drawNoose   
+            drawRightHand,
+            drawLeftHand,
+            drawNoose
         ];
     }
 
@@ -233,7 +279,14 @@ export default function HangmanGame() {
     }
 
     function onGuessSubmit(guess) {
+        if (guesses.some(x => x.toLowerCase().trim() == guess.toLowerCase().trim())) {
+            return;
+        }
         dispatch(channelPush(sendEvent(hangmanChannel, { guess }, "guess")));
+    }
+
+    if (!gameCode) {
+        return <Navigate to="/" />
     }
 
     return (
@@ -241,8 +294,9 @@ export default function HangmanGame() {
             <h3>Hangman</h3>
             <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
             </canvas>
-
-            <GuessInput onSubmit={onGuessSubmit} maxLength="1" />
+            <div style={{ width: hangman.width - 30, position: "absolute", top: hangman.height }}>
+                <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />
+            </div>
         </>
     )
 }

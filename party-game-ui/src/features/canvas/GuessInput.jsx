@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function GuessInput({ onSubmit, maxLength = 500 }) {
+export default function GuessInput({ onSubmit, maxLength = 500, className = "card flex-row md-5" }) {
     const [text, setText] = useState("");
 
     function onClick() {
@@ -10,7 +10,7 @@ export default function GuessInput({ onSubmit, maxLength = 500 }) {
 
     return (
         <>
-            <div className='card flex-row md-5'>
+            <div className={className}>
                 <form className='form-compact' noValidate onSubmit={(e) => e.preventDefault()}>
                     <div className="group-compact">
                         <input

@@ -81,7 +81,8 @@ defmodule PartyGameWeb.HangmanChannel do
 
       broadcast(socket, "handle_guess", %{
         "word" => game_room.game.display_word,
-        "guesses" => HangmanGame.wrong_guesses(game_room)
+        "guesses" => HangmanGame.wrong_guesses(game_room),
+        "isWinner" => HangmanGame.winner?(game_room)
       })
       {:noreply, socket}
     end

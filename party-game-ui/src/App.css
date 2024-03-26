@@ -663,6 +663,17 @@ body {
   font-weight: normal;
 }
 
+.canvas-card {
+  color: #333;
+  box-sizing: border-box;
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.canvas-card label{
+  color:  #4572cc;
+}
+
 .card h3 {
   text-align: center;
 }
@@ -671,7 +682,7 @@ body {
   color: #333;
 }
 
-.card .close {
+.card .close, .canvas-card .close{
   position: absolute;
   top: 0;
   right: 10px;

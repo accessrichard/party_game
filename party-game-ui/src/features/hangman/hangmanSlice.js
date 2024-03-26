@@ -4,7 +4,8 @@ const initialState = {
     word: "",
     guesses: [],
     settings: { difficulty: "easy" },
-    isOver: false
+    isOver: false,
+    isWinner: false
 }
 
 export const hangmanSlice = createSlice({
@@ -14,12 +15,14 @@ export const hangmanSlice = createSlice({
         handleNewGame(state, action) {
             state.word = action.payload.word;
             state.guesses = []
-            state.isOver = action.payload.isOver;
+            state.isOver = false;
+            state.isWinner = false;
         },
         handleGuess(state, action) {
             state.guesses = action.payload.guesses;
             state.word = action.payload.word;
             state.isOver = action.payload.isOver;
+            state.isWinner = action.payload.isWinner;
         },
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);

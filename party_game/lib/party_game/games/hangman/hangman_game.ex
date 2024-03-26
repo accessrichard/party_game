@@ -30,13 +30,19 @@ defmodule PartyGame.Games.Hangman.HangmanGame do
     end)
   end
 
-  #Change to reduce
   def display_word(word, guesses) do
-    Enum.map(
+    Enum.reduce(
       String.codepoints(word),
-      &Enum.find([" " | guesses], fn x -> compare(&1, x) || &1 == " " end)
+      [],
+      fn x, acc ->
+        if Enum.any?([" " | guesses], &compare(&1, x)) do
+          [x | acc]
+        else
+          ["_" | acc]
+        end
+      end
     )
-    |> Enum.map(&if &1 == nil, do: "_", else: &1)
+    |> Enum.reverse()
     |> List.to_string()
   end
 
@@ -78,6 +84,10 @@ defmodule PartyGame.Games.Hangman.HangmanGame do
           }
       }
     end
+  end
+
+  def winner?(%GameRoom{} = game_room) do
+    not String.contains? game_room.game.display_word, "_"
   end
 
   def word(count, difficulty \\ "easy") do
