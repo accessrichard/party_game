@@ -12,11 +12,11 @@ const hangman = {
     centerX: 400 / 2,
     centerXOffset: -30,
     centerYOffset: 10,
-    centerY:  500 / 2,
+    centerY: 500 / 2,
     radius: 20,
     lineHeight: 30,
-    get defaultX() {return this.centerX + this.centerXOffset},
-    get defaultY() {return this.centerY + this.centerYOffset}
+    get defaultX() { return this.centerX + this.centerXOffset },
+    get defaultY() { return this.centerY + this.centerYOffset }
 };
 
 
@@ -36,12 +36,12 @@ const events = (topic) => [
 export default function HangmanGame() {
 
     const dispatch = useDispatch();
-    const canvasRef = useRef(null);    
+    const canvasRef = useRef(null);
 
 
     const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
     const { word, guesses } = useSelector(state => state.hangman);
-    
+
     const hangmanChannel = `hangman:${gameCode}`;
 
     usePhoenixSocket();
@@ -49,16 +49,16 @@ export default function HangmanGame() {
     usePhoenixEvents(hangmanChannel, events);
     useLobbyEvents();
 
-    useEffect(() => { 
+    useEffect(() => {
         draw(hangman)
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "new_game")))
-     }, [])
+    }, [])
 
-     useEffect(() => { 
+    useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.height, canvas.width)
-        
+
         draw(hangman)
 
         context.fillStyle = "red";
@@ -70,7 +70,7 @@ export default function HangmanGame() {
         displayText(context, (guesses || []).join(" "), canvas.height - 50, 0, hangman.lineHeight, canvas.width)
 
 
-     }, [word, guesses])
+    }, [word, guesses])
 
     function displayText(context, text, height, width, lineHeight, maxWidth) {
         const lines = getLines(context, text, maxWidth);
@@ -167,7 +167,7 @@ export default function HangmanGame() {
     }
 
     function drawRightLeg(context, coords) {
-        
+
         context.moveTo(coords.defaultX, coords.defaultY + 50);
         context.lineTo(coords.defaultX - 50, coords.defaultY + 100);
         context.stroke();
@@ -186,25 +186,25 @@ export default function HangmanGame() {
     }
 
     function drawBody(context, coords) {
-        context.moveTo(coords.defaultX, coords.defaultY + coords.radius  - 50);
+        context.moveTo(coords.defaultX, coords.defaultY + coords.radius - 50);
         context.lineTo(coords.defaultX, coords.defaultY + 50);
         context.stroke();
     }
 
- 
+
     function draw(coords) {
         const canvas = document.getElementById('hangman-canvas');
         canvas.setAttribute('width', coords.width);
         canvas.setAttribute('height', coords.height);
 
         const context = canvas.getContext('2d');
-       
-        context.font = coords.lineHeight + "px Arial";                      
+
+        context.font = coords.lineHeight + "px Arial";
 
         drawHanger(context, coords);
-        drawNoose(context, coords);
+    
 
-        hang(context, coords)
+        hang(context, coords, guesses.length)
 
         context.stroke();
     }
@@ -220,18 +220,20 @@ export default function HangmanGame() {
             drawRightLeg,
             drawLeftEye,
             drawRightEye,
-            drawMouth
+            drawMouth,
+            drawNoose   
         ];
     }
 
-    function hang(context, coords) {
-            bodyParts().forEach(func => {
-                func(context, coords);
-            });
+    function hang(context, coords, numParts) {
+        const parts = bodyParts();
+        for (let i = 0; i < numParts && i < parts.length; i++) {
+            parts[i](context, coords);
+        }
     }
 
     function onGuessSubmit(guess) {
-        dispatch(channelPush(sendEvent(hangmanChannel, {guess}, "guess")));
+        dispatch(channelPush(sendEvent(hangmanChannel, { guess }, "guess")));
     }
 
     return (
@@ -240,7 +242,7 @@ export default function HangmanGame() {
             <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
             </canvas>
 
-            <GuessInput onSubmit={onGuessSubmit} />
+            <GuessInput onSubmit={onGuessSubmit} maxLength="1" />
         </>
     )
 }

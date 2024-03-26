@@ -8,14 +8,23 @@ defmodule PartyGame.HangmanTest do
       assert HangmanGame.word(1) |> Enum.at(0) != HangmanGame.word(1) |> Enum.at(0)
     end
 
+    test "wrong_guess/1 adds wrong guess" do
+      game_room =
+        Lobby.new()
+        |> Lobby.set_game(HangmanGame.new(%{word: "test", guesses: ["t", "z"]}))
+
+      wrong = HangmanGame.wrong_guesses(game_room)
+      assert wrong == ["z"]
+    end
+
     test "change_word/1 changes words" do
       game_room =
         Lobby.new()
         |> Lobby.set_game(HangmanGame.new(%{}))
         |> HangmanGame.change_word()
 
-        word = game_room.game.word
-        assert word !==  HangmanGame.change_word(game_room).game.word
+      word = game_room.game.word
+      assert word !== HangmanGame.change_word(game_room).game.word
     end
 
     test "guess/2 adds a guess" do
@@ -25,8 +34,8 @@ defmodule PartyGame.HangmanTest do
         |> HangmanGame.guess("a")
         |> HangmanGame.guess("g")
 
-        [guess | _] = game_room.game.guesses
-        assert guess === "g"
+      [guess | _] = game_room.game.guesses
+      assert guess === "g"
     end
 
     test "guess/2 sets display word" do
@@ -36,8 +45,7 @@ defmodule PartyGame.HangmanTest do
         |> HangmanGame.guess("t")
         |> HangmanGame.guess("a")
 
-        assert "t__t _a_" == game_room.game.display_word
+      assert "t__t _a_" == game_room.game.display_word
     end
-
   end
 end

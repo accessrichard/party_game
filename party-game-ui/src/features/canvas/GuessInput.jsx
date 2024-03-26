@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function GuessInput({ onSubmit }) {
+export default function GuessInput({ onSubmit, maxLength = 500 }) {
     const [text, setText] = useState("");
 
     function onClick() {
@@ -18,6 +18,7 @@ export default function GuessInput({ onSubmit }) {
                             autoComplete="off"
                             name="guess-input"
                             value={text}
+                            maxLength={maxLength}
                             onChange={(e) => setText(e.target.value)}                            
                         />
                         <span className="highlight"></span>
