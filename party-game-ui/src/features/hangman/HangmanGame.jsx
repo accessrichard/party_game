@@ -300,3 +300,110 @@ export default function HangmanGame() {
         </>
     )
 }
+
+
+
+function newDrawing() {
+
+    function rightArm(context, x, y, radius) {
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(x + radius, y);
+        context.stroke();
+    }
+
+    function leftArm(context, x, y, radius) {
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(x - radius, y);
+        context.stroke();
+    }
+
+    function body(context, x, y, radius, options = {}) {
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(x, y + (options.bodyLength || 80));
+        context.stroke();
+        
+        context.beginPath();
+        context.moveTo(x, y);
+        context.lineTo(x, y - (options.bodyLength || 80) / 2);
+        context.stroke();
+    }
+
+    function head(context, x, y, radius, options = {}) {
+        context.save();
+        context.strokeStyle = "green";
+        context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        context.lineWidth = 0.5;
+        context.beginPath();
+        context.arc(x, y - (options.bodyLength || 80) / 2 - radius / 2, radius / 2, 0, 2 * Math.PI);
+        context.stroke();
+        context.fill();
+        context.restore();
+    }
+
+    function leftLeg(context, x, y, radius, options = {}) {
+        let angle =  Math.PI / 4;
+        context.beginPath();
+        context.moveTo(x, y + (options.bodyLength || 80));
+        context.lineTo(
+        x +  Math.cos(Math.PI - angle) * radius,
+        y + radius + Math.sin(Math.PI - angle) * radius
+        );
+        context.stroke();
+    }
+
+    function rightLeg(context, x, y, radius, options = {}) {
+        let angle = 4
+        context.beginPath();
+        context.moveTo(x, y + (options.bodyLength || 80));
+        context.lineTo(
+        x + Math.cos(Math.PI + angle) * radius,
+        y + radius +  Math.sin(Math.PI + angle) * radius
+        );
+        context.stroke();
+    }
+
+    window.onload = draw;
+
+    function draw() {
+        const canvas = document.getElementById("hangman");
+        const context = canvas.getContext("2d");
+        let x = 200;
+        let y = 200;
+        let radius = 100;
+        let drawCircles = true;
+        const bodyLength = 80;
+
+
+        if (drawCircles) {
+        context.save();
+        context.strokeStyle = "yellow";
+        context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        context.lineWidth = 0.5;
+        context.beginPath();
+        context.arc(x, y, radius, 0, 2 * Math.PI);
+        context.stroke();
+        context.fill();
+        context.restore();
+        
+        context.save();
+        context.strokeStyle = "yellow";
+        context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        context.lineWidth = 0.5;
+        context.beginPath();
+        context.arc(x, y + radius, radius, 0, 2 * Math.PI);
+        context.stroke();
+        context.fill();
+        context.restore();
+        }
+
+        body(context, x, y);
+        rightArm(context, x, y, radius);
+        leftArm(context, x, y, radius);
+        head(context, x, y, radius);
+        leftLeg(context, x, y, radius)
+        rightLeg(context, x, y, radius)
+    }
+}
