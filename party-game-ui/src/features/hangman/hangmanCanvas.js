@@ -447,9 +447,9 @@ function animationLoop(time) {
 function startIntroAnimation(canvas, context, x, y, radius, opts) {            
     let walkTo = 300;
     let secondWalk = 500;
-    animationStack.push(walk.bind(this, x, y, 50, opts, walkTo));
-    animationStack.push(happyJump.bind(this, walkTo, y, 50, opts));
-    animationStack.push(walk.bind(this, walkTo, y, 50, opts, secondWalk));
+    animationStack.push(walk.bind(this, x, y, radius, opts, walkTo));
+    animationStack.push(happyJump.bind(this, walkTo, y, radius, opts));
+    animationStack.push(walk.bind(this, walkTo, y, radius, opts, secondWalk));
     animationStack.push(fadeHangman.bind(this, context, secondWalk, y, radius, opts, true));
     animationStack.push(fadeLogo.bind(this, context, secondWalk, y, radius, opts, false));
  
@@ -461,8 +461,8 @@ function startIntroAnimation(canvas, context, x, y, radius, opts) {
 }
 
 function winAnimation(canvas, context, x, y, radius, opts) {            
-    animationStack.push(happyJump.bind(this, x, y, 50, opts));
-    animationStack.push(walk.bind(this, x, y, 50, opts, canvas.width + radius * 2));    
+    animationStack.push(happyJump.bind(this, x, y, radius, opts));
+    animationStack.push(walk.bind(this, x, y, radius, opts, canvas.width + radius * 2));    
     animationStack.push(fadeText.bind(this, context, x, y, radius, opts, "Winner", false));
 
     if (currentAnim === undefined) {
@@ -486,7 +486,7 @@ function loseAnimation(canvas, context, x, y, radius, opts) {
 }
 
 window.onload = () => {
-    let radius = 50;
+    let radius = 100;
     let opts = {
         torso: radius * .8,
         leftArmAngle: 45,
@@ -509,5 +509,5 @@ window.onload = () => {
     
     //startIntroAnimation(canvas, context, x, y, radius, opts);    
     //loseAnimation(canvas, context, 500, y, radius, opts);
-    //winAnimation(canvas, context, 500, y, radius, opts);
+    winAnimation(canvas, context, 500, y, radius, opts);
 };    
