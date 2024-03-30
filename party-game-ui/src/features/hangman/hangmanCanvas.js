@@ -2,10 +2,6 @@ function to_radians(degrees) {
     return degrees * (Math.PI / 180);
 }
 
-function resetAngle(angle) {
-    return angle > 360 ? 0 : angle;
-}
-
 function displayText(context, text, x, y, lineHeight, maxWidth) {
     context.font = lineHeight + "px Arial";
     const lines = getLines(context, text, maxWidth);
@@ -29,6 +25,7 @@ function getLines(ctx, text, maxWidth) {
             currentLine = word;
         }
     }
+    
     lines.push(currentLine);
     return lines;
 }
@@ -38,358 +35,395 @@ function bounce(acc, numDegrees, startDegrees) {
     return startDegrees + Math.abs(acc % (numDegrees * 2) - numDegrees)
 }
 
-function drawArm(context, x, y, radius, angle) {
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(
-        x + Math.cos(to_radians(angle)) * radius,
-        y + Math.sin(to_radians(angle)) * radius
-    );
-    context.stroke();
-}
+class Hanger {
 
-function drawLeg(context, x, y, radius, angle, opts) {
-    context.beginPath();
-    context.moveTo(x, y + (opts.torso || 80));
-    context.lineTo(
-        x + Math.cos(to_radians(angle)) * radius,
-        y + radius + Math.sin(to_radians(angle)) * radius
-    );
-    context.stroke();
-}
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.context = canvas.getContext("2d");
+    }
 
-function drawHand(context, x, y, radius, angle) {
-    context.beginPath();
-    const handRadius = radius * .1
+    drawHanger(stickMan, scale) {
+        if (!scale) {
+            scale = stickMan.radius * 1.7;
+        }
 
-    context.arc(
-        x + Math.cos(to_radians(angle)) * radius + handRadius / Math.sqrt(2),
-        y + Math.sin(to_radians(angle)) * radius + handRadius / Math.sqrt(2),
-        handRadius, 0, 2 * Math.PI, false);
-    context.stroke();
-}
+        let offsetX = stickMan.x + stickMan.radius * .15;
 
-function drawBody(context, x, y, opts) {
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x, y + (opts.torso || 80));
-    context.stroke();
+        this.context.save();
+        this.context.lineWidth = 4;
 
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x, y - (opts.torso || 80) / 2);
-    context.stroke();
-}
+        //hangman top line
+        this.context.beginPath();
+        this.context.moveTo(offsetX - scale, stickMan.y - scale)
+        this.context.lineTo(stickMan.x, stickMan.y - scale)
+        this.context.stroke();
 
-function drawHead(context, x, y, radius, opts) {
-    context.save();
-    context.strokeStyle = "green";
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.arc(x, y - (opts.torso || 80) / 2 - radius / 2, radius / 2, 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
-}
+        //hangman side line
+        this.context.beginPath();
+        this.context.moveTo(offsetX - scale, stickMan.y - scale)
+        this.context.lineTo(offsetX - scale, stickMan.y + scale + scale * .25)
+        this.context.stroke();
 
-function drawLeftEye(context, x, y, radius) {
-    drawEye(context, x - radius / 4, y, radius);
-}
+        //hangman bottom line
+        this.context.beginPath();
+        this.context.moveTo(offsetX - scale - scale * .5, stickMan.y + scale + scale * .25)
+        this.context.lineTo(offsetX + scale - scale * .25, stickMan.y + scale + scale * .25)
+        this.context.stroke();
 
-function drawRightEye(context, x, y, radius) {
-    drawEye(context, x + radius / 4, y, radius);
-}
+        this.context.restore();
+        return [offsetX - scale - scale * .5, stickMan.y + scale + scale * .25]
+    }
 
-function drawEye(context, x, y, radius) {
-    context.save();
-    context.strokeStyle = "blue";
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.arc(x, y - radius * 1.1, radius / 10, 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
-}
+    drawNoose(stickMan) {
+        this.context.save();
+        this.context.lineWidth = 4;
+        let scale = this.radius * 1.7;
 
-function drawNose(context, x, y, radius) {
-    context.save();
-    context.strokeStyle = "blue";
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.arc(x, y - radius * .85, radius / 10, 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
-}
+        //hangman hangar
+        this.context.beginPath();
+        this.context.moveTo(stickMan.x, stickMan.y - scale)
+        this.context.lineTo(stickMan.x, stickMan.y - stickMan.radius - stickMan.opts.torso / 2)
+        this.context.stroke();
 
-function drawMouth(context, x, y, radius, opts) {
-    if (opts.smile) {
-        drawSmile(context, x, y, radius);
-    } else {
-        drawScared(context, x, y, radius);
+        // noose circles
+        this.context.beginPath();
+        this.context.ellipse(stickMan.x, stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * .1, 2, stickMan.radius * .08, Math.PI / 2, 0, 2 * Math.PI)
+        this.context.ellipse(stickMan.x, stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * .15, 2, stickMan.radius * .08, Math.PI / 2, 0, 2 * Math.PI)
+        this.context.ellipse(stickMan.x, stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * .2, 2, stickMan.radius * .08, Math.PI / 2, 0, 2 * Math.PI)
+        this.context.stroke();
+        this.context.restore();
     }
 }
 
-function drawScared(context, x, y, radius) {
-    context.save();
-    context.strokeStyle = "blue";
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.ellipse(
-        x,
-        y - radius * .6,
-        radius * .05,
-        radius * .2,
-        Math.PI / 2, 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
-}
 
-function drawSmile(context, x, y, radius) {
-    context.beginPath();
-    context.arc(x, y - radius * .7, radius * .2, Math.PI, 0, true);
-    context.stroke();
-}
+class Stickman {
 
-function drawFoot(context, x, y, radius, angle) {
-    context.beginPath();
-    const handRadius = radius * .1
-    context.arc(
-        x + Math.cos(to_radians(angle)) * radius + handRadius / Math.sqrt(2),
-        y + radius + Math.sin(to_radians(angle)) * radius + handRadius / Math.sqrt(2),
-        handRadius, 0, 2 * Math.PI, false);
-    context.stroke();
-}
-
-function drawHanger(context, x, y, radius, opts, scale) {
-    if (!scale) {
-        scale = radius * 1.7;
-    }
-    
-    let offsetX = x + radius * .15;
-
-    context.save();
-    context.lineWidth = 4;
-
-    //hangman top line
-    context.beginPath();
-    context.moveTo(offsetX - scale, y - scale)
-    context.lineTo(x, y - scale)
-    context.stroke();
-
-    //hangman side line
-    context.beginPath();
-    context.moveTo(offsetX - scale, y - scale)
-    context.lineTo(offsetX - scale, y + scale + scale * .25)
-    context.stroke();
-
-    //hangman bottom line
-    context.beginPath();
-    context.moveTo(offsetX - scale - scale * .5, y + scale + scale * .25)
-    context.lineTo(offsetX + scale - scale * .25, y + scale + scale * .25)
-    context.stroke();
-
-    context.restore();
-    return [offsetX - scale - scale * .5, y + scale + scale * .25]
-}
-
-function drawNoose(context, x, y, radius, opts) {
-    context.save();
-    context.lineWidth = 4;
-    let scale = radius * 1.7;
-
-    //hangman hangar
-    context.beginPath();
-    context.moveTo(x, y - scale)
-    context.lineTo(x, y - radius - opts.torso / 2)
-    context.stroke();
-
-    // noose circles
-    context.beginPath();
-    context.ellipse(x, y - opts.torso / 2 + radius * .1, 2, radius * .08, Math.PI / 2, 0, 2 * Math.PI)
-    context.ellipse(x, y - opts.torso / 2 + radius * .15, 2, radius * .08, Math.PI / 2, 0, 2 * Math.PI)
-    context.ellipse(x, y - opts.torso / 2 + radius * .2, 2, radius * .08, Math.PI / 2, 0, 2 * Math.PI)
-    context.stroke();
-    context.restore();
-}
-
-function drawCirclePaths(context, x, y, radius, opts) {
-    context.save();
-    context.strokeStyle = "yellow";
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
-
-    context.save();
-    context.strokeStyle = "yellow";
-    context.fillStyle = "rgba(0, 0, 0, 0.25)";
-    context.lineWidth = 0.5;
-    context.beginPath();
-    context.arc(x, y + radius, radius, 0, 2 * Math.PI);
-    context.stroke();
-    context.fill();
-    context.restore();
-}
-
-function drawBodyParts(context, x, y, radius, opts, index = 20) {
-    const parts = [
-        drawBody.bind(this, context, x, y, opts),
-        drawArm.bind(this, context, x, y, radius, opts.leftArmAngle, opts),
-        drawArm.bind(this, context, x, y, radius, opts.rightArmAngle, opts),
-        drawHand.bind(this, context, x, y, radius, opts.rightArmAngle, opts),
-        drawHand.bind(this, context, x, y, radius, opts.leftArmAngle, opts),
-        drawHead.bind(this, context, x, y, radius, opts),
-        drawMouth.bind(this, context, x, y, radius, opts),
-        drawLeftEye.bind(this, context, x, y, radius),
-        drawRightEye.bind(this, context, x, y, radius),
-        drawNose.bind(this, context, x, y, radius),
-        drawLeg.bind(this, context, x, y, radius, opts.leftLegAngle, opts),
-        drawFoot.bind(this, context, x, y, radius, opts.leftLegAngle, opts),
-        drawFoot.bind(this, context, x, y, radius, opts.rightLegAngle, opts),
-        drawLeg.bind(this, context, x, y, radius, opts.rightLegAngle, opts)
-    ]
-
-    for (let i = 0; i < Math.min(parts.length, index); i++) {
-        parts[i]();
-    }
-}
-
-function draw(x, y, radius, opts) {
-    const canvas = document.getElementById("hangman");
-    const context = canvas.getContext("2d");
-
-    context.clearRect(0, 0, canvas.width, canvas.height)
-
-    if (opts && opts.drawCircles) {
-        drawCirclePaths(context, x, y, radius, opts);
+    constructor(canvas, x, y, radius, opts) {
+        this.canvas = canvas;
+        this.context = canvas.getContext("2d");
+        this.x = x;
+        this.y = y;
+        this.opts = opts;
+        this.radius = radius;
+        if (!this.opts.torso) {
+            this.opts.torso = this.radius * .8;
+        }
     }
 
-    drawBodyParts(context, x, y, radius, opts);
-}
-
-function drawHeadless(x, y, radius, opts) {
-    getUnitTime(1000);
-    const canvas = document.getElementById("hangman");
-    const context = canvas.getContext("2d");
-
-    context.clearRect(0, 0, canvas.width, canvas.height)
-
-    if (opts && opts.drawCircles) {
-        drawCirclePaths(context, x, y, radius, opts);
+    drawArm(angle) {
+        this.context.beginPath();
+        this.context.moveTo(this.x, this.y);
+        this.context.lineTo(
+            this.x + Math.cos(to_radians(angle)) * this.radius,
+            this.y + Math.sin(to_radians(angle)) * this.radius
+        );
+        this.context.stroke();
     }
 
-    drawHead(context, x, y, radius, opts);
-    drawLeftEye(context, x, y, radius);
-    drawRightEye(context, x, y, radius);
-    drawNose(context, x, y, radius);
-    drawMouth(context, x, y, radius, opts);
-
-    context.save();
-    context.translate(x, y)
-    context.rotate(to_radians(90));
-    const rotatedX = radius * .2;
-    const rotatedY = radius * 2;
-    drawBody(context, rotatedY, rotatedX, opts);
-    drawArm(context, rotatedY, rotatedX, radius, 110, opts);
-    drawArm(context, rotatedY, rotatedX, radius, 80, opts);
-    drawLeg(context, rotatedY, rotatedX, radius, 85, opts)
-    drawLeg(context, rotatedY, rotatedX, radius, 105, opts)
-    context.restore();
-}
-
-function drawHanging(x, y, radius, opts, cb) {
-    let time = getUnitTime(1000); 
-    const canvas = document.getElementById("hangman");
-    const context = canvas.getContext("2d");
-
-    context.clearRect(0, 0, canvas.width, canvas.height)
-
-    opts.leftArmAngle = 80;
-    opts.rightArmAngle = 110;
-    opts.leftLegAngle = 85;
-    opts.rightLegAngle = 105;
-    opts.smile = false;
-    drawBodyParts(context, x, y, radius, opts)   
-}
-
-function happyJump(x, y, radius, opts) {
-    let time = getUnitTime(1000, true);
-
-    if ((time) > 1.2) {
-        resetUnitTime();
-    }
-    
-    opts.rightLegAngle = bounce(time * 300, 90, 180) + 150
-    opts.leftLegAngle = opts.rightLegAngle + 60;
-    opts.rightArmAngle = opts.leftLegAngle - 60;
-    opts.leftArmAngle = -opts.rightArmAngle + 150;
-    draw(x, y, radius, opts);
-}
-
-function fadeHangman(context, x, y, radius, opts, isFadeOut = true) {
-    let time = getUnitTime(1000);    
-    context.save();
-    context.globalAlpha = isFadeOut ? 1 - time : time;
-    draw(x, y, radius, opts)
-    context.restore();
-    drawHanger(context, x, y, radius, opts);
-}
-
-function fadeLogo(context, x, y, radius, opts, isFadeOut = false) {
-    let time = getUnitTime(1000);    
-    let [bottom, left] = drawHanger(context, x, y, radius, opts);
-    context.save();
-    context.fillStyle = "dimgray"
-    context.globalAlpha = isFadeOut ? 1 - time : time;
-    displayText(context, "Hangman", bottom, left + 20, 20, radius);
-    context.restore();
-}
-
-function fadeText(context, x, y, radius, opts, text, isFadeOut = false) {
-    let time = getUnitTime(1000);    
-    context.save();
-    context.fillStyle = "blue"
-    context.globalAlpha = isFadeOut ? 1 - time : time;
-    displayText(context, text, x, y, 70, 50);
-    context.restore();
-}
-
-function oscillateWalk(context, x, y, radius, opts) {
-    let time = getUnitTime(1000, true);
-    getUnitTime(1000, (x + time * 100) < 500);
-
-    let amplitude = 35;
-    let period = 1;
-    opts.rightLegAngle = amplitude * Math.sin(time * 2 * Math.PI / period) + 90
-    opts.leftLegAngle = amplitude * Math.sin((-time) * 2 * Math.PI / period) + 90
-    opts.leftArmAngle = 20 * Math.sin(time * 2 * Math.PI / period) + 80;
-    opts.rightArmAngle = 20 * Math.sin((-time) * 2 * Math.PI / period) + 80;
-    x += time * 150
-    draw(x, y, radius, opts)
-}
-
-function walk(x, y, radius, opts, to) {    
-    let time = getUnitTime(1000, true);
-    if ((x + time * 150) >= to) {
-        resetUnitTime();
+    drawLeg(angle) {
+        this.context.beginPath();
+        this.context.moveTo(this.x, this.y + this.opts.torso);
+        this.context.lineTo(
+            this.x + Math.cos(to_radians(angle)) * this.radius,
+            this.y + this.radius + Math.sin(to_radians(angle)) * this.radius
+        );
+        this.context.stroke();
     }
 
-    opts.rightLegAngle = bounce(time * 100, 60, 60)
-    opts.leftLegAngle = -opts.rightLegAngle + 180;
-    opts.rightArmAngle = opts.leftLegAngle - 30;
-    opts.leftArmAngle = -opts.rightArmAngle + 150;
+    drawHand(angle) {
+        this.context.beginPath();
+        const handRadius = this.radius * .1
 
-    x += time * 150
-    draw(x, y, radius, opts)
+        this.context.arc(
+            this.x + Math.cos(to_radians(angle)) * this.radius + handRadius / Math.sqrt(2),
+            this.y + Math.sin(to_radians(angle)) * this.radius + handRadius / Math.sqrt(2),
+            handRadius, 0, 2 * Math.PI, false);
+        this.context.stroke();
+    }
+
+    drawBody() {
+        this.context.beginPath();
+        this.context.moveTo(this.x, this.y);
+        this.context.lineTo(this.x, this.y + this.opts.torso);
+        this.context.stroke();
+
+        this.context.beginPath();
+        this.context.moveTo(this.x, this.y);
+        this.context.lineTo(this.x, this.y - this.opts.torso / 2);
+        this.context.stroke();
+    }
+
+    drawHead() {
+        this.context.save();
+        this.context.strokeStyle = "green";
+        this.context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        this.context.lineWidth = 0.5;
+        this.context.beginPath();
+        this.context.arc(this.x, this.y - this.opts.torso / 2 - this.radius / 2, this.radius / 2, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.fill();
+        this.context.restore();
+    }
+
+    drawLeftEye() {
+        this.drawEye(this.x - this.radius / 4);
+    }
+
+    drawRightEye() {
+        this.drawEye(this.x + this.radius / 4);
+    }
+
+    drawEye(offsetX) {
+        this.context.save();
+        this.context.strokeStyle = "blue";
+        this.context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        this.context.lineWidth = 0.5;
+        this.context.beginPath();
+        this.context.arc(offsetX, this.y - this.radius * 1.1, this.radius / 10, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.fill();
+        this.context.restore();
+    }
+
+    drawNose() {
+        this.context.save();
+        this.context.strokeStyle = "blue";
+        this.context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        this.context.lineWidth = 0.5;
+        this.context.beginPath();
+        this.context.arc(this.x, this.y - this.radius * .85, this.radius / 10, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.fill();
+        this.context.restore();
+    }
+
+    drawMouth() {
+        if (this.opts.smile) {
+            this.drawSmile(this.context, this.x, this.y, this.radius);
+        } else {
+            this.drawScared(this.context, this.x, this.y, this.radius);
+        }
+    }
+
+    drawScared() {
+        this.context.save();
+        this.context.strokeStyle = "blue";
+        this.context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        this.context.lineWidth = 0.5;
+        this.context.beginPath();
+        this.context.ellipse(
+            this.x,
+            this.y - this.radius * .6,
+            this.radius * .05,
+            this.radius * .2,
+            Math.PI / 2, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.fill();
+        this.context.restore();
+    }
+
+    drawSmile() {
+        this.context.beginPath();
+        this.context.arc(this.x, this.y - this.radius * .7, this.radius * .2, Math.PI, 0, true);
+        this.context.stroke();
+    }
+
+    drawFoot(angle) {
+        this.context.beginPath();
+        const handRadius = this.radius * .1
+        this.context.arc(
+            this.x + Math.cos(to_radians(angle)) * this.radius + handRadius / Math.sqrt(2),
+            this.y + this.radius + Math.sin(to_radians(angle)) * this.radius + handRadius / Math.sqrt(2),
+            handRadius, 0, 2 * Math.PI, false);
+        this.context.stroke();
+    }
+
+    drawBodyParts(index = 20) {
+        const parts = [
+            this.drawBody.bind(this),
+            this.drawArm.bind(this, this.opts.rightArmAngle),
+            this.drawArm.bind(this, this.opts.leftArmAngle),
+            this.drawHand.bind(this, this.opts.rightArmAngle),
+            this.drawHand.bind(this, this.opts.leftArmAngle),
+            this.drawHead.bind(this),
+            this.drawMouth.bind(this),
+            this.drawLeftEye.bind(this),
+            this.drawRightEye.bind(this),
+            this.drawNose.bind(this),
+            this.drawLeg.bind(this, this.opts.rightLegAngle),
+            this.drawFoot.bind(this, this.opts.rightLegAngle),
+            this.drawFoot.bind(this, this.opts.leftLegAngle),
+            this.drawLeg.bind(this, this.opts.leftLegAngle)
+        ]
+
+        for (let i = 0; i < Math.min(parts.length, index); i++) {
+            parts[i]();
+        }
+    }
+
+    draw() {
+        if (this.opts && this.opts.drawCircles) {
+            this.drawCirclePaths(this.context, this.x, this.y, this.radius, this.opts);
+        }
+
+        this.drawBodyParts();
+    }
+
+    drawHeadless() {
+        getUnitTime(1000);
+
+        this.drawHead();
+        this.drawLeftEye();
+        this.drawRightEye();
+        this.drawNose();
+        this.drawMouth();
+
+        this.context.save();
+        this.context.translate(this.x, this.y)
+        this.context.rotate(to_radians(90));
+        const oldX = this.x;
+        const oldY = this.y;
+        this.x = this.radius;
+        this.y = this.radius - this.radius / 2 ;
+
+        this.drawBody();
+        this.drawArm(110);
+        this.drawArm(80);
+        this.drawLeg(85)
+        this.drawLeg(105)
+        this.context.restore();
+        this.x = oldX;
+        this.y = oldY;
+    }
+
+    drawHanging() {
+        let time = getUnitTime(1000);
+        this.opts.leftArmAngle = 80;
+        this.opts.rightArmAngle = 110;
+        this.opts.leftLegAngle = 85;
+        this.opts.rightLegAngle = 105;
+        this.opts.smile = false;
+        this.drawBodyParts()
+    }
+
+    drawCirclePaths() {
+        this.context.save();
+        this.context.strokeStyle = "yellow";
+        this.context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        this.context.lineWidth = 0.5;
+        this.context.beginPath();
+        this.context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.fill();
+        this.context.restore();
+
+        this.context.save();
+        this.context.strokeStyle = "yellow";
+        this.context.fillStyle = "rgba(0, 0, 0, 0.25)";
+        this.context.lineWidth = 0.5;
+        this.context.beginPath();
+        this.context.arc(this.x, this.y + this.radius, this.radius, 0, 2 * Math.PI);
+        this.context.stroke();
+        this.context.fill();
+        this.context.restore();
+    }    
+}
+
+class Hangman {
+    constructor(canvas, stickMan, hanger) {
+        this.canvas = canvas;
+        this.context = canvas.getContext("2d");
+        this.stickMan = stickMan;
+        this.hanger = hanger;
+    }
+
+    happyJump() {
+        let time = getUnitTime(1000, true);
+
+        if ((time) > 1.2) {
+            resetUnitTime();
+        }
+
+        this.stickMan.opts.rightLegAngle = bounce(time * 300, 90, 180) + 150
+        this.stickMan.opts.leftLegAngle = this.stickMan.opts.rightLegAngle + 60;
+        this.stickMan.opts.rightArmAngle = this.stickMan.opts.leftLegAngle - 60;
+        this.stickMan.opts.leftArmAngle = -this.stickMan.opts.rightArmAngle + 150;
+        this.stickMan.draw();
+    }
+
+    fadeHangman(hanger, isFadeOut = true) {
+        let time = getUnitTime(1000);
+        this.context.save();
+        this.context.globalAlpha = isFadeOut ? 1 - time : time;
+        this.stickMan.draw();
+        this.context.restore();
+        this.hanger.drawHanger(this.stickMan);
+    }
+
+    fadeLogo(hanger, isFadeOut = false) {
+        let time = getUnitTime(1000);
+        let [bottom, left] = hanger.drawHanger(this.stickMan);
+        this.context.save();
+        this.context.fillStyle = "dimgray"
+        this.context.globalAlpha = isFadeOut ? 1 - time : time;
+        displayText(this.context, "Hangman", bottom, left + 20, 20, this.stickMan.radius);
+        this.context.restore();
+    }
+
+    fadeText(text, isFadeOut = false) {
+        let time = getUnitTime(1000);
+        this.context.save();
+        this.context.fillStyle = "blue"
+        this.context.globalAlpha = isFadeOut ? 1 - time : time;
+        displayText(this.context, text, this.stickMan.x, this.stickMan.y, 70, 50);
+        this.context.restore();
+    }
+
+    oscillateWalk(to) {
+        let time = getUnitTime(1000, true);
+        if (this.stickMan.x >= to) {
+            resetUnitTime();
+        }
+
+        const amplitude = 35;
+        const period = 1;
+        const phase = Math.sin(time * 2 * Math.PI / period);
+        this.stickMan.opts.rightLegAngle = amplitude * phase + 90
+        this.stickMan.opts.leftLegAngle = -this.stickMan.opts.rightLegAngle + 180;
+        this.stickMan.opts.leftArmAngle = 20 * phase + 80;
+        this.stickMan.opts.rightArmAngle = -this.stickMan.opts.leftArmAngle + 160;
+        this.x += 1.5;
+        this.stickMan.draw()
+    }
+
+    walk(to) {
+        let time = getUnitTime(1000, true);
+        if (this.stickMan.x >= to) {
+            resetUnitTime();
+        }
+
+        this.stickMan.opts.rightLegAngle = bounce(time * 100, 60, 60)
+        this.stickMan.opts.leftLegAngle = -this.stickMan.opts.rightLegAngle + 180;
+        this.stickMan.opts.rightArmAngle = this.stickMan.opts.leftLegAngle - 30;
+        this.stickMan.opts.leftArmAngle = -this.stickMan.opts.rightArmAngle + 150;
+        this.stickMan.x += 1.5;
+        this.stickMan.draw()
+    }
+
+    drawGame(word = "_ _ _ test", guesses = [1,2,3,4,5,6,7,1,1,3,4,5,6,5]) {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.stickMan.drawBodyParts(guesses.length);
+        this.hanger.drawHanger(this);
+
+        this.context.fillStyle = "red";
+        this.context.letterSpacing = "6px";
+        displayText(this.context, word, this.stickMan.x - this.stickMan.radius * 3, this.stickMan.y - this.stickMan.radius * 2.3, 30, this.canvas.width);
+
+        this.context.fillStyle = "black";
+        this.context.letterSpacing = "0px";
+        displayText(this.context, (guesses || []).join(" "), this.stickMan.x - this.stickMan.radius * 3, this.stickMan.y + this.stickMan.radius * 3, 30, this.canvas.width)
+    }
+
 }
 
 let globalTime;
@@ -399,7 +433,6 @@ const animationStack = [];
 
 function getUnitTime(duration, isInfinite = false) {
     var unitTime = (globalTime - startTime) / duration;
-
     if (isInfinite) {
         return unitTime;
     }
@@ -419,11 +452,11 @@ function resetUnitTime() {
 }
 
 function animationLoop(time) {
-
     globalTime = time;
     if (startTime === undefined) {
         startTime = time;
     }
+
     if (currentAnim === undefined) {
         if (animationStack.length > 0) {
             currentAnim = animationStack.shift();
@@ -440,74 +473,62 @@ function animationLoop(time) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     currentAnim();
-    
     requestAnimationFrame(animationLoop);
 }
 
-function startIntroAnimation(canvas, context, x, y, radius, opts) {            
-    let walkTo = 300;
-    let secondWalk = 500;
-    animationStack.push(walk.bind(this, x, y, radius, opts, walkTo));
-    animationStack.push(happyJump.bind(this, walkTo, y, radius, opts));
-    animationStack.push(walk.bind(this, walkTo, y, radius, opts, secondWalk));
-    animationStack.push(fadeHangman.bind(this, context, secondWalk, y, radius, opts, true));
-    animationStack.push(fadeLogo.bind(this, context, secondWalk, y, radius, opts, false));
- 
+function requestFrame() {
     if (currentAnim === undefined) {
         requestAnimationFrame(animationLoop);
     }
+
     startTime = undefined;
     currentAnim = undefined;
 }
 
-function winAnimation(canvas, context, x, y, radius, opts) {            
-    animationStack.push(happyJump.bind(this, x, y, radius, opts));
-    animationStack.push(walk.bind(this, x, y, radius, opts, canvas.width + radius * 2));    
-    animationStack.push(fadeText.bind(this, context, x, y, radius, opts, "Winner", false));
-
-    if (currentAnim === undefined) {
-        requestAnimationFrame(animationLoop);
-    }
-    startTime = undefined;
-    currentAnim = undefined;
+function startIntroAnimation(hangman) {
+    animationStack.push(hangman.walk.bind(hangman, hangman.stickMan.x + 300));
+    animationStack.push(hangman.happyJump.bind(hangman));
+    animationStack.push(hangman.walk.bind(hangman, hangman.stickMan.x + 500));
+    const hanger = new Hanger(hangman.canvas, hangman.stickMan);
+    animationStack.push(hangman.fadeHangman.bind(hangman, hanger, true));
+    animationStack.push(hangman.fadeLogo.bind(hangman, hanger, false));
+    requestFrame();
 }
 
-function loseAnimation(canvas, context, x, y, radius, opts) {            
-    
-    animationStack.push(drawHanging.bind(this, x, y, radius, opts));
-    animationStack.push(drawHeadless.bind(this, x, y, radius, opts));
-    animationStack.push(fadeText.bind(this, context, x, y, radius, opts, "You Lost", false));
-   
-    if (currentAnim === undefined) {
-        requestAnimationFrame(animationLoop);
-    }
-    startTime = undefined;
-    currentAnim = undefined;
+function winAnimation(hangman) {
+    animationStack.push(hangman.happyJump.bind(hangman));
+    animationStack.push(hangman.walk.bind(hangman, 
+        hangman.canvas.width + hangman.radius * 2));
+    animationStack.push(hangman.fadeText.bind(hangman, "Winner", false));
+    requestFrame();
+}
+
+function loseAnimation(hangman, stickMan) {
+    animationStack.push(stickMan.drawHanging.bind(stickMan));
+    animationStack.push(stickMan.drawHeadless.bind(stickMan));
+    animationStack.push(hangman.fadeText.bind(hangman, "You Lost", false));
+    requestFrame();
 }
 
 window.onload = () => {
-    let radius = 100;
     let opts = {
-        torso: radius * .8,
         leftArmAngle: 45,
         rightArmAngle: 135,
         leftLegAngle: 120,
         rightLegAngle: 60,
         smile: true
     };
-    let x = 0;
-    let y = 300;
-
+    
     const canvas = document.getElementById("hangman");
-    const context = canvas.getContext("2d");
+    const stickMan = new Stickman(canvas, 0, 400, 100, opts);
+    const hanger = new Hanger(stickMan.canvas, stickMan.x, stickMan.y, stickMan.radius);
+    const hangman = new Hangman(canvas, stickMan, hanger);
+    //hangman.drawGame();
+    //animationStack.push(stickMan.oscillateWalk.bind(stickMan, 500));
+    //requestFrame();
 
     //draw(400, 300, radius, opts)
-    
-    //drawHanging(500, 400, radius, opts);
-    //drawHanger(context, x, y, radius, opts)
-    //drawNoose(context, x, y, radius, opts)
-    
-    //startIntroAnimation(canvas, context, x, y, radius, opts);    
-    //loseAnimation(canvas, context, 500, y, radius, opts);
-    winAnimation(canvas, context, 500, y, radius, opts);
+    //loseAnimation(hangman, stickMan);
+   //startIntroAnimation(hangman);
+   startIntroAnimation(hangman);
 };    
