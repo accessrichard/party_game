@@ -42,6 +42,27 @@ class Hanger {
         this.context = canvas.getContext("2d");
     }
 
+    drawHangerTopLine(stickMan, offsetX, scale) {
+        this.context.beginPath();
+        this.context.moveTo(offsetX - scale, stickMan.y - scale)
+        this.context.lineTo(stickMan.x, stickMan.y - scale)
+        this.context.stroke();
+    }
+
+    drawHangerLeftLine(stickMan, offsetX, scale) {
+        this.context.beginPath();
+        this.context.moveTo(offsetX - scale, stickMan.y - scale);
+        this.context.lineTo(offsetX - scale, stickMan.y + scale + scale * .25);
+        this.context.stroke();
+    }
+
+    drawHangerBottomLine(stickMan, offsetX, scale) {
+        this.context.beginPath();
+        this.context.moveTo(offsetX - scale - scale * .5, stickMan.y + scale + scale * .25);
+        this.context.lineTo(offsetX + scale - scale * .25, stickMan.y + scale + scale * .25);
+        this.context.stroke();
+    }
+
     drawHanger(stickMan, scale) {
         if (!scale) {
             scale = stickMan.radius * 1.7;
@@ -52,23 +73,9 @@ class Hanger {
         this.context.save();
         this.context.lineWidth = 4;
 
-        //hangman top line
-        this.context.beginPath();
-        this.context.moveTo(offsetX - scale, stickMan.y - scale)
-        this.context.lineTo(stickMan.x, stickMan.y - scale)
-        this.context.stroke();
-
-        //hangman side line
-        this.context.beginPath();
-        this.context.moveTo(offsetX - scale, stickMan.y - scale)
-        this.context.lineTo(offsetX - scale, stickMan.y + scale + scale * .25)
-        this.context.stroke();
-
-        //hangman bottom line
-        this.context.beginPath();
-        this.context.moveTo(offsetX - scale - scale * .5, stickMan.y + scale + scale * .25)
-        this.context.lineTo(offsetX + scale - scale * .25, stickMan.y + scale + scale * .25)
-        this.context.stroke();
+        this.drawHangerTopLine(stickMan, offsetX, scale);
+        this.drawHangerLeftLine(stickMan, offsetX, scale);
+        this.drawHangerBottomLine(stickMan, offsetX, scale);
 
         this.context.restore();
         return [offsetX - scale - scale * .5, stickMan.y + scale + scale * .25]
@@ -107,12 +114,20 @@ class Hanger {
 
 class Stickman {
 
+    defaultOpts = {
+        leftArmAngle: 45,
+        rightArmAngle: 135,
+        leftLegAngle: 120,
+        rightLegAngle: 60,
+        smile: true
+    };
+
     constructor(canvas, x, y, radius, opts) {
         this.canvas = canvas;
         this.context = canvas.getContext("2d");
         this.x = x;
         this.y = y;
-        this.opts = opts;
+        this.opts = opts || { ...this.defaultOpts };
         this.radius = radius;
         if (!this.opts.torso) {
             this.opts.torso = this.radius * .8;
@@ -247,26 +262,28 @@ class Stickman {
         this.context.stroke();
     }
 
-    drawBodyParts(index = 20) {
-        const parts = [
+    getBodyParts() {
+        return [
+            this.drawHead.bind(this),
             this.drawBody.bind(this),
             this.drawArm.bind(this, this.opts.rightArmAngle),
             this.drawArm.bind(this, this.opts.leftArmAngle),
             this.drawHand.bind(this, this.opts.rightArmAngle),
             this.drawHand.bind(this, this.opts.leftArmAngle),
-            this.drawHead.bind(this),
-            this.drawMouth.bind(this),
-            this.drawLeftEye.bind(this),
-            this.drawRightEye.bind(this),
-            this.drawNose.bind(this),
             this.drawLeg.bind(this, this.opts.rightLegAngle),
             this.drawFoot.bind(this, this.opts.rightLegAngle),
             this.drawFoot.bind(this, this.opts.leftLegAngle),
-            this.drawLeg.bind(this, this.opts.leftLegAngle)
+            this.drawLeg.bind(this, this.opts.leftLegAngle),
+            this.drawMouth.bind(this),
+            this.drawLeftEye.bind(this),
+            this.drawRightEye.bind(this),
+            this.drawNose.bind(this)
         ]
+    }
 
-        for (let i = 0; i < Math.min(parts.length, index); i++) {
-            parts[i]();
+    drawBodyParts(bodyParts) {
+        for (let bodyPart of bodyParts) {
+            bodyPart();
         }
     }
 
@@ -275,7 +292,8 @@ class Stickman {
             this.drawCirclePaths(this.context, this.x, this.y, this.radius, this.opts);
         }
 
-        this.drawBodyParts();
+        const parts = this.getBodyParts();
+        this.drawBodyParts(parts);
     }
 
     drawHeadless() {
@@ -303,13 +321,13 @@ class Stickman {
         this.y = oldY;
     }
 
-    drawHanging() {       
+    drawHanging() {
         this.opts.leftArmAngle = 80;
         this.opts.rightArmAngle = 110;
         this.opts.leftLegAngle = 85;
         this.opts.rightLegAngle = 105;
         this.opts.smile = false;
-        this.drawBodyParts()
+        this.drawBodyParts(this.getBodyParts());
     }
 
     drawCirclePaths() {
@@ -348,7 +366,7 @@ class HangmanAnimations {
     happyJump() {
         let time = this.animationStack.getUnitTime(1000, true);
 
-        if ((time) > 1.2) {
+        if (time > 1.2) {
             this.animationStack.resetUnitTime();
         }
 
@@ -428,41 +446,51 @@ class HangmanAnimations {
         this.stickMan.draw();
     }
 
-    drawGame(word = "_ _ _ test", guesses = [1, 2, 3, 4, 5, 6, 7, 1, 1, 3, 4, 5, 6, 5]) {
+    drawGame(word = "_ _ _ test _ _ _ test443423423f", guesses = [1, 2, 3]) {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.stickMan.drawBodyParts(guesses.length);
-        this.hanger.drawHanger(this);
+        this.opts = { ...this.defaultOpts };
+
+        const bodyParts = this.stickMan.getBodyParts().slice(0, guesses.length)
+        this.stickMan.drawBodyParts(bodyParts);
+        const [bottom, left] = this.hanger.drawHanger(this.stickMan);
+        displayText(this.context, "Hangman", bottom, left + 30, 20, this.stickMan.radius);
 
         this.context.fillStyle = "red";
         this.context.letterSpacing = "6px";
-        displayText(this.context, word, this.stickMan.x - this.stickMan.radius * 3, this.stickMan.y - this.stickMan.radius * 2.3, 30, this.canvas.width);
+        displayText(this.context, word, this.stickMan.x - this.stickMan.radius * 2, this.stickMan.y - this.stickMan.radius * 4, 30, this.canvas.width);
 
         this.context.fillStyle = "black";
         this.context.letterSpacing = "0px";
         displayText(this.context, (guesses || []).join(" "),
             this.stickMan.x - this.stickMan.radius * 3,
-            this.stickMan.y + this.stickMan.radius * 3, 30, this.canvas.width);
+            this.stickMan.y + this.stickMan.radius * 3.7, 30, this.canvas.width);
     }
 
-    startIntroAnimation() {
-        this.animationStack.push(this.walk.bind(this, this.stickMan.x + 300));
-        this.animationStack.push(this.happyJump.bind(this));
-        this.animationStack.push(this.walk.bind(this, this.stickMan.x + 500));
-        const hanger = new Hanger(this.canvas, this.stickMan);
-        this.animationStack.push(this.fadeHangman.bind(this, hanger, true));
-        this.animationStack.push(this.fadeLogo.bind(this, hanger, false));
+    drawGameScene(word = "_ _ _ test", guesses = [1, 2, 3]) {
+        this.animationStack.getUnitTime(1);
+        this.drawGame(word, guesses);
         this.animationStack.requestFrame();
     }
 
-    winAnimation() {
+    startGameScene(toDancePos, toEndPos, word, guesses) {
+        this.animationStack.push(this.walk.bind(this, toDancePos));
         this.animationStack.push(this.happyJump.bind(this));
-        this.animationStack.push(this.walk.bind(this,
-            this.canvas.width + this.radius * 2));
-            this.animationStack.push(this.fadeText.bind(this, "Winner", false));
-            this.animationStack.requestFrame();
+        this.animationStack.push(this.walk.bind(this, toEndPos));
+        const hanger = new Hanger(this.canvas, this.stickMan);
+        this.animationStack.push(this.fadeHangman.bind(this, hanger, true));
+        this.animationStack.push(this.fadeLogo.bind(this, hanger, false));
+        this.animationStack.push(this.drawGameScene.bind(this, word, guesses));
+        this.animationStack.requestFrame();
     }
 
-    loseAnimation() {        
+    winScene() {
+        this.animationStack.push(this.happyJump.bind(this));
+        this.animationStack.push(this.walk.bind(this, this.canvas.width + this.stickMan.radius * 2));
+        this.animationStack.push(this.fadeText.bind(this, "Winner", false));
+        this.animationStack.requestFrame();
+    }
+
+    loseScene() {
         this.animationStack.push(this.drawHanging.bind(this));
         this.animationStack.push(this.drawHeadless.bind(this));
         this.animationStack.push(this.fadeText.bind(this, "You Lost", false));
@@ -540,10 +568,20 @@ class AnimationStack {
 }
 
 window.onload = () => {
-    runAnimations();
-};    
+    //  runAnimations("hangman");
+};
 
-function runAnimations() {
+export function hangmanView(canvas, x, y, radius, opts) {
+    const stickMan = new Stickman(canvas, x, y, radius, opts);
+    const hanger = new Hanger(canvas, x, y, radius);
+    const stack = new AnimationStack(canvas);
+    return new HangmanAnimations(canvas, stickMan, hanger, stack);
+    //hangman.startGameScene();
+    //hangman.loseScene();
+    //hangman.winScene();
+}
+
+function runAnimations(id) {
     let opts = {
         leftArmAngle: 45,
         rightArmAngle: 135,
@@ -552,14 +590,13 @@ function runAnimations() {
         smile: true
     };
 
-    const canvas = document.getElementById("hangman");
+    const canvas = document.getElementById(id);
     const stickMan = new Stickman(canvas, 0, 400, 100, opts);
     const hanger = new Hanger(stickMan.canvas, stickMan.x, stickMan.y, stickMan.radius);
     const stack = new AnimationStack(canvas);
     const hangman = new HangmanAnimations(canvas, stickMan, hanger, stack);
-    
-    hangman.startIntroAnimation();
-    hangman.loseAnimation();
-    hangman.winAnimation();
 
+    hangman.startGameScene(stickMan.x, canvas.width);
+    //hangman.loseScene();
+    //hangman.winScene();
 }
