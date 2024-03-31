@@ -25,7 +25,7 @@ function getLines(ctx, text, maxWidth) {
             currentLine = word;
         }
     }
-    
+
     lines.push(currentLine);
     return lines;
 }
@@ -77,24 +77,33 @@ class Hanger {
     drawNoose(stickMan) {
         this.context.save();
         this.context.lineWidth = 4;
-        let scale = this.radius * 1.7;
 
-        //hangman hangar
+        this.drawNooseRope(stickMan);
+
+        this.context.beginPath();
+        this.drawNooseCircle(stickMan, .1);
+        this.drawNooseCircle(stickMan, .15);
+        this.drawNooseCircle(stickMan, .2);
+        this.context.stroke();
+        this.context.restore();
+    }
+
+    drawNooseRope(stickMan) {
+        const scale = stickMan.radius * 1.7;
         this.context.beginPath();
         this.context.moveTo(stickMan.x, stickMan.y - scale)
         this.context.lineTo(stickMan.x, stickMan.y - stickMan.radius - stickMan.opts.torso / 2)
         this.context.stroke();
+    }
 
-        // noose circles
-        this.context.beginPath();
-        this.context.ellipse(stickMan.x, stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * .1, 2, stickMan.radius * .08, Math.PI / 2, 0, 2 * Math.PI)
-        this.context.ellipse(stickMan.x, stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * .15, 2, stickMan.radius * .08, Math.PI / 2, 0, 2 * Math.PI)
-        this.context.ellipse(stickMan.x, stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * .2, 2, stickMan.radius * .08, Math.PI / 2, 0, 2 * Math.PI)
-        this.context.stroke();
-        this.context.restore();
+    drawNooseCircle(stickMan, offsetY) {
+        this.context.ellipse(stickMan.x,
+            stickMan.y - stickMan.opts.torso / 2 + stickMan.radius * offsetY,
+            2,
+            stickMan.radius * .08,
+            Math.PI / 2, 0, 2 * Math.PI)
     }
 }
-
 
 class Stickman {
 
@@ -270,8 +279,6 @@ class Stickman {
     }
 
     drawHeadless() {
-        getUnitTime(1000);
-
         this.drawHead();
         this.drawLeftEye();
         this.drawRightEye();
@@ -284,7 +291,7 @@ class Stickman {
         const oldX = this.x;
         const oldY = this.y;
         this.x = this.radius;
-        this.y = this.radius - this.radius / 2 ;
+        this.y = this.radius - this.radius / 2;
 
         this.drawBody();
         this.drawArm(110);
@@ -296,8 +303,7 @@ class Stickman {
         this.y = oldY;
     }
 
-    drawHanging() {
-        let time = getUnitTime(1000);
+    drawHanging() {       
         this.opts.leftArmAngle = 80;
         this.opts.rightArmAngle = 110;
         this.opts.leftLegAngle = 85;
@@ -326,22 +332,24 @@ class Stickman {
         this.context.stroke();
         this.context.fill();
         this.context.restore();
-    }    
+    }
 }
 
-class Hangman {
-    constructor(canvas, stickMan, hanger) {
+class HangmanAnimations {
+
+    constructor(canvas, stickMan, hanger, animationStack) {
         this.canvas = canvas;
         this.context = canvas.getContext("2d");
         this.stickMan = stickMan;
         this.hanger = hanger;
+        this.animationStack = animationStack;
     }
 
     happyJump() {
-        let time = getUnitTime(1000, true);
+        let time = this.animationStack.getUnitTime(1000, true);
 
         if ((time) > 1.2) {
-            resetUnitTime();
+            this.animationStack.resetUnitTime();
         }
 
         this.stickMan.opts.rightLegAngle = bounce(time * 300, 90, 180) + 150
@@ -352,16 +360,16 @@ class Hangman {
     }
 
     fadeHangman(hanger, isFadeOut = true) {
-        let time = getUnitTime(1000);
+        let time = this.animationStack.getUnitTime(1000);
         this.context.save();
         this.context.globalAlpha = isFadeOut ? 1 - time : time;
         this.stickMan.draw();
         this.context.restore();
-        this.hanger.drawHanger(this.stickMan);
+        hanger.drawHanger(this.stickMan);
     }
 
     fadeLogo(hanger, isFadeOut = false) {
-        let time = getUnitTime(1000);
+        let time = this.animationStack.getUnitTime(1000);
         let [bottom, left] = hanger.drawHanger(this.stickMan);
         this.context.save();
         this.context.fillStyle = "dimgray"
@@ -370,8 +378,18 @@ class Hangman {
         this.context.restore();
     }
 
+    drawHanging() {
+        this.animationStack.getUnitTime(1000);
+        this.stickMan.drawHanging();
+    }
+
+    drawHeadless() {
+        this.animationStack.getUnitTime(1000);
+        this.stickMan.drawHeadless();
+    }
+
     fadeText(text, isFadeOut = false) {
-        let time = getUnitTime(1000);
+        let time = this.animationStack.getUnitTime(1000);
         this.context.save();
         this.context.fillStyle = "blue"
         this.context.globalAlpha = isFadeOut ? 1 - time : time;
@@ -380,9 +398,9 @@ class Hangman {
     }
 
     oscillateWalk(to) {
-        let time = getUnitTime(1000, true);
+        let time = this.animationStack.getUnitTime(1000, true);
         if (this.stickMan.x >= to) {
-            resetUnitTime();
+            this.animationStack.resetUnitTime();
         }
 
         const amplitude = 35;
@@ -397,9 +415,9 @@ class Hangman {
     }
 
     walk(to) {
-        let time = getUnitTime(1000, true);
+        let time = this.animationStack.getUnitTime(1000, true);
         if (this.stickMan.x >= to) {
-            resetUnitTime();
+            this.animationStack.resetUnitTime();
         }
 
         this.stickMan.opts.rightLegAngle = bounce(time * 100, 60, 60)
@@ -407,10 +425,10 @@ class Hangman {
         this.stickMan.opts.rightArmAngle = this.stickMan.opts.leftLegAngle - 30;
         this.stickMan.opts.leftArmAngle = -this.stickMan.opts.rightArmAngle + 150;
         this.stickMan.x += 1.5;
-        this.stickMan.draw()
+        this.stickMan.draw();
     }
 
-    drawGame(word = "_ _ _ test", guesses = [1,2,3,4,5,6,7,1,1,3,4,5,6,5]) {
+    drawGame(word = "_ _ _ test", guesses = [1, 2, 3, 4, 5, 6, 7, 1, 1, 3, 4, 5, 6, 5]) {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.stickMan.drawBodyParts(guesses.length);
         this.hanger.drawHanger(this);
@@ -421,96 +439,111 @@ class Hangman {
 
         this.context.fillStyle = "black";
         this.context.letterSpacing = "0px";
-        displayText(this.context, (guesses || []).join(" "), this.stickMan.x - this.stickMan.radius * 3, this.stickMan.y + this.stickMan.radius * 3, 30, this.canvas.width)
+        displayText(this.context, (guesses || []).join(" "),
+            this.stickMan.x - this.stickMan.radius * 3,
+            this.stickMan.y + this.stickMan.radius * 3, 30, this.canvas.width);
     }
 
+    startIntroAnimation() {
+        this.animationStack.push(this.walk.bind(this, this.stickMan.x + 300));
+        this.animationStack.push(this.happyJump.bind(this));
+        this.animationStack.push(this.walk.bind(this, this.stickMan.x + 500));
+        const hanger = new Hanger(this.canvas, this.stickMan);
+        this.animationStack.push(this.fadeHangman.bind(this, hanger, true));
+        this.animationStack.push(this.fadeLogo.bind(this, hanger, false));
+        this.animationStack.requestFrame();
+    }
+
+    winAnimation() {
+        this.animationStack.push(this.happyJump.bind(this));
+        this.animationStack.push(this.walk.bind(this,
+            this.canvas.width + this.radius * 2));
+            this.animationStack.push(this.fadeText.bind(this, "Winner", false));
+            this.animationStack.requestFrame();
+    }
+
+    loseAnimation() {        
+        this.animationStack.push(this.drawHanging.bind(this));
+        this.animationStack.push(this.drawHeadless.bind(this));
+        this.animationStack.push(this.fadeText.bind(this, "You Lost", false));
+        this.animationStack.requestFrame();
+    }
 }
 
-let globalTime;
-let startTime;
-let currentAnim;
-const animationStack = [];
+class AnimationStack {
 
-function getUnitTime(duration, isInfinite = false) {
-    var unitTime = (globalTime - startTime) / duration;
-    if (isInfinite) {
+    globalTime;
+    startTime;
+    currentAnim;
+    stack = [];
+
+    constructor(canvas) {
+        this.canvas = canvas;
+    }
+
+    push(animation) {
+        this.stack.push(animation)
+    }
+
+    getUnitTime(duration, isInfinite = false) {
+        var unitTime = (this.globalTime - this.startTime) / duration;
+        if (isInfinite) {
+            return unitTime;
+        }
+
+        if (unitTime >= 1) {
+            unitTime = 1;
+            this.startTime = this.startTime + duration;
+            this.currentAnim = undefined
+        }
+
         return unitTime;
     }
 
-    if (unitTime >= 1) {
-        unitTime = 1;
-        startTime = startTime + duration;
-        currentAnim = undefined
+    resetUnitTime() {
+        this.startTime = undefined;
+        this.currentAnim = undefined;
     }
 
-    return unitTime;
-}
-
-function resetUnitTime() {
-    startTime = undefined;
-    currentAnim = undefined;
-}
-
-function animationLoop(time) {
-    globalTime = time;
-    if (startTime === undefined) {
-        startTime = time;
-    }
-
-    if (currentAnim === undefined) {
-        if (animationStack.length > 0) {
-            currentAnim = animationStack.shift();
+    animationLoop(time) {
+        this.globalTime = time;
+        if (this.startTime === undefined) {
+            this.startTime = time;
         }
+
+        if (this.currentAnim === undefined) {
+            if (this.stack.length > 0) {
+                this.currentAnim = this.stack.shift();
+            }
+        }
+
+        if (this.currentAnim === undefined) {
+            return;
+        }
+
+        const context = this.canvas.getContext("2d");
+        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.currentAnim();
+
+        window.requestAnimationFrame(this.animationLoop.bind(this));
     }
 
-    if (currentAnim === undefined) {
-        return;
+    requestFrame() {
+        if (this.currentAnim === undefined) {
+            window.requestAnimationFrame(this.animationLoop.bind(this));
+        }
+
+        this.startTime = undefined;
+        this.currentAnim = undefined;
     }
-
-    const canvas = document.getElementById("hangman");
-    const context = canvas.getContext("2d");
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    currentAnim();
-    requestAnimationFrame(animationLoop);
-}
-
-function requestFrame() {
-    if (currentAnim === undefined) {
-        requestAnimationFrame(animationLoop);
-    }
-
-    startTime = undefined;
-    currentAnim = undefined;
-}
-
-function startIntroAnimation(hangman) {
-    animationStack.push(hangman.walk.bind(hangman, hangman.stickMan.x + 300));
-    animationStack.push(hangman.happyJump.bind(hangman));
-    animationStack.push(hangman.walk.bind(hangman, hangman.stickMan.x + 500));
-    const hanger = new Hanger(hangman.canvas, hangman.stickMan);
-    animationStack.push(hangman.fadeHangman.bind(hangman, hanger, true));
-    animationStack.push(hangman.fadeLogo.bind(hangman, hanger, false));
-    requestFrame();
-}
-
-function winAnimation(hangman) {
-    animationStack.push(hangman.happyJump.bind(hangman));
-    animationStack.push(hangman.walk.bind(hangman, 
-        hangman.canvas.width + hangman.radius * 2));
-    animationStack.push(hangman.fadeText.bind(hangman, "Winner", false));
-    requestFrame();
-}
-
-function loseAnimation(hangman, stickMan) {
-    animationStack.push(stickMan.drawHanging.bind(stickMan));
-    animationStack.push(stickMan.drawHeadless.bind(stickMan));
-    animationStack.push(hangman.fadeText.bind(hangman, "You Lost", false));
-    requestFrame();
 }
 
 window.onload = () => {
+    runAnimations();
+};    
+
+function runAnimations() {
     let opts = {
         leftArmAngle: 45,
         rightArmAngle: 135,
@@ -518,17 +551,15 @@ window.onload = () => {
         rightLegAngle: 60,
         smile: true
     };
-    
+
     const canvas = document.getElementById("hangman");
     const stickMan = new Stickman(canvas, 0, 400, 100, opts);
     const hanger = new Hanger(stickMan.canvas, stickMan.x, stickMan.y, stickMan.radius);
-    const hangman = new Hangman(canvas, stickMan, hanger);
-    //hangman.drawGame();
-    //animationStack.push(stickMan.oscillateWalk.bind(stickMan, 500));
-    //requestFrame();
+    const stack = new AnimationStack(canvas);
+    const hangman = new HangmanAnimations(canvas, stickMan, hanger, stack);
+    
+    hangman.startIntroAnimation();
+    hangman.loseAnimation();
+    hangman.winAnimation();
 
-    //draw(400, 300, radius, opts)
-    //loseAnimation(hangman, stickMan);
-   //startIntroAnimation(hangman);
-   startIntroAnimation(hangman);
-};    
+}
