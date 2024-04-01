@@ -40,6 +40,9 @@ export default function HangmanGame() {
 
     useEffect(() => {
         const canvas = canvasRef.current;
+        if (!canvas) {
+            return;
+        }
         canvas.width = window.innerWidth * .9;
         canvas.height = window.innerHeight * .8;
         const radius = window.innerHeight / 12;
@@ -53,7 +56,7 @@ export default function HangmanGame() {
     useEffect(() => {
         const bodyParts = HangmanView.stickMan.getBodyParts();
         if (guesses.length >= bodyParts.length) {
-            HangmanView.animations.loseScene();
+            HangmanView.animations.loseScene(word, guesses);
             return;
         }
 
@@ -73,9 +76,9 @@ export default function HangmanGame() {
 
     useEffect(() => {       
         if (isWinner) {
-            HangmanView.animations.winScene();
+            HangmanView.animations.winScene(word, guesses);
         }
-    }, [isWinner])
+    }, [isWinner, word, guesses])
 
 
     function onGuessSubmit(guess) {

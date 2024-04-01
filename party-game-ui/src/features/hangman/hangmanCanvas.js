@@ -377,6 +377,13 @@ class HangmanAnimations {
         this.stickMan.draw();
     }
 
+    happyJumpGameWon(word, guesses) {
+        this.displayGameWords(word, guesses);
+        this.hanger.drawHanger(this.stickMan);
+        this.happyJump();
+
+    }
+
     fadeHangman(hanger, isFadeOut = true) {
         let time = this.animationStack.getUnitTime(1000);
         this.context.save();
@@ -392,18 +399,34 @@ class HangmanAnimations {
         this.context.save();
         this.context.fillStyle = "dimgray"
         this.context.globalAlpha = isFadeOut ? 1 - time : time;
-        displayText(this.context, "Hangman", bottom, left + 20, 20, this.stickMan.radius);
+        displayText(this.context, "Hangman", bottom, left + 30, 20, this.stickMan.radius);
         this.context.restore();
     }
 
-    drawHanging() {
+    drawHanging(word, guesses) {
         this.animationStack.getUnitTime(1000);
+        this.displayGameWords(word, guesses);
+        this.hanger.drawHanger(this.stickMan);
+        this.hanger.drawNoose(this.stickMan);
         this.stickMan.drawHanging();
     }
 
-    drawHeadless() {
+    drawHeadless(word, guesses) {
         this.animationStack.getUnitTime(1000);
+        this.displayGameWords(word, guesses);
+        this.hanger.drawHanger(this.stickMan);
+        this.hanger.drawNoose(this.stickMan);
         this.stickMan.drawHeadless();
+    }
+
+    fadeTextLoss(word, guesses) {
+        let time = this.animationStack.getUnitTime(1000);
+        this.drawHeadless(word, guesses);
+        this.context.save();
+        this.context.fillStyle = "blue"
+        this.context.globalAlpha = time;
+        displayText(this.context, "You lose", this.canvas.width / 2 - this.stickMan.radius * 2, this.canvas.height / 2, 70, 50);
+        this.context.restore();
     }
 
     fadeText(text, isFadeOut = false) {
@@ -411,7 +434,7 @@ class HangmanAnimations {
         this.context.save();
         this.context.fillStyle = "blue"
         this.context.globalAlpha = isFadeOut ? 1 - time : time;
-        displayText(this.context, text, this.stickMan.x, this.stickMan.y, 70, 50);
+        displayText(this.context, text, this.canvas.width / 2 - this.stickMan.radius * 2, this.canvas.height / 2, 70, 50);
         this.context.restore();
     }
 
@@ -432,17 +455,23 @@ class HangmanAnimations {
         this.stickMan.draw()
     }
 
+    winWalk(to, word, guesses) {
+        this.displayGameWords(word, guesses);
+        this.hanger.drawHanger(this.stickMan);
+        this.walk(to)
+    }
+
     walk(to) {
         let time = this.animationStack.getUnitTime(1000, true);
         if (this.stickMan.x >= to) {
             this.animationStack.resetUnitTime();
         }
 
-        this.stickMan.opts.rightLegAngle = bounce(time * 100, 60, 60)
+        this.stickMan.opts.rightLegAngle = bounce(time * 150, 60, 60)
         this.stickMan.opts.leftLegAngle = -this.stickMan.opts.rightLegAngle + 180;
         this.stickMan.opts.rightArmAngle = this.stickMan.opts.leftLegAngle - 30;
         this.stickMan.opts.leftArmAngle = -this.stickMan.opts.rightArmAngle + 150;
-        this.stickMan.x +=3;
+        this.stickMan.x += 5;
         this.stickMan.draw();
     }
 
@@ -452,6 +481,10 @@ class HangmanAnimations {
 
         const bodyParts = this.stickMan.getBodyParts().slice(0, guesses.length)
         this.stickMan.drawBodyParts(bodyParts);
+        this.displayGameWords(word, guesses);
+    }
+
+    displayGameWords(word, guesses) {
         const [bottom, left] = this.hanger.drawHanger(this.stickMan);
         displayText(this.context, "Hangman", bottom, left + 30, 20, this.stickMan.radius);
 
@@ -476,7 +509,7 @@ class HangmanAnimations {
         this.animationStack.push(this.drawGameScene.bind(this, word, []));
     }
 
-    startGameScene(toDancePos, toEndPos, word, guesses) {
+    startGameScene(toDancePos, toEndPos) {
         this.animationStack.push(this.walk.bind(this, toDancePos));
         this.animationStack.push(this.happyJump.bind(this));
         this.animationStack.push(this.walk.bind(this, toEndPos));
@@ -486,17 +519,17 @@ class HangmanAnimations {
         this.animationStack.requestFrame();
     }
 
-    winScene() {
-        this.animationStack.push(this.happyJump.bind(this));
+    winScene(word = "", guesses = []) {
+        this.animationStack.push(this.happyJumpGameWon.bind(this, word, guesses));
         this.animationStack.push(this.walk.bind(this, this.canvas.width + this.stickMan.radius * 2));
         this.animationStack.push(this.fadeText.bind(this, "Winner", false));
         this.animationStack.requestFrame();
     }
 
-    loseScene() {
-        this.animationStack.push(this.drawHanging.bind(this));
-        this.animationStack.push(this.drawHeadless.bind(this));
-        this.animationStack.push(this.fadeText.bind(this, "You Lost", false));
+    loseScene(word = "", guesses = []) {
+        this.animationStack.push(this.drawHanging.bind(this, word, guesses));
+        this.animationStack.push(this.drawHeadless.bind(this, word, guesses));
+        this.animationStack.push(this.fadeTextLoss.bind(this, word, guesses));
         this.animationStack.requestFrame();
     }
 }
