@@ -442,7 +442,7 @@ class HangmanAnimations {
         this.stickMan.opts.leftLegAngle = -this.stickMan.opts.rightLegAngle + 180;
         this.stickMan.opts.rightArmAngle = this.stickMan.opts.leftLegAngle - 30;
         this.stickMan.opts.leftArmAngle = -this.stickMan.opts.rightArmAngle + 150;
-        this.stickMan.x += 1.5;
+        this.stickMan.x +=3;
         this.stickMan.draw();
     }
 
@@ -472,6 +472,10 @@ class HangmanAnimations {
         this.animationStack.requestFrame();
     }
 
+    addWord(word) {
+        this.animationStack.push(this.drawGameScene.bind(this, word, []));
+    }
+
     startGameScene(toDancePos, toEndPos, word, guesses) {
         this.animationStack.push(this.walk.bind(this, toDancePos));
         this.animationStack.push(this.happyJump.bind(this));
@@ -479,7 +483,6 @@ class HangmanAnimations {
         const hanger = new Hanger(this.canvas, this.stickMan);
         this.animationStack.push(this.fadeHangman.bind(this, hanger, true));
         this.animationStack.push(this.fadeLogo.bind(this, hanger, false));
-        this.animationStack.push(this.drawGameScene.bind(this, word, guesses));
         this.animationStack.requestFrame();
     }
 
@@ -571,14 +574,14 @@ window.onload = () => {
     //  runAnimations("hangman");
 };
 
-export function hangmanView(canvas, x, y, radius, opts) {
-    const stickMan = new Stickman(canvas, x, y, radius, opts);
-    const hanger = new Hanger(canvas, x, y, radius);
-    const stack = new AnimationStack(canvas);
-    return new HangmanAnimations(canvas, stickMan, hanger, stack);
-    //hangman.startGameScene();
-    //hangman.loseScene();
-    //hangman.winScene();
+export class HangmanView {
+ 
+    static initialize(canvas, x, y, radius, opts) {
+        this.stickMan = new Stickman(canvas, x, y, radius, opts);
+        this.hanger = new Hanger(canvas, x, y, radius);
+        this.stack = new AnimationStack(canvas);
+        this.animations = new HangmanAnimations(canvas, this.stickMan, this.hanger, this.stack);
+    }
 }
 
 function runAnimations(id) {
@@ -596,7 +599,7 @@ function runAnimations(id) {
     const stack = new AnimationStack(canvas);
     const hangman = new HangmanAnimations(canvas, stickMan, hanger, stack);
 
-    hangman.startGameScene(stickMan.x, canvas.width);
+    //hangman.startGameScene(stickMan.x, canvas.width);
     //hangman.loseScene();
     //hangman.winScene();
 }

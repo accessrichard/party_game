@@ -6,7 +6,7 @@ import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import GuessInput from './../canvas/GuessInput';
 import { Navigate } from 'react-router-dom';
-import { hangmanView } from './hangmanCanvas';
+import { HangmanView } from './hangmanCanvas';
 
 const events = (topic) => [
     {
@@ -27,11 +27,10 @@ export default function HangmanGame() {
     const dispatch = useDispatch();
     const canvasRef = useRef(null);
     const [inputStyle, setInputStyle] = useState({});
+    const [isStarted, setIsStarted] = useState(false);
 
-
-    const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
+    const { playerName, gameCode } = useSelector(state => state.lobby);
     const { word, guesses, isWinner } = useSelector(state => state.hangman);
-
     const hangmanChannel = `hangman:${gameCode}`;
 
     usePhoenixSocket();
@@ -43,34 +42,38 @@ export default function HangmanGame() {
         const canvas = canvasRef.current;
         canvas.width = window.innerWidth * .9;
         canvas.height = window.innerHeight * .8;
+        const radius = window.innerHeight / 12;
 
-        const radius = window.innerHeight / 6;
-
-        const hangman = hangmanView(canvas, canvas.width / 2, canvas.height / 2, 50);
-        setInputStyle({ width: canvas.width - 50, position: "absolute", top: canvas.height})
-
-        hangman.startGameScene(canvas.width / 3, canvas.width / 2, word, guesses);
+        HangmanView.initialize(canvas, 0, canvas.height / 2, radius);
+        HangmanView.animations.startGameScene(canvas.width / 4, canvas.width / 2, word, guesses);
+        setInputStyle({ width: canvas.width - 50, position: "absolute", top: canvas.height });
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "new_game")))
     }, [])
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const hangman = hangmanView(canvas, canvas.width / 2, canvas.height / 2, 50);
-        const bodyParts = hangman.stickMan.getBodyParts();
+        const bodyParts = HangmanView.stickMan.getBodyParts();
         if (guesses.length >= bodyParts.length) {
-           hangman.loseScene();
+            HangmanView.animations.loseScene();
             return;
         }
-        
-       hangman.drawGame(word, guesses);
-    }, [word, guesses]);
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const hangman = hangmanView(canvas, canvas.width / 2, canvas.height / 2, 50);
-        
+        if (word && word !== "" && !isStarted) {
+            console.log({word})
+            HangmanView.animations.addWord(word,);
+            setIsStarted(true);
+        }
+
+        if (guesses.length > 0) {
+            HangmanView.animations.drawGame(word, guesses);
+        }
+
+    }, [word, guesses, isStarted]);
+
+
+
+    useEffect(() => {       
         if (isWinner) {
-            hangman.winScene();
+            HangmanView.animations.winScene();
         }
     }, [isWinner])
 
@@ -83,7 +86,7 @@ export default function HangmanGame() {
     }
 
     if (!gameCode) {
-       // return <Navigate to="/" />
+         return <Navigate to="/" />
     }
 
     return (
