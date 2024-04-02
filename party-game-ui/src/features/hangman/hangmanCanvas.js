@@ -134,6 +134,10 @@ class Stickman {
         }
     }
 
+    resetOpts() {
+        this.opts = { ...this.defaultOpts }
+    }
+
     drawArm(angle) {
         this.context.beginPath();
         this.context.moveTo(this.x, this.y);
@@ -425,7 +429,20 @@ class HangmanAnimations {
         this.context.save();
         this.context.fillStyle = "blue"
         this.context.globalAlpha = time;
-        displayText(this.context, "You lose", this.canvas.width / 2 - this.stickMan.radius * 2, this.canvas.height / 2, 70, 50);
+        displayText(this.context, "You lost", this.canvas.width / 2 - this.stickMan.radius * 2, 
+        this.canvas.height / 2 - this.stickMan.opts.torso * 2.4, 50, 800);
+        this.context.restore();
+    }
+
+    fadeTextWin(word) {
+        let time = this.animationStack.getUnitTime(1000);
+        this.context.save();
+        this.context.fillStyle = "blue"
+        this.context.globalAlpha = time;
+        displayText(this.context, "Winner", this.canvas.width / 2 - this.stickMan.radius * 2, 
+        this.canvas.height / 2 - this.stickMan.opts.torso * 2.4, 50, 800);
+        displayText(this.context, word, this.canvas.width / 2 - this.stickMan.radius * 2, 
+        this.canvas.height - this.stickMan.radius * 3, 20, 800);
         this.context.restore();
     }
 
@@ -495,11 +512,12 @@ class HangmanAnimations {
         this.context.fillStyle = "black";
         this.context.letterSpacing = "0px";
         displayText(this.context, (guesses || []).join(" "),
-            this.stickMan.x - this.stickMan.radius * 3,
-            this.stickMan.y + this.stickMan.radius * 3.7, 30, this.canvas.width);
+            this.stickMan.x - this.stickMan.radius * 2.3,
+            this.stickMan.y + this.stickMan.radius * 3.1, 30, this.canvas.width - 30);
     }
 
     drawGameScene(word = "_ _ _ test", guesses = [1, 2, 3]) {
+        this.stickMan.resetOpts();
         this.animationStack.getUnitTime(1);
         this.drawGame(word, guesses);
         this.animationStack.requestFrame();
@@ -522,7 +540,7 @@ class HangmanAnimations {
     winScene(word = "", guesses = []) {
         this.animationStack.push(this.happyJumpGameWon.bind(this, word, guesses));
         this.animationStack.push(this.walk.bind(this, this.canvas.width + this.stickMan.radius * 2));
-        this.animationStack.push(this.fadeText.bind(this, "Winner", false));
+        this.animationStack.push(this.fadeTextWin.bind(this, word, false));
         this.animationStack.requestFrame();
     }
 
@@ -608,7 +626,7 @@ window.onload = () => {
 };
 
 export class HangmanView {
- 
+
     static initialize(canvas, x, y, radius, opts) {
         this.stickMan = new Stickman(canvas, x, y, radius, opts);
         this.hanger = new Hanger(canvas, x, y, radius);

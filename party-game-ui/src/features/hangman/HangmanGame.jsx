@@ -7,6 +7,7 @@ import { channelPush } from '../phoenix/phoenixMiddleware';
 import GuessInput from './../canvas/GuessInput';
 import { Navigate } from 'react-router-dom';
 import { HangmanView } from './hangmanCanvas';
+import usePrevious from '../usePrevious';
 
 const events = (topic) => [
     {
@@ -28,9 +29,10 @@ export default function HangmanGame() {
     const canvasRef = useRef(null);
     const [inputStyle, setInputStyle] = useState({});
     const [isStarted, setIsStarted] = useState(false);
-
     const { playerName, gameCode } = useSelector(state => state.lobby);
     const { word, guesses, isWinner } = useSelector(state => state.hangman);
+    const prevWord = useState(word);
+
     const hangmanChannel = `hangman:${gameCode}`;
 
     usePhoenixSocket();
@@ -38,22 +40,29 @@ export default function HangmanGame() {
     usePhoenixEvents(hangmanChannel, events);
     useLobbyEvents();
 
+    
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) {
             return;
         }
+
         canvas.width = window.innerWidth * .9;
         canvas.height = window.innerHeight * .8;
         const radius = window.innerHeight / 12;
-
         HangmanView.initialize(canvas, 0, canvas.height / 2, radius);
         HangmanView.animations.startGameScene(canvas.width / 4, canvas.width / 2, word, guesses);
         setInputStyle({ width: canvas.width - 50, position: "absolute", top: canvas.height });
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "new_game")))
-    }, [])
+      
+    }, [isStarted, prevWord]);
+
 
     useEffect(() => {
+        if (!HangmanView.stickMan) {
+            return;
+        }
+
         const bodyParts = HangmanView.stickMan.getBodyParts();
         if (guesses.length >= bodyParts.length) {
             HangmanView.animations.loseScene(word, guesses);
@@ -61,8 +70,7 @@ export default function HangmanGame() {
         }
 
         if (word && word !== "" && !isStarted) {
-            console.log({word})
-            HangmanView.animations.addWord(word,);
+            HangmanView.animations.addWord(word, guesses);
             setIsStarted(true);
         }
 
@@ -72,11 +80,10 @@ export default function HangmanGame() {
 
     }, [word, guesses, isStarted]);
 
-
-
     useEffect(() => {       
         if (isWinner) {
             HangmanView.animations.winScene(word, guesses);
+            setIsStarted(false);
         }
     }, [isWinner, word, guesses])
 
