@@ -67,15 +67,14 @@ export default function HangmanGame() {
             return;
         }
 
-        const ev = (e) => {console.log(e.detail)};
-
-        canvasRef.current.addEventListener("animation", ev);
+        const event = (e) => setIsAnimating(e.detail.isRunning);
+        canvasRef.current.addEventListener("animation", event);
         return () => {
             if (!canvasRef.current) {
                 return;
             }
 
-            canvasRef.current.removeEventListener("animation", ev);
+            canvasRef.current.removeEventListener("animation", event);
         };
     }, [canvasRef])
 
@@ -159,7 +158,7 @@ export default function HangmanGame() {
             <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
             </canvas>
             <div style={inputStyle}>
-              {!isWinner && !winningWord && word && 
+              {!isWinner && !winningWord && word && !isAnimating &&
               <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />}
             </div>
             <div className="container">
