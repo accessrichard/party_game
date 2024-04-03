@@ -9,18 +9,9 @@ export default function CanvasDrawGame() {
 
     const dispatch = useDispatch();
     const { isGameOwner, playerName, gameCode, gameName } = useSelector(state => state.lobby);
-    const { players, settings, isOver } = useSelector(state => state.canvas);
+    const { turn, winner, word, players, settings, isOver } = useSelector(state => state.canvas);
     const { games } = useSelector(state => state.creative);
-
-
     const canvasChannel = `canvas:${gameCode}`;
-
-    const {
-        turn,
-        winner,
-        word
-    } = useSelector(state => state.canvas);
-
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isEditable, setIsEditable] = useState(true);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);

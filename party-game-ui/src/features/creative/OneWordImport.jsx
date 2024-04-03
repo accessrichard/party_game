@@ -1,37 +1,38 @@
 import React, { useState } from 'react';
-import { gameToForm, mergeErrors, removeUnwantedJson, validateQuestions } from './creative';
-import MultipleChoiceCreate from './MultipleChoiceCreate';
-import { getGameFromPath, getGameMetadata } from '../../lobby/games';
-import { gameValidators } from './gameValidator';
-import { errors as initialErrors } from './game';
-import { validate } from '../../common/validator';
+import { validate, getErrors } from '../common/validator';
+import ImportGame from './ImportGame';
+import { getGameFromPath, getGameMetadata } from '../lobby/games';
 import { useDispatch } from 'react-redux';
 import { push } from 'redux-first-history';
-import ImportGame from '../../creative/ImportGame';
+import { gameValidators } from './oneWordValidators'
 
-export default function MultipleChoiceImport({text, hideSubmit}) {
+const initialErrors = {
+    words: "",
+    name: "",
+    type: ""
+}
 
+export default function OneWordImport({ children }) {
     const [gameForm, setGameForm] = useState({ errors: initialErrors });
     const [gameJson, setGameJson] = useState("");
-
     const dispatch = useDispatch();
 
-
     function importGame(json) {
-        setGameJson(json);
         try {
+
+            setGameJson(json);
             if (!json || json.trim() === "") {
                 setGameForm({ ...gameForm, errors: ["Can't import empty game."] });
                 return;
             }
 
+
             setGameForm({ ...gameForm, errors: [] });
 
             const gameObj = JSON.parse(json);
             const gameUrl = getGameFromPath();
-            if (gameUrl.type !== gameObj.type) {                
+            if (gameUrl.type !== gameObj.type) {
                 const gameMeta = getGameMetadata(gameObj.type);
-                
                 if (gameMeta) {
                     dispatch(push(gameMeta.url + '/import'))
                 } else {
@@ -42,17 +43,15 @@ export default function MultipleChoiceImport({text, hideSubmit}) {
             }
 
             const gameErrors = validate(gameValidators(gameObj));
-            const questionErrors = validateQuestions(gameObj);
-            const merged = mergeErrors(gameErrors, questionErrors)
-            
-            setGameForm({ ...gameForm, errors: merged.map(x => x.error && x.error || x ) });
-            if (merged.length > 0) {
+            const validations = getErrors(gameErrors).map(x => x.error);
+            setGameForm({ ...gameForm, errors: validations });
+
+            if (validations.length > 0) {
                 return;
             }
 
-            const cleanGame = removeUnwantedJson(gameObj);
-            setGameJson(JSON.stringify(cleanGame, null, 2));            
-            setGameForm({ ...gameToForm(cleanGame), errors: { ...initialErrors } });
+            setGameJson(JSON.stringify(gameObj, null, 2));
+            setGameForm({ ...gameObj, errors: { ...initialErrors } });
         } catch (err) {
             setGameForm({ ...gameForm, errors: [err.message] });
         }
@@ -68,7 +67,7 @@ export default function MultipleChoiceImport({text, hideSubmit}) {
                     json={gameJson}
                 />}
 
-            {gameForm.id && <MultipleChoiceCreate game={gameForm} />}
+            {gameForm.id && React.cloneElement(children, { game: gameForm, gameValidators })}
         </>
     );
 }

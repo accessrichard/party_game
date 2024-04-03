@@ -27,6 +27,8 @@ import MultipleChoiceSettings from './features/multipleChoice/MultipleChoiceSett
 import CanvasSettings from './features/canvas/CanvasSettings';
 import Start from './features/start/Start'; 
 import { history } from './features/store';
+import HangmanCreate from './features/hangman/HangmanCreate';
+import HangmanImport from './features/hangman/HangmanImport';
 
 function App() {
   return (
@@ -60,6 +62,9 @@ function App() {
               <Route exact path="/canvas_alternate/import" element={<CanvasImport />} />
 
               <Route exact path="/hangman" element={<HangmanGame />} />
+              <Route exact path="/hangman/create" element={<HangmanCreate />} />
+              <Route exact path="/hangman/import" element={<HangmanImport />} />
+              
             </Route>
           </Route>
         </Route>

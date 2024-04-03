@@ -1,4 +1,4 @@
-import { nameValidator } from "../../common/importValidator"
+import { nameValidator } from "../common/importValidator"
 
 export function gameValidators(gameObj) {
     return [       

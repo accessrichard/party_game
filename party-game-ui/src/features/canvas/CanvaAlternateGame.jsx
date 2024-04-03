@@ -11,11 +11,12 @@ export default function CanvasDrawGame() {
     const { isGameOwner, playerName, gameCode, gameName } = useSelector(state => state.lobby);
     const { games } = useSelector(state => state.creative);
     const canvasChannel = `canvas:${gameCode}`;
-    const { players, settings } = useSelector(state => state.canvas);
     const {
         turn,
         winner,
-        word
+        word,
+        players, 
+        settings
     } = useSelector(state => state.canvas);
 
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -37,7 +38,7 @@ export default function CanvasDrawGame() {
         setIsTimerActive(true);
 
         if (isGameOwner) {
-            dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner == "" ? "new_game" : "next_turn")));
+            dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner === "" ? "new_game" : "next_turn")));
         }
 
         setIsNewGamePrompt(false);
@@ -54,7 +55,7 @@ export default function CanvasDrawGame() {
     }
 
     function getGame() {
-        const matching = games.find(x => x.game.name == gameName);
+        const matching = games.find(x => x.game.name === gameName);
         return typeof matching === 'undefined'
             ? { settings: { difficulty: settings.difficulty } }
             : { type: matching.game.type, name: gameName, words: matching.game.words, settings }

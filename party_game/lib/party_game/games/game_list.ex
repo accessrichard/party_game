@@ -11,6 +11,7 @@ defmodule PartyGame.Games.GameList do
         category: "Math",
         type: "multiple_choice",
         location: "server",
+        options: %{type: ""},
         module: MultipleChoice.BasicMath
       },
       %GameMetaData{

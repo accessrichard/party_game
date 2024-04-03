@@ -1,15 +1,15 @@
 import React from 'react';
-import OneWordCreate from '../../creative/OneWordCreate';
+import OneWordCreate from '../creative/OneWordCreate';
 
 const defaultState = {
     name: "",
     words: [""],
     id: Date.now(),
-    type: "canvas",
+    type: "hangman",
     errors: { words: [], name: "" }
 }
 
-export default function CanvasCreate({ game }) {
+export default function HangmanCreate({ game }) {
     return (
         <OneWordCreate game={game} defaultState={defaultState}/>
     );
