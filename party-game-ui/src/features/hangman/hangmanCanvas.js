@@ -119,12 +119,12 @@ class Stickman {
         rightArmAngle: 135,
         leftLegAngle: 120,
         rightLegAngle: 60,
-        smile: true                
+        smile: true
     };
 
     bodyParts = [
         this.drawHead,
-        this.drawBody,            
+        this.drawBody,
         this.drawRightArm,
         this.drawLeftArm,
         this.drawRightHand,
@@ -321,7 +321,7 @@ class Stickman {
 
     drawBodyParts(bodyParts) {
         for (let bodyPart of bodyParts) {
-            bodyPart.bind(this)();            
+            bodyPart.bind(this)();
         }
     }
 
@@ -409,7 +409,7 @@ class HangmanAnimations {
         }
 
         this.stickMan.opts.rightLegAngle = bounce(time * 300, 90, 180) + 150
-        this.stickMan.opts.leftLegAngle =  this.stickMan.opts.rightLegAngle + 60;
+        this.stickMan.opts.leftLegAngle = this.stickMan.opts.rightLegAngle + 60;
         this.stickMan.opts.rightArmAngle = this.stickMan.opts.leftLegAngle - 60;
         this.stickMan.opts.leftArmAngle = -this.stickMan.opts.rightArmAngle + 150;
         this.stickMan.draw();
@@ -462,11 +462,11 @@ class HangmanAnimations {
         this.context.save();
         this.context.fillStyle = "red"
         this.context.globalAlpha = time;
-        displayText(this.context, "You Lost", this.canvas.width / 2 - this.stickMan.radius * 2, 
-        this.canvas.height / 2 - this.stickMan.opts.torso * 2.4, 50, 800);
+        displayText(this.context, "You Lost", this.canvas.width / 2 - this.stickMan.radius * 2,
+            this.canvas.height / 2 - this.stickMan.opts.torso * 2.4, 50, 800);
         this.context.fillStyle = "black"
-        displayText(this.context, winningWord, this.canvas.width / 2 - this.stickMan.radius * 2, 
-        this.canvas.height - this.stickMan.radius * 3, 20, 800);
+        displayText(this.context, winningWord, this.canvas.width / 2 - this.stickMan.radius * 2,
+            this.canvas.height - this.stickMan.radius * 3, 20, 800);
         this.context.restore();
     }
 
@@ -475,11 +475,11 @@ class HangmanAnimations {
         this.context.save();
         this.context.fillStyle = "blue"
         this.context.globalAlpha = time;
-        displayText(this.context, "Winner", this.canvas.width / 2 - this.stickMan.radius * 2, 
-        this.canvas.height / 2 - this.stickMan.opts.torso * 2.4, 50, 800);
+        displayText(this.context, "Winner", this.canvas.width / 2 - this.stickMan.radius * 2,
+            this.canvas.height / 2 - this.stickMan.opts.torso * 2.4, 50, 800);
         this.context.fillStyle = "black"
-        displayText(this.context, word, this.canvas.width / 2 - this.stickMan.radius * 2, 
-        this.canvas.height - this.stickMan.radius * 3, 20, 800);
+        displayText(this.context, word, this.canvas.width / 2 - this.stickMan.radius * 2,
+            this.canvas.height - this.stickMan.radius * 3, 20, 800);
         this.context.restore();
     }
 
@@ -540,7 +540,7 @@ class HangmanAnimations {
     }
 
     displayGameWords(word, guesses) {
-        
+
         const [bottom, left] = this.hanger.drawHanger(this.stickMan);
         displayText(this.context, "Hangman", bottom, left + 30, 20, this.stickMan.radius);
 
@@ -551,8 +551,8 @@ class HangmanAnimations {
         this.context.fillStyle = "black";
         this.context.letterSpacing = "0px";
         displayText(this.context, (guesses || []).join(" "),
-        this.stickMan.x - this.stickMan.radius * 2.3,
-        this.stickMan.y + this.stickMan.radius * 3.1, 30, this.canvas.width - 30);
+            this.stickMan.x - this.stickMan.radius * 2.3,
+            this.stickMan.y + this.stickMan.radius * 3.1, 30, this.canvas.width - 30);
     }
 
     drawGameScene(word = "_ _ _ test", guesses = [1, 2, 3]) {
@@ -594,6 +594,8 @@ class AnimationStack {
     startTime;
     currentAnim;
     stack = [];
+    isRunning = false;
+    isRunningEvent = new CustomEvent("animation", { detail: { isRunning: this.isRunning }});
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -601,10 +603,6 @@ class AnimationStack {
 
     push(animation) {
         this.stack.push(animation)
-    }
-
-    isRunning() {
-        return this.currentAnim !== undefined;
     }
 
     getUnitTime(duration, isInfinite = false) {
@@ -633,13 +631,26 @@ class AnimationStack {
             this.startTime = time;
         }
 
-        if (this.currentAnim === undefined) {
-            if (this.stack.length > 0) {
-                this.currentAnim = this.stack.shift();
+        if (this.currentAnim === undefined && this.stack.length > 0) {
+            this.currentAnim = this.stack.shift();
+
+            if (!this.isRunning) {
+                this.isRunningEvent.detail.isRunning = true;
+                this.canvas.dispatchEvent(this.isRunningEvent);
             }
+
+            this.isRunning = true;
         }
 
         if (this.currentAnim === undefined) {
+
+            if (this.isRunning) {
+                this.isRunningEvent.detail.isRunning = false;
+                this.canvas.dispatchEvent(this.isRunningEvent);
+            }
+
+            this.isRunning = false;
+
             return;
         }
 

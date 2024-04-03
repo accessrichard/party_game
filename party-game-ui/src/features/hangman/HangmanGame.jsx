@@ -35,6 +35,7 @@ export default function HangmanGame() {
     const { word, guesses, isWinner, startIntroScene, winningWord } = useSelector(state => state.hangman);
     const prevWord = usePrevious(word);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const hangmanChannel = `hangman:${gameCode}`;
     useBackButtonBlock(isBackButtonBlocked);
@@ -60,6 +61,23 @@ export default function HangmanGame() {
             window.removeEventListener("beforeunload", notifyLeave);
         };
     }, []);
+
+    useEffect(() => {
+        if (!canvasRef.current) {
+            return;
+        }
+
+        const ev = (e) => {console.log(e.detail)};
+
+        canvasRef.current.addEventListener("animation", ev);
+        return () => {
+            if (!canvasRef.current) {
+                return;
+            }
+
+            canvasRef.current.removeEventListener("animation", ev);
+        };
+    }, [canvasRef])
 
     useEffect(() => {
         if (!startIntroScene)  {
@@ -103,6 +121,10 @@ export default function HangmanGame() {
     }, [isWinner, word, guesses])
 
     function onGuessSubmit(guess) {
+        if (isWinner) {
+            return;
+        }
+         
         if (guesses.some(x => x.toLowerCase().trim() == guess.toLowerCase().trim())) {
             return;
         }
@@ -137,12 +159,14 @@ export default function HangmanGame() {
             <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
             </canvas>
             <div style={inputStyle}>
-                <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />
+              {!isWinner && !winningWord && word && 
+              <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />}
             </div>
+            <div className="container">
 
-            <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>
+            {isGameOwner && <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>}
             <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>
-
+</div>
         </>
     )
 }
