@@ -29,6 +29,7 @@ import Start from './features/start/Start';
 import { history } from './features/store';
 import HangmanCreate from './features/hangman/HangmanCreate';
 import HangmanImport from './features/hangman/HangmanImport';
+import HangmanSettings from './features/hangman/HangmanSettings';
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
               <Route exact path="/hangman" element={<HangmanGame />} />
               <Route exact path="/hangman/create" element={<HangmanCreate />} />
               <Route exact path="/hangman/import" element={<HangmanImport />} />
+              <Route exact path="/hangman/settings" element={<HangmanSettings />} />
               
             </Route>
           </Route>

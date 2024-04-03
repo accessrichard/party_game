@@ -105,14 +105,14 @@ export default function HangmanGame() {
             return;
         }
 
-        const bodyParts = HangmanView.stickMan.getBodyParts();
+        const bodyParts = HangmanView.stickMan.getBodyParts(settings.difficulty);
         if (guesses.length >= bodyParts.length) {
-            HangmanView.animations.loseScene(word, winningWord, guesses);
+            HangmanView.animations.loseScene(word, winningWord, guesses, settings.difficulty);
             return;
         }
 
         HangmanView.animations.drawGame(word, guesses);
-    }, [word, guesses, winningWord]);
+    }, [word, guesses, winningWord, settings.difficulty]);
 
     useEffect(() => {
         if (isWinner) {
@@ -129,7 +129,7 @@ export default function HangmanGame() {
             return;
         }
 
-        const bodyPartsLength = HangmanView.stickMan.getBodyParts().length;
+        const bodyPartsLength = HangmanView.stickMan.getBodyParts(settings.difficulty).length;
         const isOver = guesses.length >= bodyPartsLength;
         if (isOver) {
             return;

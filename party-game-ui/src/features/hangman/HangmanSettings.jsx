@@ -48,7 +48,7 @@ function HangmanSettings() {
                                 value={form.difficulty}
                             >
                                 <option value="easy">Easy - 14 Guessses</option>
-                                <option value="hard">Hard - 11 Guesses</option>
+                                <option value="hard">Hard - 10 Guesses</option>
                             </select>
                             <span className="highlight"></span>
                             <span className="bar"></span>

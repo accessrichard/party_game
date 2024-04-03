@@ -127,16 +127,19 @@ class Stickman {
         this.drawBody,
         this.drawRightArm,
         this.drawLeftArm,
-        this.drawRightHand,
-        this.drawLeftHand,
         this.drawRightLeg,
-        this.drawLeftFoot,
-        this.drawRightFoot,
         this.drawLeftLeg,
         this.drawMouth,
         this.drawLeftEye,
         this.drawRightEye,
         this.drawNose
+    ];
+
+    bodyPartsEasy = [
+        this.drawRightHand,
+        this.drawLeftHand,
+        this.drawLeftFoot,
+        this.drawRightFoot
     ];
 
     constructor(canvas, x, y, radius, opts) {
@@ -315,7 +318,11 @@ class Stickman {
         this.context.stroke();
     }
 
-    getBodyParts() {
+    getBodyParts(difficulty = "easy") {
+        if (difficulty && difficulty === "easy") {
+            return this.bodyParts.concat(this.bodyPartsEasy);
+        }
+        
         return this.bodyParts;
     }
 
@@ -325,12 +332,12 @@ class Stickman {
         }
     }
 
-    draw() {
+    draw(difficulty = "easy") {
         if (this.opts && this.opts.drawCircles) {
             this.drawCirclePaths(this.context, this.x, this.y, this.radius, this.opts);
         }
 
-        const parts = this.getBodyParts();
+        const parts = this.getBodyParts(difficulty);
         this.drawBodyParts(parts);
     }
 
@@ -340,7 +347,9 @@ class Stickman {
         this.drawRightEye();
         this.drawNose();
         this.drawMouth();
+    }
 
+    drawBodyHorizontal() {
         this.context.save();
         this.context.translate(this.x, this.y)
         this.context.rotate(to_radians(90));
@@ -359,13 +368,13 @@ class Stickman {
         this.y = oldY;
     }
 
-    drawHanging() {
+    drawHanging(difficulty = "easy") {
         this.opts.leftArmAngle = 80;
         this.opts.rightArmAngle = 110;
         this.opts.leftLegAngle = 85;
         this.opts.rightLegAngle = 105;
         this.opts.smile = false;
-        this.drawBodyParts(this.getBodyParts());
+        this.drawBodyParts(this.getBodyParts(difficulty));
     }
 
     drawCirclePaths() {
@@ -441,12 +450,12 @@ class HangmanAnimations {
         this.context.restore();
     }
 
-    drawHanging(word, guesses) {
+    drawHanging(word, guesses, difficulty) {
         this.animationStack.getUnitTime(1000);
         this.displayGameWords(word, guesses);
         this.hanger.drawHanger(this.stickMan);
         this.hanger.drawNoose(this.stickMan);
-        this.stickMan.drawHanging();
+        this.stickMan.drawHanging(difficulty);
     }
 
     drawHeadless(word, guesses) {
@@ -529,11 +538,11 @@ class HangmanAnimations {
         this.stickMan.draw();
     }
 
-    drawGame(word = "_ _ _ test _ _ _ test443423423f", guesses = [1, 2, 3]) {
+    drawGame(word = "", guesses = [], difficulty = "easy") {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.stickMan.opts = { ...this.stickMan.opts, ...this.stickMan.defaultOpts };
 
-        const bodyParts = this.stickMan.getBodyParts().slice(0, guesses.length)
+        const bodyParts = this.stickMan.getBodyParts(difficulty).slice(0, guesses.length)
         this.displayGameWords(word, guesses);
 
         this.stickMan.drawBodyParts(bodyParts);
@@ -580,8 +589,8 @@ class HangmanAnimations {
         this.animationStack.requestFrame();
     }
 
-    loseScene(word = "", winningWord = "", guesses = []) {
-        this.animationStack.push(this.drawHanging.bind(this, word, guesses));
+    loseScene(word = "", winningWord = "", guesses = [], difficulty = "easy") {
+        this.animationStack.push(this.drawHanging.bind(this, word, guesses, difficulty));
         this.animationStack.push(this.drawHeadless.bind(this, word, guesses));
         this.animationStack.push(this.fadeTextLoss.bind(this, word, winningWord, guesses));
         this.animationStack.requestFrame();
