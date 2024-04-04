@@ -7,7 +7,8 @@ const initialState = {
     isOver: false,
     isWinner: false,
     startIntroScene: false,
-    winningWord: ""
+    winningWord: "",
+    forceQuit: false
 }
 
 export const hangmanSlice = createSlice({
@@ -21,6 +22,7 @@ export const hangmanSlice = createSlice({
             state.isWinner = false;
             state.startIntroScene = true;
             state.winningWord = "";
+            state.forceQuit = false;
         },
         handleGuess(state, action) {
             state.guesses = action.payload.guesses;
@@ -34,10 +36,20 @@ export const hangmanSlice = createSlice({
         },
         introSceneReset(state, action) {
             state.startIntroScene = false;
-
+        },
+        returnToLobby(state, action) {   
+            state.forceQuit = action.payload.returnToLobby;
+        },
+        reset(state, action) {
+            state.forceQuit = false;
+            state.word = "";
+            state.isOver = false;
+            state.isWinner = false;
+            state.winningWord = "";
+            state.guesses = [];
         }
     }
 });
 
-export const { handleNewGame, handleGuess, updateSettings, introSceneReset } = hangmanSlice.actions;
+export const { handleNewGame, handleGuess, updateSettings, introSceneReset, returnToLobby, reset } = hangmanSlice.actions;
 export default hangmanSlice.reducer;

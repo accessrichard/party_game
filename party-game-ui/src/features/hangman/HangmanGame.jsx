@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { handleGuess, handleNewGame, introSceneReset } from './hangmanSlice';
+import { handleGuess, handleNewGame, introSceneReset, returnToLobby, reset } from './hangmanSlice';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -26,9 +26,14 @@ const events = (topic) => [
     },
     {
         event: 'handle_quit',
+        dispatcher: returnToLobby(),
+        topic
+    },
+    {
+        event: 'handle_quit',
         dispatcher: endGame(),
         topic
-    }
+    }    
 ]
 
 export default function HangmanGame() {
@@ -45,7 +50,8 @@ export default function HangmanGame() {
         startIntroScene, 
         winningWord, 
         settings, 
-        isOver
+        isOver,
+        forceQuit
     } = useSelector(state => state.hangman);
     const prevWord = usePrevious(word);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
@@ -133,7 +139,7 @@ export default function HangmanGame() {
     }, [isWinner, word, guesses])
 
     useEffect(() => {
-        if (isOver && !winningWord) {
+        if (isOver && winningWord) {
             HangmanView.animations.loseScene(word, winningWord, guesses, settings.difficulty);
         }
     }, [isOver, winningWord, word, guesses, settings.difficulty])
@@ -168,8 +174,10 @@ export default function HangmanGame() {
             ? { settings: { difficulty: settings.difficulty } }
             : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
     }
-    if (!isGameStarted) {
-        //dispatch(push('/lobby'));
+
+    if (forceQuit) {
+        dispatch(reset());
+        dispatch(push('/lobby'));        
     }
 
     if (!gameCode) {
