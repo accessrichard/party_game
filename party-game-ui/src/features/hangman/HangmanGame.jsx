@@ -54,7 +54,7 @@ export default function HangmanGame() {
     const hangmanChannel = `hangman:${gameCode}`;
     useBackButtonBlock(isBackButtonBlocked);
     usePhoenixSocket();
-    usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: true });
+    usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(hangmanChannel, events);
     useLobbyEvents();
 
@@ -139,7 +139,7 @@ export default function HangmanGame() {
     }, [isOver, winningWord, word, guesses, settings.difficulty])
 
     function onGuessSubmit(guess) {
-        if (isWinner) {
+        if (isWinner || isOver) {
             return;
         }
 
@@ -148,11 +148,6 @@ export default function HangmanGame() {
         }
 
         const bodyPartsLength = HangmanView.stickMan.getBodyParts(settings.difficulty).length;
-        const isOver = guesses.length >= bodyPartsLength;
-        if (isOver) {
-            return;
-        }
-
         dispatch(channelPush(sendEvent(hangmanChannel, { guess, isOver: guesses.length >= bodyPartsLength - 1 }, "guess")));
     }
 

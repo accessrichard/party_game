@@ -38,18 +38,15 @@ defmodule PartyGameWeb.HangmanChannel do
       Server.get_game(game_code(socket.topic))
       |> Lobby.update_player_location(socket.assigns.name, "hangman")
       |> Server.update_game()
-      |> IO.inspect(label: "heeeer")
 
       {:noreply, socket}
     end
 
     @impl true
     def handle_in("end_game", _, socket) do
-      game_room = Server.get_game(game_code(socket.topic))
+      Server.get_game(game_code(socket.topic))
        |> Lobby.update_player_location(socket.assigns.name, "lobby")
        |> Server.update_game()
-
-       IO.inspect(Lobby.players(game_room, "hangman"), label: "players")
 
        broadcast_from(socket, "handle_quit", %{})
        {:noreply, socket}
