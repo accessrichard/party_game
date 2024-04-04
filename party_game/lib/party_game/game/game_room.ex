@@ -34,6 +34,12 @@ defmodule PartyGame.Game.GameRoom do
     |> Ecto.Changeset.put_embed(:players, players)
   end
 
+  def players(%PartyGame.Game.GameRoom{} = game_room, location) do
+    game_room.players
+    |> Enum.filter(&(&1.location == location))
+    |> Enum.map(& &1.name)
+  end
+
   def new(fields \\ []) do
     __struct__(fields)
   end

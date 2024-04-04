@@ -2,7 +2,6 @@ defmodule PartyGameWeb.CanvasChannel do
   require Logger
   use PartyGameWeb, :channel
 
-  alias PartyGame.Game.GameRoom
   alias PartyGame.Server
   alias PartyGame.Lobby
   alias PartyGame.Games.Canvas.CanvasGame
@@ -65,7 +64,7 @@ defmodule PartyGameWeb.CanvasChannel do
      |> Lobby.update_player_location(socket.assigns.name, "lobby")
      |> Server.update_game()
 
-    player_names = players(game)
+    player_names = Lobby.players(game, "canvas")
     count_active = Enum.count(player_names)
     advance_turn = Map.get(payload, "advance_turn", false)
 
@@ -126,7 +125,7 @@ defmodule PartyGameWeb.CanvasChannel do
       "turn" => game_room.game.turn,
       "word" => game_room.game.word,
       "size" => CanvasGame.min_size(game_room),
-      "players" => players(game_room)
+      "players" => Lobby.players(game_room, "canvas")
     })
 
     {:noreply, socket}
@@ -143,7 +142,7 @@ defmodule PartyGameWeb.CanvasChannel do
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
       "word" => game_room.game.word,
-      "players" => players(game_room),
+      "players" => Lobby.players(game_room, "canvas"),
       "isOver" => game_room.game.is_over
     })
 
@@ -160,16 +159,10 @@ defmodule PartyGameWeb.CanvasChannel do
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
       "word" => game_room.game.word,
-      "players" => players(game_room)
+      "players" => Lobby.players(game_room, "canvas")
     })
 
     {:noreply, socket}
-  end
-
-  defp players(%GameRoom{} = game_room) do
-    game_room.players
-    |> Enum.filter(&(&1.location == "canvas"))
-    |> Enum.map(& &1.name)
   end
 
 end

@@ -34,7 +34,7 @@ export const hangmanSlice = createSlice({
         },
         introSceneReset(state, action) {
             state.startIntroScene = false;
-       
+
         }
     }
 });

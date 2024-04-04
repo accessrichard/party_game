@@ -23,6 +23,11 @@ const events = (topic) => [
         event: 'handle_guess',
         dispatcher: handleGuess(),
         topic,
+    },
+    {
+        event: 'handle_quit',
+        dispatcher: endGame(),
+        topic
     }
 ]
 
@@ -32,8 +37,16 @@ export default function HangmanGame() {
     const canvasRef = useRef(null);
     const [inputStyle, setInputStyle] = useState({});
     const { games } = useSelector(state => state.creative);
-    const { playerName, gameCode, isGameOwner, gameName } = useSelector(state => state.lobby);
-    const { word, guesses, isWinner, startIntroScene, winningWord, settings } = useSelector(state => state.hangman);
+    const { playerName, gameCode, isGameOwner, gameName, isGameStarted } = useSelector(state => state.lobby);
+    const {
+        word, 
+        guesses, 
+        isWinner, 
+        startIntroScene, 
+        winningWord, 
+        settings, 
+        isOver
+    } = useSelector(state => state.hangman);
     const prevWord = usePrevious(word);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -84,7 +97,6 @@ export default function HangmanGame() {
             return;
         }
 
-
         const canvas = canvasRef.current;
         if (!canvas || word === 'undefined' || word === '') {
             return;
@@ -120,6 +132,12 @@ export default function HangmanGame() {
         }
     }, [isWinner, word, guesses])
 
+    useEffect(() => {
+        if (isOver && !winningWord) {
+            HangmanView.animations.loseScene(word, winningWord, guesses, settings.difficulty);
+        }
+    }, [isOver, winningWord, word, guesses, settings.difficulty])
+
     function onGuessSubmit(guess) {
         if (isWinner) {
             return;
@@ -154,6 +172,9 @@ export default function HangmanGame() {
         return typeof matching === 'undefined'
             ? { settings: { difficulty: settings.difficulty } }
             : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
+    }
+    if (!isGameStarted) {
+        //dispatch(push('/lobby'));
     }
 
     if (!gameCode) {

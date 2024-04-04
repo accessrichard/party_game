@@ -111,6 +111,12 @@ defmodule PartyGame.Lobby do
     %{game | room_owner: owner}
   end
 
+  def players(%GameRoom{} = game_room, location) do
+    game_room.players
+    |> Enum.filter(&(&1.location == location))
+    |> Enum.map(& &1.name)
+  end
+
   def get_player(%GameRoom{} = game, %Player{} = player) do
     Enum.find(game.players, &(&1.name == player.name))
   end
