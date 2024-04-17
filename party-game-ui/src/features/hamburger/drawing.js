@@ -60,7 +60,21 @@ class Hamburger {
     playerY = 100;
     isWalking = false;
     isForward = true;
-    isJumping = false;
+
+    jump = {
+        isJumping: false,
+        height: 50,
+        isGoingUp: true,
+        initUp() {
+            this.isJumping = true;
+            this.isGoingUp = true;
+        },
+        initDown() {
+            this.isGoingUp = false;
+        }
+    }
+    
+    
 
     constructor() {
         this.canvas = document.getElementById("hamburger");
@@ -78,7 +92,10 @@ class Hamburger {
 
     keyDown(e) {
         if (e.keyCode === 32) {
-            this.isJumping = true;
+            if (!this.jump.isJumping) {
+                this.jump.initUp();
+            }
+            
         }
     }
 
@@ -101,15 +118,19 @@ class Hamburger {
     draw() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
-        if (this.isJumping) {
+        if (this.jump.isJumping && this.jump.isGoingUp) {
             this.playerY -= 3;
-            if (this.playerY < 50) {
-                this.isJumping = false;                
+            if (this.playerY < this.jump.height) {
+                this.jump.initDown();
             }
         }
 
-        if (!this.isJumping && this.playerY < 100) {
+        if (this.jump.isJumping && !this.jump.isGoingUp && this.playerY < 100) {
             this.playerY +=3;
+        }
+
+        if (this.playerY == 100) {
+            this.jump.isJumping = false;
         }
 
         if (this.isWalking) {
