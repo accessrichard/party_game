@@ -58,14 +58,23 @@ class HambergerMan {
     x = 0;
     y = 400;
     v = 5;
+    isWalking = false;
+    isForward = true;
+    jumpInc = 0;
+    jumpStart = 0;
+    isJumping = false;
+    velocity = 5;
 
-    constructor(canvas, x, y) {
+
+
+    constructor(canvas, x, y, velocity = 5) {
         this.x = x;
         this.y = y;
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
         this.walkSprite = new Sprite("./hamburger_walk.png", 80, 100, 7);
         this.standSprite = new Sprite("./hamburger_idle.png", 80, 100, 1);
+        this.velocity = velocity;
     }
 
     move(x, y) {
@@ -82,10 +91,6 @@ class HambergerMan {
             this.walkSprite.mirror(this.canvas, this.context, this.x, this.y);
         }
     }
-
-    jumpInc = 0;
-    jumpStart = 0;
-    isJumping = false;
 
     jump(h = 30, g = 3) {
         this.jumpInc++;
@@ -106,23 +111,52 @@ class HambergerMan {
     stand() {
         this.standSprite.draw(this.context, this.x, this.y);
     }
+
+    draw() {
+        if (this.isJumping) {
+            this.jump();
+        }
+        if (this.isWalking) {
+            this.x += (this.isForward ? 1 : -1) * 1;
+            this.walk(this.isForward);
+        } else {
+            this.stand();
+        }
+    }
+}
+
+class Background {
+
+    x = 0;
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        this.background = new Sprite("./background.png", 1200, 400, 1);
+        this.width = 1200;
+        this.height = 400;
+    }
+
+    draw() {
+        const ch = this.canvas.height;
+        this.background.draw(this.context, this.x,
+            this.canvas.height - this.height);
+        this.background.draw(this.context, this.x + this.width,
+            this.canvas.height - this.height);
+        this.background.draw(this.context, this.x - this.width,
+            this.canvas.height - this.height);
+    }
 }
 
 class Hamburger {
 
-
-    isWalking = false;
-    isForward = true;
-    backgroundX = 0;
     velocity = 5;
 
 
     constructor() {
         this.canvas = document.getElementById("hamburger");
         this.context = this.canvas.getContext("2d");
-        this.background = new Sprite("./background.png", 1200, 400, 1);
-        this.backgroundX = 0;
-        this.man = new HambergerMan(this.canvas, 400, 300)
+        this.man = new HambergerMan(this.canvas, 400, 300, this.velocity)
+        this.background = new Background(this.canvas);
     }
 
     addEvents() {
@@ -133,36 +167,24 @@ class Hamburger {
     }
 
     keyDown(e) {
-        if (e.keyCode === 32) {
-            if (!this.man.isJumping) {
-                this.man.jump(100);
-            }
-
+        if (e.keyCode === 32 && !this.man.isJumping) {
+            this.man.jump(100);
         }
     }
 
     mouseDown(e) {
-        this.isWalking = true;
-        this.isForward = e.layerX >= 400;//this.playerX;
+        this.man.isWalking = true;
+        this.man.isForward = e.layerX >= this.man.x;
     }
 
     mouseMove(e) {
-        if (this.isWalking) {
-            this.isForward = e.layerX >= 400;//this.playerX;
+        if (this.man.isWalking && !this.man.isJumping) {
+            this.man.isForward = e.layerX >= this.man.x
         }
     }
 
     mouseUp() {
-        this.isWalking = false;
-    }
-
-    drawBackground(x) {
-        const nh = this.background.image.naturalHeight;
-        const nw = this.background.image.naturalWidth;
-        const ch = this.canvas.height;
-        this.background.draw(this.context, x, ch - nh);
-        this.background.draw(this.context, x + 1200, ch - nh);
-        this.background.draw(this.context, x - 1200, ch - nh);
+        this.man.isWalking = false;
     }
 
     draw() {
@@ -170,24 +192,12 @@ class Hamburger {
         this.context.fillStyle = "blue";
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.backgroundX = ((this.backgroundX) % 1200 + 1200) % 1200;
-        this.drawBackground(-this.backgroundX);
 
-        if (this.isWalking) {
-            this.man.x += (this.isForward ? 1 : -1) * 1;
+        this.background.draw();
+        this.man.draw();
+        if (this.man.isWalking) {
+             this.background.x += (this.man.isForward ? -1 : 1) * this.velocity;
         }
-
-        if (this.man.isJumping) {
-            this.man.jump();
-        }
-        if (this.isWalking) {
-            this.man.x += (this.isForward ? 1 : -1) * 1;
-            this.backgroundX += (this.isForward ? 1 : -1) * this.velocity;
-            this.man.walk(this.isForward);
-        } else {
-            this.man.stand();
-        }
-
 
         requestAnimationFrame(this.draw.bind(this))
     }
