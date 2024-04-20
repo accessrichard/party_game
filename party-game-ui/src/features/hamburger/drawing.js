@@ -54,39 +54,75 @@ window.onload = () => {
     game.draw();
 }
 
-class Hamburger {
+class HambergerMan {
+    x = 0;
+    y = 400;
+    v = 5;
 
-    playerX = 100;
-    playerY = 300;
-    isWalking = false;
-    isForward = true;
-    backgroundX = 100;
+    constructor(canvas, x, y) {
+        this.x = x;
+        this.y = y;
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        this.walkSprite = new Sprite("./hamburger_walk.png", 80, 100, 7);
+        this.standSprite = new Sprite("./hamburger_idle.png", 80, 100, 1);
+    }
 
-    jump = {
-        isJumping: false,
-        height: 250,
-        isGoingUp: true,
-        initUp() {
-            this.isJumping = true;
-            this.isGoingUp = true;
-        },
-        initDown() {
-            this.isGoingUp = false;
+    move(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    walk(isForward) {
+        if (isForward) {
+            this.x += this.v;
+            this.walkSprite.draw(this.context, this.x, this.y);
+        } else {
+            this.x -= this.v;
+            this.walkSprite.mirror(this.canvas, this.context, this.x, this.y);
         }
     }
-    
-    
+
+    jumpInc = 0;
+    jumpStart = 0;
+    isJumping = false;
+
+    jump(h = 30, g = 3) {
+        this.jumpInc++;
+        if (!this.isJumping) {
+            this.jumpStart = this.y;
+            this.jumpInc = h;
+            this.isJumping = true;
+        }
+
+        const jumpMod = Math.abs(this.jumpInc % (h * 2) - h);
+        this.y = this.jumpStart - g * jumpMod;
+
+        if (jumpMod == 0 && this.jumpInc !== h) {
+            this.isJumping = false;
+        }
+    }
+
+    stand() {
+        this.standSprite.draw(this.context, this.x, this.y);
+    }
+}
+
+class Hamburger {
+
+
+    isWalking = false;
+    isForward = true;
+    backgroundX = 0;
+    velocity = 5;
+
 
     constructor() {
         this.canvas = document.getElementById("hamburger");
         this.context = this.canvas.getContext("2d");
-        this.walk = new Sprite("./hamburger_walk.png", 80, 100, 7);
-        this.stand = new Sprite("./hamburger_idle.png", 80, 100, 1);
         this.background = new Sprite("./background.png", 1200, 400, 1);
-        this.background2 = new Sprite("./background2.png", 1200, 400, 1);
-
         this.backgroundX = 0;
-
+        this.man = new HambergerMan(this.canvas, 400, 300)
     }
 
     addEvents() {
@@ -98,10 +134,10 @@ class Hamburger {
 
     keyDown(e) {
         if (e.keyCode === 32) {
-            if (!this.jump.isJumping) {
-                this.jump.initUp();
+            if (!this.man.isJumping) {
+                this.man.jump(100);
             }
-            
+
         }
     }
 
@@ -112,7 +148,7 @@ class Hamburger {
 
     mouseMove(e) {
         if (this.isWalking) {
-            this.isForward = e.layerX >= this.playerX;
+            this.isForward = e.layerX >= 400;//this.playerX;
         }
     }
 
@@ -120,61 +156,36 @@ class Hamburger {
         this.isWalking = false;
     }
 
-
     drawBackground(x) {
-        if (this.backgroundX <= -500) {
-            this.backgroundX = 0;
-            console.log("reset")
-        }
-
-        //console.log({b: this.backgroundX, x: this.background.frameWidth})
-
-        this.backgroundX -=1;
         const nh = this.background.image.naturalHeight;
         const nw = this.background.image.naturalWidth;
         const ch = this.canvas.height;
         this.background.draw(this.context, x, ch - nh);
         this.background.draw(this.context, x + 1200, ch - nh);
         this.background.draw(this.context, x - 1200, ch - nh);
-
     }
 
     draw() {
-
-
-
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.context.fillStyle = "blue";
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.backgroundX = ((this.playerX + 1) % 1200 + 1200) % 1200;
-        this.drawBackground(-this.backgroundX );
 
-        if (this.jump.isJumping && this.jump.isGoingUp) {
-            this.playerY -= 3;
-            if (this.playerY < this.jump.height) {
-                this.jump.initDown();
-                console.log("GOING DOWN")
-            }
-        }
-
-        if (this.jump.isJumping && !this.jump.isGoingUp ) {
-            this.playerY +=3;
-        }
-
-        if (this.playerY == 300) {
-            this.jump.isJumping = false;
-        }
+        this.backgroundX = ((this.backgroundX) % 1200 + 1200) % 1200;
+        this.drawBackground(-this.backgroundX);
 
         if (this.isWalking) {
-            this.playerX += (this.isForward ? 1 : -1) * 3;
-            if (this.isForward) {
-                this.walk.draw(this.context, 400, this.playerY);
-            } else {
-                this.walk.mirror(this.canvas, this.context, 400, this.playerY);
-            }
+            this.man.x += (this.isForward ? 1 : -1) * 1;
+        }
 
+        if (this.man.isJumping) {
+            this.man.jump();
+        }
+        if (this.isWalking) {
+            this.man.x += (this.isForward ? 1 : -1) * 1;
+            this.backgroundX += (this.isForward ? 1 : -1) * this.velocity;
+            this.man.walk(this.isForward);
         } else {
-            this.stand.draw(this.context, 400, this.playerY);
+            this.man.stand();
         }
 
 
