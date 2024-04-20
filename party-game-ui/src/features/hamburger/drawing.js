@@ -147,10 +147,39 @@ class Background {
     }
 }
 
+class Star {
+    x = 50;
+    y = 50;
+    v = 1;
+    isVisible = true;
+
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        this.x = Math.floor(Math.random() * this.canvas.width - 50);
+    }
+
+    draw() {
+        this.context.save();
+        this.context.fillStyle = "black"
+        this.context.font = "40px Arial";
+        this.context.fillText(this.x, this.x, this.y);
+        this.context.restore();
+
+        this.isVisible = this.y <= this.canvas.height + 50;
+        if (this.isVisible) {
+            this.y += this.v;
+        }
+    }
+}
+
 class Hamburger {
 
     velocity = 5;
-
+    stars = [];
+    previousTime = 0;
+    timeDelta = 0;
+    starDropTime = 0;
 
     constructor() {
         this.canvas = document.getElementById("hamburger");
@@ -187,16 +216,45 @@ class Hamburger {
         this.man.isWalking = false;
     }
 
-    draw() {
+    calcTime(time) {
+        this.timeDelta = time  - this.previousTime;
+        this.previousTime = time;
+    }
+
+    drawStars() {
+        
+        this.starDropTime = this.timeDelta + (isNaN(this.starDropTime) ? 0 : this.starDropTime);
+        // if (this.stars.length < 5) {
+        //     this.starDropTime += this.timeDelta;
+        //     console.log(this.starDropTime)            
+        //     if (this.starDropTime && this.starDropTime > Math.random() * 100){
+        //         this.stars.push(new Star(this.canvas));
+        //     }
+        // }
+
+        for (let i = 0; i < this.stars.length; i++) {
+            if (!this.stars[i].isVisible) {
+                this.stars.splice(i, 1)
+            } else {
+                this.stars[i].draw();
+            }
+        }
+    }
+
+    draw(time) {
+        this.calcTime(time);
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.context.fillStyle = "blue";
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-
         this.background.draw();
         this.man.draw();
+
+
+        this.drawStars();
+
         if (this.man.isWalking) {
-             this.background.x += (this.man.isForward ? -1 : 1) * this.velocity;
+            this.background.x += (this.man.isForward ? -1 : 1) * this.velocity;
         }
 
         requestAnimationFrame(this.draw.bind(this))
