@@ -157,13 +157,18 @@ class Star {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
         this.x = Math.floor(Math.random() * this.canvas.width - 50);
+        const x1 = Math.floor(Math.random() * 11);
+        const x2 = Math.floor(Math.random() * 11);
+        const ans = Math.floor(Math.random() > .5 ? x1 + x2 : Math.random() * 21);
+        this.question = `${x1} + ${x2} = ${ans}`
+        this.isCorrect = x1 + x2 == ans;
     }
 
     draw() {
         this.context.save();
         this.context.fillStyle = "black"
         this.context.font = "40px Arial";
-        this.context.fillText(this.x, this.x, this.y);
+        this.context.fillText(this.question, this.x, this.y);
         this.context.restore();
 
         this.isVisible = this.y <= this.canvas.height + 50;
@@ -217,20 +222,17 @@ class Hamburger {
     }
 
     calcTime(time) {
-        this.timeDelta = time  - this.previousTime;
+        this.timeDelta = time - this.previousTime;
         this.previousTime = time;
     }
 
-    drawStars() {
-        
-        this.starDropTime = this.timeDelta + (isNaN(this.starDropTime) ? 0 : this.starDropTime);
-        // if (this.stars.length < 5) {
-        //     this.starDropTime += this.timeDelta;
-        //     console.log(this.starDropTime)            
-        //     if (this.starDropTime && this.starDropTime > Math.random() * 100){
-        //         this.stars.push(new Star(this.canvas));
-        //     }
-        // }
+    drawStars(time, dropTimeRange = 4000) {
+        if (this.stars.length < 5) {
+            if (this.starDropTime < time) {
+                this.starDropTime = time + Math.random() * dropTimeRange;
+                this.stars.push(new Star(this.canvas));
+            }
+        }
 
         for (let i = 0; i < this.stars.length; i++) {
             if (!this.stars[i].isVisible) {
@@ -240,6 +242,24 @@ class Hamburger {
             }
         }
     }
+
+    detectCollision() {
+        for (let i = 0; i < this.stars.length; i++) {
+            const star = this.stars[i];
+            if (
+                this.man.x > star.x - 80 &&
+                this.man.x < star.x + 100 &&
+                this.man.y >= star.y - 100 &&
+                this.man.y < star.y + 20
+            ) {
+                if (star.isCorrect) {
+                    console.log("SCORED")
+                }
+                this.stars.splice(i, 1)
+            }
+        }
+    }
+
 
     draw(time) {
         this.calcTime(time);
@@ -251,7 +271,9 @@ class Hamburger {
         this.man.draw();
 
 
-        this.drawStars();
+        this.drawStars(time);
+
+        this.detectCollision();
 
         if (this.man.isWalking) {
             this.background.x += (this.man.isForward ? -1 : 1) * this.velocity;
