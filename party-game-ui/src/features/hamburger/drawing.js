@@ -84,10 +84,8 @@ class HambergerMan {
 
     walk(isForward) {
         if (isForward) {
-            this.x += this.v;
             this.walkSprite.draw(this.context, this.x, this.y);
         } else {
-            this.x -= this.v;
             this.walkSprite.mirror(this.canvas, this.context, this.x, this.y);
         }
     }
@@ -112,12 +110,18 @@ class HambergerMan {
         this.standSprite.draw(this.context, this.x, this.y);
     }
 
+    isInBounds() {
+        return (this.isForward && this.x < this.canvas.width - 100
+            || (!this.isForward && this.x > 10));
+    }
+
     draw() {
         if (this.isJumping) {
             this.jump();
         }
-        if (this.isWalking) {
-            this.x += (this.isForward ? 1 : -1) * 1;
+        if (this.isWalking && this.isInBounds()) {
+
+            this.x += (this.isForward ? 1 : -1) * (this.velocity - 2);
             this.walk(this.isForward);
         } else {
             this.stand();
@@ -156,7 +160,7 @@ class Star {
     constructor(canvas) {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
-        this.x = Math.floor(Math.random() * this.canvas.width - 50);
+        this.x = 100 + Math.floor(Math.random() * (this.canvas.width - 400));
         const x1 = Math.floor(Math.random() * 11);
         const x2 = Math.floor(Math.random() * 11);
         const ans = Math.floor(Math.random() > .5 ? x1 + x2 : Math.random() * 21);
@@ -167,7 +171,7 @@ class Star {
     draw() {
         this.context.save();
         this.context.fillStyle = "black"
-        this.context.font = "40px Arial";
+        this.context.font = "20px Arial";
         this.context.fillText(this.question, this.x, this.y);
         this.context.restore();
 
@@ -178,6 +182,24 @@ class Star {
     }
 }
 
+class Score {
+    constructor(canvas, x, y) {
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        this.x = x;
+        this.y = y;
+    }
+
+    draw(text) {
+        this.context.save();
+        this.context.fillStyle = "white"
+        this.context.font = "40px Arial";
+        this.context.fillText(text, this.x, this.y);
+        this.context.restore();
+    }
+
+}
+
 class Hamburger {
 
     velocity = 5;
@@ -185,12 +207,14 @@ class Hamburger {
     previousTime = 0;
     timeDelta = 0;
     starDropTime = 0;
+    score = 0;
 
     constructor() {
         this.canvas = document.getElementById("hamburger");
         this.context = this.canvas.getContext("2d");
         this.man = new HambergerMan(this.canvas, 400, 300, this.velocity)
         this.background = new Background(this.canvas);
+        this.scoreText = new Score(this.canvas, this.canvas.width - 300, 50)
     }
 
     addEvents() {
@@ -198,11 +222,28 @@ class Hamburger {
         this.canvas.addEventListener('pointermove', this.mouseMove.bind(this));
         this.canvas.addEventListener('pointerup', this.mouseUp.bind(this));
         document.addEventListener('keydown', this.keyDown.bind(this));
+        document.addEventListener('keyup', this.keyUp.bind(this));
+
     }
 
     keyDown(e) {
         if (e.keyCode === 32 && !this.man.isJumping) {
             this.man.jump(100);
+        } else if (e.key == "a") {
+            this.man.isForward = false;
+            this.man.isWalking = true;
+        } else if (e.key == "d") {
+            this.man.isForward = true;
+            this.man.isWalking = true;
+        }
+    }
+
+    keyUp(e) {
+       if (e.key == "a") {
+            this.man.isForward = true;
+            this.man.isWalking = false;
+        }else if (e.key == "d") {
+            this.man.isWalking = false;
         }
     }
 
@@ -238,6 +279,7 @@ class Hamburger {
             if (!this.stars[i].isVisible) {
                 this.stars.splice(i, 1)
             } else {
+                this.stars[i].v = this.velocity - 4;
                 this.stars[i].draw();
             }
         }
@@ -252,14 +294,23 @@ class Hamburger {
                 this.man.y >= star.y - 100 &&
                 this.man.y < star.y + 20
             ) {
-                if (star.isCorrect) {
-                    console.log("SCORED")
-                }
+                this.score += star.isCorrect ? 1 : -1;
                 this.stars.splice(i, 1)
             }
         }
     }
 
+    increaseVelocity() {
+        if (this.score > 14) {
+            this.velocity = 10;
+        } else if (this.score > 9) {
+            this.velocity = 8;
+        } else if (this.score > 6) {
+            this.velocity = 7;
+        } else if (this.score > 3) {
+            this.velocity = 6;
+        }
+    }
 
     draw(time) {
         this.calcTime(time);
@@ -269,13 +320,11 @@ class Hamburger {
 
         this.background.draw();
         this.man.draw();
-
-
         this.drawStars(time);
-
+        this.scoreText.draw(`Score: ${this.score}`);
         this.detectCollision();
-
-        if (this.man.isWalking) {
+        this.increaseVelocity();
+        if (this.man.isWalking && this.man.isInBounds()) {
             this.background.x += (this.man.isForward ? -1 : 1) * this.velocity;
         }
 
