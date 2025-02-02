@@ -11,6 +11,7 @@ import Config
 
 # Configures the endpoint
 config :party_game, PartyGameWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   render_errors: [view: PartyGameWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: PartyGame.PubSub,
