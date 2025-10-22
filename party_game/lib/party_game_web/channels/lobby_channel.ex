@@ -55,6 +55,18 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
+  def handle_in("presence_location", payload, socket) do
+    metas =
+      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
+      |> List.first()
+      |> Map.merge(%{location: Map.get(payload, "location")})
+
+    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_in("user:typing", payload, socket) do
     metas =
       Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
@@ -68,7 +80,8 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_in("new_game", payload, socket) do
-      broadcast(socket, "route_to_game", %{"type" => Map.get(payload, "type")})
+      player_count = length(Map.keys(Presence.list(socket.topic)))
+      broadcast(socket, "route_to_game", %{"type" => Map.get(payload, "type"), "player_count" => player_count})
       {:noreply, socket}
   end
 

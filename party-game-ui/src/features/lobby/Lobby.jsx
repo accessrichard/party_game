@@ -82,6 +82,15 @@ export default function Lobby() {
     usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
     usePhoenixEvents(`lobby:${gameCode}`, events);
     
+
+    useEffect(() => {
+        dispatch(channelPush({
+            topic: `lobby:${gameCode}`,
+            event: "presence_location",
+            data: { location: "lobby" }
+        }));
+    }, []);
+
     useEffect(() => {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };

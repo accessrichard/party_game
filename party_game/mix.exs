@@ -5,11 +5,12 @@ defmodule PartyGame.MixProject do
     [
       app: :party_game,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.19",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      listeners: [Phoenix.CodeReloader]
     ]
   end
 
@@ -32,24 +33,24 @@ defmodule PartyGame.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7.14"},
-      {:phoenix_ecto, "~> 4.5"},
-      {:ecto_sql, "~> 3.10"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 4.1"},
+      {:phoenix, "~> 1.8.1"},
+      {:phoenix_ecto, "~> 4.6.5"},
+      {:ecto_sql, "~> 3.13.2"},
+      {:postgrex, ">= 0.21.1"},
+      {:phoenix_html, "~> 4.3"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.0.0-rc.1", override: true},
-      {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.5"},
-      {:telemetry_metrics, "~> 1.0"},
-      {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.20"},
-      {:jason, "~> 1.2"},
-      {:bandit, "~> 1.5"},
-      {:cachex, "~> 3.6"}
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_view, "~> 1.1.15", override: true},
+      {:floki, "~> 0.38", only: :test},
+      {:phoenix_live_dashboard, "~> 0.8.7"},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
+      {:swoosh, "~> 1.19.8"},
+      {:telemetry_metrics, "~> 1.1"},
+      {:telemetry_poller, "~> 1.1"},
+      {:gettext, "~> 1.0"},
+      {:jason, "~> 1.4.4"},
+      {:bandit, "~> 1.8"},
+      {:cachex, "~> 4.1.1"}
     ]
   end
 

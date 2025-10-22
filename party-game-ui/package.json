@@ -11,25 +11,25 @@
   },
   "dependencies": {
     "@neoconfetti/react": "^1.0.0",
-    "@reduxjs/toolkit": "^2.3.0",
-    "phoenix": "^1.7.14",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "@reduxjs/toolkit": "^2.9.1",
+    "phoenix": "^1.8.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-ga4": "^2.1.0",
-    "react-redux": "^9.1.2",
-    "react-router": "^6.28.0",
-    "react-router-dom": "^6.28.0",
+    "react-redux": "^9.2.0",
+    "react-router": "^7.9.4",
+    "react-router-dom": "^7.9.4",
     "redux-first-history": "^5.2.0",
-    "web-vitals": "^4.2.4"
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react-swc": "^3.7.1",
-    "eslint": "^9.15.0",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.14",
-    "vite": "^5.4.11"
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react-swc": "^4.1.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "vite": "^7.1.11"
   }
 }

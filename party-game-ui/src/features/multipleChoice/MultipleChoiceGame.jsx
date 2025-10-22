@@ -7,6 +7,7 @@ import usePrevious from '../usePrevious';
 import useBackButtonBlock from '../useBackButtonBlock';
 import NewGamePrompt from '../common/NewGamePrompt';
 import useLobbyEvents from '../lobby/useLobbyEvents';
+import { getPresences } from '../presence/presenceSlice';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -48,7 +49,6 @@ const events = (topic) => [
     }
 ]
 
-
 export default function MultipleChoiceGame() {
 
     const dispatch = useDispatch();
@@ -71,8 +71,13 @@ export default function MultipleChoiceGame() {
         isGameOwner,
         playerName,
         gameName,
-        gameCode
+        gameCode,
+        playerCount
     } = useSelector(state => state.lobby);
+
+    
+    const players = useSelector(getPresences);
+
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
@@ -96,6 +101,12 @@ export default function MultipleChoiceGame() {
     useEffect(() => {
         dispatch(resetGame());
         setIsStartGamePrompt(true);
+
+        dispatch(channelPush({
+            topic: `lobby:${gameCode}`,
+            event: "presence_location",
+            data: { location: "game" }
+        }));
     }, []);
 
     /**
@@ -241,7 +252,7 @@ export default function MultipleChoiceGame() {
         if (isGameOwner)
         {
             handleCreateGame();
-        }
+        }        
     }
 
     return (

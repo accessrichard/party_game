@@ -152,7 +152,7 @@ export default function HangmanGame() {
         if (guesses.some(x => x.toLowerCase().trim() == guess.toLowerCase().trim())) {
             return;
         }
-
+        
         const bodyPartsLength = HangmanView.stickMan.getBodyParts(settings.difficulty).length;
         dispatch(channelPush(sendEvent(hangmanChannel, { guess, isOver: guesses.length >= bodyPartsLength - 1 }, "guess")));
     }
@@ -196,7 +196,7 @@ export default function HangmanGame() {
             <div className="container">
 
                 {isGameOwner && <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>}
-                <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>
+                {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
             </div>
         </>
     )

@@ -189,10 +189,10 @@ const phoenixMiddleware = () => {
         }
 
         if (hasChannel(action.payload.topic)) {
-            console.log(`Channel is already joined: ${action.payload.topic}`);
+            //console.log(`Channel is already joined: ${action.payload.topic}`);
             return;
             //// TODO: Since phoenix keeps retrying on error, or on socket disconnet
-            //// have to figure out a safe way to manage erros on reconnect
+            //// have to figure out a safe way to manage errors on reconnect
             //// as can end up in a loop crashing the server
             //// throw Error("Channel is already joined!");
         }

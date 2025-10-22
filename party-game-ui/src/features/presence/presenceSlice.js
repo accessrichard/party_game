@@ -22,7 +22,7 @@ export const presenceSlice = createSlice({
 
 const getPresencesList = (p) => {
     return Presence.list(p.presence, (id, { metas: [user, ...rest] }) => {
-        return { name: id, online_at: user.online_at, isTyping: user.typing };
+        return { name: id, online_at: user.online_at, isTyping: user.typing, location: user.location };
     });
 };
 

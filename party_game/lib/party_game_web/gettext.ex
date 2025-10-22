@@ -1,3 +1,3 @@
 defmodule PartyGameWeb.Gettext do
-  use Gettext, otp_app: :canvas
+  use Gettext.Backend, otp_app: :canvas
 end

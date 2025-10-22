@@ -322,7 +322,7 @@ class Stickman {
         if (difficulty && difficulty === "easy") {
             return this.bodyParts.concat(this.bodyPartsEasy);
         }
-        
+
         return this.bodyParts;
     }
 
@@ -464,6 +464,7 @@ class HangmanAnimations {
         this.hanger.drawHanger(this.stickMan);
         this.hanger.drawNoose(this.stickMan);
         this.stickMan.drawHeadless();
+        this.stickMan.drawBodyHorizontal();
     }
 
     fadeTextLoss(word, winningWord, guesses) {
@@ -604,7 +605,7 @@ class AnimationStack {
     currentAnim;
     stack = [];
     isRunning = false;
-    isRunningEvent = new CustomEvent("animation", { detail: { isRunning: this.isRunning }});
+    isRunningEvent = new CustomEvent("animation", { detail: { isRunning: this.isRunning } });
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -681,19 +682,6 @@ class AnimationStack {
     }
 }
 
-window.onload = () => {
-    //  runAnimations("hangman");
-};
-
-export class HangmanView {
-
-    static initialize(canvas, x, y, radius, opts) {
-        this.stickMan = new Stickman(canvas, x, y, radius, opts);
-        this.hanger = new Hanger(canvas, x, y, radius);
-        this.stack = new AnimationStack(canvas);
-        this.animations = new HangmanAnimations(canvas, this.stickMan, this.hanger, this.stack);
-    }
-}
 
 function runAnimations(id) {
     let opts = {
@@ -710,7 +698,24 @@ function runAnimations(id) {
     const stack = new AnimationStack(canvas);
     const hangman = new HangmanAnimations(canvas, stickMan, hanger, stack);
 
-    //hangman.startGameScene(stickMan.x, canvas.width);
-    //hangman.loseScene();
+    hangman.startGameScene(stickMan.x, canvas.width - 100);
+    hangman.loseScene();
     //hangman.winScene();
+}
+
+
+window.onload = () => {
+        //    runAnimations("hangman");
+};
+      
+
+
+export class HangmanView {
+
+    static initialize(canvas, x, y, radius, opts) {
+        this.stickMan = new Stickman(canvas, x, y, radius, opts);
+        this.hanger = new Hanger(canvas, x, y, radius);
+        this.stack = new AnimationStack(canvas);
+        this.animations = new HangmanAnimations(canvas, this.stickMan, this.hanger, this.stack);
+    }
 }

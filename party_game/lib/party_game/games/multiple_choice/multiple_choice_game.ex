@@ -138,7 +138,7 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
   defp shuffle_question_answers(questions) do
     Enum.map(questions, fn x ->
       if length(x.answers) > 2 do
-        %PartyGame.Game.Question{x | answers: Enum.shuffle(x.answers)}
+        %{x | answers: Enum.shuffle(x.answers)}
       else
         x
       end

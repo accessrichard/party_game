@@ -63,6 +63,7 @@ const initialState = {
     players: [],
     isGameOwner: false,
     genServerTimeout: null,
+    playerCount: 0,
     api: {
         start: { ...apiState },
         join: { ...apiState },
@@ -84,6 +85,7 @@ function resetGame(state) {
         isGameOwner: state.isGameOwner,
         api: state.api,
         type: state.type,
+        playerCount: 0,
         settings: {
             ...state.settings
         }
@@ -112,6 +114,7 @@ export const lobbySlice = createSlice({
             resetGame(state);
             state.isGameStarted = true;                
             state.type = action.payload.type;
+            state.playerCount = action.payload.player_count;             
         },       
         changeGame: (state, action) => {
             state.gameName = action.payload.name;

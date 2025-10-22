@@ -14,6 +14,7 @@ import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { endGame } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
+import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateWord, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
@@ -43,7 +44,17 @@ const events = (topic) => [
         event: 'handle_quit',
         dispatcher: endGame(),
         topic,
-    }
+    },
+    {
+        event: 'presence_state',
+        dispatcher: syncPresenceState(),
+        topic
+    },
+    {
+        event: 'presence_diff',
+        dispatcher: syncPresenceDiff(),
+        topic
+    },
 ]
 
 export default function CanvasUI({
@@ -67,7 +78,7 @@ export default function CanvasUI({
 }) {
 
     const dispatch = useDispatch();
-    const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
+    const { isGameOwner, playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
 
     const canvasChannel = `canvas:${gameCode}`;
 
@@ -107,6 +118,14 @@ export default function CanvasUI({
 
     useEffect(() => {
         return () => { dispatch(reset()); };
+    }, []);
+
+     useEffect(() => {
+        dispatch(channelPush({
+            topic: `lobby:${gameCode}`,
+            event: "presence_location",
+            data: { location: "game" }
+        }));
     }, []);
 
     useEffect(() => {
@@ -226,7 +245,7 @@ export default function CanvasUI({
                     {turn == playerName && word != "" && <button id="next" className="btn md-5" type="button" onClick={onNextClick}>Next</button>}
                     {turn == playerName && <button id="clear" className="btn md-5" type="button" onClick={onClearClick}>Clear</button>}
 
-                    <button id="back" className="btn md-5" type="button" onClick={onBackClick}>Quit</button>
+                    {isGameOwner && <button id="back" className="btn md-5" type="button" onClick={onBackClick}>Quit</button>}
                     <button id="save" className="btn md-5" type="button" onClick={onSaveClick}>Save Image</button>
                 </div>
             </div>
