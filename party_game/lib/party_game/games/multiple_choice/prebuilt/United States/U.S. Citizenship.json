@@ -1,0 +1,769 @@
+{
+    "name": "U.S. Citizenship Practice Test",
+    "questions": [
+        {
+            "question": "Who was the first president of the United States?",
+            "type": "multi",
+            "correct": "George Washington",
+            "answers": [
+                "George Washington",
+                "Jon Adams",
+                "Thomas Jefferson",
+                "James Madison"
+            ]
+        },
+        {
+            "question": "Name a national U.S. holiday?",
+            "type": "multi",
+            "correct": "Veterans Day",
+            "answers": [
+                "Black History Day",
+                "Veterans Day",
+                "Easter",
+                "Holloween"
+            ]
+        },
+        {
+            "question": "Name a national U.S. holiday?",
+            "type": "multi",
+            "correct": "Memorial Day",
+            "answers": [
+                "George Washington Day",
+                "Memorial Day",
+                "Soldiers Day",
+                "Freedom Day"
+            ]
+        },
+        {
+            "question": "When is Independence Day?",
+            "type": "multi",
+            "correct": "July 4",
+            "answers": [
+                "July 4",
+                "July 5",
+                "July 6",
+                "July 7"
+            ]
+        },
+        {
+            "question": "Why does the flag have 13 stripes?",
+            "type": "multi",
+            "correct": "13 Original Colonies",
+            "answers": [
+                "First 13 Presidents",
+                "13 Articles",
+                "13 Amendments",
+                "13 Original Colonies"
+            ]
+        },
+        {
+            "question": "Why does the flag have 50 stars?",
+            "type": "multi",
+            "correct": "50 States",
+            "answers": [
+                "50 days of Independence",
+                "50 Articles",
+                "50 States",
+                "50 Stars in the Sky"
+            ]
+        },
+        {
+            "question": "Name one of the longest rivers in the United States.",
+            "type": "multi",
+            "correct": "Mississippi",
+            "answers": [
+                "Mississippi",
+                "St Croix",
+                "Atlantic",
+                "Nile"
+            ]
+        },
+        {
+            "question": "Which State Borders Canada.",
+            "type": "multi",
+            "correct": "Minnesota",
+            "answers": [
+                "Ontario",
+                "California",
+                "Minnesota",
+                "Wyoming"
+            ]
+        },
+        {
+            "question": "Which State Borders Canada.",
+            "type": "multi",
+            "correct": "Ohio",
+            "answers": [
+                "Wisconsin",
+                "California",
+                "Ohio",
+                "New Mexico"
+            ]
+        },
+        {
+            "question": "Which State Borders Canada.",
+            "type": "multi",
+            "correct": "Montana",
+            "answers": [
+                "Georgia",
+                "Deleware",
+                "Montana",
+                "Oklahoma"
+            ]
+        },
+        {
+            "question": "Who did the United States fight in WWII.",
+            "type": "multi",
+            "correct": "Germany",
+            "answers": [
+                "Germany",
+                "Britain",
+                "Canada",
+                "China"
+            ]
+        },
+        {
+            "question": "What did Martin Luther King, Jr. fight for?",
+            "type": "multi",
+            "correct": "Civil Rights",
+            "answers": [
+                "Civil Rights",
+                "Segregation",
+                "WWI",
+                "Civil War"
+            ]
+        },
+        {
+            "question": "Name an original 13 state.",
+            "type": "multi",
+            "correct": "Deleware",
+            "answers": [
+                "Minnesota",
+                "California",
+                "Florida",
+                "Maine"
+            ]
+        },
+        {
+            "question": "When was the declaration of Independence adopted.",
+            "type": "multi",
+            "correct": "July 4, 1776",
+            "answers": [
+                "May 4, 1776",
+                "April 4, 1776",
+                "December 4, 1776",
+                "July 4, 1776"
+            ]
+        },
+        {
+            "question": "At what age can citizens vote?",
+            "type": "multi",
+            "correct": "18",
+            "answers": [
+                "16",
+                "18",
+                "21",
+                "14"
+            ]
+        },
+        {
+            "question": "What is a right of a U.S. citizen?",
+            "type": "multi",
+            "correct": "Vote",
+            "answers": [
+                "Vote",
+                "Drive",
+                "School",
+                "College"
+            ]
+        },
+        {
+            "question": "What is a right of a U.S. citizen?",
+            "type": "multi",
+            "correct": "Vote",
+            "answers": [
+                "Vote",
+                "Drive",
+                "School",
+                "College"
+            ]
+        },
+        {
+            "question": "Name a cabinet level position",
+            "type": "multi",
+            "correct": "Vice President",
+            "answers": [
+                "Vice President",
+                "President",
+                "Supreme Court Justice",
+                "Secretary of Exterior"
+            ]
+        },
+        {
+            "question": "How many years is a president elected for.",
+            "type": "multi",
+            "correct": "4",
+            "answers": [
+                "8",
+                "2",
+                "4",
+                "6"
+            ]
+        },
+        {
+            "question": "How many terms can a president run for.",
+            "type": "multi",
+            "correct": "2",
+            "answers": [
+                "8",
+                "2",
+                "4",
+                "6"
+            ]
+        },
+        {
+            "question": "What does a U.S. Senator represent",
+            "type": "multi",
+            "correct": "People of a State",
+            "answers": [
+                "People of a State",
+                "People of a County",
+                "People of a City",
+                "People of a District"
+            ]
+        },
+        {
+            "question": "What month are presidential elections held?",
+            "type": "multi",
+            "correct": "November",
+            "answers": [
+                "January",
+                "December",
+                "February",
+                "November"
+            ]
+        },
+        {
+            "question": "How long do U.S. Representatives in congress serve?",
+            "type": "multi",
+            "correct": "2",
+            "answers": [
+                "2",
+                "4",
+                "6",
+                "8"
+            ]
+        },
+        {
+            "question": "How long do U.S. Senators serve?",
+            "type": "multi",
+            "correct": "6",
+            "answers": [
+                "2",
+                "4",
+                "6",
+                "8"
+            ]
+        },
+        {
+            "question": "How many Senators are there?",
+            "type": "multi",
+            "correct": "100",
+            "answers": [
+                "50",
+                "100",
+                "200",
+                "400"
+            ]
+        },
+        {
+            "question": "Each state gets 2 U.S. Representatives.",
+            "type": "tf",
+            "correct": "False",
+            "answers": [
+                "True",
+                "False"
+            ]
+        },
+        {
+            "question": "Name a right int the Declaration of Independence.",
+            "type": "multi",
+            "correct": "Pursuit of Happiness",
+            "answers": [
+                "House",
+                "Pursuit of Happiness",
+                "Pursuit of Riches",
+                "Land"
+            ]
+        },
+        {
+            "question": "Name a right int the Declaration of Independence.",
+            "type": "multi",
+            "correct": "Liberty",
+            "answers": [
+                "Ownership",
+                "Liberty",
+                "Pursuit of Money",
+                "Land"
+            ]
+        },
+        {
+            "question": "Name a right int the Declaration of Independence.",
+            "type": "multi",
+            "correct": "Life",
+            "answers": [
+                "Healthcare",
+                "Life",
+                "Retirment Fund",
+                "Land"
+            ]
+        },
+        {
+            "question": "What is the supreme law of the land?",
+            "type": "multi",
+            "correct": "Constitution",
+            "answers": [
+                "Supreme Justice",
+                "Courts",
+                "Constitution",
+                "President"
+            ]
+        },
+        {
+            "question": "What is an amendment?",
+            "type": "multi",
+            "correct": "Constitution Addition",
+            "answers": [
+                "Plaintiff",
+                "Supreme Court",
+                "Presidential Order",
+                "Constitution Addition"
+            ]
+        },
+        {
+            "question": "What is in the first amendment?",
+            "type": "multi",
+            "correct": "Freedom of Speech",
+            "answers": [
+                "Freedom of Speech",
+                "Right to bear arms",
+                "Right to citizenship",
+                "Self incrimination protection"
+            ]
+        },
+        {
+            "question": "How many amendments in the constitution",
+            "type": "multi",
+            "correct": "27",
+            "answers": [
+                "25",
+                "24",
+                "27",
+                "26"
+            ]
+        },
+        {
+            "question": "Who is in charge of the Executive branch?",
+            "type": "multi",
+            "correct": "The President",
+            "answers": [
+                "The President",
+                "The House Speaker",
+                "Senate Majority Leader",
+                "Supreme Court Justice"
+            ]
+        },
+        {
+            "question": "What stops one branch of government from becoming too powerful?",
+            "type": "multi",
+            "correct": "Seperation Of Powers",
+            "answers": [
+                "The Congress",
+                "The Supreme Court",
+                "Seperation Of Powers",
+                "The Senate"
+            ]
+        },
+        {
+            "question": "What stops one branch of government from becoming too powerful?",
+            "type": "multi",
+            "correct": "Seperation Of Powers",
+            "answers": [
+                "The Congress",
+                "The Supreme Court",
+                "Seperation Of Powers",
+                "The Senate"
+            ]
+        },
+        {
+            "question": "Who is the Commander in Chief of the military?",
+            "type": "multi",
+            "correct": "The President",
+            "answers": [
+                "The Supreme General",
+                "The President",
+                "The Admiral General",
+                "The Senate"
+            ]
+        },
+        {
+            "question": "Who can veto a bill?",
+            "type": "multi",
+            "correct": "The President",
+            "answers": [
+                "The Congress",
+                "The President",
+                "The Courts",
+                "The Senate"
+            ]
+        },
+        {
+            "question": "Who signs bills to become law?",
+            "type": "multi",
+            "correct": "The President",
+            "answers": [
+                "The Congress",
+                "The President",
+                "The Courts",
+                "The Senate"
+            ]
+        },
+        {
+            "question": "Who wrote the Declaration of Independence?",
+            "type": "multi",
+            "correct": "The President",
+            "answers": [
+                "Thomas Jefferson",
+                "Benjamin Franklin",
+                "George Washington",
+                "John Adams"
+            ]
+        },
+        {
+            "question": "What does the 14th amendment pertain to?",
+            "type": "multi",
+            "correct": "citizenship",
+            "answers": [
+                "citizenship",
+                "right to bear arms",
+                "free speech",
+                "pursuit of happiness"
+            ]
+        },
+        {
+            "question": "Name an American Revolution important events.",
+            "type": "multi",
+            "correct": "Battle of Yorktown",
+            "answers": [
+                "Battle of Yorktown",
+                "Battle of Bulge",
+                "Battle Of Colonies",
+                "Pennsylvania Massacre"
+            ]
+        },
+        {
+            "question": "Why were the Federalist Papers important?",
+            "type": "multi",
+            "correct": "Supported Passing Constitution",
+            "answers": [
+                "Declared Independence",
+                "Supported Civil War",
+                "Supported Seperate Judicial",
+                "Supported Passing Constitution"
+            ]
+        },
+        {
+            "question": "What is James Madison known for",
+            "type": "multi",
+            "correct": "President during war of 1812",
+            "answers": [
+                "President during war of 1812",
+                "President during war of 1776",
+                "2nd President",
+                "Declared Independence"
+            ]
+        },
+        {
+            "question": "When did all women get the right to vote?",
+            "type": "multi",
+            "correct": "1920",
+            "answers": [
+                "1949",
+                "1920",
+                "1990",
+                "1910"
+            ]
+        },
+        {
+            "question": "What is Memorial Day?",
+            "type": "multi",
+            "correct": "Honors soldiers who died in service",
+            "answers": [
+                "Honors soldiers who died in service",
+                "Honors soldiers",
+                "WWII Remembrance",
+                "Memorializes the President"
+            ]
+        },
+        {
+            "question": "What is Memorial Day?",
+            "type": "multi",
+            "correct": "Honors soldiers who died in service",
+            "answers": [
+                "Honors soldiers who died in service",
+                "Honors soldiers",
+                "WWII Remembrance",
+                "Memorializes the President"
+            ]
+        },
+        {
+            "question": "What is an example of American Innovation?",
+            "type": "multi",
+            "correct": "All of the above",
+            "answers": [
+                "The Lightbulb",
+                "The Airplane",
+                "The Automobile",
+                "All of the above"
+            ]
+        },
+        {
+            "question": "What is an example of American Innovation?",
+            "type": "multi",
+            "correct": "All of the above",
+            "answers": [
+                "The Lightbulb",
+                "The Airplane",
+                "The Automobile",
+                "All of the above"
+            ]
+        },
+        {
+            "question": "The pledge of allegiance shows loyalty to...",
+            "type": "multi",
+            "correct": "The Flag",
+            "answers": [
+                "The Flag",
+                "The President",
+                "The Allegiance",
+                "Christianity"
+            ]
+        },
+        {
+            "question": "What ways do Americans participate in democracy?",
+            "type": "multi",
+            "correct": "All of the above",
+            "answers": [
+                "Vote",
+                "Run For Office",
+                "Join a Political Party",
+                "All of the above"
+            ]
+        },
+        {
+            "question": "What age must all men register for the Selective Service?",
+            "type": "multi",
+            "correct": "18-26",
+            "answers": [
+                "18-26",
+                "18-21",
+                "16-18",
+                "18"
+            ]
+        },
+        {
+            "question": "Who lived in America before the Europeans arrived?",
+            "type": "multi",
+            "correct": "American Indians",
+            "answers": [
+                "American Indians",
+                "Canadians",
+                "Mexicans",
+                "Chinese"
+            ]
+        },
+        {
+            "question": "What happened at the Constitutional Convention?",
+            "type": "multi",
+            "correct": "The Constitution was written",
+            "answers": [
+                "The Constitution was written",
+                "The Constitution was ripped up",
+                "The Constitution was sold",
+                "The Congress was elected"
+            ]
+        },
+        {
+            "question": "Who was Benjamin Franklin?",
+            "type": "multi",
+            "correct": "First Postmaster General",
+            "answers": [
+                "First Postmaster General",
+                "A Confederate",
+                "British Prime Minister",
+                "1899 Treaty of Virginia Writer"
+            ]
+        },
+        {
+            "question": "What territory did the United States buy from France in 1803?",
+            "type": "multi",
+            "correct": "Louisiana Territory",
+            "answers": [
+                "Louisiana Territory",
+                "Virginia Territory",
+                "Washington D.C.",
+                "Mexican Territory"
+            ]
+        },
+        {
+            "question": "What war was fought by the United States in the 1800s?",
+            "type": "multi",
+            "correct": "All of the above",
+            "answers": [
+                "Civil War",
+                "War of 1812",
+                "Mixican American War",
+                "All of the above"
+            ]
+        },
+        {
+            "question": "What was a reason the Civil War was fought?",
+            "type": "multi",
+            "correct": "Slavery",
+            "answers": [
+                "Slavery",
+                "British Taxes",
+                "Water Access",
+                "Presidential Power"
+            ]
+        },
+        {
+            "question": "What did the Emancipation Proclamation do?",
+            "type": "multi",
+            "correct": "Freed Slaves",
+            "answers": [
+                "Freed Slaves",
+                "Freedom of speech",
+                "Emancipated Children",
+                "Emancipated Canada"
+            ]
+        },
+        {
+            "question": "What did Susan B. Anthony do?",
+            "type": "multi",
+            "correct": "Fought for Womens Rights",
+            "answers": [
+                "Fought for Womens Rights",
+                "Write the Pledge of Allegiance",
+                "Fought for Children",
+                "Famous Poet"
+            ]
+        },
+        {
+            "question": "Who was President during World War I?",
+            "type": "multi",
+            "correct": "Woodrow Wilson",
+            "answers": [
+                "Woodrow Wilson",
+                "Abraham Lincoln",
+                "Theodore Roosevelt",
+                "Harry S. Truman"
+            ]
+        },
+        {
+            "question": "What was the Cold War fought over?",
+            "type": "multi",
+            "correct": "Communism",
+            "answers": [
+                "Capitalism",
+                "Communism",
+                "Socialism",
+                "Dictatorship"
+            ]
+        },
+        {
+            "question": "What ocean is on the West Coast of the United States?",
+            "type": "multi",
+            "correct": "Pacific",
+            "answers": [
+                "Pacific",
+                "Atlantic",
+                "Arctic",
+                "Indian"
+            ]
+        },
+        {
+            "question": "What ocean is on the East Coast of the United States?",
+            "type": "multi",
+            "correct": "Atlantic",
+            "answers": [
+                "Pacific",
+                "Atlantic",
+                "Arctic",
+                "Indian"
+            ]
+        },
+        {
+            "question": "Puerto Rico is a U.S Territory?",
+            "type": "tf",
+            "correct": "True",
+            "answers": [
+                "True",
+                "False"
+            ]
+        },
+        {
+            "question": "U.S. Virgin Islands is a U.S Territory?",
+            "type": "tf",
+            "correct": "True",
+            "answers": [
+                "True",
+                "False"
+            ]
+        },
+        {
+            "question": "What ocean is a U.S Territory?",
+            "type": "multi",
+            "correct": "All of the above",
+            "answers": [
+                "American Samoa",
+                "Northern Mariana Islands",
+                "Guam",
+                "All of the above"
+            ]
+        },
+        {
+            "question": "What is the U.S. Capital?",
+            "type": "multi",
+            "correct": "Washington, D.C.",
+            "answers": [
+                "Washington, D.C.",
+                "Washington state",
+                "New York City",
+                "Boston"
+            ]
+        },
+        {
+            "question": "Where is the Statue of Liberty?",
+            "type": "multi",
+            "correct": "New York",
+            "answers": [
+                "New York",
+                "Washington state",
+                "Alabama",
+                "Texas"
+            ]
+        },
+        {
+            "question": "What is the name of the national anthem?",
+            "type": "multi",
+            "correct": "Star-Spangled Banner",
+            "answers": [
+                "Star-Spangled Banner",
+                "Star Banner",
+                "Pledge of Allegiance",
+                "United We Stand"
+            ]
+        }
+    ]
+}
