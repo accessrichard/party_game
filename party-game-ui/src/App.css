@@ -79,6 +79,10 @@ body {
   color: whitesmoke;
 }
 
+.header-notification {  
+  margin: 0 auto;  
+}
+
 .spin {
   animation-duration: 1s;
   animation-name: app-logo-spin;

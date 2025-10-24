@@ -62,7 +62,7 @@ const initialState = {
     gameCode: null,
     players: [],
     isGameOwner: false,
-    genServerTimeout: null,
+    genServerTimeout: {},
     playerCount: 0,
     api: {
         start: { ...apiState },
@@ -107,7 +107,7 @@ export const lobbySlice = createSlice({
         handleChangeOwner: (state, action) => {
             state.isGameOwner = action.payload.room_owner === state.playerName;
         },
-        handleGenServerTimeout(state, action) {
+        handleGenServerTimeout(state, action) {            
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
         onRouteToGame(state, action) {

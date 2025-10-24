@@ -173,8 +173,7 @@ export const {
     unansweredTimeout,
     redirect,
     handleChangeOwner,
-    handleCorrectAnswer,    
-    handleGenServerTimeout,
+    handleCorrectAnswer,        
     handleWrongAnswer,
     handleNewGameCreated,
     onRouteToGame,
@@ -182,8 +181,7 @@ export const {
     updateGameList,
     updateSettings,
     clearWrongAnswer,
-    syncGameState,
-    clearJoinError,
+    syncGameState,    
     setFlash, 
     resetGame} = multipleChoiceSlice.actions;
 

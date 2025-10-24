@@ -29,8 +29,7 @@ export default function NewGamePrompt(props) {
         return players.filter(presence => presence.location != "game").map(x => x.name)
     }
 
-    function onTimerCompleted() {        
-        console.log("Timer COmpleted" + getMissingPlayers());
+    function onTimerCompleted() {                
         setIsTimerActive(false);
         onStartGame && onStartGame();
     }

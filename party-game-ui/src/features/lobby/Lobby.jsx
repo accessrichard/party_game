@@ -156,7 +156,7 @@ export default function Lobby() {
         }
     }
 
-    function onGenServerTimeout() {
+    function onLobbyTimeout() {
         dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
     }   
     
@@ -180,7 +180,7 @@ export default function Lobby() {
             <span className="font-14px">
                 <Timer
                     isActive={isTimerActive}
-                    onTimerCompleted={onGenServerTimeout}
+                    onTimerCompleted={onLobbyTimeout}
                     numberSeconds={import.meta.env.LOBBY_IDLE_TIMEOUT || 1800} />
             </span>
 

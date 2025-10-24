@@ -64,7 +64,8 @@ export function hasConnectedSocket(socketStatus) {
 const initialState = {
     socket: {
         status: null,
-        message: null
+        message: null,
+        event: null
     },
     channels: []
 };
@@ -85,7 +86,8 @@ export function reducer(state = initialState, action = {}) {
             return {
                 ...state,
                 socket: {
-                    status: action.type
+                    status: action.type,
+                    event: action
                 }
             };
         case SOCKET_DISCONNECT:
@@ -216,9 +218,7 @@ const phoenixMiddleware = () => {
 
                 store.dispatch(channelJoinError(formatPayload(channel, e)));
             })
-            .receive("timeout", e => {
-                store.dispatch(channelJoinTimeout(formatPayload(channel, e)));
-            });
+            .receive("timeout", e =>  store.dispatch(channelJoinTimeout(formatPayload(channel, e))));
 
         channel.onError(e => store.dispatch(channelError(formatPayload(channel, e))));
         channel.onClose(() => store.dispatch(channelLeave(formatPayload(channel))));
@@ -226,7 +226,6 @@ const phoenixMiddleware = () => {
 
     function leave(store, action) {
         store.dispatch(channelLeaving(action.payload));
-
         if (!hasChannel(action.payload.topic)) {
             return;
         }
@@ -254,6 +253,12 @@ const phoenixMiddleware = () => {
         channel.push(action.payload.event, action.payload.data)
             .receive("ok", e => channelPushOk(formatPayload(channel, e)))
             .receive("error", e => channelPushError(formatPayload(channel, e)))
+            //// Server can respond with: 
+            ////   {:noreply, socket} -> timeout event will trigger
+            ////  or
+            ////   {:reply, :ok, socket} -> no timeout
+            ////
+            //// :noreply is more efficient even though timeout will trigger.
             .receive("timeout", e => channelPushTimeout(formatPayload(channel, e)));
     }
 

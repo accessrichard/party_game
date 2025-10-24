@@ -3,7 +3,7 @@ import './App.css';
 import {
   Route,
   Routes
-} from "react-router-dom";
+} from "react-router";
 import React from 'react';
 
 import AppBody from './features/common/AppBody';

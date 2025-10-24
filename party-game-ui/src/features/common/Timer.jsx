@@ -35,7 +35,8 @@ export default function Timer(props) {
         onTimerCompleted,
         timeFormat,
         onStartDateSet,
-        restartKey
+        restartKey,
+        className
     } = props;
 
     const [seconds, setSeconds] = useState(isIncrement ? 0 : numberSeconds);
@@ -82,7 +83,7 @@ export default function Timer(props) {
     return (
         <>
             {isVisible &&
-                <span>
+                <span className={className}>
                     {formatTime(seconds, timeFormat)}
                 </span>}
         </>
