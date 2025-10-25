@@ -13,35 +13,29 @@ export default function NewGamePrompt(props) {
         header = "" } = props;
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const players = useSelector(getPresences);
+    const presenceList = useSelector(getPresences);    
+
+    
 
     useEffect(() => {
         setIsTimerActive(isNewGamePrompt);
     }, [isNewGamePrompt]);
 
-    useEffect(() => {        
+    useEffect(() => {
         if (getMissingPlayers().length === 0) {
             onTimerCompleted();
         }
-    }, [players])
+    }, [presenceList])
 
     function getMissingPlayers() {
-        return players.filter(presence => presence.location != "game").map(x => x.name)
+        return presenceList.filter(presence => presence.location != "game").map(x => x.name)
     }
 
-    function onTimerCompleted() {                
+    function onTimerCompleted() {
         setIsTimerActive(false);
         onStartGame && onStartGame();
     }
 
-    function missingPlayers() {
-        const missingList = getMissingPlayers().map((name, i) => <li key={i}>{name}</li>);
-        return (
-            <ul className="ul-nostyle">
-                {missingList}
-            </ul>
-        );
-    }
 
     return (
         <>
@@ -64,7 +58,9 @@ export default function NewGamePrompt(props) {
                             </h2>
                         </div>
                         Waiting for players to connect:
-                        {missingPlayers()}
+                        <ul className="ul-nostyle">
+                            {presenceList.map((x, i) => <li key={i}>{x.name} - {x.location}</li>)}
+                        </ul>
                     </div>
                 </div>
             }

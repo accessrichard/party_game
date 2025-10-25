@@ -26,8 +26,10 @@ const getPresencesList = (p) => {
     });
 };
 
-export const getPresences = createSelector(state => state.presence, getPresencesList);
 
+export const getPresences = createSelector(state => state.presence, getPresencesList);
+export const getPresenceUsers = createSelector(state => state.presence, (p) => Object.keys(p.presence));
+ 
 
 export const {
     syncPresenceState,

@@ -29,7 +29,7 @@ defmodule PartyGameWeb.HangmanChannel do
 
     @impl true
     def handle_info({:after_join, :game_not_found}, socket) do
-      broadcast(socket, "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
+      broadcast("lobby:#{game_code(socket.topic)}",  "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
       {:noreply, socket}
     end
 

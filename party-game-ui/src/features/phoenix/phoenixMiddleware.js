@@ -212,7 +212,7 @@ const phoenixMiddleware = () => {
                     channel.rejoinTimer.reset();
                 }
 
-                if (connectionErrors.channelJoin > 10) {
+                if (connectionErrors.channelJoin > 30) {
                     channel.rejoinTimer.reset();
                 }
 

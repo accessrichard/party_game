@@ -33,7 +33,7 @@ const events = (topic) => [
         event: 'handle_quit',
         dispatcher: endGame(),
         topic
-    }    
+    }
 ]
 
 export default function HangmanGame() {
@@ -44,12 +44,12 @@ export default function HangmanGame() {
     const { games } = useSelector(state => state.creative);
     const { playerName, gameCode, isGameOwner, gameName, isGameStarted } = useSelector(state => state.lobby);
     const {
-        word, 
-        guesses, 
-        isWinner, 
-        startIntroScene, 
-        winningWord, 
-        settings, 
+        word,
+        guesses,
+        isWinner,
+        startIntroScene,
+        winningWord,
+        settings,
         isOver,
         forceQuit
     } = useSelector(state => state.hangman);
@@ -69,6 +69,14 @@ export default function HangmanGame() {
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
         }
+    }, []);
+
+    useEffect(() => {
+        dispatch(channelPush({
+            topic: `lobby:${gameCode}`,
+            event: "presence_location",
+            data: { location: "game" }
+        }));
     }, []);
 
     function notifyLeave() {
@@ -152,7 +160,7 @@ export default function HangmanGame() {
         if (guesses.some(x => x.toLowerCase().trim() == guess.toLowerCase().trim())) {
             return;
         }
-        
+
         const bodyPartsLength = HangmanView.stickMan.getBodyParts(settings.difficulty).length;
         dispatch(channelPush(sendEvent(hangmanChannel, { guess, isOver: guesses.length >= bodyPartsLength - 1 }, "guess")));
     }
@@ -177,7 +185,7 @@ export default function HangmanGame() {
 
     if (forceQuit) {
         dispatch(reset());
-        dispatch(push('/lobby'));        
+        dispatch(push('/lobby'));
     }
 
     if (!gameCode) {

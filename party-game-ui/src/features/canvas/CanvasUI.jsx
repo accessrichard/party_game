@@ -117,10 +117,18 @@ export default function CanvasUI({
     }, []);
 
     useEffect(() => {
+        dispatch(channelPush({
+            topic: `lobby:${gameCode}`,
+            event: "presence_location",
+            data: { location: "game" }
+        }));
+    }, []);
+
+    useEffect(() => {
         return () => { dispatch(reset()); };
     }, []);
 
-     useEffect(() => {
+    useEffect(() => {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "presence_location",
