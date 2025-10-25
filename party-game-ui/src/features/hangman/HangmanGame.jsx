@@ -11,6 +11,8 @@ import usePrevious from '../usePrevious';
 import useBackButtonBlock from '../useBackButtonBlock'
 import { push } from "redux-first-history";
 import { endGame } from '../lobby/lobbySlice';
+import NewGamePrompt from '../common/NewGamePrompt';
+
 
 
 const events = (topic) => [
@@ -41,6 +43,7 @@ export default function HangmanGame() {
     const dispatch = useDispatch();
     const canvasRef = useRef(null);
     const [inputStyle, setInputStyle] = useState({});
+    const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const { games } = useSelector(state => state.creative);
     const { playerName, gameCode, isGameOwner, gameName, isGameStarted } = useSelector(state => state.lobby);
     const {
@@ -56,22 +59,15 @@ export default function HangmanGame() {
     const prevWord = usePrevious(word);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
-
     const hangmanChannel = `hangman:${gameCode}`;
     useBackButtonBlock(isBackButtonBlocked);
     usePhoenixSocket();
     usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(hangmanChannel, events);
-    useLobbyEvents();
-
-
-    useEffect(() => {
-        if (isGameOwner) {
-            dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
-        }
-    }, []);
+    useLobbyEvents();   
 
     useEffect(() => {
+        setIsStartGamePrompt(true);   
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "presence_location",
@@ -192,20 +188,29 @@ export default function HangmanGame() {
         return <Navigate to="/" />
     }
 
+
+    function onStartGame() {
+        if (isGameOwner) {
+            dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
+        } 
+    }
+
     return (
         <>
-            <h3>Hangman</h3>
-            <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
-            </canvas>
-            <div style={inputStyle}>
-                {!isWinner && !winningWord && word && !isAnimating &&
-                    <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />}
-            </div>
-            <div className="container">
+            <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
+                <h3>Hangman</h3>
+                <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
+                </canvas>
+                <div style={inputStyle}>
+                    {!isWinner && !winningWord && word && !isAnimating &&
+                        <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />}
+                </div>
+                <div className="container">
 
-                {isGameOwner && <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>}
-                {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
-            </div>
+                    {isGameOwner && <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>}
+                    {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
+                </div>
+            </NewGamePrompt>
         </>
     )
 }
