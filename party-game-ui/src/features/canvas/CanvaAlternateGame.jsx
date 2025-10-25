@@ -4,6 +4,7 @@ import { channelPush } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendEvent } from '../phoenix/usePhoenix';
 import { clearCanvas, clearCommand } from './canvasUtils';
+import { getPresenceUsers } from '../presence/presenceSlice';
 
 export default function CanvasDrawGame() {
 
@@ -14,11 +15,10 @@ export default function CanvasDrawGame() {
     const {
         turn,
         winner,
-        word,
-        players, 
+        word,        
         settings
     } = useSelector(state => state.canvas);
-
+    const players = useSelector(getPresenceUsers);    
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
 
