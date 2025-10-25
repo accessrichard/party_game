@@ -206,13 +206,16 @@ const phoenixMiddleware = () => {
                 store.dispatch(channelJoined(formatPayload(channel, e)))
             })
             .receive("error", e => {
+                console.log("Channel Join Error, Increasing join error" + connectionErrors.channelJoin)
                 connectionErrors.channelJoin+= 1;
                        
                 if (e.reason && e.reason == "unmatched topic") {
+                    console.log("Channel Join Error, Unmatched topic")                    
                     channel.rejoinTimer.reset();
                 }
 
-                if (connectionErrors.channelJoin > 30) {
+                if (connectionErrors.channelJoin > 20) {
+                    console.log("Channel Join  Error, Max Retries")                    
                     channel.rejoinTimer.reset();
                 }
 
@@ -220,7 +223,11 @@ const phoenixMiddleware = () => {
             })
             .receive("timeout", e =>  store.dispatch(channelJoinTimeout(formatPayload(channel, e))));
 
-        channel.onError(e => store.dispatch(channelError(formatPayload(channel, e))));
+        channel.onError(e => {
+            console.log("Channel error")
+            console.log(e)
+            store.dispatch(channelError(formatPayload(channel, e)))
+        });
         channel.onClose(() => store.dispatch(channelLeave(formatPayload(channel))));
     }
 

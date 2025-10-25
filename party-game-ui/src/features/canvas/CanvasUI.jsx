@@ -114,15 +114,7 @@ export default function CanvasUI({
         return () => {
             window.removeEventListener("beforeunload", notifyLeave);
         };
-    }, []);
-
-    useEffect(() => {
-        dispatch(channelPush({
-            topic: `lobby:${gameCode}`,
-            event: "presence_location",
-            data: { location: "game" }
-        }));
-    }, []);
+    }, []);   
 
     useEffect(() => {
         return () => { dispatch(reset()); };
