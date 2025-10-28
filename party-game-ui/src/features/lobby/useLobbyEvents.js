@@ -2,6 +2,7 @@ import React from 'react';
 import {
     handleChangeOwner,
     handleGenServerTimeout,
+    handleDisconnect,
     onRouteToGame
 } from '../lobby/lobbySlice';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
@@ -18,6 +19,11 @@ const events = (topic) => [
     {
         event: 'handle_room_owner_change',
         dispatcher: handleChangeOwner(),
+        topic,
+    },
+    {
+        event: 'handle_disconnect',
+        dispatcher: handleDisconnect(),
         topic,
     },
     {

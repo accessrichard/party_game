@@ -74,7 +74,6 @@ defmodule PartyGameWeb.LobbyChannel do
       |> Map.merge(%{typing: Map.get(payload, "typing")})
 
     {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
-
     {:noreply, socket}
   end
 
@@ -86,6 +85,14 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
+  def handle_in("handle_disconnect", _, socket) do
+      Logger.debug("disconnect handled on #{socket.topic} for: #{socket.assigns.name}")
+
+      push(socket, "handle_disconnect", Server.get_game(game_code(socket.topic)))
+      {:noreply, socket}
+  end
+
+  @impl true
   def handle_in("ping", _, socket) do
     Server.ping(game_code(socket.topic))
     {:noreply, socket}
@@ -93,6 +100,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def terminate(_reason, socket) do
+    Logger.debug("terminating on #{socket.topic} for: #{socket.assigns.name}")
     remove_player(Server.lookup(game_code(socket.topic)), socket)
   end
 
@@ -109,10 +117,14 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   def leave(topic, name) do
+    Logger.debug("ChannelWatcher Leave called: #{topic} name: #{name}")
     players = Map.keys(Presence.list(topic))
 
     if players == [] do
-      Server.stop(game_code(topic))
+      # Since the ChannelWatcher may trigger off network disconnects
+      # leave the server for now...
+      #
+      # Server.stop(game_code(topic))
     else
       player_leave(Server.lookup(game_code(topic)), name, players, topic)
     end
@@ -121,11 +133,16 @@ defmodule PartyGameWeb.LobbyChannel do
   defp player_leave({:error, _}, _, _, _), do: :ok
 
   defp player_leave({:ok, _}, name, players, topic) do
+    Logger.debug("player_leave #{topic} name: #{name}")
     game_room = Server.get_game(game_code(topic))
-    game_room = Lobby.remove_player(game_room, name)
+
+    # The ChannelWatcher may be called after :after_join is re-called which adds the
+    # player back into the lobby causing sequencing errors.
+    #
+    # game_room = Lobby.remove_player(game_room, name)
 
     game_room =
-      if name == game_room.room_owner do
+      if name == game_room.room_owner and players !== [] do
         elect_new_game_owner(players, topic, game_room)
       else
         game_room
@@ -136,6 +153,8 @@ defmodule PartyGameWeb.LobbyChannel do
 
   defp elect_new_game_owner(players, topic, game_room) do
     new_owner = List.first(players)
+    Logger.debug("Electing game owner on #{topic} to: #{new_owner}")
+
     game_room = Lobby.update_room_owner(game_room, new_owner)
     PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
     game_room

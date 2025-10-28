@@ -110,6 +110,11 @@ export const lobbySlice = createSlice({
         handleGenServerTimeout(state, action) {            
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
+        handleDisconnect(state, action) {
+            console.log(action)
+            //// After being disconnected for a while (cell to wifi etc.), need to resynchronize the 
+            /// game and location.
+        },
         onRouteToGame(state, action) {
             resetGame(state);
             state.isGameStarted = true;                
@@ -177,6 +182,7 @@ export const {
     handleChangeOwner,
     handleGenServerTimeout,
     handleNewGameCreated,
+    handleDisconnect,
     onRouteToGame,
     handleJoin,
     changeGame,

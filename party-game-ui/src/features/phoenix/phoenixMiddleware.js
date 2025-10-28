@@ -224,8 +224,12 @@ const phoenixMiddleware = () => {
             .receive("timeout", e =>  store.dispatch(channelJoinTimeout(formatPayload(channel, e))));
 
         channel.onError(e => {
-            console.log("Channel error")
-            console.log(e)
+            connectionErrors.channelError+= 1;
+            if (connectionErrors.channelError > 20) {
+                console.log("Channel Error, Max Retries")
+                channel.rejoinTimer.reset();
+            }
+            
             store.dispatch(channelError(formatPayload(channel, e)))
         });
         channel.onClose(() => store.dispatch(channelLeave(formatPayload(channel))));

@@ -101,7 +101,6 @@ defmodule PartyGameWeb.HangmanChannel do
         |> Lobby.set_game(HangmanGame.new(%{name: "hangman", words: words, settings: settings}))
         |> HangmanGame.change_word()
         |> Server.update_game()
-        |> IO.inspect
 
       broadcast(socket, "handle_new_game", %{
         "word" => game_room.game.display_word,
