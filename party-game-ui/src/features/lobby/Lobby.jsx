@@ -29,7 +29,7 @@ const events = (topic) => [
         topic,
     },
      {
-        event: 'handle_discconect',
+        event: 'handle_disconnect',
         dispatcher: handleDisconnect(),
         topic,
     },
