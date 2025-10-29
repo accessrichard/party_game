@@ -94,7 +94,10 @@ defmodule PartyGameWeb.LobbyChannel do
   def handle_in("handle_disconnect", _, socket) do
     Logger.debug("disconnect handled on #{socket.topic} for: #{socket.assigns.name}")
 
-    push(socket, "handle_disconnect", Server.get_game(game_code(socket.topic)))
+    game = Server.get_game(game_code(socket.topic))
+    push(socket, "handle_disconnect", %{
+              room_owner: game.room_owner
+          })
     {:noreply, socket}
   end
 
