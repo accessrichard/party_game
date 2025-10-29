@@ -1,19 +1,15 @@
-import { channelPush, SOCKET_CONNECTED, SOCKET_DISCONNECTED } from '../phoenix/phoenixMiddleware';
+import { channelPush } from '../phoenix/phoenixMiddleware';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
     changeGame,
-    handleChangeOwner,
     handleGenServerTimeout,
-    handleJoin,
-    onRouteToGame,
     listGames,
-    mergeGameList,
-    handleDisconnect
+    mergeGameList
 } from './lobbySlice';
 import { getGameMetadata } from './games';
-import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
+import useLobbyEvents from '../lobby/useLobbyEvents';
 import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
@@ -21,44 +17,6 @@ import GameList from '../common/GameList';
 import Logo from '../common/Logo';
 import Timer from '../common/Timer';
 import { push } from "redux-first-history";
-
-const events = (topic) => [
-    {
-        event: 'handle_join',
-        dispatcher: handleJoin(),
-        topic,
-    },
-     {
-        event: 'handle_disconnect',
-        dispatcher: handleDisconnect(),
-        topic,
-    },
-    {
-        event: 'presence_state',
-        dispatcher: syncPresenceState(),
-        topic
-    },
-    {
-        event: 'presence_diff',
-        dispatcher: syncPresenceDiff(),
-        topic
-    },
-    {
-        event: 'handle_game_server_idle_timeout',
-        dispatcher: handleGenServerTimeout(),
-        topic,
-    },
-    {
-        event: 'handle_room_owner_change',
-        dispatcher: handleChangeOwner(),
-        topic,
-    },
-    {
-        event: 'route_to_game',
-        dispatcher: onRouteToGame(),
-        topic
-    }
-]
 
 export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -78,7 +36,6 @@ export default function Lobby() {
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
     const gameMetaData = getGameMetadata(type);
-    const [isDisconnected, setIsDisconnected] = useState(false);
 
     useEffect(() => {
         if (!gameCode) {
@@ -87,9 +44,9 @@ export default function Lobby() {
     }, [gameCode]);
 
     usePhoenixSocket();
-    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
-    usePhoenixEvents(`lobby:${gameCode}`, events);
-    
+    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });    
+    useLobbyEvents();
+
 
     useEffect(() => {
         dispatch(channelPush({
@@ -104,33 +61,7 @@ export default function Lobby() {
         return () => { setIsTimerActive(false); };
     }, []);
 
-    /**
-     * If the client goes offline, we need to elect a new game owner.
-     * If the client comes back online, sync the new game owner.
-     * In the future will have to resync the entire game but for now this
-     * will keep things moving.
-     */
-    useEffect(() => {
-        if (socketStatus === null) {
-            return;
-        }
-        
-        if (socketStatus === SOCKET_CONNECTED && isDisconnected)
-        {
-            setIsDisconnected(false);
-            dispatch(channelPush({
-                topic: `lobby:${gameCode}`,
-                event: "handle_disconnect"                
-            }));
-            return;
-        }
 
-        if (socketStatus === SOCKET_DISCONNECTED && !isDisconnected) {
-            setIsDisconnected(true);
-            return;
-        }
-    
-    }, [socketStatus, isDisconnected])
 
     useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {
@@ -194,8 +125,8 @@ export default function Lobby() {
 
     function onLobbyTimeout() {
         dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
-    }   
-    
+    }
+
     return (
         <>
             <header className="full-width">
