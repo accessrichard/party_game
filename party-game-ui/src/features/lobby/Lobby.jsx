@@ -1,12 +1,13 @@
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
+import { usePhoenixChannel, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import {
     changeGame,
     handleGenServerTimeout,
     listGames,
-    mergeGameList
+    mergeGameList,
+    selectGameOwner
 } from './lobbySlice';
 import { getGameMetadata } from './games';
 import useLobbyEvents from '../lobby/useLobbyEvents';
@@ -25,7 +26,7 @@ export default function Lobby() {
     const {
         playerName,
         gameCode,
-        isGameOwner,
+        gameOwner,        
         isGameStarted,
         gameName,
         type
@@ -36,6 +37,7 @@ export default function Lobby() {
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
     const gameMetaData = getGameMetadata(type);
+    const isGameOwner = useSelector(selectGameOwner);
 
     useEffect(() => {
         if (!gameCode) {
@@ -141,7 +143,7 @@ export default function Lobby() {
             </header>
 
             {!isGameOwner &&
-                <div className="medium-font">Waiting for game owner to start game.</div>
+                <div className="medium-font">Waiting for game owner: {gameOwner} to start game.</div>
             }
 
             <span className="font-14px">

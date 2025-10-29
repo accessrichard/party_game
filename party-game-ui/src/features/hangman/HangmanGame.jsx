@@ -10,7 +10,7 @@ import { HangmanView } from './hangmanCanvas';
 import usePrevious from '../usePrevious';
 import useBackButtonBlock from '../useBackButtonBlock'
 import { push } from "redux-first-history";
-import { endGame } from '../lobby/lobbySlice';
+import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import NewGamePrompt from '../common/NewGamePrompt';
 
 
@@ -45,7 +45,7 @@ export default function HangmanGame() {
     const [inputStyle, setInputStyle] = useState({});
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const { games } = useSelector(state => state.creative);
-    const { playerName, gameCode, isGameOwner, gameName, isGameStarted } = useSelector(state => state.lobby);
+    const { playerName, gameCode, gameName, isGameStarted } = useSelector(state => state.lobby);
     const {
         word,
         guesses,
@@ -56,6 +56,8 @@ export default function HangmanGame() {
         isOver,
         forceQuit
     } = useSelector(state => state.hangman);
+    const isGameOwner = useSelector(selectGameOwner);
+    
     const prevWord = usePrevious(word);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);

@@ -12,7 +12,7 @@ import useLobbyEvents from '../lobby/useLobbyEvents';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { endGame } from '../lobby/lobbySlice';
+import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -78,7 +78,8 @@ export default function CanvasUI({
 }) {
 
     const dispatch = useDispatch();
-    const { isGameOwner, playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
+    const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
+    const isGameOwner = useSelector(selectGameOwner);
 
     const canvasChannel = `canvas:${gameCode}`;
 

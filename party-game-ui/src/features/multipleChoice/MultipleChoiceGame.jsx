@@ -13,7 +13,7 @@ import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { toServerSettings } from './settingsApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { mergeGameList, endGame } from '../lobby/lobbySlice';
+import { mergeGameList, endGame, selectGameOwner } from '../lobby/lobbySlice';
 import { usePhoenixEvents, usePhoenixChannel, sendEvent } from '../phoenix/usePhoenix';
 import {
     clearWrongAnswer,
@@ -67,15 +67,13 @@ export default function MultipleChoiceGame() {
         isOver
     } = useSelector(state => state.multipleChoice);
 
-    const {
-        isGameOwner,
+    const {        
         playerName,
         gameName,
-        gameCode,
-        playerCount
+        gameCode
     } = useSelector(state => state.lobby);
 
-    
+    const isGameOwner = useSelector(selectGameOwner);
     const players = useSelector(getPresences);
 
 

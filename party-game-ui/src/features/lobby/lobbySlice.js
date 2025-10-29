@@ -52,6 +52,8 @@ export const stopGame = createAsyncThunk(
 )
 
 
+export const selectGameOwner = createSelector(state => state.lobby, lobby => lobby.playerName === lobby.gameOwner);
+
 const initialState = {
     isGameStarted: false,
     isPaused: false,
@@ -61,7 +63,7 @@ const initialState = {
     type: '',
     gameCode: null,
     players: [],
-    isGameOwner: false,
+    gameOwner: '',
     genServerTimeout: {},
     playerCount: 0,
     api: {
@@ -82,7 +84,7 @@ function resetGame(state) {
         playerName: state.playerName,
         gameName: state.gameName,
         gameCode: state.gameCode,
-        isGameOwner: state.isGameOwner,
+        gameOwner: state.gameOwner,
         api: state.api,
         type: state.type,
         playerCount: 0,
@@ -105,13 +107,13 @@ export const lobbySlice = createSlice({
             state.isGameStarted = false;
         },
         handleChangeOwner: (state, action) => {
-            state.isGameOwner = action.payload.room_owner === state.playerName;
+            state.gameOwner = action.payload.room_owner;
         },
         handleGenServerTimeout(state, action) {            
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
         handleDisconnect(state, action) {
-            state.isGameOwner = action.payload.room_owner === state.playerName;
+            state.gameOwner = action.payload.room_owner;
         },
         onRouteToGame(state, action) {
             resetGame(state);
@@ -127,7 +129,7 @@ export const lobbySlice = createSlice({
             state.playerName = action.payload.playerName;
             state.gameCode = action.payload.room_name;            
             state.players = action.payload.players;
-            state.isGameOwner = action.payload.room_owner === action.payload.playerName;
+            state.gameOwner = action.payload.room_owner;
             state.gameName = action.payload.name || '';
         },
         handleJoin(state, action) {

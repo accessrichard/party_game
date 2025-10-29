@@ -25,8 +25,7 @@ function _resetGame(state) {
         gameCode: state.gameCode,
         round: 0,               
         players: [],
-        rounds: [],
-        isGameOwner: state.isGameOwner,
+        rounds: [],        
         api: state.api,
         settings: {
             ...state.settings

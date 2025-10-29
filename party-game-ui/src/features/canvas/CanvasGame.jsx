@@ -5,15 +5,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sendEvent } from '../phoenix/usePhoenix';
 import { clearCanvas, clearCommand } from './canvasUtils';
 import { getPresenceUsers } from '../presence/presenceSlice';
-
+import { selectGameOwner } from '../lobby/lobbySlice';
 
 export default function CanvasDrawGame() {
 
     const dispatch = useDispatch();
-    const { isGameOwner, playerName, gameCode, gameName } = useSelector(state => state.lobby);
+    const { playerName, gameCode, gameName } = useSelector(state => state.lobby);
     const { turn, winner, word, settings, isOver } = useSelector(state => state.canvas);
     const { games } = useSelector(state => state.creative);
-    const players = useSelector(getPresenceUsers);    
+    const players = useSelector(getPresenceUsers);
+    const isGameOwner = useSelector(selectGameOwner);    
     const canvasChannel = `canvas:${gameCode}`;
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isEditable, setIsEditable] = useState(true);
