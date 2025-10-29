@@ -1,4 +1,6 @@
 import { Socket } from "phoenix";
+import { createSelector } from  '@reduxjs/toolkit';
+
 
 export const SOCKET_CONNECT = 'SOCKET_CONNECT';
 export const SOCKET_ERROR = 'SOCKET_ERROR';
@@ -60,6 +62,8 @@ export function hasChannelError(channels, topic) {
 export function hasConnectedSocket(socketStatus) {
     return socketStatus === SOCKET_CONNECTED;
 }
+
+export const selectLobbyChannel = createSelector(state => state.phoenix.channels, channels => channels.find(channel => channel.topic.startsWith("lobby")))
 
 const initialState = {
     socket: {

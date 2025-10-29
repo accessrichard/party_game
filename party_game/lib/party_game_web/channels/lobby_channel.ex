@@ -9,7 +9,6 @@ defmodule PartyGameWeb.LobbyChannel do
   alias PartyGame.Game.Player
   import PartyGameWeb.GameUtils
 
-
   @channel_name "lobby:"
 
   @impl true
@@ -22,7 +21,7 @@ defmodule PartyGameWeb.LobbyChannel do
         socket = assign(socket, :game, Server.get_game(room_name))
         socket = assign(socket, :name, name)
         send(self(), {:after_join})
-        {:ok, socket}
+        {:ok, %{owner: socket.assigns.game.room_owner}, socket}
 
       _ ->
         send(self(), {:after_join, :game_not_found})
@@ -41,11 +40,13 @@ defmodule PartyGameWeb.LobbyChannel do
     :ok =
       ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
 
+    location = if socket.assigns.game == nil, do: "lobby", else: "game"
+
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
         online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
         typing: false,
-        location: "lobby"
+        location: location
       })
 
     push(socket, "presence_state", Presence.list(socket))
@@ -79,17 +80,22 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_in("new_game", payload, socket) do
-      player_count = length(Map.keys(Presence.list(socket.topic)))
-      broadcast(socket, "route_to_game", %{"type" => Map.get(payload, "type"), "player_count" => player_count})
-      {:noreply, socket}
+    player_count = length(Map.keys(Presence.list(socket.topic)))
+
+    broadcast(socket, "route_to_game", %{
+      "type" => Map.get(payload, "type"),
+      "player_count" => player_count
+    })
+
+    {:noreply, socket}
   end
 
   @impl true
   def handle_in("handle_disconnect", _, socket) do
-      Logger.debug("disconnect handled on #{socket.topic} for: #{socket.assigns.name}")
+    Logger.debug("disconnect handled on #{socket.topic} for: #{socket.assigns.name}")
 
-      push(socket, "handle_disconnect", Server.get_game(game_code(socket.topic)))
-      {:noreply, socket}
+    push(socket, "handle_disconnect", Server.get_game(game_code(socket.topic)))
+    {:noreply, socket}
   end
 
   @impl true
@@ -159,5 +165,4 @@ defmodule PartyGameWeb.LobbyChannel do
     PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
     game_room
   end
-
 end
