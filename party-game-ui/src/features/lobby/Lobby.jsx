@@ -1,4 +1,4 @@
-import { channelPush, selectLobbyChannel } from '../phoenix/phoenixMiddleware';
+import { channelPush } from '../phoenix/phoenixMiddleware';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -69,8 +69,7 @@ export default function Lobby() {
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
-    const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
-    const lobbyChannel = useSelector(selectLobbyChannel);
+    const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);    
     const gameMetaData = getGameMetadata(type);
 
     useEffect(() => {
@@ -96,20 +95,6 @@ export default function Lobby() {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };
     }, []);
-
-    useEffect(() => {
-        if (lobbyChannel === undefined || !lobbyChannel.message || !lobbyChannel.message.owner) {
-            return
-        }
-
-        if (playerName === lobbyChannel.message.owner && isGameOwner)
-        {
-            return;
-        }
-        
-        dispatch(handleChangeOwner({room_owner: lobbyChannel.message.owner}))
-
-    }, [lobbyChannel, playerName])
 
     useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {

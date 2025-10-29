@@ -21,7 +21,8 @@ defmodule PartyGameWeb.LobbyChannel do
         socket = assign(socket, :game, Server.get_game(room_name))
         socket = assign(socket, :name, name)
         send(self(), {:after_join})
-        {:ok, %{owner: socket.assigns.game.room_owner}, socket}
+        #{:ok, %{owner: socket.assigns.game.room_owner}, socket}
+        {:ok, socket}
 
       _ ->
         send(self(), {:after_join, :game_not_found})
