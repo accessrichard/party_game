@@ -111,10 +111,7 @@ export const lobbySlice = createSlice({
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
         handleDisconnect(state, action) {
-            console.log("Handle Discconect")
-            console.log(action)
-            //// After being disconnected for a while (cell to wifi etc.), need to resynchronize the 
-            /// game and location.
+            state.isGameOwner = action.payload.room_owner === state.playerName;
         },
         onRouteToGame(state, action) {
             resetGame(state);

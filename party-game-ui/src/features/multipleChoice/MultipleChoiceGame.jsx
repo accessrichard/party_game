@@ -235,8 +235,7 @@ export default function MultipleChoiceGame() {
             game = { ...game, questions: creativeGame.game.questions }
         }
 
-        const data = { name: playerName, settings: toServerSettings(settings), game: game };
-        console.log(data)
+        const data = { name: playerName, settings: toServerSettings(settings), game: game };        
         dispatch(channelPush(sendEvent(gameChannel, data, "new_game")));
     }
 

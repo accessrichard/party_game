@@ -104,15 +104,17 @@ export default function Lobby() {
         return () => { setIsTimerActive(false); };
     }, []);
 
+    /**
+     * If the client goes offline, we need to elect a new game owner.
+     * If the client comes back online, sync the new game owner.
+     * In the future will have to resync the entire game but for now this
+     * will keep things moving.
+     */
     useEffect(() => {
-        
-        console.log("Lobby Rerender")
-        
         if (socketStatus === null) {
             return;
         }
         
-        console.log(socketStatus)
         if (socketStatus === SOCKET_CONNECTED && isDisconnected)
         {
             setIsDisconnected(false);
