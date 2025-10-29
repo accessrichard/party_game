@@ -107,7 +107,7 @@ export default function Lobby() {
         }
         
         console.log(socketStatus)
-        if (socketStatus.status === SOCKET_CONNECTED && isDisconnected)
+        if (socketStatus === SOCKET_CONNECTED && isDisconnected)
         {
             setIsDisconnected(false);
             dispatch(channelPush({
@@ -117,7 +117,7 @@ export default function Lobby() {
             return;
         }
 
-        if (socketStatus.status === SOCKET_DISCONNECTED && !isDisconnected) {
+        if (socketStatus === SOCKET_DISCONNECTED && !isDisconnected) {
             setIsDisconnected(true);
             return;
         }
