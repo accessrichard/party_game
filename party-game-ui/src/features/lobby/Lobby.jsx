@@ -26,7 +26,7 @@ export default function Lobby() {
     const {
         playerName,
         gameCode,
-        gameOwner,        
+        gameOwner,
         isGameStarted,
         gameName,
         type
@@ -35,7 +35,6 @@ export default function Lobby() {
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
-    const socketStatus = useSelector(state => state.phoenix.socket.status);
     const gameMetaData = getGameMetadata(type);
     const isGameOwner = useSelector(selectGameOwner);
 
@@ -46,7 +45,7 @@ export default function Lobby() {
     }, [gameCode]);
 
     usePhoenixSocket();
-    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });    
+    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
     useLobbyEvents();
 
 
@@ -82,14 +81,22 @@ export default function Lobby() {
 
     /**
      * Default the selected game on first page visit.
+     * 
+     * When elected new game owner, sync the type and game.
      */
     useEffect(() => {
-        if (gameName) {
+        if (!gameList || gameList.length === 0) {
             return;
         }
 
-        if (gameList && gameList.length > 0) {
+        if (!gameName) {
             selectGame(gameList[0].name);
+            return;
+        }
+
+        if (!gameList.find(game => game.name == gameName && game.type == type)) {
+            selectGame(gameList[0].name);
+            return;
         }
     }, [gameList, gameName]);
 
