@@ -10,7 +10,7 @@ import { SOCKET_CONNECTED, SOCKET_DISCONNECTED } from '../phoenix/phoenixMiddlew
 
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { usePhoenixEvents } from '../phoenix/usePhoenix';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const events = (topic) => [
@@ -67,6 +67,7 @@ const events = (topic) => [
 ]
 
 export default function useLobbyEvents() {
+    const dispatch = useDispatch();
     const gameCode = useSelector(state => state.lobby.gameCode);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
     usePhoenixEvents(`lobby:${gameCode}`, events);
