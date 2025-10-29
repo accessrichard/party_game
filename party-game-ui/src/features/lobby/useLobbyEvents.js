@@ -7,7 +7,7 @@ import {
     onRouteToGame    
 } from '../lobby/lobbySlice';
 import { SOCKET_CONNECTED, SOCKET_DISCONNECTED } from '../phoenix/phoenixMiddleware';
-
+import { channelPush } from '../phoenix/phoenixMiddleware';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { usePhoenixEvents } from '../phoenix/usePhoenix';
 import { useDispatch, useSelector } from 'react-redux';
