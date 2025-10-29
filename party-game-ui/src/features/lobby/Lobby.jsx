@@ -1,4 +1,4 @@
-import { channelPush } from '../phoenix/phoenixMiddleware';
+import { channelPush, SOCKET_CONNECTED, SOCKET_DISCONNECTED } from '../phoenix/phoenixMiddleware';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ import {
 } from './lobbySlice';
 import { getGameMetadata } from './games';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
@@ -69,8 +69,10 @@ export default function Lobby() {
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
-    const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);    
+    const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
+    const socketStatus = useSelector(state => state.phoenix.socket.status);
     const gameMetaData = getGameMetadata(type);
+    const [isDisconnected, setIsDisconnected] = useState(false);
 
     useEffect(() => {
         if (!gameCode) {
@@ -95,6 +97,32 @@ export default function Lobby() {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };
     }, []);
+
+    useEffect(() => {
+        
+        console.log("Lobby Rerender")
+        
+        if (socketStatus === null) {
+            return;
+        }
+        
+        console.log(socketStatus)
+        if (socketStatus.state === SOCKET_CONNECTED && isDisconnected)
+        {
+            setIsDisconnected(false);
+            dispatch(channelPush({
+                topic: `lobby:${gameCode}`,
+                event: "handle_disconnect"                
+            }));
+            return;
+        }
+
+        if (socketStatus.status === SOCKET_DISCONNECTED && !isDisconnected) {
+            setIsDisconnected(true);
+            return;
+        }
+    
+    }, [socketStatus, isDisconnected])
 
     useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {

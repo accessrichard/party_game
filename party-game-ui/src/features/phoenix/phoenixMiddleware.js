@@ -61,8 +61,6 @@ export function hasConnectedSocket(socketStatus) {
     return socketStatus === SOCKET_CONNECTED;
 }
 
-//export const selectLobbyChannel = createSelector(state => state.phoenix.channels, channels => channels.find(channel => channel.topic.startsWith("lobby")))
-
 const initialState = {
     socket: {
         status: null,

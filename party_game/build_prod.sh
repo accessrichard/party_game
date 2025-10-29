@@ -1,7 +1,11 @@
-git stash
-git pull
-git stash pop
+#!/bin/bash
 
+skip_git = $0
+
+if [ $# -eq 0 ]; then
+    git reset --hard HEAD
+    git pull
+fi
 export VITE_API_URL=
 export VITE_SOCKET_URL=
 export VITE_API_TIMEOUT=5000
