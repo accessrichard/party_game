@@ -9,11 +9,12 @@ import {
     handleJoin,
     onRouteToGame,
     listGames,
-    mergeGameList
+    mergeGameList,
+    handleDisconnect
 } from './lobbySlice';
 import { getGameMetadata } from './games';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
 import GameList from '../common/GameList';
@@ -25,6 +26,11 @@ const events = (topic) => [
     {
         event: 'handle_join',
         dispatcher: handleJoin(),
+        topic,
+    },
+     {
+        event: 'handle_discconect',
+        dispatcher: handleDisconnect(),
         topic,
     },
     {
