@@ -79,14 +79,7 @@ export default function HangmanGame() {
 
     function notifyLeave() {
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "end_game")))
-    }
-
-    useEffect(() => {
-        window.addEventListener("beforeunload", notifyLeave);
-        return () => {
-            window.removeEventListener("beforeunload", notifyLeave);
-        };
-    }, []);
+    }    
 
     useEffect(() => {
         if (!canvasRef.current) {

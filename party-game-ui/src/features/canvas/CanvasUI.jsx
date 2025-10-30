@@ -110,12 +110,6 @@ export default function CanvasUI({
             { advance_turn: turn == playerName, game }, "end_game")))
     }
 
-    useEffect(() => {
-        window.addEventListener("beforeunload", notifyLeave);
-        return () => {
-            window.removeEventListener("beforeunload", notifyLeave);
-        };
-    }, []);   
 
     useEffect(() => {
         return () => { dispatch(reset()); };

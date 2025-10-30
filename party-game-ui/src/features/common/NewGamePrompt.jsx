@@ -32,8 +32,10 @@ export default function NewGamePrompt(props) {
     }
 
     function onTimerCompleted() {
-        setIsTimerActive(false);
-        onStartGame && onStartGame();
+        if (isTimerActive){
+            setIsTimerActive(false);
+            onStartGame && onStartGame();
+        }
     }
 
 

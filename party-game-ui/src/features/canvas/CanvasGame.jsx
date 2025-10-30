@@ -27,6 +27,17 @@ export default function CanvasDrawGame() {
         }
     }, [winner])
 
+    /**
+     * If game owner quits and only 1 person is left,
+     * and its not their turn, make it their turn.
+     */
+    useEffect(() => {
+        if (players.length === 1 && turn !== playerName) {
+            onNextClick();
+        }
+
+    }, [players, turn, playerName]);
+
     function onTimerCompleted() {
         setIsTimerActive(false);
         setIsNewGamePrompt(true);
