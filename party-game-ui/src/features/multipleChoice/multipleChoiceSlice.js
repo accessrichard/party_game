@@ -146,24 +146,7 @@ const getWinners = (rounds, presence) => {
 export const getScores = createSelector([rounds, presencePlayers], getWinners);
 
 
-export const mergeGameList = (serverGames, clientGames) => {
-    let list = [];
-    if (serverGames && Array.isArray(serverGames)) {
-        list = [...serverGames];
-    }
 
-    if (clientGames && Array.isArray(clientGames)) {
-        const mapped = clientGames.map((x) => ({
-            name: x.game.name,
-            location: "client",
-            type: x.game.type
-        }));
-
-        return mapped.concat([...list]);
-    }
-
-    return list;
-};
 
 export const {
     start,

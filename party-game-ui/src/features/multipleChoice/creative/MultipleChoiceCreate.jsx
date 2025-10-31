@@ -94,7 +94,7 @@ export default function MultipleChoiceCreate(props) {
         return () => clearTimeout(timer);
     }, [isGenServerDebounced, dispatch, gameChannel]);
 
-    function addQuestion(e) {
+    function onAddQuestion(e) {
         if (formRef.current.reportValidity()) {
             const game = toServerSideGame(form);
             saveSessionStorage(game);
@@ -113,7 +113,7 @@ export default function MultipleChoiceCreate(props) {
         saveSessionStorage(game);
     }
 
-    function downloadGame(e) {
+    function onDownloadGame(e) {
         e.preventDefault();
         if (!formRef.current.reportValidity()) {
             return;
@@ -123,7 +123,7 @@ export default function MultipleChoiceCreate(props) {
         download("Buzztastic Game " + form.name, JSON.stringify(serverSideGame, 2));
     }
 
-    function play(e) {
+    function onPlay(e) {
         e.preventDefault();
         if (!formRef.current.reportValidity()) {
             return;
@@ -196,9 +196,9 @@ export default function MultipleChoiceCreate(props) {
                     ))}
                     <CreativeControls
                         gameNames={getGamesNames(type)}
-                        onAdd={addQuestion}
-                        onDownload={downloadGame}
-                        onPlay={play}
+                        onAdd={onAddQuestion}
+                        onDownload={onDownloadGame}
+                        onPlay={onPlay}
                         onEditGameClick={onEditGameClick}
                     />
                 </form>

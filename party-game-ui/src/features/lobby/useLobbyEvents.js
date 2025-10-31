@@ -73,8 +73,6 @@ export default function useLobbyEvents() {
     usePhoenixEvents(`lobby:${gameCode}`, events);
     const [isDisconnected, setIsDisconnected] = useState(false);
 
-
-
     /**
      * If the client goes offline, we need to elect a new game owner.
      * If the client comes back online, sync the new game owner.
