@@ -36,7 +36,7 @@ export default function Lobby() {
     const serverGames = useSelector(state => state.lobby.api.list.data);
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
     const gameMetaData = getGameMetadata(type);
-    const isGameOwner = useSelector(selectGameOwner);
+    const isGameOwner = useSelector(selectGameOwner);    
 
     useEffect(() => {
         if (!gameCode) {

@@ -15,6 +15,7 @@ defmodule PartyGame.Application do
       PartyGameWeb.Endpoint,
       PartyGameWeb.Presence,
       PartyGame.ChannelWatcher,
+      PartyGame.PartyGameTimer,
       # Start a worker by calling: PartyGame.Worker.start_link(arg)
       # {PartyGame.Worker, arg}
       {Cachex, name: :party_game_cache},

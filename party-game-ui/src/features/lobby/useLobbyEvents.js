@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import {
-    handleChangeOwner,
+import {    
     handleGenServerTimeout,
     handleJoin,
     handleReconnect,
-    onRouteToGame    
+    onRouteToGame
 } from '../lobby/lobbySlice';
 import { SOCKET_CONNECTED, SOCKET_DISCONNECTED } from '../phoenix/phoenixMiddleware';
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -21,8 +20,13 @@ const events = (topic) => [
     },
     {
         event: 'handle_room_owner_change',
-        dispatcher: handleChangeOwner(),
+        dispatcher: handleReconnect(),
         topic,
+    },
+    {
+        event: 'visiblity_change',
+        dispatcher: handleReconnect(),
+        topic
     },
     {
         event: 'handle_reconnect',
@@ -48,9 +52,8 @@ const events = (topic) => [
         event: 'handle_join',
         dispatcher: handleJoin(),
         topic,
-    }      
+    }
 ]
-
 export default function useLobbyEvents() {
     const dispatch = useDispatch();
     const gameCode = useSelector(state => state.lobby.gameCode);

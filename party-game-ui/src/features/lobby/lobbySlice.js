@@ -106,9 +106,6 @@ export const lobbySlice = createSlice({
         endGame: (state) => {
             state.isGameStarted = false;
         },
-        handleChangeOwner: (state, action) => {
-            state.gameOwner = action.payload.room_owner;
-        },
         handleGenServerTimeout(state, action) {            
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
@@ -178,10 +175,10 @@ export const mergeGameList = (serverGames, clientGames) => {
 
 export const {
     redirect,
-    handleChangeOwner,
     handleGenServerTimeout,
     handleNewGameCreated,
     handleReconnect,
+    handleVisiblityChange,
     onRouteToGame,
     handleJoin,
     changeGame,

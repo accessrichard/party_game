@@ -75,6 +75,7 @@ defmodule PartyGameWeb.LobbyChannel do
       |> Map.merge(%{typing: Map.get(payload, "typing")})
 
     {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
+
     {:noreply, socket}
   end
 
@@ -86,6 +87,15 @@ defmodule PartyGameWeb.LobbyChannel do
       "type" => Map.get(payload, "type"),
       "player_count" => player_count
     })
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("visiblity_change", _, socket) do
+    Logger.debug("visibilty_change handled on #{socket.topic} for: #{socket.assigns.name}")
+
+    leave(socket)
 
     {:noreply, socket}
   end
@@ -109,8 +119,6 @@ defmodule PartyGameWeb.LobbyChannel do
     {:noreply, socket}
   end
 
-
-
   @impl true
   def handle_in("ping", _, socket) do
     Server.ping(game_code(socket.topic))
@@ -133,6 +141,10 @@ defmodule PartyGameWeb.LobbyChannel do
     Server.update_game(game_room)
 
     :ok
+  end
+
+  def leave(socket) do
+    leave(socket.topic, socket.assigns.name)
   end
 
   def leave(topic, name) do
