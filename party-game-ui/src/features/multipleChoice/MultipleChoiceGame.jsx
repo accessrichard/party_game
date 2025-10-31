@@ -247,7 +247,7 @@ export default function MultipleChoiceGame() {
         if (isGameOwner)
         {
             handleCreateGame();
-        }        
+        }
     }
 
     return (
