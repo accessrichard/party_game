@@ -112,7 +112,7 @@ export const lobbySlice = createSlice({
         handleGenServerTimeout(state, action) {            
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
-        handleDisconnect(state, action) {
+        handleReconnect(state, action) {
             state.gameOwner = action.payload.room_owner;
         },
         onRouteToGame(state, action) {
@@ -181,7 +181,7 @@ export const {
     handleChangeOwner,
     handleGenServerTimeout,
     handleNewGameCreated,
-    handleDisconnect,
+    handleReconnect,
     onRouteToGame,
     handleJoin,
     changeGame,

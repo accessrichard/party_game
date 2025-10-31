@@ -3,7 +3,7 @@ import {
     handleChangeOwner,
     handleGenServerTimeout,
     handleJoin,
-    handleDisconnect,
+    handleReconnect,
     onRouteToGame    
 } from '../lobby/lobbySlice';
 import { SOCKET_CONNECTED, SOCKET_DISCONNECTED } from '../phoenix/phoenixMiddleware';
@@ -25,8 +25,8 @@ const events = (topic) => [
         topic,
     },
     {
-        event: 'handle_disconnect',
-        dispatcher: handleDisconnect(),
+        event: 'handle_reconnect',
+        dispatcher: handleReconnect(),
         topic,
     },
     {
@@ -43,27 +43,12 @@ const events = (topic) => [
         event: 'presence_diff',
         dispatcher: syncPresenceDiff(),
         topic
-    },
-     {
-        event: 'handle_disconnect',
-        dispatcher: handleDisconnect(),
-        topic,
-    },
+    },    
     {
         event: 'handle_join',
         dispatcher: handleJoin(),
         topic,
-    },
-      {
-        event: 'presence_state',
-        dispatcher: syncPresenceState(),
-        topic
-    },
-    {
-        event: 'presence_diff',
-        dispatcher: syncPresenceDiff(),
-        topic
-    },
+    }      
 ]
 
 export default function useLobbyEvents() {
@@ -88,7 +73,7 @@ export default function useLobbyEvents() {
             setIsDisconnected(false);
             dispatch(channelPush({
                 topic: `lobby:${gameCode}`,
-                event: "handle_disconnect"
+                event: "handle_reconnect"
             }));
             return;
         }

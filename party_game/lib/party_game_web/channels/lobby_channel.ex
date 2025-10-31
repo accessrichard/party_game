@@ -90,16 +90,26 @@ defmodule PartyGameWeb.LobbyChannel do
     {:noreply, socket}
   end
 
+   @doc """
+    Called after ChannelWatcher leave triggers to set the new game owner.
+
+    The client socket is disconnected
+    The ChannelWatcher triggers the leave call
+    The Client socket reconnects
+    The Client calls handle_reconnect to sycn the game back up.
+   """
   @impl true
-  def handle_in("handle_disconnect", _, socket) do
-    Logger.debug("disconnect handled on #{socket.topic} for: #{socket.assigns.name}")
+  def handle_in("handle_reconnect", _, socket) do
+    Logger.debug("reconnect handled on #{socket.topic} for: #{socket.assigns.name}")
 
     game = Server.get_game(game_code(socket.topic))
-    push(socket, "handle_disconnect", %{
+    push(socket, "handle_reconnect", %{
               room_owner: game.room_owner
           })
     {:noreply, socket}
   end
+
+
 
   @impl true
   def handle_in("ping", _, socket) do

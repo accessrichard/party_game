@@ -44,17 +44,7 @@ const events = (topic) => [
         event: 'handle_quit',
         dispatcher: endGame(),
         topic,
-    },
-    {
-        event: 'presence_state',
-        dispatcher: syncPresenceState(),
-        topic
-    },
-    {
-        event: 'presence_diff',
-        dispatcher: syncPresenceDiff(),
-        topic
-    },
+    }
 ]
 
 export default function CanvasUI({
