@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function TrueFalse(props) {
 
     function handleChange(e) {

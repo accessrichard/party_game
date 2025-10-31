@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { gameToForm, mergeErrors, removeUnwantedJson, validateQuestions } from './creative';
 import MultipleChoiceCreate from './MultipleChoiceCreate';
 import { getGameFromPath, getGameMetadata } from '../../lobby/games';
@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { push } from 'redux-first-history';
 import ImportGame from '../../creative/ImportGame';
 
-export default function MultipleChoiceImport({text, hideSubmit}) {
+export default function MultipleChoiceImport() {
 
     const [gameForm, setGameForm] = useState({ errors: initialErrors });
     const [gameJson, setGameJson] = useState("");

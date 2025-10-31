@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { clearJoinError, joinGame } from '../lobby/lobbySlice';
 import { useDispatch, useSelector } from 'react-redux';
 

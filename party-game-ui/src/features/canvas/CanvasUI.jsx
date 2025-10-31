@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Timer from '../common/Timer';
 import ColorPallette from './ColorPallette';
 import Canvas from './Canvas';
@@ -154,7 +154,7 @@ export default function CanvasUI({
         dispatch(channelPush(sendEvent(canvasChannel, clearCommand, "commands")));
     }
 
-    function onSaveClick(e) {
+    function onSaveClick() {
         saveCanvas('paint-canvas');
     }
 

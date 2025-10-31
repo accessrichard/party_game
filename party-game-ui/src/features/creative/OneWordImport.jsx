@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, cloneElement } from 'react';
 import { validate, getErrors } from '../common/validator';
 import ImportGame from './ImportGame';
 import { getGameFromPath, getGameMetadata } from '../lobby/games';
@@ -67,7 +67,7 @@ export default function OneWordImport({ children }) {
                     json={gameJson}
                 />}
 
-            {gameForm.id && React.cloneElement(children, { game: gameForm, gameValidators })}
+            {gameForm.id && cloneElement(children, { game: gameForm, gameValidators })}
         </>
     );
 }

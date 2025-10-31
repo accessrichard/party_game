@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import InputError from '../common/InputError';
 import SelectGameType from '../creative/SelectGameType';
 import { getGameFromPath } from '../lobby/games';
@@ -45,12 +45,7 @@ export default function ImportGame({ text, hideSubmit, onImportGame, form = null
                             <span className="highlight"></span>
                             <span className="bar"></span>
                             <label>{text || "Paste your game here:"}</label>
-                            <InputError className="error shake" errors={form && form.errors || [""]} />
-                            {false && <ul className="error shake">
-                                {(form && form.errors || []).map((err, idx) => {
-                                    return <li className="input-error-text red" key={idx}>{err}</li>
-                                })}
-                            </ul>}
+                            <InputError className="error shake" errors={form && form.errors || [""]} />                           
                         </div>
 
                         {!hideSubmit &&

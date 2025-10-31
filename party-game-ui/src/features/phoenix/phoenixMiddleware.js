@@ -176,7 +176,7 @@ const phoenixMiddleware = () => {
         socket.onClose(e => store.dispatch(socketDisconnected(e.reason)));
     }
 
-    function disconnect(store, action) {
+    function disconnect(_store, _action) {
         if (socket !== null) {
             socket.disconnect();
         }

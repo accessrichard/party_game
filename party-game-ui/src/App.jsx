@@ -4,7 +4,6 @@ import {
   Route,
   Routes
 } from "react-router";
-import React from 'react';
 
 import AppBody from './features/common/AppBody';
 import MultipleChoiceCreate from './features/multipleChoice/creative/MultipleChoiceCreate';

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Answers from './Answers';
 import Faces from '../common/Faces';
 import Flash from '../common/Flash';
@@ -7,7 +7,6 @@ import usePrevious from '../usePrevious';
 import useBackButtonBlock from '../useBackButtonBlock';
 import NewGamePrompt from '../common/NewGamePrompt';
 import useLobbyEvents from '../lobby/useLobbyEvents';
-import { getPresences } from '../presence/presenceSlice';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -74,7 +73,6 @@ export default function MultipleChoiceGame() {
     } = useSelector(state => state.lobby);
 
     const isGameOwner = useSelector(selectGameOwner);
-    const players = useSelector(getPresences);
 
 
     const creativeGames = useSelector(state => state.creative.games);

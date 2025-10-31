@@ -1,5 +1,3 @@
-import React from 'react';
-
 const GuessList = (props) => {
     const { guesses, className } = props;
 

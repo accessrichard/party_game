@@ -1,5 +1,3 @@
-import React from 'react';
-
 const link = (gameCode) => {
     if (typeof window !== 'undefined') {
         return `${window.location.protocol}//${window.location.host}/join/${gameCode}`;

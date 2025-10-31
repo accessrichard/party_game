@@ -1,10 +1,8 @@
 import { MULTIPLE_CHOICE, TRUE_FALSE } from '../../common/questionTypes';
 import AnswerInput from './AnswerInput';
 import InputError from '../../common/InputError';
-import React from 'react';
 import TrueFalse from './TrueFalse';
 import TypeRadio from './TypeRadio';
-import { answer } from './game';
 import {  getError } from '../../creative/creative';
 
 export default function QuestionForm({index, errors, onChange, value, type }) {

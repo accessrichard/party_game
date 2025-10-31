@@ -66,17 +66,17 @@ export const multipleChoiceSlice = createSlice({
                 state.round += 1;
             }
         },        
-        handleWrongAnswer(state, action) {
+        handleWrongAnswer(state, _action) {
             state.isWrong = true;
         },
-        unansweredTimeout: (state, action) => {
+        unansweredTimeout: (state, _action) => {
             state.isRoundStarted = false;
             state.isWrong = false;
             if (!state.isOver && !state.isPaused) {
                 state.startCountdown = true;
             }
         },
-        resetGame(state, action) {
+        resetGame(state, _action) {
             _resetGame(state);
         },
         handleNewGameCreated(state, action) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleGuess, handleNewGame, introSceneReset, returnToLobby, reset } from './hangmanSlice';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
@@ -45,7 +45,7 @@ export default function HangmanGame() {
     const [inputStyle, setInputStyle] = useState({});
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const { games } = useSelector(state => state.creative);
-    const { playerName, gameCode, gameName, isGameStarted } = useSelector(state => state.lobby);
+    const { playerName, gameCode, gameName } = useSelector(state => state.lobby);
     const {
         word,
         guesses,

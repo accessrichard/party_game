@@ -1,6 +1,5 @@
 import InputError from '../../common/InputError';
 import { MULTIPLE_CHOICE } from '../../common/questionTypes';
-import React from 'react';
 
 export default function AnswerInput(props) {
 

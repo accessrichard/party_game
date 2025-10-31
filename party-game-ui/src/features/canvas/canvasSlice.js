@@ -61,7 +61,7 @@ export const canvasSlice = createSlice({
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
         },
-        reset(state, action) {
+        reset(state, _action) {
             state.commands = [];
             state.word = "";
             state.guesses = [];

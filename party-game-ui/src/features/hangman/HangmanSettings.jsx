@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Logo from '../common/Logo';
 import { updateSettings } from './hangmanSlice';
@@ -8,7 +8,6 @@ function HangmanSettings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.hangman);
-    const { type } = useSelector(state => state.lobby);
     const [form, setForm] = useState({ ...settings, errors: { difficulty: "easy" } });
 
     function handleSubmit(e) {

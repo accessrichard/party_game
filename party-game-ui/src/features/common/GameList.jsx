@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function GameList({ games, value, onGameChange }) {
 
     function onChange(e) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CanvasUI from './CanvasUI';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
@@ -57,7 +57,7 @@ export default function CanvasDrawGame() {
         setIsNewGamePrompt(false);
     }
 
-    function onNextClick(e) {
+    function onNextClick() {
         onClearClick();
         dispatch(channelPush(sendEvent(canvasChannel, {}, "next_turn")));
     }

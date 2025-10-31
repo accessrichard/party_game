@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { games, getGameMetadata } from '../lobby/games';
 
 export default function SelectGameType({value = "multiple_choice", onSelectGameType}) {

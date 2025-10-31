@@ -1,5 +1,5 @@
 import { MULTIPLE_CHOICE, TRUE_FALSE } from '../../common/questionTypes';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function TypeRadio(props) {
     const { errors } = props;

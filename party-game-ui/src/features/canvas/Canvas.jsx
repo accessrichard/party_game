@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { canvasWidth, canvasHeight } from './canvasUtils';
 
 const store = {
@@ -104,8 +104,7 @@ export default function Canvas({ color, isEditable, onDraw, width, height, comma
         }
     }
 
-    useEffect(() => {
-        const context = canvasRef.current.getContext("2d");
+    useEffect(() => {        
         commands.forEach(command => onCommand(command));
     }, [commands]);
 

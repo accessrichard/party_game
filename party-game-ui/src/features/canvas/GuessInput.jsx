@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function GuessInput({ onSubmit, maxLength = 500, className = "card flex-row md-5" }) {
     const [text, setText] = useState("");

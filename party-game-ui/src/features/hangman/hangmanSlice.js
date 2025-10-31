@@ -34,13 +34,13 @@ export const hangmanSlice = createSlice({
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
         },
-        introSceneReset(state, action) {
+        introSceneReset(state, _action) {
             state.startIntroScene = false;
         },
         returnToLobby(state, action) {   
             state.forceQuit = action.payload.returnToLobby;
         },
-        reset(state, action) {
+        reset(state, _action) {
             state.forceQuit = false;
             state.word = "";
             state.isOver = false;

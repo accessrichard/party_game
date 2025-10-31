@@ -1,4 +1,3 @@
-import React from 'react';
 import ColorButton from './ColorButton';
 
 const colorPallette = [
@@ -7,7 +6,7 @@ const colorPallette = [
     "#ffff00", "#800080" 
 ];
 
-function toHex(rgb) {
+function _toHex(rgb) {
     rgb = rgb.replace(/[^\d,]/g, '').split(',')
     return "#" + (1 << 24 | rgb[0] << 16 | rgb[1] << 8 | rgb[2]).toString(16).slice(1);
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import OneWordImport from '../creative/OneWordImport';
 import HangmanCreate from './HangmanCreate';
 

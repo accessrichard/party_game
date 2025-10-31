@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Answers(props) {
 
     const { isDisabled, answers, correct } = props;

@@ -21,7 +21,7 @@ export const presenceSlice = createSlice({
 });
 
 const getPresencesList = (p) => {
-    return Presence.list(p.presence, (id, { metas: [user, ...rest] }) => {
+    return Presence.list(p.presence, (id, { metas: [user, ..._rest] }) => {
         return { name: id, online_at: user.online_at, isTyping: user.typing, location: user.location };
     });
 };

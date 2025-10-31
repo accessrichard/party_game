@@ -202,11 +202,11 @@ class Stickman {
         this.context.stroke();
     }
 
-    drawLeftHand(angle) {
+    drawLeftHand() {
         this.drawHand(this.opts.leftArmAngle);
     }
 
-    drawRightHand(angle) {
+    drawRightHand() {
         this.drawHand(this.opts.rightArmAngle);
     }
 
@@ -467,7 +467,7 @@ class HangmanAnimations {
         this.stickMan.drawBodyHorizontal();
     }
 
-    fadeTextLoss(word, winningWord, guesses) {
+    fadeTextLoss(_word, winningWord, _guesses) {
         let time = this.animationStack.getUnitTime(1000);
         this.context.save();
         this.context.fillStyle = "red"
@@ -683,7 +683,7 @@ class AnimationStack {
 }
 
 
-function runAnimations(id) {
+function _runAnimations(id) {
     let opts = {
         leftArmAngle: 45,
         rightArmAngle: 135,

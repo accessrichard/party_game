@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import CreativeControls from './CreativeControls';
 import SelectGameType from './SelectGameType';
@@ -85,7 +85,7 @@ export default function OneWordCreate({ game, defaultState }) {
     function onEditGameClick(e, name) {
         e.preventDefault();
         const game = getSessionGame(name)
-        game.errors.words = [...Array(game.words.length).keys()].map(x => "")
+        game.errors.words = [...Array(game.words.length).keys()].map(() => "")
         setForm(game);
     }
 

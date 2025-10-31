@@ -1,7 +1,7 @@
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { usePhoenixChannel, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     changeGame,
     handleGenServerTimeout,

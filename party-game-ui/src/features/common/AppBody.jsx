@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import React from 'react';
 import BannerNotification from './BannerNotification'
 
 export default function AppBody() {

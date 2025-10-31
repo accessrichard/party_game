@@ -137,7 +137,7 @@ export const lobbySlice = createSlice({
                 state.players.push(action.payload);
             }
         },
-        clearJoinError(state, action) {
+        clearJoinError(state, _action) {
             state.api.join.error = "";
         }
     },

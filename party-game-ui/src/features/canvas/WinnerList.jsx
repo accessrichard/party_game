@@ -1,5 +1,3 @@
-import React from 'react';
-
 const WinnerList = ({winners = []}) => {
     return (
         <ul className="ul-nostyle list-inline smallest-font">

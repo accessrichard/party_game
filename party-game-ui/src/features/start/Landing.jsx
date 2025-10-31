@@ -1,6 +1,6 @@
 import '../../App.css';
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import Logo from '../common/Logo';
 import { NavLink } from 'react-router-dom';
@@ -80,8 +80,7 @@ function Landing() {
                 </div>
             </div>
             <div className='flex flex-row flex-center app-light pad-5pc-lr pad-5pc-bottom'>
-                {(serverGameCols || []).map((x, key) => {
-                    let cat = x.category
+                {(serverGameCols || []).map((x, key) => {                    
                     return <div key={key} className='flex-column text-align-left flex-item pad-5pc-lr pad-5pc-bottom '>
                         <ul className='font-14px' >
                             <h3>{x.category}</h3>

@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function InputError(props) {
     const { errors, className } = props;
 

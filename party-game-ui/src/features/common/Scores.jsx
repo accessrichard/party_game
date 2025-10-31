@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Scores = (props) => {
     const { scores, rounds } = props;
 

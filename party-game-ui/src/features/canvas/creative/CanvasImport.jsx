@@ -1,4 +1,3 @@
-import React from 'react';
 import CanvasCreate from './CanvasCreate';
 import OneWordImport from '../../creative/OneWordImport';
 export default function CanvasImport() {

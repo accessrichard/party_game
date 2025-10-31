@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const HAPPY_FACE_SVG_COUNT = 3;
 const SAD_FACE_SVG_COUNT = 6;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Timer from '../common/Timer';
 import { getPresences } from '../presence/presenceSlice';
 import { useSelector } from 'react-redux';

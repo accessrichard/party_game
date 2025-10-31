@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   root: '.',
   build: {
-    outDir: "../party_game/priv/static",
+    outDir: "../party_game/priv/static",    
   },
   server: {
      cors: {

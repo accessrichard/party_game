@@ -19,7 +19,7 @@ class Sprite {
 
     }
 
-    mirror(canvas, context, x = 0, y = 0, horizontal = true, vertical = false) {
+    mirror(canvas, context, x = 0, y = 0) {
         context.save();
         context.scale(-1, 1);
         this.draw(context, x * -1, y);
@@ -140,8 +140,7 @@ class Background {
         this.height = 400;
     }
 
-    draw() {
-        const ch = this.canvas.height;
+    draw() {        
         this.background.draw(this.context, this.x,
             this.canvas.height - this.height);
         this.background.draw(this.context, this.x + this.width,

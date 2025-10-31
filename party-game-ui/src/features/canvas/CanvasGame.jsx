@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CanvasUI from './CanvasUI';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { useDispatch, useSelector } from 'react-redux';
