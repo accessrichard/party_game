@@ -34,7 +34,7 @@ export default function CanvasDrawGame() {
      * and its not their turn, make it their turn.
      */
     useEffect(() => {
-        if (players.length === 1 && turn !== playerName) {
+        if (players.length === 1 && turn !== '' && turn !== playerName) {
             onNextClick();
         }
 
@@ -50,7 +50,9 @@ export default function CanvasDrawGame() {
     function onStartClick() {
         setIsTimerActive(true);
 
+        console.log("Is Game Owner" + isGameOwner)
         if (isGameOwner) {
+            console.log("winner" + winner === "")
             dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner === "" ? "new_game" : "next_turn")));
         }
 

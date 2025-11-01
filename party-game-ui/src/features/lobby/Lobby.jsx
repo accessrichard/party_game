@@ -114,7 +114,7 @@ export default function Lobby() {
         }
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
-            event: "new_game",
+            event: "route_to_game",
             data: { name: gameName, type: type }
         }));
         e.preventDefault();

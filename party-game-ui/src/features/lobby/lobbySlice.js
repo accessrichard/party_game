@@ -114,9 +114,9 @@ export const lobbySlice = createSlice({
         },
         onRouteToGame(state, action) {
             resetGame(state);
-            state.isGameStarted = true;                
+            state.isGameStarted = true;
             state.type = action.payload.type;
-            state.playerCount = action.payload.player_count;             
+            state.playerCount = action.payload.player_count;
         },       
         changeGame: (state, action) => {
             state.gameName = action.payload.name;

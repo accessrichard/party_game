@@ -37,8 +37,8 @@ defmodule PartyGame.PartyGameTimer do
     end
 
     timer = Process.send_after(self(), {:timer_completed, key, mfa}, time)
-
-    {:reply, :ok, put_timer(state, key, mfa, timer)}
+    new_state = put_timer(state, key, mfa, timer)
+    {:reply, {:ok, DateTime.utc_now()}, new_state}
   end
 
   def handle_call({:cancel_timer, key}, _from, state) do

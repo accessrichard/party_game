@@ -32,7 +32,7 @@ export default function CanvasDrawGame() {
      * and its not their turn, make it their turn.
      */
     useEffect(() => {
-        if (players.length === 1 && turn !== playerName) {
+        if (players.length === 1 && turn !== '' && turn !== playerName) {
             onNextClick();
         }
 
