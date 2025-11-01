@@ -34,8 +34,8 @@ defmodule PartyGame.LobbyTest do
     test "name_take/2 ensures unique name" do
       game_room = GameRoom.new()
       game_room = Lobby.add_player(game_room, "test")
-      {:error, error} = Lobby.name_taken(game_room, "test")
-      assert error.player_name != nil
+      {:error, %{player_name: error}} = Lobby.name_taken(game_room, "test")
+      assert error == "Name taken. Choose a different name."
     end
 
     test "name_take/2 ensures name can be added" do

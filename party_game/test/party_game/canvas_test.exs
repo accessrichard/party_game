@@ -4,8 +4,9 @@ defmodule PartyGame.CanvasTest do
   use ExUnit.Case, async: true
 
   describe "Canvas tests" do
-    test "word/1 generates random word" do
-      assert CanvasGame.word(1) |> Enum.at(0) != CanvasGame.word(1) |> Enum.at(0)
+    test "word/2 generates random word" do
+      word = CanvasGame.word(2, "easy")
+      assert Enum.at(word, 0) != Enum.at(word, 1)
     end
 
     test "change_turn/1 changes turns" do
