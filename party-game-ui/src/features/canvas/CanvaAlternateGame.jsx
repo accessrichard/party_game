@@ -23,11 +23,7 @@ export default function CanvasDrawGame() {
     const players = useSelector(getPresenceUsers);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
-
-    useEffect(() => {
-        setIsTimerActive(!isNewGamePrompt);
-    }, [turn, isNewGamePrompt]);
-
+    
     /**
      * If game owner quits and only 1 person is left,
      * and its not their turn, make it their turn.
@@ -40,8 +36,9 @@ export default function CanvasDrawGame() {
     }, [players, turn, playerName]);
 
     useEffect(() => {
-        setIsTimerActive(true);
-    }, [word, turn]);
+        setIsTimerActive(!isNewGamePrompt);
+    }, [word, turn, isNewGamePrompt]);
+
 
     function onTimerCompleted() {
         setIsTimerActive(false);
