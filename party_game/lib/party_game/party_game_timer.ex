@@ -62,7 +62,7 @@ defmodule PartyGame.PartyGameTimer do
         {:noreply, state}
 
       {:ok, mfa} ->
-        IO.inspect({mfa}, label: "Timer Completed")
+        Task.start_link(fn -> apply(mfa.module, mfa.function, mfa.args) end)
         {:noreply, drop_timer(state, key)}
     end
   end

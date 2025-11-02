@@ -74,7 +74,7 @@ export default function CanvasDrawGame() {
     function getGame() {
         const matching = games.find(x => x.game.name == gameName);
         return typeof matching === 'undefined'
-            ? { settings: { difficulty: settings.difficulty } }
+            ? { settings: settings }
             : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
     }
 

@@ -36,11 +36,12 @@ export default function Timer(props) {
         timeFormat,
         onStartDateSet,
         restartKey,
-        className
+        className,
+        startDate = null
     } = props;
 
     const [seconds, setSeconds] = useState(isIncrement ? 0 : numberSeconds);
-    const [startDate, setStartDate] = useState(null);
+    const [startDateInternal, setStartDateInternal] = useState(startDate);
     const prevActive = usePrevious(isActive);
 
     /// If you:
@@ -57,7 +58,7 @@ export default function Timer(props) {
                 date.setSeconds(date.getSeconds() - 1);
             }
 
-            setStartDate(date);
+            setStartDateInternal(date);
             onStartDateSet && onStartDateSet(date);
         }
 
@@ -65,20 +66,20 @@ export default function Timer(props) {
 
         if (isActive) {
             interval = setInterval(() => {
-                setSeconds(isIncrement ? getDateDiff(startDate) : numberSeconds - getDateDiff(startDate));
+                setSeconds(isIncrement ? getDateDiff(startDateInternal) : numberSeconds - getDateDiff(startDateInternal));
             }, 1000);
         } else {
             clearInterval(interval);
         }
 
-        if (isTimerComplete(startDate, numberSeconds, isIncrement)) {
+        if (isTimerComplete(startDateInternal, numberSeconds, isIncrement)) {
             onTimerCompleted && onTimerCompleted();
             const date = new Date();
-            setStartDate(date.setSeconds(date.getSeconds() + 1));
+            setStartDateInternal(date.setSeconds(date.getSeconds() + 1));
         }
 
         return () => clearInterval(interval);
-    }, [isActive, seconds, prevActive, numberSeconds, startDate, isIncrement]);
+    }, [isActive, seconds, prevActive, numberSeconds, startDateInternal, isIncrement]);
 
     return (
         <>

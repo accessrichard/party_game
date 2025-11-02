@@ -5,6 +5,7 @@ defmodule PartyGame.Game.CanvasSettings do
   @derive {Jason.Encoder, only: [:difficulty]}
   embedded_schema do
     field(:difficulty, :string, default: "easy")
+    field(:round_time, :integer, default: 45000)
   end
 
   def apply_settings(settings, params \\ %{}) do

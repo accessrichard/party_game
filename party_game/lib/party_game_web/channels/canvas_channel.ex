@@ -29,7 +29,10 @@ defmodule PartyGameWeb.CanvasChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
-     broadcast("lobby:#{game_code(socket.topic)}",  "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
+    broadcast("lobby:#{game_code(socket.topic)}", "handle_game_server_idle_timeout", %{
+      "reason" => "Game Not Found"
+    })
+
     {:noreply, socket}
   end
 
@@ -60,9 +63,10 @@ defmodule PartyGameWeb.CanvasChannel do
 
   @impl true
   def handle_in("end_game", payload, socket) do
-    game = Server.get_game(game_code(socket.topic))
-     |> Lobby.update_player_location(socket.assigns.name, "lobby")
-     |> Server.update_game()
+    game =
+      Server.get_game(game_code(socket.topic))
+      |> Lobby.update_player_location(socket.assigns.name, "lobby")
+      |> Server.update_game()
 
     player_names = Lobby.players(game, "canvas")
     count_active = Enum.count(player_names)
@@ -72,9 +76,11 @@ defmodule PartyGameWeb.CanvasChannel do
       game.room_owner == socket.assigns.name ->
         broadcast_from(socket, "handle_quit", %{})
         {:noreply, socket}
+
       count_active < 1 ->
         broadcast_from(socket, "handle_quit", %{})
         {:noreply, socket}
+
       true ->
         handle_in(if(advance_turn, do: "next_turn", else: "switch_editable"), %{}, socket)
     end
@@ -83,7 +89,11 @@ defmodule PartyGameWeb.CanvasChannel do
   @impl true
   def handle_in("word", _, socket) do
     game_room = Server.get_game(game_code(socket.topic))
-    broadcast(socket, "word", %{"word" => CanvasGame.word(1, game_room.game.settings.difficulty) |> Enum.at(0)})
+
+    broadcast(socket, "word", %{
+      "word" => CanvasGame.word(1, game_room.game.settings.difficulty) |> Enum.at(0)
+    })
+
     {:noreply, socket}
   end
 
@@ -106,40 +116,32 @@ defmodule PartyGameWeb.CanvasChannel do
     name = Map.get(payload, "name", "canvas_game")
     words = Map.get(payload, "words", [])
     settings = Map.get(payload, "settings", %{})
+    round_time = Map.get(settings, "roundTime", 45000)
+    settings = Map.put(settings, "round_time", round_time)
 
     game_room =
       Server.get_game(game_code(socket.topic))
-      |> Lobby.set_game(CanvasGame.new(%{name: name, type: type, words: words, settings: settings}))
+      |> Lobby.set_game(
+        CanvasGame.new(%{name: name, type: type, words: words, settings: settings})
+      )
       |> CanvasGame.change_word()
       |> CanvasGame.change_turn()
       |> CanvasGame.start_round()
       |> Server.update_game()
 
-    {:ok, time} = PartyGame.PartyGameTimer.start_timer(socket.topic, 4000, %{module: "CanvasChannel", function: "next_round", args: %{}})
-    IO.inspect time, label: "------------"
+    #{:ok, time} =
+    #  PartyGame.PartyGameTimer.start_timer(socket.topic, round_time, %{
+    #    module: __MODULE__,
+    #    function: :next_turn,
+    #    args: [socket.topic]
+    #  })
+
     broadcast(socket, "handle_new_game", %{
       "turn" => game_room.game.turn,
       "word" => game_room.game.word,
       "size" => CanvasGame.min_size(game_room),
-      "players" => Lobby.players(game_room, "canvas")
-    })
-
-    {:noreply, socket}
-  end
-
-  @impl true
-  def handle_in("next_turn", _, socket) do
-    game_room =
-      Server.get_game(game_code(socket.topic))
-      |> CanvasGame.change_word()
-      |> CanvasGame.change_turn()
-      |> Server.update_game()
-
-    broadcast(socket, "handle_new_game", %{
-      "turn" => game_room.game.turn,
-      "word" => game_room.game.word,
       "players" => Lobby.players(game_room, "canvas"),
-      "isOver" => game_room.game.is_over
+      "sync" => DateTime.utc_now() #time
     })
 
     {:noreply, socket}
@@ -161,4 +163,32 @@ defmodule PartyGameWeb.CanvasChannel do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_in("next_turn", _, socket) do
+    next_turn(socket.topic)
+    {:noreply, socket}
+  end
+
+  def next_turn(topic) do
+    game_room =
+      Server.get_game(game_code(topic))
+      |> CanvasGame.change_word()
+      |> CanvasGame.change_turn()
+      |> Server.update_game()
+
+   # {:ok, time} =
+   #   PartyGame.PartyGameTimer.start_timer(topic, game_room.game.settings.round_time, %{
+   #     module: __MODULE__,
+   #     function: :next_turn,
+   #     args: [topic]
+   #   })
+
+    PartyGameWeb.Endpoint.broadcast(topic, "handle_new_game", %{
+      "turn" => game_room.game.turn,
+      "word" => game_room.game.word,
+      "players" => Lobby.players(game_room, "canvas"),
+      "isOver" => game_room.game.is_over,
+      "sync" => DateTime.utc_now() #time
+    })
+  end
 end

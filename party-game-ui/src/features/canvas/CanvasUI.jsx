@@ -14,7 +14,6 @@ import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
-import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateWord, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
@@ -206,6 +205,7 @@ export default function CanvasUI({
                 <div>
                     <Timer key={startTimerTime}
                         restartKey={startTimerTime}
+                        startDate={startTimerTime}
                         isActive={isTimerActive}
                         onTimerCompleted={onTimerCompleted}
                         timeIncrement={-1}

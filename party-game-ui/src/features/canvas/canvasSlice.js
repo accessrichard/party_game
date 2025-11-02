@@ -10,8 +10,9 @@ const initialState = {
     winner: "",
     winners: [],
     players: [],
-    settings: { roundTime: 45, alternateRoundTime: 20, difficulty: "easy" },
-    isOver: false
+    settings: { roundTime: 45, difficulty: "easy" },
+    isOver: false,
+    sync: Date()
 }
 
 export const canvasSlice = createSlice({
@@ -27,7 +28,7 @@ export const canvasSlice = createSlice({
         handleNewGame(state, action) {
             state.commands = [];
             if (state.word !== action.payload.word && action.payload.word !== undefined) {
-                state.startTimerTime = new Date().toISOString();
+                state.startTimerTime = action.payload.sync;
             }
 
             state.word = action.payload.word;
@@ -36,6 +37,7 @@ export const canvasSlice = createSlice({
             state.guesses = []
             state.players = action.payload.players;
             state.isOver = action.payload.isOver;
+            
             if (action.payload.size
                 && action.payload.size.length == 2
                 && action.payload.size[0] > 100
