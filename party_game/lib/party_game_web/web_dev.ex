@@ -21,6 +21,7 @@ defmodule PartyGameWeb.WebDev do
     Mix.ensure_application!(:wx)
     Mix.ensure_application!(:runtime_tools)
     Mix.ensure_application!(:observer)
+    #:observer.start()
   end
 
   def count_children() do

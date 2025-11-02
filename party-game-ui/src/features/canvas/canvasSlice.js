@@ -27,9 +27,8 @@ export const canvasSlice = createSlice({
         },
         handleNewGame(state, action) {
             state.commands = [];
-            if (state.word !== action.payload.word && action.payload.word !== undefined) {
-                state.startTimerTime = action.payload.sync;
-            }
+           
+            state.startTimerTime = action.payload.sync;
 
             state.word = action.payload.word;
             state.turn = action.payload.turn;
@@ -37,7 +36,11 @@ export const canvasSlice = createSlice({
             state.guesses = []
             state.players = action.payload.players;
             state.isOver = action.payload.isOver;
-            
+
+            if (action.payload.settings) {
+                state.settings.roundTime = action.payload.settings.roundTime;
+            }
+
             if (action.payload.size
                 && action.payload.size.length == 2
                 && action.payload.size[0] > 100

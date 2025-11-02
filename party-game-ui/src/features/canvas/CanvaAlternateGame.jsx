@@ -17,15 +17,14 @@ export default function CanvasDrawGame() {
     const {
         turn,
         winner,
-        word,        
+        word,
         settings
     } = useSelector(state => state.canvas);
-    const players = useSelector(getPresenceUsers);    
+    const players = useSelector(getPresenceUsers);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
 
     useEffect(() => {
-        setIsTimerActive(false);
         setIsTimerActive(!isNewGamePrompt);
     }, [turn, isNewGamePrompt]);
 
@@ -39,17 +38,17 @@ export default function CanvasDrawGame() {
         }
 
     }, [players, turn, playerName]);
-    
+
+    useEffect(() => {
+        setIsTimerActive(true);
+    }, [word, turn]);
+
     function onTimerCompleted() {
         setIsTimerActive(false);
-        if (isGameOwner) {
-            dispatch(channelPush(sendEvent(canvasChannel, {}, "switch_editable")));
-        }
     }
 
     function onStartClick() {
         setIsTimerActive(true);
-
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner === "" ? "new_game" : "next_turn")));
         }
@@ -69,23 +68,22 @@ export default function CanvasDrawGame() {
 
     function getGame() {
         const matching = games.find(x => x.game.name === gameName);
+        const serverSettings = { difficulty: settings.difficulty, roundTime: settings.roundTime };       
         return typeof matching === 'undefined'
-            ? { settings: { difficulty: settings.difficulty } }
-            : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
+            ? { settings: serverSettings, name: gameName, type: "canvas_alternate" }
+            : { type: matching.game.type, name: gameName, words: matching.game.words, serverSettings }
     }
 
     return (
         <>
             <CanvasUI
                 onTimerCompleted={onTimerCompleted}
-                isEditable={playerName == turn}
-                setIsNewGamePrompt={setIsNewGamePrompt}
-                isTimerActive={isTimerActive}
-                timerSeconds={settings.alternateRoundTime}
                 onStartClick={onStartClick}
-                onClearClick={onClearClick}
-                isNewGamePrompt={isNewGamePrompt}
                 onNextClick={onNextClick}
+                isEditable={playerName == turn}
+                isTimerActive={isTimerActive && players.length !== 1}
+                timerSeconds={settings.roundTime}
+                isNewGamePrompt={isNewGamePrompt}
                 isGuessInputDisplayed={false}
                 isGuessListDisplayed={false}
                 players={players}
@@ -95,6 +93,7 @@ export default function CanvasDrawGame() {
                 word={word}
                 winner={winner}
                 game="canvas_alternate"
+                isTimerDisplayed={players.length !== 1}
             />
         </>)
 }

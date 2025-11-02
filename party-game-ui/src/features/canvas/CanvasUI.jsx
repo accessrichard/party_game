@@ -63,7 +63,8 @@ export default function CanvasUI({
     word,
     winner,
     playerDrawMessage,
-    game = ""
+    game = "",
+    isTimerDisplayed = true
 }) {
 
     const dispatch = useDispatch();
@@ -202,7 +203,7 @@ export default function CanvasUI({
             />
 
             <div className="container">
-                <div>
+                <div>{isTimerDisplayed &&
                     <Timer key={startTimerTime}
                         restartKey={startTimerTime}
                         startDate={startTimerTime}
@@ -210,7 +211,7 @@ export default function CanvasUI({
                         onTimerCompleted={onTimerCompleted}
                         timeIncrement={-1}
                         isIncrement={false}
-                        numberSeconds={timerSeconds} />
+                        numberSeconds={timerSeconds} />}
                 </div>
                 <div className="break"></div>
 

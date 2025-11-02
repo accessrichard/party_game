@@ -14,16 +14,16 @@ export default function CanvasDrawGame() {
     const { turn, winner, word, settings, isOver } = useSelector(state => state.canvas);
     const { games } = useSelector(state => state.creative);
     const players = useSelector(getPresenceUsers);
-    const isGameOwner = useSelector(selectGameOwner);    
+    const isGameOwner = useSelector(selectGameOwner);
     const canvasChannel = `canvas:${gameCode}`;
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isEditable, setIsEditable] = useState(true);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
 
+
     useEffect(() => {
         if (winner) {
             setIsTimerActive(false);
-            setIsNewGamePrompt(true);
         }
     }, [winner])
 
@@ -36,29 +36,29 @@ export default function CanvasDrawGame() {
             onNextClick();
         }
 
+        setIsEditable(playerName == turn);
     }, [players, turn, playerName]);
+
+    useEffect(() => {
+        setIsTimerActive(true);
+    }, [word, turn]);
 
     function onTimerCompleted() {
         setIsTimerActive(false);
-        setIsNewGamePrompt(true);
     }
 
     function onGuessSubmit(guess) {
         dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
     }
 
-    useEffect(() => {
-        setIsEditable(playerName == turn);
-    }, [turn]);
 
     function onStartClick() {
         setIsTimerActive(true);
+        setIsNewGamePrompt(false);
 
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(canvasChannel, getGame(), winner == "" ? "new_game" : "next_turn")));
         }
-
-        setIsNewGamePrompt(false);
     }
 
     function onNextClick() {
@@ -71,12 +71,14 @@ export default function CanvasDrawGame() {
         dispatch(channelPush(sendEvent(canvasChannel, clearCommand, "commands")));
     }
 
-    function getGame() {
-        const matching = games.find(x => x.game.name == gameName);
+        function getGame() {
+        const matching = games.find(x => x.game.name === gameName);
+        const serverSettings = { difficulty: settings.difficulty, roundTime: settings.roundTime };       
         return typeof matching === 'undefined'
-            ? { settings: settings }
-            : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
+            ? { settings: serverSettings, name: gameName, type: "canvas" }
+            : { type: matching.game.type, name: gameName, words: matching.game.words, serverSettings }
     }
+
 
     return (
         <>
@@ -84,14 +86,12 @@ export default function CanvasDrawGame() {
             <CanvasUI
                 onTimerCompleted={onTimerCompleted}
                 onGuessSubmit={onGuessSubmit}
+                onStartClick={onStartClick}
+                onNextClick={onNextClick}
                 isEditable={isEditable}
-                setIsNewGamePrompt={setIsNewGamePrompt}
                 isTimerActive={isTimerActive}
                 timerSeconds={settings.roundTime}
-                onStartClick={onStartClick}
-                onClearClick={onClearClick}
                 isNewGamePrompt={isNewGamePrompt}
-                onNextClick={onNextClick}
                 isGuessInputDisplayed={playerName != turn}
                 isGuessListDisplayed={players.length > 1}
                 players={players}

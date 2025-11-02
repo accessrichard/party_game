@@ -11,6 +11,7 @@ defmodule PartyGame.Game.CanvasSettings do
   def apply_settings(settings, params \\ %{}) do
     settings
     |> Ecto.Changeset.cast(params, [:difficulty])
+    |> Ecto.Changeset.cast(params, [:round_time])
     |> Ecto.Changeset.apply_changes()
   end
 

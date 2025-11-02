@@ -52,6 +52,10 @@ export default function Timer(props) {
     const prevRestartKey = usePrevious(restartKey);
 
     useEffect(() => {
+        setStartDateInternal(startDate);
+    }, [startDate]);
+
+    useEffect(() => {
         if ((!prevActive && isActive) || prevRestartKey !== restartKey) {
             const date = new Date();
             if (isIncrement) {

@@ -11,11 +11,15 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
   def change_turn(%GameRoom{} = game_room) do
     index = find_index_round_robin(game_room.players, &(game_room.game.turn == &1.name))
     turn = Enum.at(game_room.players, index)
-    %{game_room | game: %{game_room.game | turn: turn.name, winner: nil}}
+    if turn == nil do
+      %{game_room | game: %{game_room.game | is_over: true}}
+    else
+      %{game_room | game: %{game_room.game | turn: turn.name, winner: nil}}
+    end
   end
 
   def change_word(%GameRoom{} = game_room) do
-    if game_room.game.words == []  do
+    if game_room.game.words == [] do
       word = Enum.at(word(1, game_room.game.settings.difficulty), 0)
       %{game_room | game: %{game_room.game | word: word, winner: nil}}
     else
@@ -41,15 +45,38 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
       equal(game_room.game.word, guess) ->
         %{
           game_room
-          | game: %{game_room.game | guesses: [guess | guesses],
-            winner: player_name,
-            round_started: false}
+          | game: %{
+              game_room.game
+              | guesses: [guess | guesses],
+                winner: player_name,
+                round_started: false
+            }
         }
 
       true ->
         %{game_room | game: %{game_room.game | guesses: [guess | guesses]}}
     end
   end
+
+  def touch_expires(%GameRoom{} = game_room) do
+    %{
+      game_room
+      | game: %{
+          game_room.game
+          | expires_at: DateTime.utc_now()
+        }
+    }
+  end
+
+  def seconds_until_expired(time \\ 45) do
+    max = Enum.max([time, 45]) * 2
+    Enum.min([max, 300])
+  end
+
+  def is_expired(%GameRoom{} = game_room, time \\ 45) do
+    DateTime.diff(DateTime.utc_now, game_room.game.expires_at) > time
+  end
+
 
   def word(count, difficulty) do
     file = if difficulty == "hard", do: "drawing_two_word.json", else: "drawings.json"
@@ -81,11 +108,12 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
   end
 
   defp equal(word1, word2) do
-    w1 = word1 |> String.downcase |> String.trim()
-    w2 = word2 |> String.downcase |> String.trim()
-    w1 == w2
-    or w1 == String.replace_suffix(w2, "s", "")
-    or w2 == String.replace_suffix(w1, "s", "")
+    w1 = word1 |> String.downcase() |> String.trim()
+    w2 = word2 |> String.downcase() |> String.trim()
+
+    w1 == w2 or
+      w1 == String.replace_suffix(w2, "s", "") or
+      w2 == String.replace_suffix(w1, "s", "")
   end
 
   def find_index_round_robin(enumerable, fun) do
@@ -99,5 +127,4 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
       {:not_found, _} -> 0
     end
   end
-
 end

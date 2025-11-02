@@ -11,8 +11,7 @@ function CanvasSettings() {
 
     const dispatch = useDispatch();
     const { settings } = useSelector(state => state.canvas);
-    const { type } = useSelector(state => state.lobby);
-    const [form, setForm] = useState({ ...settings, errors: { roundTime: "", alternateRoundTime: "", difficulty: "easy" } });
+    const [form, setForm] = useState({ ...settings, errors: { roundTime: 45, difficulty: "easy" } });
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -26,6 +25,7 @@ function CanvasSettings() {
     function onNumberChange(e) {
         e.preventDefault();
         const { name, value, validationMessage } = e.target;
+        
         let newForm = {
             ...form,
             [name]: parseInt(value, 10) || "",
@@ -57,11 +57,11 @@ function CanvasSettings() {
                     <div className="group">
                         <input required
                             autoComplete="off"
-                            name={type == "canvas" ? "roundTime" : "alternateRoundTime"}
+                            name={"roundTime"}
                             type="number"
                             min="5"
                             max="120"
-                            value={type == "canvas" ? form.roundTime : form.alternateRoundTime}
+                            value={form.roundTime}
                             onChange={onNumberChange}
                         />
                         <span className="highlight"></span>
