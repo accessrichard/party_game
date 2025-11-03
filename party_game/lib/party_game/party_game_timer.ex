@@ -38,6 +38,7 @@ defmodule PartyGame.PartyGameTimer do
 
     timer = Process.send_after(self(), {:timer_completed, key, mfa}, time)
     new_state = put_timer(state, key, mfa, timer)
+    IO.inspect(mfa, label: "Timer started for arges")
     {:reply, {:ok, DateTime.utc_now()}, new_state}
   end
 
@@ -62,6 +63,8 @@ defmodule PartyGame.PartyGameTimer do
         {:noreply, state}
 
       {:ok, mfa} ->
+        IO.inspect(mfa, label: "Timer completed for arges")
+
         Task.start_link(fn -> apply(mfa.module, mfa.function, mfa.args) end)
         {:noreply, drop_timer(state, key)}
     end

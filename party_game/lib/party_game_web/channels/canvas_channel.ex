@@ -32,7 +32,9 @@ defmodule PartyGameWeb.CanvasChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
-    broadcast("lobby:#{game_code(socket.topic)}", "handle_game_server_idle_timeout", %{
+    lobby = PartyGameWeb.LobbyChannel.channel_name()
+
+    broadcast("#{lobby}#{game_code(socket.topic)}", "handle_game_server_idle_timeout", %{
       "reason" => "Game Not Found"
     })
 
@@ -192,7 +194,7 @@ defmodule PartyGameWeb.CanvasChannel do
   defp broadcast_next_turn(%GameRoom{} = game_room) do
     expires_in_sec = CanvasGame.seconds_until_expired(game_room.game.settings.round_time)
 
-    topic = "canvas:#{game_room.room_name}"
+    topic = "#{@channel_name}#{game_room.room_name}"
 
     unless game_room.game.is_over or CanvasGame.is_expired(game_room, expires_in_sec) do
       {:ok, time} = start_timer(game_room)
@@ -226,7 +228,8 @@ defmodule PartyGameWeb.CanvasChannel do
   end
 
   defp start_timer(%GameRoom{} = game_room) do
-    game_code = "canvas:#{game_room.room_name}"
+
+    game_code = "#{@channel_name}#{game_room.room_name}"
 
     Logger.debug("Starting timer with #{game_room.game.settings.round_time} seconds")
 
@@ -241,7 +244,8 @@ defmodule PartyGameWeb.CanvasChannel do
 
   def leave(topic, name) do
     Logger.debug("ChannelWatcher Leave called: #{topic} name: #{name}")
-    players = Map.keys(Presence.list("lobby:#{game_code(topic)}"))
+    lobby = PartyGameWeb.LobbyChannel.channel_name()
+    players = Map.keys(Presence.list("#{lobby}#{game_code(topic)}"))
 
     if players == [] do
       PartyGame.PartyGameTimer.cancel_timer(topic)
@@ -249,7 +253,7 @@ defmodule PartyGameWeb.CanvasChannel do
   end
 
   defp cancel_timer(%GameRoom{} = game_room) do
-    game_code = "canvas:#{game_room.room_name}"
+    game_code = "#{@channel_name}#{game_room.room_name}"
     PartyGame.PartyGameTimer.cancel_timer(game_code)
   end
 end

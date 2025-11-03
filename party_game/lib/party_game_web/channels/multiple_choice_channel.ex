@@ -8,6 +8,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   alias PartyGame.Game.GameRoom
   alias PartyGame.Games.GameList
   alias PartyGame.Game.MultipleChoice
+  alias PartyGame.PartyGameTimer
   import PartyGameWeb.GameUtils
 
   @channel_name "game:"
@@ -32,24 +33,33 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
-    broadcast("lobby:#{game_code(socket.topic)}",  "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
+    lobby = PartyGameWeb.LobbyChannel.channel_name()
+
+    broadcast("#{lobby}#{game_code(socket.topic)}", "handle_game_server_idle_timeout", %{
+      "reason" => "Game Not Found"
+    })
+
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:after_join}, socket) do
+    # game_room.game.settings.question_time
+    config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
+
+    #start_timer(
+    #  Server.get_game(game_code(socket.topic)),
+    #  config[:new_game_prompt_time],
+    #  :start_round
+    #)
+
     {:noreply, socket}
   end
 
   @impl true
   def handle_in("start_round", _, socket) do
-    game_room =
-      Server.get_game(game_code(socket.topic))
-      |> MultipleChoiceGame.start_round()
-
-    Server.update_game(game_room)
-
-    reply_with_questions(socket, %{is_new?: false, game_room: game_room})
+    start_round(socket.topic)
+    {:noreply, socket}
   end
 
   @impl true
@@ -63,10 +73,10 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     game_room =
       if game_location == "client" do
-        multiple_choice = MultipleChoice.create_game(MultipleChoice.new, client_form)
+        multiple_choice = MultipleChoice.create_game(MultipleChoice.new(), client_form)
         %{server_game | game: multiple_choice}
       else
-        multiple_choice = MultipleChoice.create_game(MultipleChoice.new, %{})
+        multiple_choice = MultipleChoice.create_game(MultipleChoice.new(), %{})
         %{server_game | game: multiple_choice}
       end
 
@@ -90,33 +100,13 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
       |> MultipleChoiceGame.start_round()
       |> Server.update_game()
 
-      reply_with_questions(socket, %{is_new?: true, game_room: game_room})
+    reply_with_questions(socket.topic, %{is_new?: true, game_room: game_room})
+    {:noreply, socket}
   end
 
   @impl true
   def handle_in("next_question", _, socket) do
-    game_room =
-      Server.get_game(game_code(socket.topic))
-      |> MultipleChoiceGame.next_question()
-      |> MultipleChoiceGame.start_round()
-
-    Server.update_game(game_room)
-
-    question = next_question(game_room)
-
-    broadcast(
-      socket,
-      "handle_next_question",
-      %{
-        data: %{
-          isOver: game_room.is_over,
-          question: question.question,
-          answers: question.answers,
-          id: question.id
-        }
-      }
-    )
-
+    next_question(socket.topic)
     {:noreply, socket}
   end
 
@@ -159,7 +149,45 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     {:noreply, socket}
   end
 
-  defp reply_with_questions(socket, %{is_new?: isNew, game_room: game_room}) do
+  def start_round(topic) do
+    Logger.debug("Start Round called on #{topic}")
+
+    game_room =
+      Server.get_game(game_code(topic))
+      |> MultipleChoiceGame.start_round()
+      |> Server.update_game()
+
+    reply_with_questions(topic, %{is_new?: false, game_room: game_room})
+
+    :ok
+  end
+
+  def next_question(topic) do
+    game_room =
+      Server.get_game(game_code(topic))
+      |> MultipleChoiceGame.next_question()
+      |> MultipleChoiceGame.start_round()
+      |> Server.update_game()
+
+    question = get_next_question(game_room)
+
+    PartyGameWeb.Endpoint.broadcast(
+      topic,
+      "handle_next_question",
+      %{
+        data: %{
+          isOver: game_room.is_over,
+          question: question.question,
+          answers: question.answers,
+          id: question.id
+        }
+      }
+    )
+
+    :ok
+  end
+
+  defp reply_with_questions(topic, %{is_new?: isNew, game_room: game_room}) do
     [question | _] = game_room.game.questions
     resp = %{"data" => question, "isNew" => isNew}
 
@@ -170,17 +198,29 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
         resp
       end
 
-    broadcast(socket, "handle_next_question", resp)
-    {:noreply, socket}
+    PartyGameWeb.Endpoint.broadcast(topic, "handle_next_question", resp)
+
+    :ok
   end
 
-
-  defp next_question(%GameRoom{} = game_room) when game_room.game.questions == [] do
+  defp get_next_question(%GameRoom{} = game_room) when game_room.game.questions == [] do
     %{question: "", answers: [], id: Ecto.UUID.autogenerate()}
   end
 
-  defp next_question(%GameRoom{} = game_room) do
+  defp get_next_question(%GameRoom{} = game_room) do
     [question | _] = game_room.game.questions
     question
+  end
+
+  defp start_timer(%GameRoom{} = game_room, seconds, func) do
+    game_code = "#{@channel_name}#{game_room.room_name}"
+
+    Logger.debug("Starting timer on #{game_code} with #{seconds} seconds")
+
+    PartyGameTimer.start_timer(game_code, seconds * 1000, %{
+      module: __MODULE__,
+      function: func,
+      args: [game_code]
+    })
   end
 end

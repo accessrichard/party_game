@@ -11,6 +11,8 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @channel_name "lobby:"
 
+  def channel_name, do: @channel_name
+
   @impl true
   def join(@channel_name <> room_name, payload, socket) do
     Logger.info("Join #{@channel_name}#{room_name} for: #{Map.get(payload, "name")}")
@@ -51,7 +53,14 @@ defmodule PartyGameWeb.LobbyChannel do
 
     push(socket, "presence_state", Presence.list(socket))
     player = Player.add_player(socket.assigns.name)
-    broadcast_from(socket, "handle_join", player)
+
+    config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
+
+    broadcast_from(socket, "handle_join", %{
+      player: player,
+      settings: %{newGamePromtTime: config[:new_game_prompt_time]}
+    })
+
     {:noreply, socket}
   end
 
@@ -100,22 +109,24 @@ defmodule PartyGameWeb.LobbyChannel do
     {:noreply, socket}
   end
 
-   @doc """
-    Called after ChannelWatcher leave triggers to set the new game owner.
+  @doc """
+   Called after ChannelWatcher leave triggers to set the new game owner.
 
-    The client socket is disconnected
-    The ChannelWatcher triggers the leave call
-    The Client socket reconnects
-    The Client calls handle_reconnect to sycn the game back up.
-   """
+   The client socket is disconnected
+   The ChannelWatcher triggers the leave call
+   The Client socket reconnects
+   The Client calls handle_reconnect to sycn the game back up.
+  """
   @impl true
   def handle_in("handle_reconnect", _, socket) do
     Logger.debug("reconnect handled on #{socket.topic} for: #{socket.assigns.name}")
 
     game = Server.get_game(game_code(socket.topic))
+
     push(socket, "handle_reconnect", %{
-              room_owner: game.room_owner
-          })
+      room_owner: game.room_owner
+    })
+
     {:noreply, socket}
   end
 

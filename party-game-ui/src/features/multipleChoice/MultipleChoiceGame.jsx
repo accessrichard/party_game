@@ -66,7 +66,7 @@ export default function MultipleChoiceGame() {
         isOver
     } = useSelector(state => state.multipleChoice);
 
-    const {        
+    const {
         playerName,
         gameName,
         gameCode
@@ -77,6 +77,7 @@ export default function MultipleChoiceGame() {
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
+    const { newGamePromtTime } = useSelector(state => state.lobby.settings);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
@@ -140,12 +141,12 @@ export default function MultipleChoiceGame() {
      * Ensures the timer is going when a round is started
      * and reset on new rounds.
      */
-    useEffect(() => {                
+    useEffect(() => {
         if (isRoundStarted) {
             setIsStartGamePrompt(false);
         }
 
-        if (isRoundStarted && round === prevRound) {                        
+        if (isRoundStarted && round === prevRound) {
             setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
             setIsDisabled(false);
@@ -154,11 +155,11 @@ export default function MultipleChoiceGame() {
             /// since timers can go out of sync across players.
             setIsStartGamePrompt(false);
             setIsTimerActive(new Date());
-            setIsQuestionAnswered(false);            
+            setIsQuestionAnswered(false);
         }
 
         return () => { setIsTimerActive(false); };
-    }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);    
+    }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);
 
     function startClick(e) {
         e && e.preventDefault();
@@ -209,9 +210,9 @@ export default function MultipleChoiceGame() {
     useEffect(() => {
         let timeout;
         if (isOver) {
-            
+
             dispatch(endGame());
-            
+
             timeout = setTimeout(() => {
                 dispatch(push('/multiple_choice/score'));
             }, 1000);
@@ -222,19 +223,6 @@ export default function MultipleChoiceGame() {
         }
     }, [isOver, settings.nextQuestionTime]);
 
-    function handleCreateGame() {
-        const list = mergeGameList(serverGames, creativeGames);
-        let game = list.find(x => x.name === gameName);
-
-        if (game && game.location === 'client') {
-            const creativeGame = creativeGames.find(x => x.game.name === gameName);
-            game = { ...game, questions: creativeGame.game.questions }
-        }
-
-        const data = { name: playerName, settings: toServerSettings(settings), game: game };        
-        dispatch(channelPush(sendEvent(gameChannel, data, "new_game")));
-    }
-
     function isHappy() {
         return roundWinner === playerName && correct !== "";
     }
@@ -244,15 +232,25 @@ export default function MultipleChoiceGame() {
     }
 
     function onStartGame() {
-        if (isGameOwner)
-        {
-            handleCreateGame();
+        if (!isGameOwner) {
+            return;
         }
+
+        const list = mergeGameList(serverGames, creativeGames);
+        let game = list.find(x => x.name === gameName);
+
+        if (game && game.location === 'client') {
+            const creativeGame = creativeGames.find(x => x.game.name === gameName);
+            game = { ...game, questions: creativeGame.game.questions }
+        }
+
+        const data = { name: playerName, settings: toServerSettings(settings), game: game };
+        dispatch(channelPush(sendEvent(gameChannel, data, "new_game")));
     }
 
     return (
         <>
-            <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
+            <NewGamePrompt isNewGamePrompt={isStartGamePrompt} seconds={newGamePromtTime} onStartGame={() => onStartGame()} >
                 <div className="full-width full-height flex-container flex-column">
                     <header>
                         <h2 className="landscape-hidden">Buzz Game</h2>

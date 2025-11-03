@@ -71,6 +71,9 @@ const initialState = {
         join: { ...apiState },
         stop: { ...apiState },
         list: { ...apiState }
+    },
+    settings: {
+        newGamePromtTime: 15
     }
 };
 
@@ -130,9 +133,11 @@ export const lobbySlice = createSlice({
             state.gameName = action.payload.name || '';
         },
         handleJoin(state, action) {
-            if (!state.players.filter(x => x.name === action.payload.name)) {
-                state.players.push(action.payload);
+            if (!state.players.filter(x => x.name === action.payload.player.name)) {
+                state.players.push(action.payload.player);
             }
+
+            state.settings.newGamePromtTime = action.payload.settings.newGamePromtTime;
         },
         clearJoinError(state, _action) {
             state.api.join.error = "";
