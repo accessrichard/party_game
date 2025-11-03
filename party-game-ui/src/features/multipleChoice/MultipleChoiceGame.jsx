@@ -22,7 +22,9 @@ import {
     startRound,
     handleWrongAnswer,
     setFlash,
-    resetGame
+    resetGame,
+    serverRequestsNewGame,
+    serverReceivedNewGame
 } from './multipleChoiceSlice';
 
 const events = (topic) => [
@@ -45,6 +47,11 @@ const events = (topic) => [
         event: 'handle_new_game_created',
         dispatcher: handleNewGameCreated(),
         topic
+    },
+    {
+        event: 'request_new_game',
+        dispatcher: serverRequestsNewGame(),
+        topic
     }
 ]
 
@@ -63,7 +70,8 @@ export default function MultipleChoiceGame() {
         roundWinner,
         settings,
         startCountdown,
-        isOver
+        isOver,
+        alternateGameOwner
     } = useSelector(state => state.multipleChoice);
 
     const {
@@ -222,6 +230,29 @@ export default function MultipleChoiceGame() {
             timeout && clearTimeout(timeout);
         }
     }, [isOver, settings.nextQuestionTime]);
+
+
+    /**
+     * If not all clients have connected after NewGamePrompt timeout expires,
+     * we need to start the game for people connected.
+     * 
+     * Usually the game owner will kick this off from the client side but
+     * if that fails working through a way to determine who is connected
+     * and elect a new game owner. On ios/android either takes
+     * a while for client disconnects and using visiblitiy causes a lot
+     * of false positives. Stubbing this in temporarily for now...to
+     * keep the game moving while an official game owner is elected.
+     */
+    useEffect(() =>{
+        if (playerName === alternateGameOwner){
+            onStartGame();
+        }
+        
+        if (alternateGameOwner !== null){
+            dispatch(serverReceivedNewGame());
+        }
+
+    }, [alternateGameOwner, playerName]);
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";

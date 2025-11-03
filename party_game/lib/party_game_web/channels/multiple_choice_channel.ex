@@ -44,14 +44,15 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   @impl true
   def handle_info({:after_join}, socket) do
-    # game_room.game.settings.question_time
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
 
-    #start_timer(
-    #  Server.get_game(game_code(socket.topic)),
-    #  config[:new_game_prompt_time],
-    #  :start_round
-    #)
+    start_timer(
+      Server.get_game(game_code(socket.topic)),
+      # Client usually kicks this off...but if the owner client is
+      # sleeping during game start, server can initiate it.
+      config[:new_game_prompt_time] + 3,
+      :request_new_game
+    )
 
     {:noreply, socket}
   end
@@ -160,6 +161,19 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     reply_with_questions(topic, %{is_new?: false, game_room: game_room})
 
     :ok
+  end
+
+  def request_new_game(topic) do
+    game_room =
+      Server.get_game(game_code(topic))
+
+    unless game_room.started do
+      PartyGameWeb.Endpoint.broadcast(
+        topic,
+        "request_new_game",
+        %{}
+      )
+    end
   end
 
   def next_question(topic) do

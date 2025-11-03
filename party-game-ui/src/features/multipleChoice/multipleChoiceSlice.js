@@ -14,7 +14,8 @@ const initialState = {
     isWrong: false,
     flash: {},
     answers: null,
-    rounds: []
+    rounds: [],
+    alternateGameOwner: false
 };
 
 function _resetGame(state) {
@@ -89,6 +90,12 @@ export const multipleChoiceSlice = createSlice({
                 state.isGameStarted = true;                
             }
         },
+        serverRequestsNewGame(state, action) {
+            state.alternateGameOwner = action.payload.alternateGameOwner;
+        },
+        serverReceivedNewGame(state, _action) {
+            state.alternateGameOwner = null;
+        },
         handleCorrectAnswer(state, action) {
             state.isRoundStarted = false;
             state.isWrong = false;
@@ -157,6 +164,8 @@ export const {
     handleCorrectAnswer,        
     handleWrongAnswer,
     handleNewGameCreated,
+    serverRequestsNewGame,
+    serverReceivedNewGame,
     onRouteToGame,
     handleJoin,
     updateGameList,
