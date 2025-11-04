@@ -23,8 +23,8 @@ import {
     handleWrongAnswer,
     setFlash,
     resetGame,
-    serverRequestsNewGame,
-    serverReceivedNewGame
+    newGameTimeout,
+    quitGame
 } from './multipleChoiceSlice';
 
 const events = (topic) => [
@@ -49,8 +49,13 @@ const events = (topic) => [
         topic
     },
     {
-        event: 'request_new_game',
-        dispatcher: serverRequestsNewGame(),
+        event: 'new_game_timeout',
+        dispatcher: newGameTimeout(),
+        topic
+    },
+    {
+        event: 'quit_game',
+        dispatcher: quitGame(),
         topic
     }
 ]
@@ -71,7 +76,9 @@ export default function MultipleChoiceGame() {
         settings,
         startCountdown,
         isOver,
-        alternateGameOwner
+        isNewGameTimeout,
+        startRoundTimeSync,
+        isQuit
     } = useSelector(state => state.multipleChoice);
 
     const {
@@ -169,38 +176,47 @@ export default function MultipleChoiceGame() {
         return () => { setIsTimerActive(false); };
     }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);
 
+    useEffect(() => {
+        if (isQuit) {
+            dispatch(endGame());
+            dispatch(resetGame());
+            dispatch(push('/lobby'))
+        }
+    }, [isQuit]);
+
     function startClick(e) {
-        e && e.preventDefault();
-        startClickCallback(correct ? "start_round" : "next_question");
-    }
+            e && e.preventDefault();
+            startClickCallback(correct ? "start_round" : "next_question");
+        }
+
+    function quitClick(e) {
+            e && e.preventDefault();
+            dispatch(channelPush(sendEvent(gameChannel, {}, "quit_game")));
+        }
 
     function onTimerCompleted() {
-        setIsDisabled(true);
+            setIsDisabled(true);
 
-        if (!isGameOwner) {
-            return;
+            setIsTimerActive(false);
+            if (!isQuestionAnswered && isRoundStarted) {
+                dispatch(unansweredTimeout());
+                return;
+            }
+            //// This event was pushed to the server            
+            //// startClickCallback(correct ? "start_round" : "next_question");
         }
-
-        setIsTimerActive(false);
-        if (!isQuestionAnswered && isRoundStarted) {
-            dispatch(unansweredTimeout());
-            return;
-        }
-
-        startClickCallback(correct ? "start_round" : "next_question");
-    }
 
     function onAnswerClick(e, answer) {
-        setIsQuestionAnswered(true);
-        const data = { answer, name: playerName, id: id };
-        dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
-    }
+            setIsQuestionAnswered(true);
+            const data = { answer, name: playerName, id: id };
+            dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
+        }
 
     const startClickCallback = useCallback((action, payload = {}) => {
-        setIsQuestionAnswered(false);
-        const data = { name: playerName, ...payload };
-        dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
-    }, [gameCode, playerName])
+            setIsQuestionAnswered(false);
+            const data = { name: playerName, ...payload };
+            dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
+        }, [gameCode, playerName])
 
     function onWrongAnswerTimerCompleted() {
         //// In case round ends before timer is reset.
@@ -231,28 +247,24 @@ export default function MultipleChoiceGame() {
         }
     }, [isOver, settings.nextQuestionTime]);
 
-
     /**
      * If not all clients have connected after NewGamePrompt timeout expires,
      * we need to start the game for people connected.
      * 
      * Usually the game owner will kick this off from the client side but
-     * if that fails working through a way to determine who is connected
-     * and elect a new game owner. On ios/android either takes
-     * a while for client disconnects and using visiblitiy causes a lot
-     * of false positives. Stubbing this in temporarily for now...to
-     * keep the game moving while an official game owner is elected.
+     * if that fails, we need a fallback. If the game is a client game this is problematic
+     * as the client game may not yet be created on the server. Currently, this is by design as each
+     * game channel can be a completely different game.
+     * 
+     * Instead of trying to elect a new game owner and pass the game around, just going
+     * to push users back to the lobby for now.
      */
-    useEffect(() =>{
-        if (playerName === alternateGameOwner){
-            onStartGame();
-        }
-        
-        if (alternateGameOwner !== null){
-            dispatch(serverReceivedNewGame());
+    useEffect(() => {
+        if (isNewGameTimeout) {
+            dispatch(push("/lobby"))
         }
 
-    }, [alternateGameOwner, playerName]);
+    }, [isNewGameTimeout]);
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";
@@ -319,6 +331,7 @@ export default function MultipleChoiceGame() {
                                     isActive={isTimerActive}
                                     timeIncrement={-1}
                                     onStartDateSet={setTimerStartDate}
+                                    startDate={startRoundTimeSync}
                                     isIncrement={false}
                                     onTimerCompleted={onTimerCompleted}
                                     timeFormat={"seconds"}
@@ -334,6 +347,7 @@ export default function MultipleChoiceGame() {
                         <div className="flex-column">
                             {isGameOwner && !isRoundStarted && settings.nextQuestionTime > 2 &&
                                 <a className="app-link" href="/#" onClick={startClick}>Next</a>}
+                            {isGameOwner && <a className="app-link" href="/#" onClick={quitClick}>Quit</a>}
                         </div>
                     </div>
                 </div>

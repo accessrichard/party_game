@@ -196,7 +196,7 @@ defmodule PartyGameWeb.CanvasChannel do
 
     topic = "#{@channel_name}#{game_room.room_name}"
 
-    unless game_room.game.is_over or CanvasGame.is_expired(game_room, expires_in_sec) do
+    unless game_room.game.is_over or CanvasGame.is_expired?(game_room, expires_in_sec) do
       {:ok, time} = start_timer(game_room)
 
       PartyGameWeb.Endpoint.broadcast(topic, "handle_new_game", %{

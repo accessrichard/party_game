@@ -7,6 +7,7 @@ const initialState = {
     round: 0,
     startCountdown: false,
     isOver: false,
+    isQuit: false,
     isRoundStarted: false,
     question: null,
     correct: '',
@@ -15,7 +16,8 @@ const initialState = {
     flash: {},
     answers: null,
     rounds: [],
-    alternateGameOwner: false
+    isNewGameTimeout: false,
+    startRoundTimeSync: null
 };
 
 function _resetGame(state) {
@@ -24,22 +26,24 @@ function _resetGame(state) {
         name: state.name,
         url: state.url,
         gameCode: state.gameCode,
-        round: 0,               
+        round: 0,
+        isQuit: false,
         players: [],
-        rounds: [],        
+        rounds: [],
         api: state.api,
+        isNewGameTimeout: false,
         settings: {
             ...state.settings
         }
     };
 
-    Object.assign(state, { ...initialState, ...savedState});
+    Object.assign(state, { ...initialState, ...savedState });
 }
 
 export const multipleChoiceSlice = createSlice({
     name: 'game',
     initialState: initialState,
-    reducers: {       
+    reducers: {
         clearWrongAnswer: (state) => {
             state.isWrong = false;
         },
@@ -51,7 +55,7 @@ export const multipleChoiceSlice = createSlice({
                 _resetGame(state);
                 state.settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             }
-            
+
             state.isRoundStarted = true;
             state.question = action.payload.data.question;
             state.id = action.payload.data.id;
@@ -61,12 +65,13 @@ export const multipleChoiceSlice = createSlice({
             state.correct = '';
             state.roundWinner = '';
             state.isWrong = false;
-            state.isOver = action.payload.data.isOver;            
-
+            state.isOver = action.payload.data.isOver;
+            state.sync = action.payload.data.expiresIn;
+            state.startRoundTimeSync = action.payload.startRoundTimeSync;
             if (!action.payload.data.isOver) {
                 state.round += 1;
             }
-        },        
+        },
         handleWrongAnswer(state, _action) {
             state.isWrong = true;
         },
@@ -87,15 +92,16 @@ export const multipleChoiceSlice = createSlice({
             if (settings.isNewGamePrompt) {
                 state.isNewGamePrompt = true
             } else {
-                state.isGameStarted = true;                
+                state.isGameStarted = true;
             }
+
+            state.isNewGameTimeout = false;
         },
-        serverRequestsNewGame(state, action) {
-            state.alternateGameOwner = action.payload.alternateGameOwner;
-        },
-        serverReceivedNewGame(state, _action) {
-            state.alternateGameOwner = null;
-        },
+        newGameTimeout(state, action) {
+            if (action.payload.isNewGameTimeout) {
+                state.isNewGameTimeout = true;
+            }
+        },       
         handleCorrectAnswer(state, action) {
             state.isRoundStarted = false;
             state.isWrong = false;
@@ -108,7 +114,7 @@ export const multipleChoiceSlice = createSlice({
 
             state.roundWinner = action.payload.data.winner;
             state.correct = action.payload.data.answer;
-
+            state.startRoundTimeSync = action.payload.startRoundTimeSync;
             state.isOver = action.payload.data.isOver;
             state.isGameStarted = !action.payload.data.isOver;
             if (!state.isOver && !state.isPaused) {
@@ -118,6 +124,9 @@ export const multipleChoiceSlice = createSlice({
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
         },
+        quitGame(state, _action){
+            state.isQuit = true;
+        }
     }
 });
 
@@ -160,19 +169,19 @@ export const {
     startRound,
     stop,
     unansweredTimeout,
-    redirect,    
-    handleCorrectAnswer,        
+    redirect,
+    handleCorrectAnswer,
     handleWrongAnswer,
     handleNewGameCreated,
-    serverRequestsNewGame,
-    serverReceivedNewGame,
+    newGameTimeout,    
     onRouteToGame,
     handleJoin,
     updateGameList,
     updateSettings,
     clearWrongAnswer,
-    syncGameState,    
-    setFlash, 
-    resetGame} = multipleChoiceSlice.actions;
+    syncGameState,
+    setFlash,
+    resetGame,
+    quitGame } = multipleChoiceSlice.actions;
 
 export default multipleChoiceSlice.reducer;

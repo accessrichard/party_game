@@ -73,7 +73,7 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     Enum.min([max, 300])
   end
 
-  def is_expired(%GameRoom{} = game_room, time \\ 45) do
+  def is_expired?(%GameRoom{} = game_room, time \\ 45) do
     DateTime.diff(DateTime.utc_now, game_room.game.expires_at) > time
   end
 

@@ -18,6 +18,7 @@ import GameList from '../common/GameList';
 import Logo from '../common/Logo';
 import Timer from '../common/Timer';
 import { push } from "redux-first-history";
+import useVisibilityChangeTracking from '../useVisibilityChangeTracking';
 
 export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -47,7 +48,7 @@ export default function Lobby() {
     usePhoenixSocket();
     usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
     useLobbyEvents();
-
+    useVisibilityChangeTracking();
 
     useEffect(() => {
         dispatch(channelPush({

@@ -3,6 +3,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   use PartyGameWeb, :channel
 
+  alias PartyGame.PartyGameTimer
   alias PartyGameWeb.Presence
   alias PartyGame.{Server, Lobby}
   alias PartyGame.ChannelWatcher
@@ -101,10 +102,30 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   @impl true
-  def handle_in("visiblity_change", _, socket) do
-    Logger.debug("visibilty_change handled on #{socket.topic} for: #{socket.assigns.name}")
+  def handle_in("visiblity_change", payload, socket) do
+    game_code = game_code(socket.topic)
+    game = Server.get_game(game_code)
 
-    leave(socket)
+    Logger.debug(
+      "visibilty_change: #{Map.get(payload, "isVisible")} on #{socket.topic} for: #{socket.assigns.name} with current owner #{game.room_owner}"
+    )
+
+    players =
+      Enum.map(game.players, fn player ->
+        if player.name == socket.assigns.name,
+          do: PartyGame.Game.Player.touch_last_active_at(player),
+          else: player
+      end)
+
+
+   #
+   #  Server.update_game(%{game | players: players})
+
+   # PartyGameTimer.start_timer(game_code, 10 * 1000, %{
+   #   module: __MODULE__,
+   #   function: :elect_new_game_owner,
+   #   args: [socket.topic, socket.assigns.name]
+   # })
 
     {:noreply, socket}
   end
@@ -200,5 +221,32 @@ defmodule PartyGameWeb.LobbyChannel do
     game_room = Lobby.update_room_owner(game_room, new_owner)
     PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: new_owner})
     game_room
+  end
+
+  def elect_new_game_owner(topic, name) do
+    game_code = game_code(topic)
+    game = Server.get_game(game_code)
+
+    player = Enum.find(game.players, &(&1.name == name))
+    Logger.debug("Current Room Owner #{name} current game owner #{game.room_owner}")
+
+    unless PartyGame.Game.Player.is_inactive?(player, 1) and Enum.at(game.players, 1) == nil do
+      new_owner = get_new_owner(game.players, name)
+      Logger.debug("Electing new game owner on #{topic} from #{name} to #{new_owner.name}")
+      game = Lobby.update_room_owner(game, new_owner.name)
+      Server.update_game(game)
+
+      PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{room_owner: game.room_owner})
+    end
+  end
+
+  defp get_new_owner(players, name) do
+    [player | p] = players
+
+    if player.name == name do
+      get_new_owner(p, name)
+    else
+      player
+    end
   end
 end

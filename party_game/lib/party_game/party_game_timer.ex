@@ -2,6 +2,7 @@ defmodule PartyGame.PartyGameTimer do
   @moduledoc """
   A timer for the party games.
   """
+  require Logger
   use GenServer
 
   @name __MODULE__
@@ -27,10 +28,12 @@ defmodule PartyGame.PartyGameTimer do
     GenServer.start_link(__MODULE__, [], name: @name)
   end
 
+  @impl true
   def init(_) do
     {:ok, %{timers: Map.new()}}
   end
 
+  @impl true
   def handle_call({:start_timer, key, time, mfa}, _from, state) do
     if Map.get(state.timers, key) != nil do
       cancel(state, key)
@@ -38,10 +41,10 @@ defmodule PartyGame.PartyGameTimer do
 
     timer = Process.send_after(self(), {:timer_completed, key, mfa}, time)
     new_state = put_timer(state, key, mfa, timer)
-    IO.inspect(mfa, label: "Timer started for arges")
     {:reply, {:ok, DateTime.utc_now()}, new_state}
   end
 
+  @impl true
   def handle_call({:cancel_timer, key}, _from, state) do
     cancel(state, key)
   end
@@ -57,13 +60,15 @@ defmodule PartyGame.PartyGameTimer do
     end
   end
 
+  @impl true
   def handle_info({:timer_completed, key, _}, state) do
     case Map.fetch(state.timers, key) do
       :error ->
         {:noreply, state}
 
       {:ok, mfa} ->
-        IO.inspect(mfa, label: "Timer completed for arges")
+
+        Logger.debug("Timer completed for #{mfa.function} #{mfa.args}")
 
         Task.start_link(fn -> apply(mfa.module, mfa.function, mfa.args) end)
         {:noreply, drop_timer(state, key)}

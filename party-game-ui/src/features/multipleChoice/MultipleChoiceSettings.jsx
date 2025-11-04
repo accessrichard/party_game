@@ -68,7 +68,7 @@ function MultipleChoiceSettings() {
                             autoComplete="off"
                             name="questionTime"
                             type="number"
-                            min="1"
+                            min="5"
                             max="60"
                             value={form.questionTime}
                             onChange={onNumberChange}

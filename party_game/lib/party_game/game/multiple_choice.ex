@@ -12,6 +12,7 @@ defmodule PartyGame.Game.MultipleChoice do
     embeds_many(:rounds, Round, on_replace: :delete)
     embeds_one(:settings, MultipleChoiceSettings, on_replace: :delete)
     field(:round_started, :boolean, default: false)
+    field(:expires_at, :utc_datetime, default: nil)
     embeds_many(:questions, Question, on_replace: :delete)
   end
 
@@ -37,7 +38,8 @@ defmodule PartyGame.Game.MultipleChoice do
     game
     |> Ecto.Changeset.cast(params, [
       :round_started,
-      :name
+      :name,
+      :expires_at
     ])
     |> EctoHelpers.require_field(:questions)
     |> Ecto.Changeset.put_embed(:rounds, rounds)

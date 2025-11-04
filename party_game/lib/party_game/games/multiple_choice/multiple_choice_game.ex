@@ -161,4 +161,27 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
         }
     }
   end
+
+  def touch_expires(%GameRoom{} = game_room) do
+    %{
+      game_room
+      | game: %{
+          game_room.game
+          | expires_at: DateTime.utc_now()
+        }
+    }
+  end
+
+  def seconds_until_question_expired(time \\ 10) do
+    max = Enum.max([time, 5])
+    Enum.min([max, 60])
+  end
+
+  def is_expired?(%GameRoom{} = game_room, time \\ 60) do
+    if game_room.game == nil do
+      false
+    else
+      DateTime.diff(DateTime.utc_now(), game_room.game.expires_at) > time
+    end
+  end
 end

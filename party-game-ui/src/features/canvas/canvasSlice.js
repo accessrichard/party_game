@@ -11,8 +11,7 @@ const initialState = {
     winners: [],
     players: [],
     settings: { roundTime: 45, difficulty: "easy" },
-    isOver: false,
-    sync: Date()
+    isOver: false
 }
 
 export const canvasSlice = createSlice({
