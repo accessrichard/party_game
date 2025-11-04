@@ -37,7 +37,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     game_code = "#{lobby}#{game_code(socket.topic)}"
 
-    PartyGameWeb.Endpoint.broadcast(game_code, "handle_game_server_idle_timeout", %{
+    PartyGameWeb.Endpoint.broadcast(game_code, "handle_game_server_error", %{
       "reason" => "Game Not Found"
     })
 
@@ -199,7 +199,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     PartyGameWeb.Endpoint.broadcast!(
       "#{lobby}#{game_code}",
-      "handle_game_server_idle_timeout",
+      "handle_game_server_error",
       %{"reason" => "Game timeout - No input for multiple rounds."}
     )
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { channelPush } from './phoenix/phoenixMiddleware';
 import { selectGameOwner } from './lobby/lobbySlice';
@@ -17,48 +17,26 @@ export default function useVisibilityChangeTracking() {
 
     const dispatch = useDispatch();
     const { gameCode } = useSelector(state => state.lobby);
-    const { games } = useSelector(state => state.creative)
-    const [isVisible, setIsVisible] = useState(true);
-    const [isVisibleEventSent, setIsVisibleEventSent] = useState(false);
     const isGameOwner = useSelector(selectGameOwner);
 
 
     useEffect(() => {
         const onVisibilitychange = () => {
-            setIsVisible(!document.hidden);
+
+            if (!isGameOwner) {
+                return
+            }
+            dispatch(channelPush({
+                topic: `lobby:${gameCode}`,
+                event: "visiblity_change",
+                data: { isVisible: !document.hidden }
+            }));
         }
         window.addEventListener("visibilitychange", onVisibilitychange);
         return () => {
             window.removeEventListener("visibilitychange", onVisibilitychange);
         };
-    }, []);
-    
-    useEffect(() => {
-        if (!isGameOwner) {
-            return;
-        }
-
-        let timeout;
-        if (isVisible && isVisibleEventSent) {
-            setIsVisibleEventSent(false)
-            dispatch(channelPush({
-                topic: `lobby:${gameCode}`,
-                event: "visiblity_change",
-                data: { isVisible: isVisible }
-            }));
-        } else if (!isVisible && !isVisibleEventSent) {
-            timeout = setTimeout(() => {
-                setIsVisibleEventSent(true)
-                dispatch(channelPush({
-                    topic: `lobby:${gameCode}`,
-                    event: "visiblity_change",
-                    data: { isVisible: isVisible, creativeCount: games.length }
-                }));
-            }, 1000 * 10);
-
-        }
-        return () => clearTimeout(timeout)
-    }, [isVisible, isVisibleEventSent, isGameOwner]);
+    }, [isGameOwner]);
 
 
 

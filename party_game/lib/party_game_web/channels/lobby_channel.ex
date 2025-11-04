@@ -36,7 +36,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
-    broadcast(socket, "handle_game_server_idle_timeout", %{"reason" => "Game Not Found"})
+    broadcast(socket, "handle_game_server_error", %{"reason" => "Game Not Found"})
     {:noreply, socket}
   end
 
@@ -105,11 +105,18 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_in("visiblity_change", payload, socket) do
-    isVisible = Map.get(payload, "isVisible")
+    is_visible = Map.get(payload, "isVisible")
 
-    Logger.debug("visibilty_change: #{isVisible} on #{socket.topic} for: #{socket.assigns.name}")
+    Logger.debug("visibilty_change: #{is_visible} on #{socket.topic} for: #{socket.assigns.name}")
 
-    visibility_change(%{isVisible: isVisible, payload: payload, socket: socket})
+    multiplayer? = unless is_visible, do: is_multiplayer?(socket.topic), else: false
+
+    visibility_change(%{
+      is_visible?: is_visible,
+      multiplayer?: multiplayer?,
+      payload: payload,
+      socket: socket
+    })
 
     {:noreply, socket}
   end
@@ -147,29 +154,22 @@ defmodule PartyGameWeb.LobbyChannel do
     remove_player(Server.lookup(game_code(socket.topic)), socket)
   end
 
-   defp visibility_change(%{isVisible: true, payload: _, socket: socket}) do
+  defp visibility_change(%{multiplayer?: false}),  do: :ok
+
+  defp visibility_change(%{is_visible?: true, payload: _, socket: socket}) do
+    Logger.debug("Cancel Timer #{"#{@visibility_timer_name}:#{game_code(socket.topic)}"}")
     PartyGameTimer.cancel_timer("#{@visibility_timer_name}:#{game_code(socket.topic)}")
   end
 
-  defp visibility_change(%{isVisible: false, payload: _payload, socket: socket}) do
-    #creative_count = Map.get(payload, "creativeCount", 0)
-
-    game_code = game_code(socket.topic)
-
-    game = Server.get_game(game_code)
-
-    players =
-      Enum.map(game.players, fn player ->
-        if player.name == socket.assigns.name,
-          do: PartyGame.Game.Player.touch_last_active_at(player),
-          else: player
-      end)
-
-    Server.update_game(%{game | players: players})
-
+  defp visibility_change(%{
+         is_visible?: false,
+         multiplayer?: true,
+         payload: _payload,
+         socket: socket
+       }) do
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
     inactive_time_check = config[:player_inactive_time_check]
-    inactive_time = config[:player_inactive_timeout]
+    Logger.debug("START Timer #{"#{@visibility_timer_name}:#{game_code(socket.topic)}"}")
 
     PartyGameTimer.start_timer(
       "#{@visibility_timer_name}:#{game_code(socket.topic)}",
@@ -177,9 +177,13 @@ defmodule PartyGameWeb.LobbyChannel do
       %{
         module: __MODULE__,
         function: :timeout_elect_new_game_owner,
-        args: [socket.topic, socket.assigns.name, inactive_time]
+        args: [socket.topic, socket.assigns.name]
       }
     )
+  end
+
+  defp is_multiplayer?(topic) do
+    Enum.at(Map.keys(Presence.list(topic)), 1) != nil
   end
 
   defp remove_player({:error, _}, _), do: :ok
@@ -240,23 +244,33 @@ defmodule PartyGameWeb.LobbyChannel do
     game_room
   end
 
-  def timeout_elect_new_game_owner(topic, name, inactive_time) do
+  def timeout_elect_new_game_owner(topic, name) do
+    multiplayer? = is_multiplayer?(topic)
+    timeout_elect_new_game_owner(%{multiplayer?: multiplayer?}, topic, name)
+  end
+
+  defp timeout_elect_new_game_owner(%{multiplayer?: false}, _, _), do: :ok
+
+  defp timeout_elect_new_game_owner(%{multiplayer?: true}, topic, name) do
     game_code = game_code(topic)
     game = Server.get_game(game_code)
 
-    player = Enum.find(game.players, &(&1.name == name))
+    # player = Enum.find(game.players, &(&1.name == name))
 
-    unless player == nil and PartyGame.Game.Player.is_inactive?(player, inactive_time) and
-             Enum.at(game.players, 1) == nil do
-      new_owner = get_new_owner(game.players, name)
-      Logger.debug("Electing new game owner on #{topic} from #{name} to #{new_owner.name}")
-      game = Lobby.update_room_owner(game, new_owner.name)
-      Server.update_game(game)
+    # unless player == nil and PartyGame.Game.Player.is_inactive?(player, inactive_time) and
+    #         Enum.at(game.players, 1) == nil do
+    new_owner = get_new_owner(game.players, name)
+    Logger.debug("Electing new game owner on #{topic} from #{name} to #{new_owner.name}")
+    game = Lobby.update_room_owner(game, new_owner.name)
+    Server.update_game(game)
 
-      PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{
-        room_owner: game.room_owner
-      })
-    end
+    PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{
+      room_owner: game.room_owner
+    })
+  end
+
+  defp get_new_owner(players, name) when players == [] do
+    %PartyGame.Game.Player{name: name}
   end
 
   defp get_new_owner(players, name) do

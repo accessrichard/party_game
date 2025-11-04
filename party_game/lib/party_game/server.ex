@@ -120,7 +120,7 @@ defmodule PartyGame.Server do
     lobby = PartyGameWeb.LobbyChannel.channel_name
     PartyGameWeb.Endpoint.broadcast!(
       "#{lobby}#{game.room_name}",
-      "handle_game_server_idle_timeout",
+      "handle_game_server_error",
       %{"reason" => "Game Server Idle Timeout"}
     )
 

@@ -109,7 +109,7 @@ export const lobbySlice = createSlice({
         endGame: (state) => {
             state.isGameStarted = false;
         },
-        handleGenServerTimeout(state, action) {            
+        handleServerError(state, action) {            
             state.genServerTimeout = {timeout: true, reason: action.payload.reason};
         },
         handleReconnect(state, action) {
@@ -180,7 +180,7 @@ export const mergeGameList = (serverGames, clientGames) => {
 
 export const {
     redirect,
-    handleGenServerTimeout,
+    handleServerError,
     handleNewGameCreated,
     handleReconnect,
     handleVisiblityChange,

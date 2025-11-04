@@ -77,7 +77,7 @@ window.onload = function () {
   channel.on("resize", (resizing) => resize(resizing, store.displays, canvas));
   channel.on("commands", (resp) => onCommands(resp.commands));
   channel.on("word", (word) => onWord(word));
-  channel.on("handle_game_server_idle_timeout", (timeout => onTimeout(timeout)));
+  channel.on("handle_game_server_error", (timeout => onTimeout(timeout)));
   channel.on("presence_state", (state) => onPresenceState(state));
   channel.on("handle_join", (join) => onHandleJoin(join));
 

@@ -554,18 +554,21 @@ class HangmanAnimations {
         const [bottom, left] = this.hanger.drawHanger(this.stickMan);
         displayText(this.context, "Hangman", bottom, left + 30, 20, this.stickMan.radius);
 
+        const fontSize = Math.max(this.stickMan.radius * .3, 12);
         this.context.fillStyle = "red";
         this.context.letterSpacing = "6px";
-        displayText(this.context, word, this.stickMan.x - this.stickMan.radius * 2, this.stickMan.y - this.stickMan.radius * 4, 30, this.canvas.width);
+        displayText(this.context, word,
+            this.stickMan.x - this.stickMan.radius * 2,
+            this.stickMan.y - this.stickMan.radius * 2 - 50, fontSize, this.canvas.width);
 
         this.context.fillStyle = "black";
         this.context.letterSpacing = "0px";
         displayText(this.context, (guesses || []).join(" "),
-            this.stickMan.x - this.stickMan.radius * 2.3,
-            this.stickMan.y + this.stickMan.radius * 3.1, 30, this.canvas.width - 30);
+            this.stickMan.x - this.stickMan.radius * 2,
+            this.stickMan.y - this.stickMan.radius * 2, fontSize, this.canvas.width - 30);
     }
 
-    drawGameScene(word = "_ _ _ test", guesses = [1, 2, 3]) {
+    drawGameScene(word = "_ _ _ test", guesses = [1, 2, 3, 4, 5]) {
         this.stickMan.resetOpts();
         this.animationStack.getUnitTime(1);
         this.drawGame(word, guesses);
@@ -604,8 +607,8 @@ class AnimationStack {
     startTime;
     currentAnim;
     stack = [];
-    isRunning = false;
-    isRunningEvent = new CustomEvent("animation", { detail: { isRunning: this.isRunning } });
+    isRunningEvent = new CustomEvent("hangmanAnimation", { detail: { isRunning: true } });
+    isStoppedRunningEvent = new CustomEvent("hangmanAnimation", { detail: { isRunning: false } });
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -643,24 +646,11 @@ class AnimationStack {
 
         if (this.currentAnim === undefined && this.stack.length > 0) {
             this.currentAnim = this.stack.shift();
-
-            if (!this.isRunning) {
-                this.isRunningEvent.detail.isRunning = true;
-                this.canvas.dispatchEvent(this.isRunningEvent);
-            }
-
-            this.isRunning = true;
+            this.canvas.dispatchEvent(this.isRunningEvent);
         }
 
         if (this.currentAnim === undefined) {
-
-            if (this.isRunning) {
-                this.isRunningEvent.detail.isRunning = false;
-                this.canvas.dispatchEvent(this.isRunningEvent);
-            }
-
-            this.isRunning = false;
-
+            this.canvas.dispatchEvent(this.isStoppedRunningEvent);
             return;
         }
 
@@ -693,21 +683,23 @@ function _runAnimations(id) {
     };
 
     const canvas = document.getElementById(id);
-    const stickMan = new Stickman(canvas, 0, 400, 100, opts);
+    const stickMan = new Stickman(canvas, 500, 400, 100, opts);
     const hanger = new Hanger(stickMan.canvas, stickMan.x, stickMan.y, stickMan.radius);
     const stack = new AnimationStack(canvas);
     const hangman = new HangmanAnimations(canvas, stickMan, hanger, stack);
 
     hangman.startGameScene(stickMan.x, canvas.width - 100);
     hangman.loseScene();
-    //hangman.winScene();
+    hangman.winScene();
+    //hangman.drawGameScene();
+    //hangman.drawGame("teddst", ['t','d','e','t','t','c','x'])
 }
 
 
 window.onload = () => {
-        //    runAnimations("hangman");
+   // _runAnimations("hangman");
 };
-      
+
 
 
 export class HangmanView {

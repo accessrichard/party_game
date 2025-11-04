@@ -45,7 +45,7 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :party_game, PartyGameWeb.LobbyChannel, new_game_prompt_time: 15, new_game_prompt_time_offset: 4, player_inactive_timeout: 15, player_inactive_time_check: 15
+config :party_game, PartyGameWeb.LobbyChannel, new_game_prompt_time: 15, new_game_prompt_time_offset: 4, player_inactive_time_check: 30
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

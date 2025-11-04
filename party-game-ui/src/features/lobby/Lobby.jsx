@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
     changeGame,
-    handleGenServerTimeout,
+    handleServerError,
     listGames,
     mergeGameList,
     selectGameOwner
@@ -134,7 +134,7 @@ export default function Lobby() {
     }
 
     function onLobbyTimeout() {
-        dispatch(handleGenServerTimeout({ reason: "Game Lobby Timeout" }));
+        dispatch(handleServerError({ reason: "Game Lobby Timeout" }));
     }
 
     return (

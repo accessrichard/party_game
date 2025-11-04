@@ -12,7 +12,7 @@ import useBackButtonBlock from '../useBackButtonBlock'
 import { push } from "redux-first-history";
 import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import NewGamePrompt from '../common/NewGamePrompt';
-
+import Keyboard from '../common/Keyboard';
 
 
 const events = (topic) => [
@@ -57,7 +57,7 @@ export default function HangmanGame() {
         forceQuit
     } = useSelector(state => state.hangman);
     const isGameOwner = useSelector(selectGameOwner);
-    
+
     const prevWord = usePrevious(word);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -66,10 +66,10 @@ export default function HangmanGame() {
     usePhoenixSocket();
     usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(hangmanChannel, events);
-    useLobbyEvents();   
+    useLobbyEvents();
 
     useEffect(() => {
-        setIsStartGamePrompt(true);   
+        setIsStartGamePrompt(true);
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "presence_location",
@@ -79,7 +79,7 @@ export default function HangmanGame() {
 
     function notifyLeave() {
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "end_game")))
-    }    
+    }
 
     useEffect(() => {
         if (!canvasRef.current) {
@@ -87,15 +87,15 @@ export default function HangmanGame() {
         }
 
         const event = (e) => setIsAnimating(e.detail.isRunning);
-        canvasRef.current.addEventListener("animation", event);
+        canvasRef.current.addEventListener("hangmanAnimation", event, true);
         return () => {
             if (!canvasRef.current) {
                 return;
             }
 
-            canvasRef.current.removeEventListener("animation", event);
+            canvasRef.current.removeEventListener("hangmanAnimation", event);
         };
-    }, [canvasRef])
+    }, [canvasRef.current])
 
     useEffect(() => {
         if (!startIntroScene) {
@@ -108,11 +108,12 @@ export default function HangmanGame() {
         }
 
         canvas.width = window.innerWidth * .9;
-        canvas.height = window.innerHeight * .8;
-        const radius = window.innerHeight / 12;
+        canvas.height = window.innerHeight * .5;
+        const radius = window.innerHeight / 16;
+
         HangmanView.initialize(canvas, 0, canvas.height / 2, radius);
         HangmanView.animations.startGameScene(canvas.width / 4, canvas.width / 2, word, []);
-        setInputStyle({ width: canvas.width - 50, position: "absolute", top: canvas.height - 25 });
+        setInputStyle({ width: canvas.width - 50, position: "absolute", top: canvas.height - 65 });
         dispatch(introSceneReset());
     }, [word, prevWord, startIntroScene])
 
@@ -187,8 +188,8 @@ export default function HangmanGame() {
     function onStartGame() {
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
-        } 
-    }
+        }
+    }    
 
     return (
         <>
@@ -196,15 +197,15 @@ export default function HangmanGame() {
                 <h3>Hangman</h3>
                 <canvas ref={canvasRef} id="hangman-canvas">Your browser does not support canvas element.
                 </canvas>
-                <div style={inputStyle}>
-                    {!isWinner && !winningWord && word && !isAnimating &&
-                        <GuessInput className='canvas-card flex-row md-5' onSubmit={onGuessSubmit} maxLength="1" />}
+                <div className={(isAnimating ? 'keyboard_disabled  ' : '') + 'keyboard_container'}>{
+                    <Keyboard onClick={(_e, g) => { onGuessSubmit(g) }} />}
                 </div>
                 <div className="container">
 
                     {isGameOwner && <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>}
                     {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
                 </div>
+
             </NewGamePrompt>
         </>
     )

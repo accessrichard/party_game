@@ -8,7 +8,7 @@ defmodule PartyGame.Games.GameList do
     games = [
       %GameMetaData{
         name: "Basic Math",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -20,7 +20,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Addition",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -32,7 +32,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Subtraction",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -44,7 +44,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Multiplication",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -56,7 +56,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Multiplication - Fractions",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -68,7 +68,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Division",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -80,7 +80,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Division - Fractions",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         settings: true,
@@ -92,7 +92,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "Equations",
-        category: "Math",
+        category: "Math - Quiz Game",
         type: "multiple_choice",
         url: "/multiple_choice",
         location: "server",
@@ -104,7 +104,7 @@ defmodule PartyGame.Games.GameList do
       },
       %GameMetaData{
         name: "U.S. State Capitals",
-        category: "United States",
+        category: "United States - Quiz Game",
         url: "/multiple_choice",
         location: "server",
         settings: true,

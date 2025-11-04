@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {    
-    handleGenServerTimeout,
+    handleServerError,
     handleJoin,
     handleReconnect,
     onRouteToGame
@@ -14,8 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const events = (topic) => [
     {
-        event: 'handle_game_server_idle_timeout',
-        dispatcher: handleGenServerTimeout(),
+        event: 'handle_game_server_error',
+        dispatcher: handleServerError(),
         topic,
     },
     {
