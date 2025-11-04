@@ -17,6 +17,7 @@ export default function useVisibilityChangeTracking() {
 
     const dispatch = useDispatch();
     const { gameCode } = useSelector(state => state.lobby);
+    const { games } = useSelector(state => state.creative)
     const [isVisible, setIsVisible] = useState(true);
     const [isVisibleEventSent, setIsVisibleEventSent] = useState(false);
     const isGameOwner = useSelector(selectGameOwner);
@@ -31,12 +32,12 @@ export default function useVisibilityChangeTracking() {
             window.removeEventListener("visibilitychange", onVisibilitychange);
         };
     }, []);
-
+    
     useEffect(() => {
-        if (isGameOwner) {
+        if (!isGameOwner) {
             return;
         }
-        
+
         let timeout;
         if (isVisible && isVisibleEventSent) {
             setIsVisibleEventSent(false)
@@ -51,9 +52,9 @@ export default function useVisibilityChangeTracking() {
                 dispatch(channelPush({
                     topic: `lobby:${gameCode}`,
                     event: "visiblity_change",
-                    data: { isVisible: isVisible }
+                    data: { isVisible: isVisible, creativeCount: games.length }
                 }));
-            }, 1000 * 1);
+            }, 1000 * 10);
 
         }
         return () => clearTimeout(timeout)
