@@ -31,7 +31,7 @@ export default function Lobby() {
         isGameStarted,
         gameName,
         type
-    } = useSelector(state => state.lobby);    
+    } = useSelector(state => state.lobby);
 
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
@@ -62,8 +62,6 @@ export default function Lobby() {
         setIsTimerActive(true);
         return () => { setIsTimerActive(false); };
     }, []);
-
-
 
     useEffect(() => {
         if (serverGamesLoading === 'idle' && (serverGames === null || serverGames.length === 0)) {

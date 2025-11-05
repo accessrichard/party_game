@@ -62,6 +62,7 @@ export default function HangmanGame() {
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
     const hangmanChannel = `hangman:${gameCode}`;
+
     useBackButtonBlock(isBackButtonBlocked);
     usePhoenixSocket();
     usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
@@ -76,10 +77,6 @@ export default function HangmanGame() {
             data: { location: "game" }
         }));
     }, []);
-
-    function notifyLeave() {
-        dispatch(channelPush(sendEvent(hangmanChannel, {}, "end_game")))
-    }
 
     useEffect(() => {
         if (!canvasRef.current) {
@@ -117,7 +114,6 @@ export default function HangmanGame() {
         dispatch(introSceneReset());
     }, [word, prevWord, startIntroScene])
 
-
     useEffect(() => {
         if (!HangmanView.stickMan) {
             return;
@@ -143,6 +139,10 @@ export default function HangmanGame() {
             HangmanView.animations.loseScene(word, winningWord, guesses, settings.difficulty);
         }
     }, [isOver, winningWord, word, guesses, settings.difficulty])
+
+    function notifyLeave() {
+        dispatch(channelPush(sendEvent(hangmanChannel, {}, "end_game")))
+    }
 
     function onGuessSubmit(guess) {
         if (isWinner || isOver) {
@@ -184,12 +184,11 @@ export default function HangmanGame() {
         return <Navigate to="/" />
     }
 
-
     function onStartGame() {
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
         }
-    }    
+    }
 
     return (
         <>

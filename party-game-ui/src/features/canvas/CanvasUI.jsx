@@ -70,7 +70,6 @@ export default function CanvasUI({
     const dispatch = useDispatch();
     const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
     const isGameOwner = useSelector(selectGameOwner);
-
     const canvasChannel = `canvas:${gameCode}`;
 
     usePhoenixSocket();
@@ -99,7 +98,6 @@ export default function CanvasUI({
         dispatch(channelPush(sendEvent(canvasChannel,
             { advance_turn: turn == playerName, game }, "end_game")))
     }
-
 
     useEffect(() => {
         return () => { dispatch(reset()); };

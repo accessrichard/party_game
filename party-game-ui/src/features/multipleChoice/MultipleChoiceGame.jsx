@@ -88,8 +88,6 @@ export default function MultipleChoiceGame() {
     } = useSelector(state => state.lobby);
 
     const isGameOwner = useSelector(selectGameOwner);
-
-
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
     const { newGamePromtTime } = useSelector(state => state.lobby.settings);
@@ -107,7 +105,6 @@ export default function MultipleChoiceGame() {
     usePhoenixChannel(gameChannel, { name: playerName });
     usePhoenixEvents(gameChannel, events);
     useLobbyEvents();
-
     useBackButtonBlock(true);
 
     useEffect(() => {
@@ -185,38 +182,38 @@ export default function MultipleChoiceGame() {
     }, [isQuit]);
 
     function startClick(e) {
-            e && e.preventDefault();
-            startClickCallback(correct ? "start_round" : "next_question");
-        }
+        e && e.preventDefault();
+        startClickCallback(correct ? "start_round" : "next_question");
+    }
 
     function quitClick(e) {
-            e && e.preventDefault();
-            dispatch(channelPush(sendEvent(gameChannel, {}, "quit_game")));
-        }
+        e && e.preventDefault();
+        dispatch(channelPush(sendEvent(gameChannel, {}, "quit_game")));
+    }
 
     function onTimerCompleted() {
-            setIsDisabled(true);
+        setIsDisabled(true);
 
-            setIsTimerActive(false);
-            if (!isQuestionAnswered && isRoundStarted) {
-                dispatch(unansweredTimeout());
-                return;
-            }
-            //// This event was pushed to the server            
-            //// startClickCallback(correct ? "start_round" : "next_question");
+        setIsTimerActive(false);
+        if (!isQuestionAnswered && isRoundStarted) {
+            dispatch(unansweredTimeout());
+            return;
         }
+        //// This event was pushed to the server            
+        //// startClickCallback(correct ? "start_round" : "next_question");
+    }
 
     function onAnswerClick(e, answer) {
-            setIsQuestionAnswered(true);
-            const data = { answer, name: playerName, id: id };
-            dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
-        }
+        setIsQuestionAnswered(true);
+        const data = { answer, name: playerName, id: id };
+        dispatch(channelPush(sendEvent(gameChannel, data, "answer_click")));
+    }
 
     const startClickCallback = useCallback((action, payload = {}) => {
-            setIsQuestionAnswered(false);
-            const data = { name: playerName, ...payload };
-            dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
-        }, [gameCode, playerName])
+        setIsQuestionAnswered(false);
+        const data = { name: playerName, ...payload };
+        dispatch(channelPush(sendEvent(gameChannel, data, action || "start_round")));
+    }, [gameCode, playerName])
 
     function onWrongAnswerTimerCompleted() {
         //// In case round ends before timer is reset.

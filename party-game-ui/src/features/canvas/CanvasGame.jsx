@@ -20,7 +20,6 @@ export default function CanvasDrawGame() {
     const [isEditable, setIsEditable] = useState(true);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);
 
-
     useEffect(() => {
         if (winner) {
             setIsTimerActive(false);
@@ -51,7 +50,6 @@ export default function CanvasDrawGame() {
         dispatch(channelPush(sendEvent(canvasChannel, { guess }, "guess")));
     }
 
-
     function onStartClick() {
         setIsTimerActive(true);
         setIsNewGamePrompt(false);
@@ -71,14 +69,13 @@ export default function CanvasDrawGame() {
         dispatch(channelPush(sendEvent(canvasChannel, clearCommand, "commands")));
     }
 
-        function getGame() {
+    function getGame() {
         const matching = games.find(x => x.game.name === gameName);
-        const serverSettings = { difficulty: settings.difficulty, roundTime: settings.roundTime };       
+        const serverSettings = { difficulty: settings.difficulty, roundTime: settings.roundTime };
         return typeof matching === 'undefined'
             ? { settings: serverSettings, name: gameName, type: "canvas" }
             : { type: matching.game.type, name: gameName, words: matching.game.words, serverSettings }
     }
-
 
     return (
         <>

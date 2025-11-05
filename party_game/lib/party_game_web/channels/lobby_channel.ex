@@ -157,8 +157,9 @@ defmodule PartyGameWeb.LobbyChannel do
   defp visibility_change(%{multiplayer?: false}),  do: :ok
 
   defp visibility_change(%{is_visible?: true, payload: _, socket: socket}) do
-    Logger.debug("Cancel Timer #{"#{@visibility_timer_name}:#{game_code(socket.topic)}"}")
-    PartyGameTimer.cancel_timer("#{@visibility_timer_name}:#{game_code(socket.topic)}")
+    topic = "#{@visibility_timer_name}:#{game_code(socket.topic)}"
+    Logger.debug("Cancel Timer #{topic}")
+    PartyGameTimer.cancel_timer(topic)
   end
 
   defp visibility_change(%{
