@@ -77,7 +77,7 @@ defmodule PartyGameWeb.HangmanChannel do
 
     @impl true
     def handle_in("guess", payload, socket) do
-      is_over = Map.get(payload, "isOver", false)
+      over? = Map.get(payload, "isOver", false)
       game_room =
         Server.get_game(game_code(socket.topic))
         |> HangmanGame.guess(Map.get(payload, "guess"))
@@ -87,7 +87,7 @@ defmodule PartyGameWeb.HangmanChannel do
         "word" => game_room.game.display_word,
         "guesses" => HangmanGame.wrong_guesses(game_room),
         "isWinner" => HangmanGame.winner?(game_room),
-        "winningWord" => (if is_over, do: game_room.game.word, else: "")
+        "winningWord" => (if over?, do: game_room.game.word, else: "")
       })
       {:noreply, socket}
     end

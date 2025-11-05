@@ -10,7 +10,7 @@ defmodule PartyGame.Game.Hangman do
     field(:words, {:array, :string}, default: [])
     field(:display_word, :string, default: nil)
     field(:guesses, {:array, :string}, default: [])
-    field(:is_over, :boolean, default: false)
+    field(:over?, :boolean, default: false)
     embeds_one(:settings, HangmanSettings, on_replace: :delete)
   end
 
@@ -29,7 +29,7 @@ defmodule PartyGame.Game.Hangman do
       :words,
       :guesses,
       :display_word,
-      :is_over])
+      :over?])
       |> Ecto.Changeset.put_embed(:settings, settings)
   end
 

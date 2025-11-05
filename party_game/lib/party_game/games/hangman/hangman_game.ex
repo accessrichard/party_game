@@ -64,14 +64,14 @@ defmodule PartyGame.Games.Hangman.HangmanGame do
             game_room.game
             | word: word,
               display_word: display_word(word, []),
-              is_over: false
+              over?: false
           }
       }
     else
       index =
         CanvasGame.find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
 
-      is_over = game_room.game.word != nil && index == 0
+      over? = game_room.game.word != nil && index == 0
       word = Enum.at(game_room.game.words, index)
 
       %{
@@ -80,7 +80,7 @@ defmodule PartyGame.Games.Hangman.HangmanGame do
             game_room.game
             | word: word,
               display_word: display_word(word, []),
-              is_over: is_over
+              over?: over?
           }
       }
     end

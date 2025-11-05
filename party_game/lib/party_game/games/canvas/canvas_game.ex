@@ -12,7 +12,7 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     index = find_index_round_robin(game_room.players, &(game_room.game.turn == &1.name))
     turn = Enum.at(game_room.players, index)
     if turn == nil do
-      %{game_room | game: %{game_room.game | is_over: true}}
+      %{game_room | game: %{game_room.game | over?: true}}
     else
       %{game_room | game: %{game_room.game | turn: turn.name, winner: nil}}
     end
@@ -24,9 +24,9 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
       %{game_room | game: %{game_room.game | word: word, winner: nil}}
     else
       index = find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
-      is_over = game_room.game.word != nil && index == 0
+      over? = game_room.game.word != nil && index == 0
       word = Enum.at(game_room.game.words, index)
-      %{game_room | game: %{game_room.game | word: word, winner: nil, is_over: is_over}}
+      %{game_room | game: %{game_room.game | word: word, winner: nil, over?: over?}}
     end
   end
 
@@ -73,7 +73,7 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     Enum.min([max, 300])
   end
 
-  def is_expired?(%GameRoom{} = game_room, time \\ 45) do
+  def expired?(%GameRoom{} = game_room, time \\ 45) do
     DateTime.diff(DateTime.utc_now, game_room.game.expires_at) > time
   end
 

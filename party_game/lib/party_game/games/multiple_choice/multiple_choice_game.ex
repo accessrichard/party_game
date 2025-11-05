@@ -19,7 +19,7 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
   end
 
   def end_game(%GameRoom{} = game_room) do
-    %{game_room | is_over: true, started: false, game: %{game_room.game | round_started: false}}
+    %{game_room | over?: true, started: false, game: %{game_room.game | round_started: false}}
   end
 
   def score(%GameRoom{} = game_room) do
@@ -76,7 +76,7 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
         {:win,
          %{
            game_room
-           | is_over: questions == [],
+           | over?: questions == [],
              started: game_room.started && questions != [],
              game: %{
                game_room.game
@@ -151,7 +151,7 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
 
     %{
       game_room
-      | is_over: questions == [],
+      | over?: questions == [],
         started: questions == [],
         game: %{
           game_room.game
@@ -177,11 +177,15 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
     Enum.min([max, 60])
   end
 
-  def is_expired?(%GameRoom{} = game_room, time \\ 60) do
-    if game_room.game == nil do
-      false
-    else
-      DateTime.diff(DateTime.utc_now(), game_room.game.expires_at) > time
-    end
+  def expired?(game, time \\ 60)
+
+  def expired?(%PartyGame.Game.GameRoom{game: %{expires_at: expires_at}}, time) do
+    IO.inspect("Here")
+    DateTime.diff(DateTime.utc_now(), expires_at) > time
+  end
+
+  def expired?(_game, _time) do
+    IO.inspect("there")
+    false
   end
 end

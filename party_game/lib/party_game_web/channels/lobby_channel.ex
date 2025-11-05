@@ -18,7 +18,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def join(@channel_name <> room_name, payload, socket) do
-    Logger.info("Join #{@channel_name}#{room_name} for: #{Map.get(payload, "name")}")
+    Logger.debug("Join #{@channel_name}#{room_name} for: #{Map.get(payload, "name")}")
 
     case Server.lookup(room_name) do
       {:ok, _} ->
@@ -36,14 +36,17 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
-    broadcast(socket, "handle_game_server_error", %{"reason" => "Game Not Found"})
+    broadcast(socket, "handle_game_server_error", %{"reason" => "Game No Longer Available"})
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:after_join}, socket) do
+    Logger.debug("After Join #{socket.topic} for: #{socket.assigns.name}")
+
     :ok =
       ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
+    Logger.debug("After Join ChannelWatcher #{socket.topic} for: #{socket.assigns.name}")
 
     location = if socket.assigns.game == nil, do: "lobby", else: "game"
 
@@ -59,10 +62,14 @@ defmodule PartyGameWeb.LobbyChannel do
 
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
 
+    Logger.debug("After Join push socket #{socket.topic} for: #{socket.assigns.name}")
+
     broadcast_from(socket, "handle_join", %{
       player: player,
       settings: %{newGamePromtTime: config[:new_game_prompt_time]}
     })
+
+    Logger.debug("After Join broadcast_from #{socket.topic} for: #{socket.assigns.name}")
 
     {:noreply, socket}
   end
@@ -105,14 +112,14 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_in("visiblity_change", payload, socket) do
-    is_visible = Map.get(payload, "isVisible")
+    visible? = Map.get(payload, "isVisible")
 
-    Logger.debug("visibilty_change: #{is_visible} on #{socket.topic} for: #{socket.assigns.name}")
+    Logger.debug("visibilty_change: #{visible?} on #{socket.topic} for: #{socket.assigns.name}")
 
-    multiplayer? = unless is_visible, do: is_multiplayer?(socket.topic), else: false
+    multiplayer? = unless visible?, do: multiplayer?(socket.topic), else: false
 
     visibility_change(%{
-      is_visible?: is_visible,
+      visible?: visible?,
       multiplayer?: multiplayer?,
       payload: payload,
       socket: socket
@@ -121,14 +128,12 @@ defmodule PartyGameWeb.LobbyChannel do
     {:noreply, socket}
   end
 
-  @doc """
-   Called after ChannelWatcher leave triggers to set the new game owner.
-
-   The client socket is disconnected
-   The ChannelWatcher triggers the leave call
-   The Client socket reconnects
-   The Client calls handle_reconnect to sycn the game back up.
-  """
+  # Called after ChannelWatcher leave triggers to set the new game owner.
+  #
+  # 1. The client socket is disconnected
+  # 2. The ChannelWatcher triggers the leave call
+  # 3. The Client socket reconnects
+  # 4. The Client calls handle_reconnect to sycn the game back up.
   @impl true
   def handle_in("handle_reconnect", _, socket) do
     Logger.debug("reconnect handled on #{socket.topic} for: #{socket.assigns.name}")
@@ -142,6 +147,9 @@ defmodule PartyGameWeb.LobbyChannel do
     {:noreply, socket}
   end
 
+  # The multipe choice game will ping the server periodically
+  # to keep the GenServer alive in case it has a configured
+  # smaller timeout.
   @impl true
   def handle_in("ping", _, socket) do
     Server.ping(game_code(socket.topic))
@@ -154,16 +162,16 @@ defmodule PartyGameWeb.LobbyChannel do
     remove_player(Server.lookup(game_code(socket.topic)), socket)
   end
 
-  defp visibility_change(%{multiplayer?: false}),  do: :ok
+  defp visibility_change(%{multiplayer?: false}), do: :ok
 
-  defp visibility_change(%{is_visible?: true, payload: _, socket: socket}) do
+  defp visibility_change(%{visible?: true, payload: _, socket: socket}) do
     topic = "#{@visibility_timer_name}:#{game_code(socket.topic)}"
     Logger.debug("Cancel Timer #{topic}")
     PartyGameTimer.cancel_timer(topic)
   end
 
   defp visibility_change(%{
-         is_visible?: false,
+         visible?: false,
          multiplayer?: true,
          payload: _payload,
          socket: socket
@@ -183,7 +191,7 @@ defmodule PartyGameWeb.LobbyChannel do
     )
   end
 
-  defp is_multiplayer?(topic) do
+  defp multiplayer?(topic) do
     Enum.at(Map.keys(Presence.list(topic)), 1) != nil
   end
 
@@ -246,7 +254,7 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   def timeout_elect_new_game_owner(topic, name) do
-    multiplayer? = is_multiplayer?(topic)
+    multiplayer? = multiplayer?(topic)
     timeout_elect_new_game_owner(%{multiplayer?: multiplayer?}, topic, name)
   end
 
@@ -258,7 +266,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
     # player = Enum.find(game.players, &(&1.name == name))
 
-    # unless player == nil and PartyGame.Game.Player.is_inactive?(player, inactive_time) and
+    # unless player == nil and PartyGame.Game.Player.inactive?(player, inactive_time) and
     #         Enum.at(game.players, 1) == nil do
     new_owner = get_new_owner(game.players, name)
     Logger.debug("Electing new game owner on #{topic} from #{name} to #{new_owner.name}")

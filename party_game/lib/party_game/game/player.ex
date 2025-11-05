@@ -46,7 +46,7 @@ defmodule PartyGame.Game.Player do
     |> Ecto.Changeset.apply_changes()
   end
 
-  def is_inactive?(%PartyGame.Game.Player{} = player, inactive_time \\ 10) do
+  def inactive?(%PartyGame.Game.Player{} = player, inactive_time \\ 10) do
     if player.last_active_at == nil do
       false
     else

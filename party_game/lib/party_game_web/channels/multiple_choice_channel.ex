@@ -188,10 +188,10 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
           %{
             startRoundTimeSync: time,
             data: %{
-              rounds: if(game_room.is_over, do: game_room.game.rounds, else: []),
+              rounds: if(game_room.over?, do: game_room.game.rounds, else: []),
               answer: answer,
               winner: socket.assigns.name,
-              isOver: game_room.is_over
+              isOver: game_room.over?
             }
           }
         )
@@ -207,7 +207,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     PartyGameWeb.Endpoint.broadcast!(
       "#{lobby}#{game_code}",
       "handle_game_server_error",
-      %{"reason" => "Game timeout - No input for multiple rounds."}
+      %{"reason" => "Game timeout - Server Error or Game Idle Too Long."}
     )
 
     Server.stop(game_code)
@@ -245,7 +245,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     resp = %{
       data: %{
-        isOver: game_room.is_over,
+        isOver: game_room.over?,
         question: question.question,
         answers: question.answers,
         id: question.id
@@ -298,7 +298,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
 
-    unless MultipleChoiceGame.is_expired?(game_room, config[:idle_game_timeout]) do
+    unless MultipleChoiceGame.expired?(game_room, config[:idle_game_timeout]) do
       PartyGameTimer.start_timer(game_code, seconds * 1000, %{
         module: __MODULE__,
         function: func,

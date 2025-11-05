@@ -10,7 +10,7 @@ defmodule PartyGame.Game.GameRoom do
     field(:started, :boolean, default: false)
     field(:room_name, :string, default: nil)
     field(:room_owner, :string, default: nil)
-    field(:is_over, :boolean, default: false)
+    field(:over?, :boolean, default: false)
     field(:game, :map, default: nil)
   end
 
@@ -28,7 +28,7 @@ defmodule PartyGame.Game.GameRoom do
       :started,
       :room_name,
       :room_owner,
-      :is_over,
+      :over?,
       :game
     ])
     |> Ecto.Changeset.put_embed(:players, players)
