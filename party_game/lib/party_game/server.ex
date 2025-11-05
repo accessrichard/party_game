@@ -121,7 +121,7 @@ defmodule PartyGame.Server do
     PartyGameWeb.Endpoint.broadcast!(
       "#{lobby}#{game.room_name}",
       "handle_game_server_error",
-      %{"reason" => "Game Server Idle Timeout"}
+      %{"reason" => "Game inactive over #{trunc(@timeout / 60 / 1000)} minutes"}
     )
 
     {:stop, :normal, game}
