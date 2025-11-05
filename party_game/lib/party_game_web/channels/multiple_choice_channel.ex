@@ -121,6 +121,11 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   def handle_in("quit_game", _, socket) do
     Logger.debug("Cancelling timer on #{socket.topic} from quit game")
     PartyGameTimer.cancel_timer(socket.topic)
+
+    Server.get_game(game_code(socket.topic))
+      |> Lobby.stop_game()
+      |> Server.update_game()
+
     broadcast(socket, "quit_game", %{})
     {:noreply, socket}
   end
