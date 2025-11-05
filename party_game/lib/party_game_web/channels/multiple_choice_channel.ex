@@ -119,6 +119,8 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
   @impl true
   def handle_in("quit_game", _, socket) do
+    Logger.debug("Cancelling timer on #{socket.topic} from quit game")
+    PartyGameTimer.cancel_timer(socket.topic)
     broadcast(socket, "quit_game", %{})
     {:noreply, socket}
   end
@@ -289,7 +291,9 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     game_code = "#{@channel_name}#{game_room.room_name}"
     Logger.debug("Starting timer on #{game_code} with #{seconds} seconds")
 
-    unless MultipleChoiceGame.is_expired?(game_room) do
+    config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
+
+    unless MultipleChoiceGame.is_expired?(game_room, config[:idle_game_timeout]) do
       PartyGameTimer.start_timer(game_code, seconds * 1000, %{
         module: __MODULE__,
         function: func,
