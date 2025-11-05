@@ -201,7 +201,6 @@ export default function HangmanGame() {
                     <Keyboard onClick={(_e, g) => { onGuessSubmit(g) }} />}
                 </div>
                 <div className="container">
-
                     {isGameOwner && <button id="Restart" className="btn md-5" type="button" onClick={onRestartClick}>Restart</button>}
                     {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
                 </div>

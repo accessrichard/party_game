@@ -1,17 +1,17 @@
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+@media only screen and (min-device-width : 320px) and (max-device-width : 600px) {
     .keyboard_container {
-        width: 100%;
+        width: 95%;
     }
 }
 
-@media screen and (min-device-width: 400px) {
+@media screen and (min-device-width: 600px) {
     .keyboard_container {
         width: 50%;
     }
 }
 
 .keyboard_key {
-    height: 35px;
+    height: 45px;
     width: 6%;
     max-width: 90px;
     margin: 3px;

@@ -559,7 +559,7 @@ class HangmanAnimations {
         this.context.letterSpacing = "6px";
         displayText(this.context, word,
             this.stickMan.x - this.stickMan.radius * 2,
-            this.stickMan.y - this.stickMan.radius * 2 - 50, fontSize, this.canvas.width);
+            this.stickMan.y - this.stickMan.radius * 2 - 25, fontSize, this.canvas.width);
 
         this.context.fillStyle = "black";
         this.context.letterSpacing = "0px";
