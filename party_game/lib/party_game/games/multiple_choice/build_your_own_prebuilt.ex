@@ -1,6 +1,6 @@
 defmodule PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do
-
   alias PartyGame.Game.MultipleChoice
+  alias PartyGame.FileLoader
 
   @games_path "./lib/party_game/games/multiple_choice/prebuilt"
 
@@ -13,7 +13,7 @@ defmodule PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do
   end
 
   def prebuilt_games() do
-    games = ls_r(@games_path)
+    games = FileLoader.ls_r(@games_path)
     game_list(games, @games_path)
   end
 
@@ -32,18 +32,6 @@ defmodule PartyGame.Games.MultipleChoice.BuildYourOwnPrebuilt do
       nil
     else
       List.last(Path.split(Path.dirname(file)))
-    end
-  end
-
-  def ls_r(path \\ ".") do
-    cond do
-      File.regular?(path) -> [path]
-      File.dir?(path) ->
-        File.ls!(path)
-        |> Enum.map(&Path.join(path, &1))
-        |> Enum.map(&ls_r/1)
-        |> Enum.concat
-      true -> []
     end
   end
 end

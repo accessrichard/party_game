@@ -36,6 +36,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_info({:after_join, :game_not_found}, socket) do
+    Logger.debug("After Join Game not found:   #{socket.topic} for: #{socket.assigns.name}")
     broadcast(socket, "handle_game_server_error", %{"reason" => "Game No Longer Available"})
     {:noreply, socket}
   end

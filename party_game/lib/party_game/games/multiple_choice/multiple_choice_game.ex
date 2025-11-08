@@ -180,12 +180,10 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
   def expired?(game, time \\ 60)
 
   def expired?(%PartyGame.Game.GameRoom{game: %{expires_at: expires_at}}, time) do
-    IO.inspect("Here")
     DateTime.diff(DateTime.utc_now(), expires_at) > time
   end
 
   def expired?(_game, _time) do
-    IO.inspect("there")
     false
   end
 end

@@ -15,30 +15,33 @@ import MultipleChoiceGame from './features/multipleChoice/MultipleChoiceGame';
 import CanvasGame from './features/canvas/CanvasGame';
 import CanvasAlternateGame from './features/canvas/CanvaAlternateGame';
 import HangmanGame from './features/hangman/HangmanGame';
+import StoryGame from './features/story/StoryGame';
 import { HistoryRouter as Router } from "redux-first-history/rr6";
 import Start from './features/start/Start';
 import { history } from './features/store';
-import MultipleChoiceCreate from './features/multipleChoice/creative/MultipleChoiceCreate';
-//const MultipleChoiceCreate = lazy(() => import('./features/multipleChoice/creative/MultipleChoiceCreate'));
-import MultipleChoiceImport from './features/multipleChoice/creative/MultipleChoiceImport';
-//const MultipleChoiceImport = lazy(() => import('./features/multipleChoice/creative/MultipleChoiceImport'));
-import CanvasCreate from './features/canvas/creative/CanvasCreate';
-//const CanvasCreate = lazy(() => import('./features/canvas/creative/CanvasCreate'));
-import CanvasImport from './features/canvas/creative/CanvasImport';
-//const CanvasImport = lazy(() => import('./features/canvas/creative/CanvasImport'));
-import MultipleChoiceScore from './features/multipleChoice/MultipleChoiceScore';
-//const MultipleChoiceScore = lazy(() => import('./features/multipleChoice/MultipleChoiceScore'));
-import MultipleChoiceSettings from './features/multipleChoice/MultipleChoiceSettings';
-//const MultipleChoiceSettings = lazy(() => import('./features/multipleChoice/MultipleChoiceSettings'));
-import CanvasSettings from './features/canvas/CanvasSettings';
-//const CanvasSettings = lazy(() => import('./features/canvas/CanvasSettings'));
-import HangmanCreate from './features/hangman/HangmanCreate';
-//const HangmanCreate = lazy(() => import('./features/hangman/HangmanCreate'));
-import HangmanImport from './features/hangman/HangmanImport';
-//const HangmanImport = lazy(() => import('./features/hangman/HangmanImport'));
-import HangmanSettings from './features/hangman/HangmanSettings';
-//const HangmanSettings = lazy(() => import('./features/hangman/HangmanSettings'));
+
+//import MultipleChoiceCreate from './features/multipleChoice/creative/MultipleChoiceCreate';
+//import MultipleChoiceImport from './features/multipleChoice/creative/MultipleChoiceImport';
+//import CanvasCreate from './features/canvas/creative/CanvasCreate';
+//import CanvasImport from './features/canvas/creative/CanvasImport';
+//import MultipleChoiceScore from './features/multipleChoice/MultipleChoiceScore';
+//import MultipleChoiceSettings from './features/multipleChoice/MultipleChoiceSettings';
+//import CanvasSettings from './features/canvas/CanvasSettings';
+//import HangmanCreate from './features/hangman/HangmanCreate';
+//import HangmanImport from './features/hangman/HangmanImport';
+//import HangmanSettings from './features/hangman/HangmanSettings';
 //import InlineFacesSprite from './features/common/InlineFacesSprite';
+
+const MultipleChoiceCreate = lazy(() => import('./features/multipleChoice/creative/MultipleChoiceCreate'));
+const MultipleChoiceImport = lazy(() => import('./features/multipleChoice/creative/MultipleChoiceImport'));
+const CanvasCreate = lazy(() => import('./features/canvas/creative/CanvasCreate'));
+const CanvasImport = lazy(() => import('./features/canvas/creative/CanvasImport'));
+const MultipleChoiceScore = lazy(() => import('./features/multipleChoice/MultipleChoiceScore'));
+const MultipleChoiceSettings = lazy(() => import('./features/multipleChoice/MultipleChoiceSettings'));
+const CanvasSettings = lazy(() => import('./features/canvas/CanvasSettings'));
+const HangmanCreate = lazy(() => import('./features/hangman/HangmanCreate'));
+const HangmanImport = lazy(() => import('./features/hangman/HangmanImport'));
+const HangmanSettings = lazy(() => import('./features/hangman/HangmanSettings'));
 const InlineFacesSprite = lazy(() => import('./features/common/InlineFacesSprite'));
 
 function App() {
@@ -46,7 +49,7 @@ function App() {
     <Router history={history}>
       <Routes>
         <Route element={<GoogleAnalytics />}>
-          <Route path="/" element={<AppBody />}>
+          <Route path="/" element={<AppBody />}>            
             <Route exact path="/start" element={<Start />} />
             <Route path="/join" element={<Join />}>
               <Route path="/join/:id" element={<Join />} />
