@@ -1,5 +1,5 @@
 defmodule PartyGame.Game.StoryToken do
-  defstruct [:type, :value]
+  defstruct [:id, :type, :placeholder, :value, :errors]
 end
 
 defmodule PartyGame.Game.Story do
