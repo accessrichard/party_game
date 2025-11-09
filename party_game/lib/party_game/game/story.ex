@@ -1,4 +1,5 @@
 defmodule PartyGame.Game.StoryToken do
+  @derive Jason.Encoder
   defstruct [:id, :type, :placeholder, :value, :errors]
 end
 
@@ -6,6 +7,7 @@ defmodule PartyGame.Game.Story do
   use Ecto.Schema
   alias PartyGame.Game.StoryToken
 
+  @derive {Jason.Encoder, only: [:name, :tokens]}
   @primary_key false
   embedded_schema do
     field(:name, :string, default: nil)

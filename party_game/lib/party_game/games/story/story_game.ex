@@ -4,10 +4,14 @@ defmodule PartyGame.Games.Story.StoryGame do
 
   @stories_path "./lib/party_game/games/story/prebuilt"
 
-  def new(_, _options \\ %{}) do
-    %Story{tokens: tokenize(story())}
+  def new(%Story{} = story \\ %Story{}, options \\ %{}) do
+    Story.create_story(story, options)
   end
 
+  def add_story(%Story{} = story) do
+    {name, tokens} = story()
+    %{story | name: name, tokens: tokenize(tokens)}
+  end
 
   @doc """
   Takes a story with form fields represented by brackets [] and tokenizes
@@ -80,8 +84,10 @@ defmodule PartyGame.Games.Story.StoryGame do
     do: tokenize(rest, concat_str <> s, id, acc)
 
   def story() do
-    story = Enum.take_random(prebuilt_stories(), 1)
-    File.read!(story)
+    story_path = Enum.take_random(prebuilt_stories(), 1)
+    story = File.read!(story_path)
+    name = FileLoader.filename(story_path)
+    {name, story}
   end
 
   def input(id, placeholder) do

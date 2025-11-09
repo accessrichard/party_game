@@ -1,4 +1,9 @@
 defmodule PartyGame.FileLoader do
+
+  def filename(path) do
+    Path.rootname(Path.basename(path))
+  end
+
   def ls_r(path \\ ".") do
     cond do
       File.regular?(path) ->

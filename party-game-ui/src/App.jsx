@@ -49,7 +49,7 @@ function App() {
     <Router history={history}>
       <Routes>
         <Route element={<GoogleAnalytics />}>
-          <Route path="/" element={<AppBody />}>            
+          <Route path="/" element={<AppBody />}>
             <Route exact path="/start" element={<Start />} />
             <Route path="/join" element={<Join />}>
               <Route path="/join/:id" element={<Join />} />
@@ -64,6 +64,8 @@ function App() {
               <Route exact path="/multiple_choice/settings" element={<MultipleChoiceSettings />} />
               <Route exact path="/multiple_choice/create" element={<MultipleChoiceCreate />} />
               <Route exact path="/multiple_choice/import" element={<MultipleChoiceImport />} />
+
+              <Route exact path="/story" element={<StoryGame />} />
 
               <Route exact path="/canvas" element={<CanvasGame />} />
               <Route exact path="/canvas/settings" element={<CanvasSettings />} />

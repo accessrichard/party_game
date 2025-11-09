@@ -3,7 +3,7 @@ defmodule PartyGameWeb.StoryChannel do
 
   use PartyGameWeb, :channel
 
-  alias PartyGame.Game.Story
+  alias PartyGame.Games.Story.StoryGame
   alias PartyGame.{Server, Lobby}
   import PartyGameWeb.GameUtils
 
@@ -44,16 +44,21 @@ defmodule PartyGameWeb.StoryChannel do
 
   @impl true
   def handle_in("new_game", _payload, socket) do
-    story = Story.create_story(%Story{}, %{})
+    Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
+    #words = Map.get(payload, "tokens", [])
+    #settings = Map.get(payload, "settings", %{})
+
+    story = StoryGame.add_story(StoryGame.new())
 
     game_room =
-       Server.get_game(game_code(socket.topic))
-        |> Lobby.set_game(story)
-        |> Server.update_game()
+      Server.get_game(game_code(socket.topic))
+      |> Lobby.set_game(story)
+      |> Server.update_game()
 
+    broadcast(socket, "handle_new_game", %{
+      "story" => game_room.game
+    })
 
-    broadcast(socket, "handle_new_game", %{story: game_room.game})
     {:noreply, socket}
   end
-
 end
