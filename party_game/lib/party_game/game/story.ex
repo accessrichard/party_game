@@ -1,15 +1,38 @@
 defmodule PartyGame.Game.StoryToken do
   use Ecto.Schema
+  alias PartyGame.Game.StoryToken
 
-  @primary_key false
   @derive {Jason.Encoder, only: [:id, :type, :placeholder, :value, :errors]}
+  @primary_key false
   schema "storytoken" do
     field(:id, :integer, default: nil)
-    field(:type, :string, default: nil)
-    field(:placeholder, :string, default: nil)
-    field(:value, :string, default: nil)
+    field(:type, :string, default: "")
+    field(:placeholder, :string, default: "")
+    field(:value, :string, default: "")
     field(:errors, {:array, :string}, default: [])
   end
+
+  def create_token(%StoryToken{} = token, params) do
+    create_changeset(token, params)
+    |> Ecto.Changeset.apply_changes()
+  end
+
+  def create_token(params) do
+    create_changeset(%StoryToken{}, params)
+    |> Ecto.Changeset.apply_changes()
+  end
+
+  def create_changeset(token, params \\ %{}) do
+    token
+    |> Ecto.Changeset.cast(params, [
+      :id,
+      :type,
+      :placeholder,
+      :value,
+      :errors
+    ])
+  end
+
 end
 
 defmodule PartyGame.Game.Story do

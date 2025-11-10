@@ -7,8 +7,12 @@ import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from
 import { useDispatch, useSelector } from 'react-redux';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { handleNewGame, handleUpdate, returnToLobby, reset } from './storySlice';
-import { endGame } from '../lobby/lobbySlice';
+import { handleNewGame, handleUpdate, returnToLobby } from './storySlice';
+import { endGame, selectGameOwner } from '../lobby/lobbySlice';
+import NewGamePrompt from '../common/NewGamePrompt';
+
+import useBackButtonBlock from '../useBackButtonBlock'
+import { push } from "redux-first-history";
 
 const events = (topic) => [
     {
@@ -53,19 +57,23 @@ const defaultForm = {
 
 export default function StoryGame() {
 
+    const dispatch = useDispatch();
+
     const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const { games } = useSelector(state => state.creative);
+    const { tokens, name } = useSelector(state => state.story);
+    const isGameOwner = useSelector(selectGameOwner);
 
+    const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
+    const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const storyChannel = `story:${gameCode}`;
+    const [form, setForm] = useState(defaultForm);
+
     usePhoenixSocket();
-    usePhoenixChannel(storyChannel, { name: playerName }, { persisted: true });
+    usePhoenixChannel(storyChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(storyChannel, events);
     useLobbyEvents();
-
-    const dispatch = useDispatch();
-    const tokens = useSelector(state => state.story.tokens);
-    const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
-
+    useBackButtonBlock(isBackButtonBlocked);
 
     useEffect(() => {
         setIsStartGamePrompt(true);
@@ -77,24 +85,20 @@ export default function StoryGame() {
     }, []);
 
     useEffect(() => {
-        setIsStartGamePrompt(true);
         dispatch(channelPush({
             topic: `story:${gameCode}`,
             event: "new_game",
             data: { location: "game" }
         }));
-
-        dispatch(channelPush(sendEvent(storyChannel, getGame(), "new_game")))
-
     }, []);
 
     useEffect(() => {
         if (tokens && tokens.length > 0) {
+            setIsStartGamePrompt(false);
             const newForm = { ...form, inputs: tokens }
             setForm(newForm)
         }
     }, [tokens]);
-
 
     function getGame() {
         const settings = { difficulty: "easy" };
@@ -104,51 +108,80 @@ export default function StoryGame() {
             : { type: matching.game.type, name: selectedGame.name, tokens: matching.game.tokens, settings }
     }
 
-    const [form, setForm] = useState(defaultForm);
     function handleChanges(e, id) {
         const input = toFieldObject(e);
-        const oldInput = form.inputs.filter(x => x.id === id);
-
-        if (oldInput.length === 1) {
-            const newInput = { ...oldInput[0], ...input, ...{ errors: [e.target.validationMessage] } };
+        const oldInput = form.inputs.find(x => x.id === id);
+        if (oldInput && e.type == 'change') {
+            const newInput = { ...oldInput, ...input, ...{ errors: [e.target.validationMessage] } };
             const newForm = { ...form, inputs: form.inputs.map(item => item.id === id ? newInput : item) };
-            setForm(newForm)
+            setForm(newForm);
+        }
+
+        if (e.type === 'blur') {
+            const field = form.inputs.find(x => x.id === id);
+            dispatch(channelPush(sendEvent(storyChannel, field, "update_token")));
         }
 
         if (e.type === 'invalid') {
             e.preventDefault();
         }
+
+
+    }
+
+    function notifyLeave() {
+        dispatch(channelPush(sendEvent(storyChannel, {}, "end_game")))
+    }
+
+    function onQuitClick() {
+        notifyLeave();
+        dispatch(endGame());
+        setIsBackButtonBlocked(false);
+        dispatch(push('/lobby'))
+    }
+
+    function onStartGame() {
+        if (isGameOwner) {
+            dispatch(channelPush(sendEvent(storyChannel, getGame(), "new_game")))
+        }
     }
 
     return (
-        <>
-            <h3>Story Time</h3>
-            <div className='center-65'>
+        <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
+            <h3>Story Time - {name}</h3>
+            <div className='center-65 light-background item card story '>
+                <form className='form'>
+                    {form.inputs.map((x) => {
+                        if (x.type === "text") {
+                            return <span key={x.id}>{x.value}</span>
+                        } else if (x.type === "input") {
+                            return <span key={"span-" + x.id} className='inline-flex group'>
 
-                {form.inputs.map((x) => {
-                    if (x.type === "string") {
-                        return <span key={x.id}>{x.value}</span>
-                    } else if (x.type === "text") {
-                        return <span className='inline-flex'>
-                            <input
-                                placeholder={x.placeholder}
-                                required
-                                name="value"
-                                key={x.id}
-                                type='text'
-                                onInvalid={(e) => handleChanges(e, x.id)}
-                                onChange={(e) => handleChanges(e, x.id)}
-                                onBlur={(e) => handleChanges(e, x.id)}
-                                value={x.value}
-                                id={"value" + x.id}
-                            />
-                            <span className="message">
-                                <InputError key={'error' + x.id} className="error shake" errors={x.errors} />
+                                <input
+                                    required
+                                    name="value"
+                                    key={"input-" + x.id}
+                                    type='text'
+                                    onInvalid={(e) => handleChanges(e, x.id)}
+                                    onChange={(e) => handleChanges(e, x.id)}
+                                    onBlur={(e) => handleChanges(e, x.id)}
+                                    value={x.value}
+                                    id={"value" + x.id}
+                                />
+                                <span className="highlight"></span>
+                                <span className="bar"></span>
+                                <label>{x.placeholder}</label>
+                                <span className="message">
+                                    <InputError key={"error-" + x.id} className="error shake" errors={x.errors} />
+                                </span>
                             </span>
-                        </span>
-                    }
-                })}
+                        }
+                    })}
+                </form>
             </div>
-        </>
+            <div className="container">
+                {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
+            </div>
+        </NewGamePrompt>
     )
 }

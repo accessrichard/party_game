@@ -7,10 +7,18 @@
 
 .inline-flex input {
     padding: 4px 8px;
+    width: 90%;
 }
 
 .inline-flex .message {
-    font-size: 0.8em;
-    color: gray;
-    margin-top: 2px;
+    font-size: 0.8em;    
+    margin-top: 2px;    
+}
+
+.story .group {
+    margin: 15px 0;
+}
+
+.story input ~ label {
+    left: 7px;
 }

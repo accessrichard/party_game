@@ -4,6 +4,7 @@ defmodule PartyGameWeb.StoryChannel do
   use PartyGameWeb, :channel
 
   alias PartyGame.Games.Story.StoryGame
+  alias PartyGame.Game.{Story, StoryToken}
   alias PartyGame.{Server, Lobby}
   import PartyGameWeb.GameUtils
 
@@ -45,8 +46,8 @@ defmodule PartyGameWeb.StoryChannel do
   @impl true
   def handle_in("new_game", _payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
-    #tokens = Map.get(payload, "tokens", [])
-    #settings = Map.get(payload, "settings", %{})
+    # tokens = Map.get(payload, "tokens", [])
+    # settings = Map.get(payload, "settings", %{})
 
     story = StoryGame.add_story(StoryGame.new())
 
@@ -60,5 +61,44 @@ defmodule PartyGameWeb.StoryChannel do
     })
 
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("end_game", _, socket) do
+    game_room =
+      Server.get_game(game_code(socket.topic))
+      |> Lobby.update_player_location(socket.assigns.name, "lobby")
+      |> Server.update_game()
+
+    broadcast_from(socket, "handle_quit", %{
+      "returnToLobby" => socket.assigns.name == game_room.room_owner
+    })
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("update_token", payload, socket) do
+
+    game_room = Server.get_game(game_code(socket.topic))
+
+    case updated?(game_room.game, payload) do
+      true ->
+        token = StoryToken.create_token(payload)
+        game = StoryGame.update_token(game_room.game, token)
+        game_room = Lobby.set_game(game_room, game)
+        Server.update_game(game_room)
+        broadcast_from(socket, "handle_update_token", payload)
+        {:noreply, socket}
+
+      false ->
+        {:noreply, socket}
+
+    end
+  end
+
+  defp updated?(%Story{} = story, new_token) do
+     token = Enum.find(story.tokens, fn x -> x.id == new_token["id"] end)
+     token.value !== new_token["value"]
   end
 end

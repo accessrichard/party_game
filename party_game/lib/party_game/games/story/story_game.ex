@@ -13,6 +13,19 @@ defmodule PartyGame.Games.Story.StoryGame do
     %{story | name: name, tokens: tokenize(tokens)}
   end
 
+  def update_token(%Story{} = story, %StoryToken{} = new_token) do
+    updated_tokens =
+      Enum.map(story.tokens, fn existing_token ->
+        if existing_token.id == new_token.id do
+          new_token
+        else
+          existing_token
+        end
+      end)
+
+    %{story | tokens: updated_tokens}
+   end
+
   @doc """
   Takes a story with form fields represented by brackets [] and tokenizes
   it for the ui to display inputs where the brackets are.
