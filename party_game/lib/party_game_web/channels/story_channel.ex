@@ -45,7 +45,7 @@ defmodule PartyGameWeb.StoryChannel do
   @impl true
   def handle_in("new_game", _payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
-    #words = Map.get(payload, "tokens", [])
+    #tokens = Map.get(payload, "tokens", [])
     #settings = Map.get(payload, "settings", %{})
 
     story = StoryGame.add_story(StoryGame.new())

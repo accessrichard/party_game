@@ -1,6 +1,15 @@
 defmodule PartyGame.Game.StoryToken do
-  @derive Jason.Encoder
-  defstruct [:id, :type, :placeholder, :value, :errors]
+  use Ecto.Schema
+
+  @primary_key false
+  @derive {Jason.Encoder, only: [:id, :type, :placeholder, :value, :errors]}
+  schema "storytoken" do
+    field(:id, :integer, default: nil)
+    field(:type, :string, default: nil)
+    field(:placeholder, :string, default: nil)
+    field(:value, :string, default: nil)
+    field(:errors, {:array, :string}, default: [])
+  end
 end
 
 defmodule PartyGame.Game.Story do
@@ -11,7 +20,7 @@ defmodule PartyGame.Game.Story do
   @primary_key false
   embedded_schema do
     field(:name, :string, default: nil)
-    embeds_one(:tokens, StoryToken, on_replace: :delete)
+    embeds_many(:tokens, StoryToken, on_replace: :delete)
   end
 
   def create_story(story, params \\ %{}) do

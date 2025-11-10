@@ -7,6 +7,7 @@ defmodule PartyGameWeb.UserSocket do
   channel "canvas:*", PartyGameWeb.CanvasChannel
   channel "lobby:*", PartyGameWeb.LobbyChannel
   channel "hangman:*", PartyGameWeb.HangmanChannel
+  channel "story:*", PartyGameWeb.StoryChannel
 
 
   # Socket params are passed from the client and can

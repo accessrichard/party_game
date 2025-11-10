@@ -1,8 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     toFieldObject
 } from '../creative/creative';
 import InputError from '../common/InputError';
+import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
+import { useDispatch, useSelector } from 'react-redux';
+import useLobbyEvents from '../lobby/useLobbyEvents';
+import { channelPush } from '../phoenix/phoenixMiddleware';
+import { handleNewGame, handleUpdate, returnToLobby, reset } from './storySlice';
+import { endGame } from '../lobby/lobbySlice';
+
+const events = (topic) => [
+    {
+        event: 'handle_new_game',
+        dispatcher: handleNewGame(),
+        topic,
+    },
+    {
+        event: 'handle_update',
+        dispatcher: handleUpdate(),
+        topic,
+    },
+    {
+        event: 'handle_quit',
+        dispatcher: returnToLobby(),
+        topic
+    },
+    {
+        event: 'handle_quit',
+        dispatcher: endGame(),
+        topic
+    }
+]
 
 const story = [
     { type: "string", value: "once upon a time in a", errors: [], id: 1 },
@@ -24,6 +53,57 @@ const defaultForm = {
 
 export default function StoryGame() {
 
+    const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
+    const { games } = useSelector(state => state.creative);
+
+    const storyChannel = `story:${gameCode}`;
+    usePhoenixSocket();
+    usePhoenixChannel(storyChannel, { name: playerName }, { persisted: true });
+    usePhoenixEvents(storyChannel, events);
+    useLobbyEvents();
+
+    const dispatch = useDispatch();
+    const tokens = useSelector(state => state.story.tokens);
+    const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
+
+
+    useEffect(() => {
+        setIsStartGamePrompt(true);
+        dispatch(channelPush({
+            topic: `lobby:${gameCode}`,
+            event: "presence_location",
+            data: { location: "game" }
+        }));
+    }, []);
+
+    useEffect(() => {
+        setIsStartGamePrompt(true);
+        dispatch(channelPush({
+            topic: `story:${gameCode}`,
+            event: "new_game",
+            data: { location: "game" }
+        }));
+
+        dispatch(channelPush(sendEvent(storyChannel, getGame(), "new_game")))
+
+    }, []);
+
+    useEffect(() => {
+        if (tokens && tokens.length > 0) {
+            const newForm = { ...form, inputs: tokens }
+            setForm(newForm)
+        }
+    }, [tokens]);
+
+
+    function getGame() {
+        const settings = { difficulty: "easy" };
+        const matching = games.find(x => x.game.name === selectedGame.name);
+        return typeof matching === 'undefined'
+            ? { settings: { difficulty: settings.difficulty } }
+            : { type: matching.game.type, name: selectedGame.name, tokens: matching.game.tokens, settings }
+    }
+
     const [form, setForm] = useState(defaultForm);
     function handleChanges(e, id) {
         const input = toFieldObject(e);
@@ -42,7 +122,6 @@ export default function StoryGame() {
 
     return (
         <>
-
             <h3>Story Time</h3>
             <div className='center-65'>
 
@@ -52,6 +131,7 @@ export default function StoryGame() {
                     } else if (x.type === "text") {
                         return <span className='inline-flex'>
                             <input
+                                placeholder={x.placeholder}
                                 required
                                 name="value"
                                 key={x.id}
@@ -62,7 +142,7 @@ export default function StoryGame() {
                                 value={x.value}
                                 id={"value" + x.id}
                             />
-                            <span class="message">
+                            <span className="message">
                                 <InputError key={'error' + x.id} className="error shake" errors={x.errors} />
                             </span>
                         </span>

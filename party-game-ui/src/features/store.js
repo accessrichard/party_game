@@ -8,7 +8,7 @@ import creativeReducer from './creative/creativeSlice';
 import multipleChoiceReducer from './multipleChoice/multipleChoiceSlice';
 import lobbyReducer from './lobby/lobbySlice';
 import hangmanReducer from './hangman/hangmanSlice';
-
+import storyReducer from './story/storySlice';
 import presenceReducer from './presence/presenceSlice';
 
 const {
@@ -26,7 +26,8 @@ const reducers = {
   creative: creativeReducer,
   presence: presenceReducer,
   canvas: canvasReducer,
-  hangman: hangmanReducer
+  hangman: hangmanReducer,
+  story: storyReducer
 };
 
 const combinedReducer = combineReducers(reducers);
