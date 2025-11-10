@@ -102,9 +102,8 @@ defmodule PartyGameWeb.LobbyChannel do
   @impl true
   def handle_in("route_to_game", payload, socket) do
     player_count = length(Map.keys(Presence.list(socket.topic)))
-
     broadcast(socket, "route_to_game", %{
-      "type" => Map.get(payload, "type"),
+      "selectedGame" => Map.get(payload, "selectedGame"),
       "player_count" => player_count
     })
 

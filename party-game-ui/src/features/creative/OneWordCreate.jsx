@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import CreativeControls from './CreativeControls';
 import SelectGameType from './SelectGameType';
-import { getGameFromPath } from '../lobby/games';
+import { useDispatch } from 'react-redux';
 import { push } from 'redux-first-history';
 import InputError from '../common/InputError';
 import { changeGame } from '../lobby/lobbySlice';
@@ -20,8 +19,7 @@ import {
 export default function OneWordCreate({ game, defaultState }) {
     const dispatch = useDispatch();
     const formRef = useRef(null);
-    const [form, setForm] = useState({ ...defaultState });
-
+    const [form, setForm] = useState({ ...defaultState });    
 
     useEffect(() => {
         if (game) {
@@ -70,6 +68,26 @@ export default function OneWordCreate({ game, defaultState }) {
         return game;
     }
 
+     function toGameMeta(game) {
+        let url = "/hangman";
+        if (game.type == "canvas") {
+            url = "/canvas"
+        } else if (game.type == "canvas_alternate")
+        {
+            url = "/canvas_alternate"
+        }
+
+        return {
+            name: game.name, 
+            type: game.type, 
+            url: url,
+            location: "client",
+            import: true,
+            create: true,
+            settings: true
+        };
+    }
+
     function addWord(e) {
         if (formRef.current.reportValidity()) {
             const game = toServerSideGame(form)
@@ -107,8 +125,9 @@ export default function OneWordCreate({ game, defaultState }) {
 
         const game = toServerSideGame(form);
         saveSessionStorage(game);
-        dispatch(changeGame({ name: game.name, type: getGameFromPath().type }));
-        dispatch(createGame({ game: game, redirect: true }));
+        const selectedGame = toGameMeta(game);
+        dispatch(changeGame({ selectedGame: selectedGame}));
+        dispatch(createGame({ game: {...game, ...selectedGame}, redirect: true }));
     }
 
     function onSelectGameType(e) {
@@ -122,7 +141,7 @@ export default function OneWordCreate({ game, defaultState }) {
 
                     <div className="empty-space">
                         <div className="card">
-                            <SelectGameType value={getGameFromPath().type} onSelectGameType={onSelectGameType} />
+                            <SelectGameType value={defaultState.type} onSelectGameType={onSelectGameType} />
                         </div>
                     </div>
 
@@ -175,7 +194,7 @@ export default function OneWordCreate({ game, defaultState }) {
                     ))}
 
                     <CreativeControls
-                        gameNames={getGamesNames(getGameFromPath().type)}
+                        gameNames={getGamesNames(defaultState.type)}
                         onAdd={addWord}
                         onDownload={downloadGame}
                         onPlay={play}

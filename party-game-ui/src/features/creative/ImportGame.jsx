@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import InputError from '../common/InputError';
 import SelectGameType from '../creative/SelectGameType';
-import { getGameFromPath } from '../lobby/games';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { push } from 'redux-first-history';
 
 export default function ImportGame({ text, hideSubmit, onImportGame, form = null, json = "" }) {
     const [game, setGame] = useState(json);
 
     const dispatch = useDispatch();
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
 
     function handleChange(e) {
         setGame(e.target.value);
@@ -28,7 +28,7 @@ export default function ImportGame({ text, hideSubmit, onImportGame, form = null
                 <div className="flex-row flex-item">
                     <div className="flex-row">
                         <div className='item card'>
-                            <SelectGameType value={getGameFromPath().type} onSelectGameType={onSelectGameType} />
+                            <SelectGameType value={selectedGame.type} onSelectGameType={onSelectGameType} />
                         </div>
                     </div>
                     <div className="flex-row flex-item"></div>

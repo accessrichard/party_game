@@ -83,7 +83,7 @@ export default function MultipleChoiceGame() {
 
     const {
         playerName,
-        gameName,
+        selectedGame,
         gameCode
     } = useSelector(state => state.lobby);
 
@@ -277,10 +277,10 @@ export default function MultipleChoiceGame() {
         }
 
         const list = mergeGameList(serverGames, creativeGames);
-        let game = list.find(x => x.name === gameName);
+        let game = list.find(x => x.name === selectedGame.name);
 
         if (game && game.location === 'client') {
-            const creativeGame = creativeGames.find(x => x.game.name === gameName);
+            const creativeGame = creativeGames.find(x => x.game.name === selectedGame.name);
             game = { ...game, questions: creativeGame.game.questions }
         }
 

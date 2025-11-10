@@ -45,7 +45,7 @@ export default function HangmanGame() {
     const [inputStyle, setInputStyle] = useState({});
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const { games } = useSelector(state => state.creative);
-    const { playerName, gameCode, gameName } = useSelector(state => state.lobby);
+    const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const {
         word,
         guesses,
@@ -169,10 +169,10 @@ export default function HangmanGame() {
     }
 
     function getGame() {
-        const matching = games.find(x => x.game.name === gameName);
+        const matching = games.find(x => x.game.name === selectedGame.name);
         return typeof matching === 'undefined'
             ? { settings: { difficulty: settings.difficulty } }
-            : { type: matching.game.type, name: gameName, words: matching.game.words, settings }
+            : { type: matching.game.type, name: selectedGame.name, words: matching.game.words, settings }
     }
 
     if (forceQuit) {

@@ -73,7 +73,7 @@ function App() {
               <Route exact path="/canvas/import" element={<CanvasImport />} />
               <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />
               <Route exact path="/canvas_alternate/settings" element={<CanvasSettings />} />
-              <Route exact path="/canvas_alternate/create" element={<CanvasCreate />} />
+              <Route exact path="/canvas_alternate/create" element={<CanvasCreate defaults={{type: "canvas_alternate"}}/>}/> 
               <Route exact path="/canvas_alternate/import" element={<CanvasImport />} />
 
               <Route exact path="/hangman" element={<HangmanGame />} />

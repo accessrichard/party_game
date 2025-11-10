@@ -162,8 +162,6 @@ const getWinners = (rounds, presence) => {
 export const getScores = createSelector([rounds, presencePlayers], getWinners);
 
 
-
-
 export const {
     start,
     startRound,

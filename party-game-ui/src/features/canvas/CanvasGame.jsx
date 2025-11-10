@@ -10,7 +10,7 @@ import { selectGameOwner } from '../lobby/lobbySlice';
 export default function CanvasDrawGame() {
 
     const dispatch = useDispatch();
-    const { playerName, gameCode, gameName } = useSelector(state => state.lobby);
+    const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const { turn, winner, word, settings, isOver } = useSelector(state => state.canvas);
     const { games } = useSelector(state => state.creative);
     const players = useSelector(getPresenceUsers);
@@ -70,11 +70,11 @@ export default function CanvasDrawGame() {
     }
 
     function getGame() {
-        const matching = games.find(x => x.game.name === gameName);
+        const matching = games.find(x => x.game.name === selectedGame.name);
         const serverSettings = { difficulty: settings.difficulty, roundTime: settings.roundTime };
         return typeof matching === 'undefined'
-            ? { settings: serverSettings, name: gameName, type: "canvas" }
-            : { type: matching.game.type, name: gameName, words: matching.game.words, serverSettings }
+            ? { settings: serverSettings, name: selectedGame.name, type: selectedGame.type }
+            : { settings: serverSettings, name: selectedGame.name, type: selectedGame.type, words: matching.game.words }
     }
 
     return (

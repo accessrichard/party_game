@@ -7,9 +7,9 @@ import {
     handleServerError,
     listGames,
     mergeGameList,
-    selectGameOwner
+    selectGameOwner,
+    serverGameList
 } from './lobbySlice';
-import { getGameMetadata } from './games';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
@@ -29,14 +29,12 @@ export default function Lobby() {
         gameCode,
         gameOwner,
         isGameStarted,
-        gameName,
-        type
+        selectedGame
     } = useSelector(state => state.lobby);
 
     const creativeGames = useSelector(state => state.creative.games);
-    const serverGames = useSelector(state => state.lobby.api.list.data);
+    const serverGames = useSelector(serverGameList);
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
-    const gameMetaData = getGameMetadata(type);
     const isGameOwner = useSelector(selectGameOwner);
 
     useEffect(() => {
@@ -88,23 +86,23 @@ export default function Lobby() {
             return;
         }
 
-        if (!gameName) {
+        if (!selectedGame || !selectedGame.name) {
             selectGame(gameList[0].name);
             return;
         }
 
-        if (!gameList.find(game => game.name == gameName && game.type == type)) {
+        if (!gameList.find(game => game.name == selectedGame.name && game.type == selectedGame.type)) {
             selectGame(gameList[0].name);
             return;
         }
-    }, [gameList, gameName]);
+    }, [gameList, selectedGame.name]);
 
     useEffect(() => {
-        if (gameMetaData.url && isGameStarted) {
-            dispatch(push(gameMetaData.url))
+        if (selectedGame.url && isGameStarted) {
+            dispatch(push(selectedGame.url))
         }
 
-    }, [gameMetaData.url, isGameStarted])
+    }, [selectedGame.url, isGameStarted])
 
     function handleCreateGame(e) {
         if (!e.target.reportValidity()) {
@@ -114,7 +112,7 @@ export default function Lobby() {
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "route_to_game",
-            data: { name: gameName, type: type }
+            data: {selectedGame}
         }));
         e.preventDefault();
         return;
@@ -127,7 +125,7 @@ export default function Lobby() {
     function selectGame(name) {
         const game = gameList.find(x => x.name == name);
         if (game) {
-            dispatch(changeGame({ name: game.name, type: game.type }));
+            dispatch(changeGame({ selectedGame: game }));
         }
     }
 
@@ -167,7 +165,7 @@ export default function Lobby() {
                             <form className='form' noValidate onSubmit={handleCreateGame}>
                                 <div className="flex-row">
                                     <div className="flex-column flex-center">
-                                        <GameList value={gameName} onGameChange={onGameChange} games={gameList} />
+                                        <GameList value={selectedGame.name} onGameChange={onGameChange} games={gameList} />
                                     </div>
                                 </div>
                                 <div>
@@ -187,9 +185,9 @@ export default function Lobby() {
                             </form>
                             <div>
                                 <span className="flex-row flex-center">
-                                    {gameMetaData.create && <NavLink className="pd-5-lr" to={`${gameMetaData.url}/create/`}>Create Your Own</NavLink>}
-                                    {gameMetaData.import && <NavLink className="pd-5-lr" to={`${gameMetaData.url}/import/`}>Import</NavLink>}
-                                    {gameMetaData.settings && <NavLink className="pd-5-lr" to={`${gameMetaData.url}/settings/`}>Settings</NavLink>}
+                                    {selectedGame.create && <NavLink className="pd-5-lr" to={`${selectedGame.url}/create/`}>Create Your Own</NavLink>}
+                                    {selectedGame.import && <NavLink className="pd-5-lr" to={`${selectedGame.url}/import/`}>Import</NavLink>}
+                                    {selectedGame.settings && <NavLink className="pd-5-lr" to={`${selectedGame.url}/settings/`}>Settings</NavLink>}
                                 </span>
                             </div>
                         </div>

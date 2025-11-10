@@ -158,11 +158,59 @@ defmodule PartyGame.Games.GameList do
         module: Story.StoryGame
       },
       %GameMetaData{
-        name: "",
+        name: "Multiple Choice",
         category: "User Games",
         type: "multiple_choice",
         location: "client",
+        url: "/multiple_choice",
+        settings: true,
+        import: true,
+        create: true,
         module: MultipleChoice.BuildYourOwn
+      },
+      %GameMetaData{
+        name: "Story Telly",
+        category: "User Games",
+        type: "story",
+        location: "client",
+        url: "/story",
+        settings: true,
+        import: true,
+        create: true,
+        module: Story.StoryGame
+      },
+      %GameMetaData{
+        name: "Hangman",
+        category: "User Games",
+        type: "hangman",
+        location: "client",
+        url: "/hangman",
+        settings: true,
+        import: true,
+        create: true,
+        module: Hangman.HangmanGame
+      },
+      %GameMetaData{
+        name: "Canvas Alternate",
+        category: "User Games",
+        type: "canvas_alternate",
+        location: "client",
+        url: "/canvas_alternate",
+        settings: true,
+        import: true,
+        create: true,
+        module: Canvas.CanvasGame
+      },
+      %GameMetaData{
+        name: "Canvas",
+        category: "User Games",
+        type: "canvas",
+        location: "client",
+        url: "/canvas",
+        settings: true,
+        import: true,
+        create: true,
+        module: Canvas.CanvasGame
       }
     ]
 
@@ -173,13 +221,13 @@ defmodule PartyGame.Games.GameList do
           module: MultipleChoice.BuildYourOwnPrebuilt,
           type: "multiple_choice",
           location: "server",
-          category: x.category
+          category: x.category,
+          settings: true,
+          import: true,
+          create: true,
+          url: "/multiple_choice"
         }
       end)
-  end
-
-  def non_blank_cached_list() do
-    cached_game_list() |> non_blank_game_list()
   end
 
   def cached_game_list() do
@@ -193,15 +241,11 @@ defmodule PartyGame.Games.GameList do
         end,
         ttl: :timer.minutes(5)
       )
-    games
-  end
 
-  defp non_blank_game_list(game_list) do
-    Enum.filter(game_list, &(&1.name !== ""))
+    games
   end
 
   defp sort_game_list(game_list) do
     Enum.sort(game_list, &(&1.category > &2.category))
   end
-
 end

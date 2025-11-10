@@ -54,13 +54,20 @@ export const stopGame = createAsyncThunk(
 
 export const selectGameOwner = createSelector(state => state.lobby, lobby => lobby.playerName === lobby.gameOwner);
 
+export const clientGameList = createSelector(state => state.lobby.api.list.data, (gameList) => {
+    return (gameList ?? []).filter((x) => x.location === 'client');
+});
+
+export const serverGameList = createSelector(state => state.lobby.api.list.data, (gameList) => {
+    return (gameList ?? []).filter((x) => x.location === 'server')
+});
+
 const initialState = {
     isGameStarted: false,
     isPaused: false,
     flash: {},
     playerName: null,
-    gameName: '',
-    type: '',
+    selectedGame: { name: '', type: '', url: '' },
     gameCode: null,
     players: [],
     gameOwner: '',
@@ -85,32 +92,31 @@ if (import.meta.env.VITE_DEVELOP_MODE === 'true') {
 function resetGame(state) {
     const savedState = {
         playerName: state.playerName,
-        gameName: state.gameName,
         gameCode: state.gameCode,
         gameOwner: state.gameOwner,
         api: state.api,
-        type: state.type,
+        selectedGame: state.selectedGame,
         playerCount: 0,
         settings: {
             ...state.settings
         }
     };
 
-    Object.assign(state, { ...initialState, ...savedState});
+    Object.assign(state, { ...initialState, ...savedState });
 }
 
 export const lobbySlice = createSlice({
     name: 'lobby',
     initialState: initialState,
-    reducers: {               
+    reducers: {
         setFlash: (state, action) => {
             state.flash = action.payload
         },
         endGame: (state) => {
             state.isGameStarted = false;
         },
-        handleServerError(state, action) {            
-            state.genServerTimeout = {timeout: true, reason: action.payload.reason};
+        handleServerError(state, action) {
+            state.genServerTimeout = { timeout: true, reason: action.payload.reason };
         },
         handleReconnect(state, action) {
             state.gameOwner = action.payload.room_owner;
@@ -118,19 +124,19 @@ export const lobbySlice = createSlice({
         onRouteToGame(state, action) {
             resetGame(state);
             state.isGameStarted = true;
-            state.type = action.payload.type;
+            state.selectedGame = action.payload.selectedGame;
             state.playerCount = action.payload.player_count;
-        },       
+        },
         changeGame: (state, action) => {
-            state.gameName = action.payload.name;
-            state.type = action.payload.type;
+            if (action.payload.selectedGame) {
+                state.selectedGame = action.payload.selectedGame;
+            }
         },
         syncGameState: (state, action) => {
             state.playerName = action.payload.playerName;
-            state.gameCode = action.payload.room_name;            
+            state.gameCode = action.payload.room_name;
             state.players = action.payload.players;
             state.gameOwner = action.payload.room_owner;
-            state.gameName = action.payload.name || '';
         },
         handleJoin(state, action) {
             if (!state.players.filter(x => x.name === action.payload.player.name)) {
@@ -143,7 +149,7 @@ export const lobbySlice = createSlice({
             state.api.join.error = "";
         }
     },
-    extraReducers: builder => { 
+    extraReducers: builder => {
         builder.addCase(startNewGame.pending, (state, action) => { pending(state.api.start, action) });
         builder.addCase(startNewGame.fulfilled, (state, action) => { fulfilled(state.api.start, action) });
         builder.addCase(startNewGame.rejected, (state, action) => { rejected(state.api.start, action) });

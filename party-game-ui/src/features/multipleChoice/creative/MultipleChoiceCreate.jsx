@@ -16,7 +16,6 @@ import {
 } from '../../creative/creative';
 import { errors, game, question, questionErrors } from './game';
 import { useDispatch, useSelector } from 'react-redux';
-import { getGameFromPath } from '../../lobby/games';
 import { push } from 'redux-first-history';
 import InputError from '../../common/InputError';
 import { MULTIPLE_CHOICE } from '../../common/questionTypes';
@@ -40,7 +39,7 @@ export default function MultipleChoiceCreate(props) {
 
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
-    const { gameCode, type } = useSelector(state => state.lobby);
+    const { gameCode, selectedGame } = useSelector(state => state.lobby);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
@@ -131,7 +130,18 @@ export default function MultipleChoiceCreate(props) {
 
         const serverSideGame = toServerSideGame(form);
         saveSessionStorage(serverSideGame);
-        dispatch(changeGame({ name: serverSideGame.name, type: serverSideGame.type }));
+
+        const gameMeta = {
+            name: serverSideGame.name, 
+            type: "multiple_choice", 
+            url: "/multiple_choice",
+            location: "client",
+            import: true,
+            create: true,
+            settings: true
+        };
+
+        dispatch(changeGame({ selectedGame: gameMeta }));
         dispatch(createGame({ game: serverSideGame, redirect: true }));
     }
 
@@ -154,7 +164,7 @@ export default function MultipleChoiceCreate(props) {
 
                     <div className="empty-space">
                         <div className="card">
-                            <SelectGameType value={getGameFromPath().type} onSelectGameType={onSelectGameType} />
+                            <SelectGameType value="multiple_choice" onSelectGameType={onSelectGameType} />
                         </div>
                     </div>
 
@@ -195,7 +205,7 @@ export default function MultipleChoiceCreate(props) {
                         </div>
                     ))}
                     <CreativeControls
-                        gameNames={getGamesNames(type)}
+                        gameNames={getGamesNames(selectedGame.type)}
                         onAdd={onAddQuestion}
                         onDownload={onDownloadGame}
                         onPlay={onPlay}

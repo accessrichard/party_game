@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { gameToForm, mergeErrors, removeUnwantedJson, validateQuestions } from './creative';
 import MultipleChoiceCreate from './MultipleChoiceCreate';
-import { getGameFromPath, getGameMetadata } from '../../lobby/games';
 import { gameValidators } from './gameValidator';
 import { errors as initialErrors } from './game';
 import { validate } from '../../common/validator';
-import { useDispatch } from 'react-redux';
-import { push } from 'redux-first-history';
+import { clientGameList } from '../../lobby/lobbySlice';
+import { useDispatch, useSelector } from 'react-redux'; import { push } from 'redux-first-history';
 import ImportGame from '../../creative/ImportGame';
 
 export default function MultipleChoiceImport() {
 
     const [gameForm, setGameForm] = useState({ errors: initialErrors });
     const [gameJson, setGameJson] = useState("");
+    const clientGameMetaList = useSelector(clientGameList);
 
     const dispatch = useDispatch();
 
@@ -28,10 +28,9 @@ export default function MultipleChoiceImport() {
             setGameForm({ ...gameForm, errors: [] });
 
             const gameObj = JSON.parse(json);
-            const gameUrl = getGameFromPath();
-            if (gameUrl.type !== gameObj.type) {                
-                const gameMeta = getGameMetadata(gameObj.type);
-                
+            if (!window.location.href.includes(gameObj.type)) {
+                const gameMeta = clientGameMetaList.find(x => x.type === gameObj.type);
+
                 if (gameMeta) {
                     dispatch(push(gameMeta.url + '/import'))
                 } else {
@@ -44,14 +43,14 @@ export default function MultipleChoiceImport() {
             const gameErrors = validate(gameValidators(gameObj));
             const questionErrors = validateQuestions(gameObj);
             const merged = mergeErrors(gameErrors, questionErrors)
-            
-            setGameForm({ ...gameForm, errors: merged.map(x => x.error && x.error || x ) });
+
+            setGameForm({ ...gameForm, errors: merged.map(x => x.error && x.error || x) });
             if (merged.length > 0) {
                 return;
             }
 
             const cleanGame = removeUnwantedJson(gameObj);
-            setGameJson(JSON.stringify(cleanGame, null, 2));            
+            setGameJson(JSON.stringify(cleanGame, null, 2));
             setGameForm({ ...gameToForm(cleanGame), errors: { ...initialErrors } });
         } catch (err) {
             setGameForm({ ...gameForm, errors: [err.message] });

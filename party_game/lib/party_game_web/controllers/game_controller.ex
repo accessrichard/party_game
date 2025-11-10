@@ -63,7 +63,7 @@ defmodule PartyGameWeb.GameController do
   end
 
   def list(conn, _) do
-    render(conn, :list, games: GameList.non_blank_cached_list())
+    render(conn, :list, games: GameList.cached_game_list())
   end
 
   def stop(conn, %{"room_name" => room_name}) do

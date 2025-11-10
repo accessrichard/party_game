@@ -8,8 +8,8 @@ const defaultState = {
     errors: { words: [], name: "" }
 }
 
-export default function CanvasCreate({ game }) {
+export default function CanvasCreate({ game, defaults }) {
     return (
-        <OneWordCreate game={game} defaultState={defaultState}/>
+        <OneWordCreate game={game} defaultState={{...defaultState, ...defaults}}/>
     );
 }

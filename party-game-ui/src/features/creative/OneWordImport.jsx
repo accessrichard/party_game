@@ -1,8 +1,8 @@
 import { useState, cloneElement } from 'react';
 import { validate, getErrors } from '../common/validator';
 import ImportGame from './ImportGame';
-import { getGameFromPath, getGameMetadata } from '../lobby/games';
-import { useDispatch } from 'react-redux';
+import { clientGameList } from '../lobby/lobbySlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { push } from 'redux-first-history';
 import { gameValidators } from './oneWordValidators'
 
@@ -15,6 +15,7 @@ const initialErrors = {
 export default function OneWordImport({ children }) {
     const [gameForm, setGameForm] = useState({ errors: initialErrors });
     const [gameJson, setGameJson] = useState("");
+    const clientGameMetaList = useSelector(clientGameList);
     const dispatch = useDispatch();
 
     function importGame(json) {
@@ -30,9 +31,10 @@ export default function OneWordImport({ children }) {
             setGameForm({ ...gameForm, errors: [] });
 
             const gameObj = JSON.parse(json);
-            const gameUrl = getGameFromPath();
-            if (gameUrl.type !== gameObj.type) {
-                const gameMeta = getGameMetadata(gameObj.type);
+            
+            if (!window.location.href.includes(gameObj.type)) {
+                
+                const gameMeta = clientGameMetaList.find(x => x.type === gameObj.type);
                 if (gameMeta) {
                     dispatch(push(gameMeta.url + '/import'))
                 } else {

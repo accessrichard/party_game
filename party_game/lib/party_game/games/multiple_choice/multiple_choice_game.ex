@@ -108,7 +108,7 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
     game_metadata =
       Enum.find(game_list, fn x ->
         (x.name == name and x.location == location) or
-          (x.location == location and location == "client")
+          (x.location == location and x.location == "client" and x.type == "multiple_choice")
       end)
 
     num_rounds = Map.get(game, :rounds, 10)
