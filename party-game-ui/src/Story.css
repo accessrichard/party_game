@@ -22,3 +22,8 @@
 .story input ~ label {
     left: 7px;
 }
+
+.story .display {
+    font-size: 1.5em;
+    line-height: 1.9em;
+}

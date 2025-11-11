@@ -4,6 +4,8 @@ defmodule PartyGame.Games.Story.StoryGame do
   alias PartyGame.FileLoader
   alias PartyGame.Lobby
 
+  require Logger
+
   @stories_path "./lib/party_game/games/story/prebuilt"
 
   def new(%Story{} = story \\ %Story{}, options \\ %{}) do

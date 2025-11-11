@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import {
     toFieldObject
 } from '../creative/creative';
-import InputError from '../common/InputError';
+import StoryGameInputForm from './StoryInputForm';
+import StoryDisplayForm from './StoryDisplayForm';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 import { useDispatch, useSelector } from 'react-redux';
 import useLobbyEvents from '../lobby/useLobbyEvents';
@@ -66,7 +67,7 @@ export default function StoryGame() {
 
     const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const { games } = useSelector(state => state.creative);
-    const { tokens, name, turn, tokenIndex } = useSelector(state => state.story);
+    const { tokens, name, turn, display, tokenIndex } = useSelector(state => state.story);
     const isGameOwner = useSelector(selectGameOwner);
 
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
@@ -90,7 +91,6 @@ export default function StoryGame() {
     }, []);
 
     useEffect(() => {
-        console.log("Called")
         dispatch(channelPush({
             topic: `story:${gameCode}`,
             event: "new_game",
@@ -126,7 +126,7 @@ export default function StoryGame() {
 
         if (e.type === 'blur') {
             const field = form.inputs.find(x => x.id === id);
-         //   dispatch(channelPush(sendEvent(storyChannel, field, "update_token")));
+            //   dispatch(channelPush(sendEvent(storyChannel, field, "update_token")));
         }
 
         if (e.type === 'invalid') {
@@ -165,40 +165,21 @@ export default function StoryGame() {
     return (
         <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
             <h3>Story Time - {name}</h3>
-            <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `{${turn}'s turn`} to fill out form. Then hit "Next Turn" below.</div>
+            <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form. Then hit "Done" below.</div>
             <div className='center-65 light-background item card story '>
-                <form id="story-form" className='form' onSubmit={handleSubmit} noValidate >
-                    {form.inputs.map((x) => {
+                {display != 'story' && <StoryGameInputForm
+                    handleChanges={handleChanges}
+                    handleSubmit={handleSubmit}
+                    inputs={form.inputs}
+                    formId="story-form"
+                />}
+                {display == 'story' && <StoryDisplayForm inputs={form.inputs} />}
 
-                        if (x.type === "text") {
-                            return <span key={x.id}>{x.value}</span>
-                        } else if (x.type === "input") {
-                            return <span key={"span-" + x.id} className='inline-flex group'>
-                                <input
-                                    required
-                                    name="value"
-                                    key={"input-" + x.id}
-                                    type='text'
-                                    onInvalid={(e) => handleChanges(e, x.id)}
-                                    onChange={(e) => handleChanges(e, x.id)}
-                                    onBlur={(e) => handleChanges(e, x.id)}
-                                    value={x.value}
-                                    id={"value" + x.id}
-                                />
-                                <span className="highlight"></span>
-                                <span className="bar"></span>
-                                <label>{x.placeholder}</label>
-                                <span className="message">
-                                    <InputError key={"error-" + x.id} className="error shake" errors={x.errors} />
-                                </span>
-                            </span>
-                        }
-                    })}
-                </form>
+
             </div>
             <div className="container">
                 {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
-                {isGameOwner && <button id="Next Turn" className="btn md-5" type="submit" form="story-form">Next Turn</button>}
+                {turn == playerName && display != "story" && <button id="Next Turn" className="btn md-5" type="submit" form="story-form">Done</button>}
             </div>
         </NewGamePrompt>
     )
