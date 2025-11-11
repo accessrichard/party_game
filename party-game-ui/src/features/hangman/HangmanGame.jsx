@@ -4,7 +4,6 @@ import { handleGuess, handleNewGame, introSceneReset, returnToLobby, reset } fro
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import GuessInput from './../canvas/GuessInput';
 import { Navigate } from 'react-router-dom';
 import { HangmanView } from './hangmanCanvas';
 import usePrevious from '../usePrevious';
@@ -41,8 +40,7 @@ const events = (topic) => [
 export default function HangmanGame() {
 
     const dispatch = useDispatch();
-    const canvasRef = useRef(null);
-    const [inputStyle, setInputStyle] = useState({});
+    const canvasRef = useRef(null);    
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const { games } = useSelector(state => state.creative);
     const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
@@ -110,7 +108,6 @@ export default function HangmanGame() {
 
         HangmanView.initialize(canvas, 0, canvas.height / 2, radius);
         HangmanView.animations.startGameScene(canvas.width / 4, canvas.width / 2, word, []);
-        setInputStyle({ width: canvas.width - 50, position: "absolute", top: canvas.height - 65 });
         dispatch(introSceneReset());
     }, [word, prevWord, startIntroScene])
 

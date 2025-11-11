@@ -5,10 +5,11 @@ const initialState = {
     name: '',
     turn: '',
     tokenIndex: 0,
-    settings: { difficulty: "easy" },
+    settings: { roundTime: 60 },
     forceQuit: false,
     type: '',
-    isOver: false
+    isOver: false,
+    startTimerTime: null
 }
 
 export const storySlice = createSlice({
@@ -23,11 +24,16 @@ export const storySlice = createSlice({
             state.forceQuit = false;
             state.type = action.payload.type;
             state.isOver = false;
+            state.startTimerTime = action.payload.startTimerTime;
+            state.settings = {...state.settings, ...action.payload.settings};
         },
         handleUpdate(state, action) {
             state.tokens = state.tokens.map(s => s.id === action.payload.token.id ? action.payload.token : s);
             state.turn = action.payload.turn;
             state.tokenIndex = action.payload.token_index;
+            if (action.payload.startTimerTime) {
+                state.startTimerTime = action.payload.startTimerTime;
+            }
         },
         handleSubmitForm(state, action) {
             state.tokens = action.payload.tokens;
@@ -35,7 +41,6 @@ export const storySlice = createSlice({
             state.name = action.payload.name;
             state.type = action.payload.type;
             state.isOver = true;
-
         },
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);

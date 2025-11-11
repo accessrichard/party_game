@@ -8,10 +8,10 @@ import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from
 import { useDispatch, useSelector } from 'react-redux';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { handleNewGame, handleUpdate, returnToLobby, handleSubmitForm } from './storySlice';
+import { handleNewGame, handleUpdate, returnToLobby, handleSubmitForm, reset } from './storySlice';
 import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import NewGamePrompt from '../common/NewGamePrompt';
-
+import Timer from '../common/Timer';
 import useBackButtonBlock from '../useBackButtonBlock'
 import { push } from "redux-first-history";
 
@@ -67,13 +67,14 @@ export default function StoryGame() {
 
     const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const { games } = useSelector(state => state.creative);
-    const { tokens, name, turn, isOver, tokenIndex } = useSelector(state => state.story);
+    const { tokens, name, turn, isOver, forceQuit, startTimerTime, tokenIndex, settings } = useSelector(state => state.story);
     const isGameOwner = useSelector(selectGameOwner);
 
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const storyChannel = `story:${gameCode}`;
     const [form, setForm] = useState(defaultForm);
+    const [isTimerActive, setIsTimerActive] = useState(false);    
 
     usePhoenixSocket();
     usePhoenixChannel(storyChannel, { name: playerName }, { persisted: false });
@@ -82,36 +83,46 @@ export default function StoryGame() {
     useBackButtonBlock(isBackButtonBlocked);
 
     useEffect(() => {
+        dispatch(reset());
         setIsStartGamePrompt(true);
+        setIsTimerActive(true);
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "presence_location",
             data: { location: "game" }
-        }));
+        }));    
     }, []);
 
+
     useEffect(() => {
-        dispatch(channelPush({
-            topic: `story:${gameCode}`,
-            event: "new_game",
-            data: { location: "game" }
-        }));
-    }, []);
+        if (forceQuit) {
+            setIsTimerActive(false);
+            onQuitClick();
+        }
+    }, [forceQuit])
+
+     useEffect(() => {
+        if (!gameCode) {
+           window.location.href = '/';
+        }
+
+    }, [gameCode])
+
 
     useEffect(() => {
         if (tokens && tokens.length > 0) {
             setIsStartGamePrompt(false);
             const newForm = { ...form, inputs: tokens }
             setForm(newForm)
+            setIsTimerActive(true);
         }
     }, [tokens]);
 
     function getGame() {
-        const settings = { difficulty: "easy" };
         const matching = games.find(x => x.game.name === selectedGame.name);
         return typeof matching === 'undefined'
             ? { type: selectedGame.type, name: selectedGame.name, settings }
-            : { type: matching.game.type, name: selectedGame.name, tokens: matching.game.tokens, settings }
+            : { type: matching.game.type, name: selectedGame.name, tokens: matching.game.tokens, settings };
     }
 
     function handleChanges(e, id) {
@@ -138,11 +149,16 @@ export default function StoryGame() {
         dispatch(channelPush(sendEvent(storyChannel, {}, "end_game")))
     }
 
-    function onQuitClick() {
-        notifyLeave();
+    function onQuitClick(e) {
+        if (e) {
+            notifyLeave();
+        }
+
         dispatch(endGame());
         setIsBackButtonBlocked(false);
-        dispatch(push('/lobby'))
+        dispatch(reset());
+        setIsTimerActive(false);
+        dispatch(push('/lobby'));
     }
 
     function handleSubmit(e) {
@@ -166,6 +182,15 @@ export default function StoryGame() {
         <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
             <h3>Story Time - {name}</h3>
             <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form.</div>
+            <div>{
+                    <Timer key={startTimerTime}
+                        restartKey={startTimerTime}
+                        startDate={startTimerTime}
+                        isActive={isTimerActive}                        
+                        timeIncrement={-1}
+                        isIncrement={false}
+                        numberSeconds={settings.roundTime} />}
+                </div>
             {!isOver && playerName == turn &&
                 <div className='center-65 light-background item card story '>
                     <StoryGameInputForm
@@ -186,7 +211,7 @@ export default function StoryGame() {
                 {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
                 {(turn == playerName) && !isOver && <button id="Next Turn" className="btn md-5" type="submit" form="story-form">Done</button>}
                 {isGameOwner && isOver && <button id="Next Story" className="btn md-5" type="button" onClick={onStartGame}>Next Story</button>}
-                
+
             </div>
         </NewGamePrompt>
     )

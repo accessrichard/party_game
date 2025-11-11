@@ -15,5 +15,11 @@ defmodule PartyGame.Game.GenericSettings do
     |> Ecto.Changeset.apply_changes()
   end
 
+  def cast_changeset(settings, params \\ %{}) do
+    settings
+    |> Ecto.Changeset.cast(params, [:difficulty])
+    |> Ecto.Changeset.cast(params, [:round_time])
+  end
+
   def new(fields \\ %{}), do: __struct__(fields)
 end

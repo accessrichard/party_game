@@ -108,11 +108,29 @@ defmodule PartyGame.Lobby do
     }
   end
 
-  def next_turn(%GameRoom{} = game_room, current_player_name_turn) do
-    index =
-      find_index_round_robin(game_room.players, &(current_player_name_turn == &1.name))
+  def random_player(%GameRoom{} = game_room) do
+    hd(Enum.take_random(game_room.players, 1))
+  end
 
-    Enum.at(game_room.players, index)
+  def next_turn(%GameRoom{} = game_room, current_player_name_turn, random_first_turn? \\ true) do
+    first_turn? = current_player_name_turn == nil
+
+    cond do
+      first_turn? && random_first_turn? ->
+        random_player(game_room)
+
+      first_turn? == true ->
+        index =
+          find_index_round_robin(game_room.players, &(game_room.room_owner == &1.name))
+
+        Enum.at(game_room.players, index - 1)
+
+      true ->
+        index =
+          find_index_round_robin(game_room.players, &(current_player_name_turn == &1.name))
+
+        Enum.at(game_room.players, index)
+    end
   end
 
   def find_index_round_robin(enumerable, fun) do

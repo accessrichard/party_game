@@ -39,12 +39,19 @@ defmodule PartyGameWeb.StoryChannel do
   @impl true
   def handle_in("new_game", payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
+    game_room = Server.get_game(game_code(socket.topic))
+    payload = if game_room.game != nil, do: Map.put(payload, "turn", game_room.game.turn), else: payload
+
+    settings = Map.get(payload, "settings", %{})
+    round_time = Map.get(settings, "roundTime", 60)
+    settings = Map.put(settings, "round_time", round_time)
+    payload = Map.put(payload, "settings", settings)
+
     story = StoryGame.new(%Story{}, payload)
     story = if Map.get(payload, "tokens", []) == [], do: StoryGame.add_story(story), else: story
 
     game_room =
-      Server.get_game(game_code(socket.topic))
-      |> Lobby.set_game(story)
+      Lobby.set_game(game_room, story)
       |> StoryGame.advance()
       |> Server.update_game()
 
@@ -53,7 +60,9 @@ defmodule PartyGameWeb.StoryChannel do
       name: game_room.game.name,
       turn: game_room.game.turn,
       token_index: game_room.game.token_index,
-      type: game_room.game.type
+      type: game_room.game.type,
+      settings: game_room.game.settings,
+      startTimerTime: DateTime.utc_now()
     })
 
     {:noreply, socket}
@@ -61,13 +70,12 @@ defmodule PartyGameWeb.StoryChannel do
 
   @impl true
   def handle_in("end_game", _, socket) do
-    game_room =
       Server.get_game(game_code(socket.topic))
       |> Lobby.update_player_location(socket.assigns.name, "lobby")
       |> Server.update_game()
 
     broadcast_from(socket, "handle_quit", %{
-      "returnToLobby" => socket.assigns.name == game_room.room_owner
+      "returnToLobby" => true
     })
 
     {:noreply, socket}

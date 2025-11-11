@@ -78,12 +78,7 @@ defmodule PartyGame.Games.Story.StoryGame do
 
   def change_turn(%GameRoom{} = game_room) do
     player = Lobby.next_turn(game_room, game_room.game.turn)
-
-    if player == nil do
-      %{game_room | game: %{game_room.game | turn: game_room.room_owner}}
-    else
-      %{game_room | game: %{game_room.game | turn: player.name}}
-    end
+     %{game_room | game: %{game_room.game | turn: player.name}}
   end
 
   @doc """
