@@ -40,7 +40,9 @@ defmodule PartyGameWeb.StoryChannel do
   def handle_in("new_game", payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
     game_room = Server.get_game(game_code(socket.topic))
-    payload = if game_room.game != nil, do: Map.put(payload, "turn", game_room.game.turn), else: payload
+
+    payload =
+      if game_room.game != nil, do: Map.put(payload, "turn", game_room.game.turn), else: payload
 
     settings = Map.get(payload, "settings", %{})
     round_time = Map.get(settings, "roundTime", 60)
@@ -70,9 +72,9 @@ defmodule PartyGameWeb.StoryChannel do
 
   @impl true
   def handle_in("end_game", _, socket) do
-      Server.get_game(game_code(socket.topic))
-      |> Lobby.update_player_location(socket.assigns.name, "lobby")
-      |> Server.update_game()
+    Server.get_game(game_code(socket.topic))
+    |> Lobby.update_player_location(socket.assigns.name, "lobby")
+    |> Server.update_game()
 
     broadcast_from(socket, "handle_quit", %{
       "returnToLobby" => true
@@ -105,6 +107,33 @@ defmodule PartyGameWeb.StoryChannel do
       false ->
         {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_in("update_tokens", updated_tokens, socket) do
+    game_room = Server.get_game(game_code(socket.topic))
+
+    new_tokens =
+      Enum.map(updated_tokens, fn token_map ->
+        token_map
+        |> Map.put_new("updated_by", socket.assigns.name)
+        |> StoryToken.create_token()
+      end)
+
+    game_room =
+      game_room
+      |> StoryGame.update_tokens(new_tokens)
+      |> StoryGame.advance()
+      |> Server.update_game()
+
+    broadcast(socket, "handle_update_tokens", %{
+      tokens: updated_tokens,
+      turn: game_room.game.turn,
+      token_index: game_room.game.token_index,
+      startTimerTime: DateTime.utc_now()
+    })
+
+    {:noreply, socket}
   end
 
   @impl true

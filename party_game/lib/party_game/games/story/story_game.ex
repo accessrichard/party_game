@@ -20,6 +20,7 @@ defmodule PartyGame.Games.Story.StoryGame do
   def advance(%GameRoom{} = game_room) do
     case game_room.game.type do
       "alternate_word" ->
+
         change_turn(game_room)
         |> next_input_token()
 
@@ -54,13 +55,13 @@ defmodule PartyGame.Games.Story.StoryGame do
     until_token_index =
       PartyGame.Lobby.find_index_round_robin(
         game_room.game.tokens,
-        &(&1.id > next_token_index && &1.type == "text" && String.contains?(&1.value, ".333 "))
+        &(&1.id > next_token_index && &1.type == "text" && String.contains?(&1.value, ". "))
       )
 
     until_token_index = if until_token_index == 0, do: 999, else: until_token_index
 
     Logger.debug("Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}, Until Token is: #{until_token_index}")
-    %{game_room | game: %{game_room.game | token_index: next_token_index - 1}}
+    %{game_room | game: %{game_room.game | token_index: until_token_index - 1}}
   end
 
   def update_token(%GameRoom{} = game_room, %StoryToken{} = new_token) do
@@ -74,6 +75,24 @@ defmodule PartyGame.Games.Story.StoryGame do
       end)
 
     %{game_room | game: %{game_room.game | tokens: updated_tokens, token_index: new_token.id}}
+  end
+
+  def update_tokens(%GameRoom{} = game_room, new_tokens) do
+    new_token_map = Map.new(new_tokens, fn token -> {token.id, token} end)
+    last_updated_id = List.last(new_tokens).id
+
+    updated_tokens =
+      Enum.map(game_room.game.tokens, fn existing_token ->
+        case Map.get(new_token_map, existing_token.id) do
+          nil ->
+            existing_token
+
+          new_token ->
+            new_token
+        end
+      end)
+
+    %{game_room | game: %{game_room.game | tokens: updated_tokens, token_index: last_updated_id}}
   end
 
   def change_turn(%GameRoom{} = game_room) do

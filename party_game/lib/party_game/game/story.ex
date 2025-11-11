@@ -39,7 +39,7 @@ defmodule PartyGame.Game.Story do
   alias PartyGame.Game.StoryToken
   alias PartyGame.Game.GenericSettings
 
-  @derive {Jason.Encoder, only: [:name, :turn, :type, :tokens, :token_index, :updated_by]}
+  @derive Jason.Encoder
   @primary_key false
   embedded_schema do
     field(:name, :string, default: nil)

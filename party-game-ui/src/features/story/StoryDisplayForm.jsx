@@ -4,7 +4,7 @@ export default function StoryGame({ inputs }) {
         return inputs.map((x) => {
             if (x.type === "input") {
                 
-                return <span className='bolder'>{x.value == '' ? '__________' : x.value}</span>
+                return <span key={"span-" + x.id} className='bolder'>{x.value == '' ? '__________' : x.value}</span>
             }
 
             return x.value;

@@ -5,6 +5,7 @@ const initialState = {
     name: '',
     turn: '',
     tokenIndex: 0,
+    editableTokens: [],
     settings: { roundTime: 60 },
     forceQuit: false,
     type: '',
@@ -12,11 +13,16 @@ const initialState = {
     startTimerTime: null
 }
 
+const getEditableTokens = (tokens, tokenIndex) =>
+    tokens.filter(x => x.id <= tokenIndex && x.value == '').map(x => x.id);
+
+
 export const storySlice = createSlice({
     name: 'story',
     initialState: initialState,
     reducers: {
         handleNewGame(state, action) {
+            console.log(action)
             state.tokens = action.payload.tokens;
             state.name = action.payload.name;
             state.turn = action.payload.turn;
@@ -25,21 +31,32 @@ export const storySlice = createSlice({
             state.type = action.payload.type;
             state.isOver = false;
             state.startTimerTime = action.payload.startTimerTime;
-            state.settings = {...state.settings, ...action.payload.settings};
+            state.settings = { ...state.settings, ...action.payload.settings };
+            if (state.type !== "advance_story") {
+                state.editableTokens = getEditableTokens(action.payload.tokens, action.payload.token_index);
+            }
         },
-        handleUpdate(state, action) {
-            state.tokens = state.tokens.map(s => s.id === action.payload.token.id ? action.payload.token : s);
+        handleUpdateTokens(state, action) {
+            const updatedTokensMap = new Map(
+                action.payload.tokens.map(token => [token.id, token])
+            );
+
+            state.tokens = state.tokens.map(token =>
+                updatedTokensMap.get(token.id) || token
+            );
             state.turn = action.payload.turn;
             state.tokenIndex = action.payload.token_index;
-            if (action.payload.startTimerTime) {
-                state.startTimerTime = action.payload.startTimerTime;
+
+            if (state.type !== "advance_story") {
+                state.editableTokens = getEditableTokens(state.tokens, state.tokenIndex);
             }
+
+            state.startTimerTime = action.payload.startTimerTime;
         },
         handleSubmitForm(state, action) {
             state.tokens = action.payload.tokens;
             state.turn = action.payload.turn;
             state.name = action.payload.name;
-            state.type = action.payload.type;
             state.isOver = true;
         },
         updateSettings(state, action) {
@@ -52,5 +69,5 @@ export const storySlice = createSlice({
     }
 });
 
-export const { handleNewGame, handleUpdate, handleSubmitForm, updateSettings, returnToLobby, reset } = storySlice.actions;
+export const { handleNewGame, handleUpdateTokens, handleSubmitForm, updateSettings, returnToLobby, reset } = storySlice.actions;
 export default storySlice.reducer;

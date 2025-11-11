@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import {
     toFieldObject
 } from '../creative/creative';
-import StoryGameInputForm from './StoryInputForm';
+import StoryInputForm from './StoryInputForm';
+import StoryInputAltForm from './StoryInputAltForm';
 import StoryDisplayForm from './StoryDisplayForm';
 import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
 import { useDispatch, useSelector } from 'react-redux';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { handleNewGame, handleUpdate, returnToLobby, handleSubmitForm, reset } from './storySlice';
+import { handleNewGame, handleUpdateTokens, returnToLobby, handleSubmitForm, reset } from './storySlice';
 import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import NewGamePrompt from '../common/NewGamePrompt';
 import Timer from '../common/Timer';
@@ -22,8 +23,8 @@ const events = (topic) => [
         topic,
     },
     {
-        event: 'handle_update_token',
-        dispatcher: handleUpdate(),
+        event: 'handle_update_tokens',
+        dispatcher: handleUpdateTokens(),
         topic,
     },
     {
@@ -67,14 +68,14 @@ export default function StoryGame() {
 
     const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const { games } = useSelector(state => state.creative);
-    const { tokens, name, turn, isOver, forceQuit, startTimerTime, tokenIndex, settings } = useSelector(state => state.story);
+    const { tokens, name, turn, type, isOver, forceQuit, startTimerTime, editableTokens, settings } = useSelector(state => state.story);
     const isGameOwner = useSelector(selectGameOwner);
 
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const storyChannel = `story:${gameCode}`;
     const [form, setForm] = useState(defaultForm);
-    const [isTimerActive, setIsTimerActive] = useState(false);    
+    const [isTimerActive, setIsTimerActive] = useState(false);
 
     usePhoenixSocket();
     usePhoenixChannel(storyChannel, { name: playerName }, { persisted: false });
@@ -90,7 +91,7 @@ export default function StoryGame() {
             topic: `lobby:${gameCode}`,
             event: "presence_location",
             data: { location: "game" }
-        }));    
+        }));
     }, []);
 
 
@@ -101,9 +102,9 @@ export default function StoryGame() {
         }
     }, [forceQuit])
 
-     useEffect(() => {
+    useEffect(() => {
         if (!gameCode) {
-           window.location.href = '/';
+            window.location.href = '/';
         }
 
     }, [gameCode])
@@ -114,7 +115,6 @@ export default function StoryGame() {
             setIsStartGamePrompt(false);
             const newForm = { ...form, inputs: tokens }
             setForm(newForm)
-            setIsTimerActive(true);
         }
     }, [tokens]);
 
@@ -135,9 +135,9 @@ export default function StoryGame() {
             setForm(newForm);
         }
 
-        if (e.type === 'blur') {
-            const field = form.inputs.find(x => x.id === id);
-            //   dispatch(channelPush(sendEvent(storyChannel, field, "update_token")));
+        if (e.type === 'blur' && type !== "alternate_story") {
+            //const field = form.inputs.find(x => x.id === id);
+            // dispatch(channelPush(sendEvent(storyChannel, [field], "update_tokens")));
         }
 
         if (e.type === 'invalid') {
@@ -161,13 +161,30 @@ export default function StoryGame() {
         dispatch(push('/lobby'));
     }
 
-    function handleSubmit(e) {
-        //  if (e.target.reportValidity()) { noValidate below too...
-        dispatch(channelPush(sendEvent(storyChannel, {
-            tokens: form.inputs,
+    function onTimerCompleted() {
+        setIsTimerActive(false);
+        if (!isOver) {
+            dispatch(channelPush(sendEvent(storyChannel, {
+                tokens: form.inputs,
+            }, "submit_form")));
+            return;
+        }
+    }
 
-        }, "submit_form")));
-        //   }
+    function handleSubmit(e) {
+        //  if (e.target.reportValidity()) { ...noValidate...
+        //  }
+
+        if (type == "alternate_story") {
+            onTimerCompleted();
+        } else {
+            const fields = form.inputs.filter(x => editableTokens.includes(x.id))
+            dispatch(channelPush(sendEvent(storyChannel, fields, "update_tokens")));
+        }
+
+
+
+
 
         e.preventDefault();
     }
@@ -183,21 +200,36 @@ export default function StoryGame() {
             <h3>Story Time - {name}</h3>
             <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form.</div>
             <div>{
-                    <Timer key={startTimerTime}
-                        restartKey={startTimerTime}
-                        startDate={startTimerTime}
-                        isActive={isTimerActive}                        
-                        timeIncrement={-1}
-                        isIncrement={false}
-                        numberSeconds={settings.roundTime} />}
-                </div>
-            {!isOver && playerName == turn &&
+                <Timer key={startTimerTime}
+                    restartKey={startTimerTime}
+                    startDate={startTimerTime}
+                    isActive={!isOver}
+                    timeIncrement={-1}
+                    isIncrement={false}
+                    onTimerCompleted={onTimerCompleted}
+                    numberSeconds={settings.roundTime} />}
+            </div>
+            {type == "alternate_story" && !isOver && playerName == turn &&
                 <div className='center-65 light-background item card story '>
-                    <StoryGameInputForm
+                    <StoryInputForm
                         handleChanges={handleChanges}
                         handleSubmit={handleSubmit}
                         inputs={form.inputs}
                         formId="story-form"
+                    />
+                </div>
+            }
+
+            {type !== "alternate_story" && !isOver &&
+                <div className='center-65 light-background item card story '>
+                    <StoryInputAltForm
+                        handleChanges={handleChanges}
+                        handleSubmit={handleSubmit}
+                        inputs={form.inputs}
+                        formId="story-form"
+                        editableTokens={editableTokens}
+                        playerName={playerName}
+                        turn={turn}
                     />
                 </div>
             }

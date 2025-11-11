@@ -23,6 +23,13 @@
     left: 7px;
 }
 
+.story .highlight input {
+    border: 1px solid red;
+}
+
+.story .highlight input:focus {
+    border: 0px;
+}
 .story .display {
     font-size: 1.5em;
     line-height: 1.9em;

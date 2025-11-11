@@ -1,16 +1,19 @@
 import InputError from '../common/InputError';
 
 
-export default function StoryInput(props) {
-    const { inputs, handleChanges, handleSubmit, formId = "story-form"} = props;
-
+export default function StoryInputAltForm(props) {
+    const { inputs, handleChanges, handleSubmit, editableTokens, playerName, turn, formId = "story-form" } = props;
     return (
-        <form id={formId} className='form' onSubmit={handleSubmit} noValidate >
+        <form id={formId} className='form highlight' onSubmit={handleSubmit} noValidate >
             {inputs.map((x) => {
 
                 if (x.type === "text") {
                     return <span key={x.id}>{x.value}</span>
-                } else if (x.type === "input") {
+                } else if (!editableTokens.includes(x.id) && x.updated_by == playerName) {
+                    return <span key={x.id} className='bolder'>{x.value}</span>
+                } else if (!editableTokens.includes(x.id) && x.updated_by != playerName) {
+                    return <span key={x.id} className='bolder'>{x.value == '' ? '__________' : ' ******* '}</span>
+                } else if (turn == playerName) {
                     return <span key={"span-" + x.id} className='inline-flex group'>
                         <input
                             required
