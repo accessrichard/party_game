@@ -2,6 +2,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   require Logger
 
   use PartyGameWeb, :channel
+  use PartyGameWeb.GameChannel
 
   alias PartyGame.{Server, Lobby}
   alias PartyGame.MultipleChoice.MultipleChoiceGame
@@ -9,7 +10,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
   alias PartyGame.Games.GameList
   alias PartyGame.Game.MultipleChoice
   alias PartyGame.PartyGameTimer
-  import PartyGameWeb.GameUtils
 
   @channel_name "game:"
 
@@ -29,19 +29,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
         send(self(), {:after_join, :game_not_found})
         {:ok, socket}
     end
-  end
-
-  @impl true
-  def handle_info({:after_join, :game_not_found}, socket) do
-    lobby = PartyGameWeb.LobbyChannel.channel_name()
-
-    game_code = "#{lobby}#{game_code(socket.topic)}"
-
-    PartyGameWeb.Endpoint.broadcast(game_code, "handle_game_server_error", %{
-      "reason" => "Game Not Found"
-    })
-
-    {:noreply, socket}
   end
 
   @impl true

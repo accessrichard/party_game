@@ -1,6 +1,7 @@
 defmodule PartyGameWeb.CanvasChannel do
   require Logger
   use PartyGameWeb, :channel
+  use PartyGameWeb.GameChannel
 
   alias PartyGame.Server
   alias PartyGame.Lobby
@@ -8,8 +9,6 @@ defmodule PartyGameWeb.CanvasChannel do
   alias PartyGame.Game.GameRoom
   alias PartyGameWeb.Presence
   alias PartyGame.ChannelWatcher
-
-  import PartyGameWeb.GameUtils
 
   @channel_name "canvas:"
 
@@ -28,17 +27,6 @@ defmodule PartyGameWeb.CanvasChannel do
         send(self(), {:after_join, :game_not_found})
         {:ok, socket}
     end
-  end
-
-  @impl true
-  def handle_info({:after_join, :game_not_found}, socket) do
-    lobby = PartyGameWeb.LobbyChannel.channel_name()
-
-    broadcast("#{lobby}#{game_code(socket.topic)}", "handle_game_server_error", %{
-      "reason" => "Game Not Found"
-    })
-
-    {:noreply, socket}
   end
 
   @impl true

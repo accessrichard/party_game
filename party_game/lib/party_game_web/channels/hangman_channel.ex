@@ -1,12 +1,11 @@
 defmodule PartyGameWeb.HangmanChannel do
     require Logger
     use PartyGameWeb, :channel
+    use PartyGameWeb.GameChannel
 
     alias PartyGame.Server
     alias PartyGame.Lobby
     alias PartyGame.Games.Hangman.HangmanGame
-
-    import PartyGameWeb.GameUtils
 
     @channel_name "hangman:"
 
@@ -25,13 +24,6 @@ defmodule PartyGameWeb.HangmanChannel do
           send(self(), {:after_join, :game_not_found})
           {:ok, socket}
       end
-    end
-
-    @impl true
-    def handle_info({:after_join, :game_not_found}, socket) do
-       lobby = PartyGameWeb.LobbyChannel.channel_name
-      broadcast("#{lobby}#{game_code(socket.topic)}",  "handle_game_server_error", %{"reason" => "Game Not Found"})
-      {:noreply, socket}
     end
 
     @impl true

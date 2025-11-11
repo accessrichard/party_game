@@ -2,11 +2,11 @@ defmodule PartyGameWeb.StoryChannel do
   require Logger
 
   use PartyGameWeb, :channel
+  use PartyGameWeb.GameChannel
 
   alias PartyGame.Games.Story.StoryGame
   alias PartyGame.Game.{Story, StoryToken}
   alias PartyGame.{Server, Lobby}
-  import PartyGameWeb.GameUtils
 
   @channel_name "story:"
 
@@ -31,25 +31,16 @@ defmodule PartyGameWeb.StoryChannel do
   end
 
   @impl true
-  def handle_info({:after_join, :game_not_found}, socket) do
-    Logger.debug("After Join Game not found:   #{socket.topic} for: #{socket.assigns.name}")
-    broadcast(socket, "handle_game_server_error", %{"reason" => "Game No Longer Available"})
-    {:noreply, socket}
-  end
-
-  @impl true
   def handle_info({:after_join}, socket) do
     Logger.debug("After Join #{socket.topic} for: #{socket.assigns.name}")
     {:noreply, socket}
   end
 
   @impl true
-  def handle_in("new_game", _payload, socket) do
+  def handle_in("new_game", payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
-    # tokens = Map.get(payload, "tokens", [])
-    # settings = Map.get(payload, "settings", %{})
-
-    story = StoryGame.add_story(StoryGame.new())
+    story = StoryGame.new(%Story{}, payload)
+    story = if Map.get(payload, "tokens", []) == [], do: StoryGame.add_story(story), else: story
 
     game_room =
       Server.get_game(game_code(socket.topic))
@@ -89,10 +80,11 @@ defmodule PartyGameWeb.StoryChannel do
 
     case updated?(game_room.game, updated_token) do
       true ->
-       game_room = game_room
-        |> StoryGame.update_token(StoryToken.create_token(updated_token))
-        |> StoryGame.advance()
-        |> Server.update_game()
+        game_room =
+          game_room
+          |> StoryGame.update_token(StoryToken.create_token(updated_token))
+          |> StoryGame.advance()
+          |> Server.update_game()
 
         broadcast(socket, "handle_update_token", %{
           token: updated_token,
@@ -112,15 +104,14 @@ defmodule PartyGameWeb.StoryChannel do
     game_room = Server.get_game(game_code(socket.topic))
 
     broadcast(socket, "handle_submit_form", %{
-          tokens: form["tokens"],
-          name: game_room.game.name,
-          turn: game_room.game.turn,
-          type: game_room.game.type
-        })
-        {:noreply, socket}
+      tokens: form["tokens"],
+      name: game_room.game.name,
+      turn: game_room.game.turn,
+      type: game_room.game.type
+    })
+
+    {:noreply, socket}
   end
-
-
 
   defp updated?(%Story{} = story, new_token) do
     token = Enum.find(story.tokens, fn x -> x.id == new_token["id"] end)

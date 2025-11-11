@@ -1,4 +1,4 @@
-defmodule PartyGame.Game.CanvasSettings do
+defmodule PartyGame.Game.GenericSettings do
 
   use Ecto.Schema
   @primary_key false

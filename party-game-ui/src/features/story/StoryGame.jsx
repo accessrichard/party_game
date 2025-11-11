@@ -67,7 +67,7 @@ export default function StoryGame() {
 
     const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
     const { games } = useSelector(state => state.creative);
-    const { tokens, name, turn, display, tokenIndex } = useSelector(state => state.story);
+    const { tokens, name, turn, isOver, tokenIndex } = useSelector(state => state.story);
     const isGameOwner = useSelector(selectGameOwner);
 
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
@@ -110,7 +110,7 @@ export default function StoryGame() {
         const settings = { difficulty: "easy" };
         const matching = games.find(x => x.game.name === selectedGame.name);
         return typeof matching === 'undefined'
-            ? { settings: { difficulty: settings.difficulty } }
+            ? { type: selectedGame.type, name: selectedGame.name, settings }
             : { type: matching.game.type, name: selectedGame.name, tokens: matching.game.tokens, settings }
     }
 
@@ -165,21 +165,28 @@ export default function StoryGame() {
     return (
         <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
             <h3>Story Time - {name}</h3>
-            <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form. Then hit "Done" below.</div>
-            <div className='center-65 light-background item card story '>
-                {display != 'story' && <StoryGameInputForm
-                    handleChanges={handleChanges}
-                    handleSubmit={handleSubmit}
-                    inputs={form.inputs}
-                    formId="story-form"
-                />}
-                {display == 'story' && <StoryDisplayForm inputs={form.inputs} />}
+            <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form.</div>
+            {!isOver && playerName == turn &&
+                <div className='center-65 light-background item card story '>
+                    <StoryGameInputForm
+                        handleChanges={handleChanges}
+                        handleSubmit={handleSubmit}
+                        inputs={form.inputs}
+                        formId="story-form"
+                    />
+                </div>
+            }
 
+            {isOver &&
+                <div className='center-65 light-background item card story '>
+                    <StoryDisplayForm inputs={form.inputs} />
+                </div>}
 
-            </div>
             <div className="container">
                 {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
-                {turn == playerName && display != "story" && <button id="Next Turn" className="btn md-5" type="submit" form="story-form">Done</button>}
+                {(turn == playerName) && !isOver && <button id="Next Turn" className="btn md-5" type="submit" form="story-form">Done</button>}
+                {isGameOwner && isOver && <button id="Next Story" className="btn md-5" type="button" onClick={onStartGame}>Next Story</button>}
+                
             </div>
         </NewGamePrompt>
     )

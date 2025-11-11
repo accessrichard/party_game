@@ -147,9 +147,31 @@ defmodule PartyGame.Games.GameList do
         module: Hangman.HangmanGame
       },
       %GameMetaData{
-        name: "Story",
-        category: "Story Telly",
-        type: "story",
+        name: "Story - Alternate Story",
+        category: "Story Telly - Fill In The Blank",
+        type: "alternate_story",
+        url: "/story",
+        settings: false,
+        import: false,
+        create: false,
+        location: "server",
+        module: Story.StoryGame
+      },
+       %GameMetaData{
+        name: "Story - Alternate Sentence",
+        category: "Story Telly - Fill In The Blank",
+        type: "alternate_sentence",
+        url: "/story",
+        settings: false,
+        import: false,
+        create: false,
+        location: "server",
+        module: Story.StoryGame
+      },
+       %GameMetaData{
+        name: "Story - Alternate word",
+        category: "Story Telly - Fill In The Blank",
+        type: "alternate_word",
         url: "/story",
         settings: false,
         import: false,

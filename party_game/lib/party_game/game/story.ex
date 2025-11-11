@@ -32,22 +32,23 @@ defmodule PartyGame.Game.StoryToken do
       :errors
     ])
   end
-
 end
 
 defmodule PartyGame.Game.Story do
   use Ecto.Schema
   alias PartyGame.Game.StoryToken
+  alias PartyGame.Game.GenericSettings
 
   @derive {Jason.Encoder, only: [:name, :turn, :type, :tokens, :token_index, :updated_by]}
   @primary_key false
   embedded_schema do
     field(:name, :string, default: nil)
     field(:turn, :string, default: nil)
-    field(:type, :string, default: "alternate_word")
+    field(:type, :string, default: "alternate_sentence")
     field(:token_index, :integer, default: 0)
     field(:updated_by, :string, default: nil)
     embeds_many(:tokens, StoryToken, on_replace: :delete)
+    embeds_one(:settings, GenericSettings, on_replace: :delete)
   end
 
   def create_story(story, params \\ %{}) do
@@ -58,6 +59,9 @@ defmodule PartyGame.Game.Story do
   def create_changeset(story, params \\ %{}) do
     tokens = Map.get(params, :tokens, [%StoryToken{}])
 
+    settings =
+      GenericSettings.apply_settings(GenericSettings.new(), Map.get(params, :settings, %{}))
+
     story
     |> Ecto.Changeset.cast(params, [
       :name,
@@ -67,6 +71,7 @@ defmodule PartyGame.Game.Story do
       :updated_by
     ])
     |> Ecto.Changeset.put_embed(:tokens, tokens)
+    |> Ecto.Changeset.put_embed(:settings, settings)
   end
 
   def new(fields \\ []) do

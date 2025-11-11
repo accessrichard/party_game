@@ -1,7 +1,7 @@
 defmodule PartyGame.Game.Canvas do
   use Ecto.Schema
 
-  alias PartyGame.Game.CanvasSettings
+  alias PartyGame.Game.GenericSettings
 
   @primary_key false
   embedded_schema do
@@ -15,7 +15,7 @@ defmodule PartyGame.Game.Canvas do
     field(:winner, :string, default: nil)
     field(:over?, :boolean, default: false)
     field(:expires_at, :utc_datetime, default: nil)
-    embeds_one(:settings, CanvasSettings, on_replace: :delete)
+    embeds_one(:settings, GenericSettings, on_replace: :delete)
   end
 
   def create_game(game, params \\ %{}) do
@@ -24,7 +24,7 @@ defmodule PartyGame.Game.Canvas do
   end
 
   def create_changeset(game, params \\ %{}) do
-    settings = CanvasSettings.apply_settings(CanvasSettings.new, Map.get(params, :settings, %{}))
+    settings = GenericSettings.apply_settings(GenericSettings.new, Map.get(params, :settings, %{}))
 
     game
     |> Ecto.Changeset.cast(params, [

@@ -2,13 +2,13 @@ defmodule PartyGameWeb.LobbyChannel do
   require Logger
 
   use PartyGameWeb, :channel
+  use PartyGameWeb.GameChannel
 
   alias PartyGame.PartyGameTimer
   alias PartyGameWeb.Presence
   alias PartyGame.{Server, Lobby}
   alias PartyGame.ChannelWatcher
   alias PartyGame.Game.Player
-  import PartyGameWeb.GameUtils
 
   @channel_name "lobby:"
 
@@ -32,13 +32,6 @@ defmodule PartyGameWeb.LobbyChannel do
         send(self(), {:after_join, :game_not_found})
         {:ok, socket}
     end
-  end
-
-  @impl true
-  def handle_info({:after_join, :game_not_found}, socket) do
-    Logger.debug("After Join Game not found:   #{socket.topic} for: #{socket.assigns.name}")
-    broadcast(socket, "handle_game_server_error", %{"reason" => "Game No Longer Available"})
-    {:noreply, socket}
   end
 
   @impl true

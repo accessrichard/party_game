@@ -23,9 +23,10 @@ defmodule PartyGame.Games.Story.StoryGame do
         change_turn(game_room)
         |> next_input_token()
 
-      "alternate_sentance" ->
-        next_sentence_token(game_room)
-        |> change_turn()
+      "alternate_sentence" ->
+        change_turn(game_room)
+        |> next_sentence_token()
+
 
       "alternate_story" ->
         change_turn(game_room)

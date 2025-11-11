@@ -8,7 +8,7 @@ const initialState = {
     settings: { difficulty: "easy" },
     forceQuit: false,
     type: '',
-    display: 'inputs'
+    isOver: false
 }
 
 export const storySlice = createSlice({
@@ -22,11 +22,7 @@ export const storySlice = createSlice({
             state.tokenIndex = action.payload.token_index;
             state.forceQuit = false;
             state.type = action.payload.type;
-            if (action.payload.display) {
-                state.display = action.payload.display;
-            } else {
-                state.display = 'inputs';
-            }
+            state.isOver = false;
         },
         handleUpdate(state, action) {
             state.tokens = state.tokens.map(s => s.id === action.payload.token.id ? action.payload.token : s);
@@ -38,8 +34,8 @@ export const storySlice = createSlice({
             state.turn = action.payload.turn;
             state.name = action.payload.name;
             state.type = action.payload.type;
-            state.display = 'story';
-            
+            state.isOver = true;
+
         },
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
