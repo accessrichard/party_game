@@ -54,10 +54,15 @@ defmodule PartyGameWeb.StoryChannel do
     game_room =
       Server.get_game(game_code(socket.topic))
       |> Lobby.set_game(story)
+      |> StoryGame.advance()
       |> Server.update_game()
 
     broadcast(socket, "handle_new_game", %{
-      "story" => game_room.game
+      tokens: game_room.game.tokens,
+      name: game_room.game.name,
+      turn: game_room.game.turn,
+      token_index: game_room.game.token_index,
+      type: game_room.game.type
     })
 
     {:noreply, socket}
@@ -78,27 +83,47 @@ defmodule PartyGameWeb.StoryChannel do
   end
 
   @impl true
-  def handle_in("update_token", payload, socket) do
-
+  def handle_in("update_token", updated_token, socket) do
     game_room = Server.get_game(game_code(socket.topic))
+    updated_token = Map.put_new(updated_token, "updated_by", socket.assigns.name)
 
-    case updated?(game_room.game, payload) do
+    case updated?(game_room.game, updated_token) do
       true ->
-        token = StoryToken.create_token(payload)
-        game = StoryGame.update_token(game_room.game, token)
-        game_room = Lobby.set_game(game_room, game)
-        Server.update_game(game_room)
-        broadcast_from(socket, "handle_update_token", payload)
+       game_room = game_room
+        |> StoryGame.update_token(StoryToken.create_token(updated_token))
+        |> StoryGame.advance()
+        |> Server.update_game()
+
+        broadcast(socket, "handle_update_token", %{
+          token: updated_token,
+          turn: game_room.game.turn,
+          token_index: game_room.game.token_index
+        })
+
         {:noreply, socket}
 
       false ->
         {:noreply, socket}
-
     end
   end
 
+  @impl true
+  def handle_in("submit_form", form, socket) do
+    game_room = Server.get_game(game_code(socket.topic))
+
+    broadcast(socket, "handle_submit_form", %{
+          tokens: form["tokens"],
+          name: game_room.game.name,
+          turn: game_room.game.turn,
+          type: game_room.game.type
+        })
+        {:noreply, socket}
+  end
+
+
+
   defp updated?(%Story{} = story, new_token) do
-     token = Enum.find(story.tokens, fn x -> x.id == new_token["id"] end)
-     token.value !== new_token["value"]
+    token = Enum.find(story.tokens, fn x -> x.id == new_token["id"] end)
+    token.value !== new_token["value"]
   end
 end

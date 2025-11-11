@@ -1,7 +1,7 @@
 defmodule PartyGame.Games.Hangman.HangmanGame do
   alias PartyGame.Game.Hangman
   alias PartyGame.Game.GameRoom
-  alias PartyGame.Games.Canvas.CanvasGame
+  alias PartyGame.Lobby
 
   def new(game, _options \\ %{}) do
     Hangman.create_game(%Hangman{}, game)
@@ -69,7 +69,7 @@ defmodule PartyGame.Games.Hangman.HangmanGame do
       }
     else
       index =
-        CanvasGame.find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
+        Lobby.find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
 
       over? = game_room.game.word != nil && index == 0
       word = Enum.at(game_room.game.words, index)

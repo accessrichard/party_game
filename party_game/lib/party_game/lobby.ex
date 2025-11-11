@@ -63,6 +63,7 @@ defmodule PartyGame.Lobby do
 
   def update_player_location(%GameRoom{} = game_room, player_name, location) do
     player = get_player(game_room, player_name)
+
     if player == nil do
       game_room
     else
@@ -71,7 +72,7 @@ defmodule PartyGame.Lobby do
   end
 
   def update_all_player_locations(%GameRoom{} = game_room, location) do
-    players = Enum.map(game_room.players, &(%{&1 | location: location}))
+    players = Enum.map(game_room.players, &%{&1 | location: location})
     %{game_room | players: players}
   end
 
@@ -105,6 +106,25 @@ defmodule PartyGame.Lobby do
             if p.name == player.name, do: player, else: p
           end)
     }
+  end
+
+  def next_turn(%GameRoom{} = game_room, current_player_name_turn) do
+    index =
+      find_index_round_robin(game_room.players, &(current_player_name_turn == &1.name))
+
+    Enum.at(game_room.players, index)
+  end
+
+  def find_index_round_robin(enumerable, fun) do
+    result =
+      Enumerable.reduce(enumerable, {:cont, {:not_found, 0}}, fn entry, {_, index} ->
+        if fun.(entry), do: {:halt, {:found, index}}, else: {:cont, {:not_found, index + 1}}
+      end)
+
+    case elem(result, 1) do
+      {:found, index} -> if index >= length(enumerable) - 1, do: 0, else: index + 1
+      {:not_found, _} -> 0
+    end
   end
 
   def update_room_owner(%GameRoom{} = game, owner) do

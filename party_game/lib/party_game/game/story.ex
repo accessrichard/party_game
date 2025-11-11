@@ -39,10 +39,14 @@ defmodule PartyGame.Game.Story do
   use Ecto.Schema
   alias PartyGame.Game.StoryToken
 
-  @derive {Jason.Encoder, only: [:name, :tokens]}
+  @derive {Jason.Encoder, only: [:name, :turn, :type, :tokens, :token_index, :updated_by]}
   @primary_key false
   embedded_schema do
     field(:name, :string, default: nil)
+    field(:turn, :string, default: nil)
+    field(:type, :string, default: "alternate_word")
+    field(:token_index, :integer, default: 0)
+    field(:updated_by, :string, default: nil)
     embeds_many(:tokens, StoryToken, on_replace: :delete)
   end
 
@@ -56,7 +60,11 @@ defmodule PartyGame.Game.Story do
 
     story
     |> Ecto.Changeset.cast(params, [
-      :name
+      :name,
+      :turn,
+      :type,
+      :token_index,
+      :updated_by
     ])
     |> Ecto.Changeset.put_embed(:tokens, tokens)
   end

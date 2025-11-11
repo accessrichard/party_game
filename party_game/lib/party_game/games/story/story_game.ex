@@ -1,6 +1,8 @@
 defmodule PartyGame.Games.Story.StoryGame do
+  alias PartyGame.Game.GameRoom
   alias PartyGame.Game.{Story, StoryToken}
   alias PartyGame.FileLoader
+  alias PartyGame.Lobby
 
   @stories_path "./lib/party_game/games/story/prebuilt"
 
@@ -13,9 +15,54 @@ defmodule PartyGame.Games.Story.StoryGame do
     %{story | name: name, tokens: tokenize(tokens)}
   end
 
-  def update_token(%Story{} = story, %StoryToken{} = new_token) do
+  def advance(%GameRoom{} = game_room) do
+    case game_room.game.type do
+      "alternate_word" ->
+        change_turn(game_room)
+        |> next_input_token()
+
+      "alternate_sentance" ->
+        next_sentence_token(game_room)
+        |> change_turn()
+
+      "alternate_story" ->
+        change_turn(game_room)
+    end
+  end
+
+  def next_input_token(%GameRoom{} = game_room) do
+    next_token_index =
+      PartyGame.Lobby.find_index_round_robin(
+        game_room.game.tokens,
+        &(&1.id > game_room.game.token_index && &1.type == "input")
+      )
+
+    Logger.debug("Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}")
+    %{game_room | game: %{game_room.game | token_index: next_token_index - 1}}
+  end
+
+  def next_sentence_token(%GameRoom{} = game_room) do
+    next_token_index =
+      PartyGame.Lobby.find_index_round_robin(
+        game_room.game.tokens,
+        &(&1.id > game_room.game.token_index && &1.type == "input")
+      )
+
+    until_token_index =
+      PartyGame.Lobby.find_index_round_robin(
+        game_room.game.tokens,
+        &(&1.id > next_token_index && &1.type == "text" && String.contains?(&1.value, ".333 "))
+      )
+
+    until_token_index = if until_token_index == 0, do: 999, else: until_token_index
+
+    Logger.debug("Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}, Until Token is: #{until_token_index}")
+    %{game_room | game: %{game_room.game | token_index: next_token_index - 1}}
+  end
+
+  def update_token(%GameRoom{} = game_room, %StoryToken{} = new_token) do
     updated_tokens =
-      Enum.map(story.tokens, fn existing_token ->
+      Enum.map(game_room.game.tokens, fn existing_token ->
         if existing_token.id == new_token.id do
           new_token
         else
@@ -23,8 +70,18 @@ defmodule PartyGame.Games.Story.StoryGame do
         end
       end)
 
-    %{story | tokens: updated_tokens}
-   end
+    %{game_room | game: %{game_room.game | tokens: updated_tokens, token_index: new_token.id}}
+  end
+
+  def change_turn(%GameRoom{} = game_room) do
+    player = Lobby.next_turn(game_room, game_room.game.turn)
+
+    if player == nil do
+      %{game_room | game: %{game_room.game | turn: game_room.room_owner}}
+    else
+      %{game_room | game: %{game_room.game | turn: player.name}}
+    end
+  end
 
   @doc """
   Takes a story with form fields represented by brackets [] and tokenizes

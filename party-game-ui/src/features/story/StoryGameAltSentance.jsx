@@ -7,7 +7,7 @@ import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from
 import { useDispatch, useSelector } from 'react-redux';
 import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { handleNewGame, handleUpdate, returnToLobby, handleSubmitForm } from './storySlice';
+import { handleNewGame, handleUpdate, returnToLobby } from './storySlice';
 import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import NewGamePrompt from '../common/NewGamePrompt';
 
@@ -23,11 +23,6 @@ const events = (topic) => [
     {
         event: 'handle_update_token',
         dispatcher: handleUpdate(),
-        topic,
-    },
-    {
-        event: 'handle_submit_form',
-        dispatcher: handleSubmitForm(),
         topic,
     },
     {
@@ -60,7 +55,7 @@ const defaultForm = {
     type: "Story"
 }
 
-export default function StoryGame() {
+export default function StoryGameAltSentance() {
 
     const dispatch = useDispatch();
 
@@ -90,7 +85,6 @@ export default function StoryGame() {
     }, []);
 
     useEffect(() => {
-        console.log("Called")
         dispatch(channelPush({
             topic: `story:${gameCode}`,
             event: "new_game",
@@ -117,21 +111,22 @@ export default function StoryGame() {
     function handleChanges(e, id) {
         const input = toFieldObject(e);
         const oldInput = form.inputs.find(x => x.id === id);
-
-        if (oldInput && e.type == 'change' || e.target.validationMessage) {
+        if (oldInput && e.type == 'change') {            
             const newInput = { ...oldInput, ...input, ...{ errors: [e.target.validationMessage] } };
             const newForm = { ...form, inputs: form.inputs.map(item => item.id === id ? newInput : item) };
             setForm(newForm);
         }
 
-        if (e.type === 'blur') {
+        if (e.type === 'blur') {            
             const field = form.inputs.find(x => x.id === id);
-         //   dispatch(channelPush(sendEvent(storyChannel, field, "update_token")));
+            dispatch(channelPush(sendEvent(storyChannel, field, "update_token")));
         }
 
         if (e.type === 'invalid') {
             e.preventDefault();
         }
+
+
     }
 
     function notifyLeave() {
@@ -145,17 +140,6 @@ export default function StoryGame() {
         dispatch(push('/lobby'))
     }
 
-    function handleSubmit(e) {
-        //  if (e.target.reportValidity()) { noValidate below too...
-        dispatch(channelPush(sendEvent(storyChannel, {
-            tokens: form.inputs,
-
-        }, "submit_form")));
-        //   }
-
-        e.preventDefault();
-    }
-
     function onStartGame() {
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(storyChannel, getGame(), "new_game")))
@@ -165,17 +149,22 @@ export default function StoryGame() {
     return (
         <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
             <h3>Story Time - {name}</h3>
-            <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `{${turn}'s turn`} to fill out form. Then hit "Next Turn" below.</div>
             <div className='center-65 light-background item card story '>
-                <form id="story-form" className='form' onSubmit={handleSubmit} noValidate >
+                <form className='form'>
                     {form.inputs.map((x) => {
-
+                        
                         if (x.type === "text") {
                             return <span key={x.id}>{x.value}</span>
+                        } else if (x.type === "input" && tokenIndex !== x.id && x.updated_by == playerName) {
+                            return <span key={x.id} className='bolder'>{x.value}</span>
+                        } else if (x.type === "input" && tokenIndex !== x.id && x.updated_by != playerName) {
+                            return <span key={x.id} className='bolder'>____________________</span>
                         } else if (x.type === "input") {
                             return <span key={"span-" + x.id} className='inline-flex group'>
+
                                 <input
                                     required
+
                                     name="value"
                                     key={"input-" + x.id}
                                     type='text'
@@ -198,7 +187,6 @@ export default function StoryGame() {
             </div>
             <div className="container">
                 {isGameOwner && <button id="Quit" className="btn md-5" type="button" onClick={onQuitClick}>Quit</button>}
-                {isGameOwner && <button id="Next Turn" className="btn md-5" type="submit" form="story-form">Next Turn</button>}
             </div>
         </NewGamePrompt>
     )

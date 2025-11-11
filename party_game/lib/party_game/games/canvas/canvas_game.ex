@@ -1,33 +1,12 @@
 defmodule PartyGame.Games.Canvas.CanvasGame do
   alias PartyGame.Game.Canvas
   alias PartyGame.Game.GameRoom
+  alias PartyGame.Lobby
 
   @word_path "./lib/party_game/games/canvas"
 
   def new(game, _options \\ %{}) do
     Canvas.create_game(%Canvas{}, game)
-  end
-
-  def change_turn(%GameRoom{} = game_room) do
-    index = find_index_round_robin(game_room.players, &(game_room.game.turn == &1.name))
-    turn = Enum.at(game_room.players, index)
-    if turn == nil do
-      %{game_room | game: %{game_room.game | over?: true}}
-    else
-      %{game_room | game: %{game_room.game | turn: turn.name, winner: nil}}
-    end
-  end
-
-  def change_word(%GameRoom{} = game_room) do
-    if game_room.game.words == [] do
-      word = Enum.at(word(1, game_room.game.settings.difficulty), 0)
-      %{game_room | game: %{game_room.game | word: word, winner: nil}}
-    else
-      index = find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
-      over? = game_room.game.word != nil && index == 0
-      word = Enum.at(game_room.game.words, index)
-      %{game_room | game: %{game_room.game | word: word, winner: nil, over?: over?}}
-    end
   end
 
   def start_round(%GameRoom{} = game_room) do
@@ -36,6 +15,28 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
 
   def stop_round(%GameRoom{} = game_room) do
     %{game_room | game: %{game_room.game | round_started: false}}
+  end
+
+  def change_turn(%GameRoom{} = game_room) do
+    player = Lobby.next_turn(game_room, game_room.game.turn)
+
+    if player == nil do
+      %{game_room | game: %{game_room.game | over?: true, turn: nil}}
+    else
+      %{game_room | game: %{game_room.game | winner: nil, turn: player.name}}
+    end
+  end
+
+   def change_word(%GameRoom{} = game_room) do
+    if game_room.game.words == [] do
+      word = Enum.at(word(1, game_room.game.settings.difficulty), 0)
+      %{game_room | game: %{game_room.game | word: word, winner: nil}}
+    else
+      index = Lobby.find_index_round_robin(game_room.game.words, &(game_room.game.word == &1))
+      over? = game_room.game.word != nil && index == 0
+      word = Enum.at(game_room.game.words, index)
+      %{game_room | game: %{game_room.game | word: word, winner: nil, over?: over?}}
+    end
   end
 
   def guess(%GameRoom{} = game_room, guess, player_name) do
@@ -114,17 +115,5 @@ defmodule PartyGame.Games.Canvas.CanvasGame do
     w1 == w2 or
       w1 == String.replace_suffix(w2, "s", "") or
       w2 == String.replace_suffix(w1, "s", "")
-  end
-
-  def find_index_round_robin(enumerable, fun) do
-    result =
-      Enumerable.reduce(enumerable, {:cont, {:not_found, 0}}, fn entry, {_, index} ->
-        if fun.(entry), do: {:halt, {:found, index}}, else: {:cont, {:not_found, index + 1}}
-      end)
-
-    case elem(result, 1) do
-      {:found, index} -> if index >= length(enumerable) - 1, do: 0, else: index + 1
-      {:not_found, _} -> 0
-    end
   end
 end
