@@ -116,7 +116,7 @@ defmodule PartyGameWeb.StoryChannel do
     new_tokens =
       Enum.map(updated_tokens, fn token_map ->
         token_map
-        |> Map.put_new("updated_by", socket.assigns.name)
+        |> Map.put("updated_by", socket.assigns.name)
         |> StoryToken.create_token()
       end)
 
@@ -127,10 +127,11 @@ defmodule PartyGameWeb.StoryChannel do
       |> Server.update_game()
 
     broadcast(socket, "handle_update_tokens", %{
-      tokens: updated_tokens,
+      tokens: new_tokens,
       turn: game_room.game.turn,
       token_index: game_room.game.token_index,
-      startTimerTime: DateTime.utc_now()
+      startTimerTime: DateTime.utc_now(),
+      isOver: game_room.game.over?
     })
 
     {:noreply, socket}

@@ -40,18 +40,20 @@ export const storySlice = createSlice({
             const updatedTokensMap = new Map(
                 action.payload.tokens.map(token => [token.id, token])
             );
-
+            
             state.tokens = state.tokens.map(token =>
                 updatedTokensMap.get(token.id) || token
             );
+            
             state.turn = action.payload.turn;
             state.tokenIndex = action.payload.token_index;
 
             if (state.type !== "advance_story") {
                 state.editableTokens = getEditableTokens(state.tokens, state.tokenIndex);
             }
-
+          
             state.startTimerTime = action.payload.startTimerTime;
+            state.isOver = action.payload.isOver;
         },
         handleSubmitForm(state, action) {
             state.tokens = action.payload.tokens;

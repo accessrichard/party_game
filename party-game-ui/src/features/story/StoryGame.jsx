@@ -75,7 +75,6 @@ export default function StoryGame() {
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const storyChannel = `story:${gameCode}`;
     const [form, setForm] = useState(defaultForm);
-    const [isTimerActive, setIsTimerActive] = useState(false);
 
     usePhoenixSocket();
     usePhoenixChannel(storyChannel, { name: playerName }, { persisted: false });
@@ -86,7 +85,6 @@ export default function StoryGame() {
     useEffect(() => {
         dispatch(reset());
         setIsStartGamePrompt(true);
-        setIsTimerActive(true);
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "presence_location",
@@ -97,7 +95,6 @@ export default function StoryGame() {
 
     useEffect(() => {
         if (forceQuit) {
-            setIsTimerActive(false);
             onQuitClick();
         }
     }, [forceQuit])
@@ -134,15 +131,6 @@ export default function StoryGame() {
             const newForm = { ...form, inputs: form.inputs.map(item => item.id === id ? newInput : item) };
             setForm(newForm);
         }
-
-        if (e.type === 'blur' && type !== "alternate_story") {
-            //const field = form.inputs.find(x => x.id === id);
-            // dispatch(channelPush(sendEvent(storyChannel, [field], "update_tokens")));
-        }
-
-        if (e.type === 'invalid') {
-            e.preventDefault();
-        }
     }
 
     function notifyLeave() {
@@ -157,12 +145,10 @@ export default function StoryGame() {
         dispatch(endGame());
         setIsBackButtonBlocked(false);
         dispatch(reset());
-        setIsTimerActive(false);
         dispatch(push('/lobby'));
     }
 
     function onTimerCompleted() {
-        setIsTimerActive(false);
         if (!isOver) {
             dispatch(channelPush(sendEvent(storyChannel, {
                 tokens: form.inputs,
@@ -182,10 +168,6 @@ export default function StoryGame() {
             dispatch(channelPush(sendEvent(storyChannel, fields, "update_tokens")));
         }
 
-
-
-
-
         e.preventDefault();
     }
 
@@ -198,8 +180,8 @@ export default function StoryGame() {
     return (
         <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
             <h3>Story Time - {name}</h3>
-            <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form.</div>
-            <div>{
+            {!isOver && <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form.</div>}
+            <div>{!isOver &&
                 <Timer key={startTimerTime}
                     restartKey={startTimerTime}
                     startDate={startTimerTime}

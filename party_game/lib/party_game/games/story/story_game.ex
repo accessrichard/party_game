@@ -20,14 +20,12 @@ defmodule PartyGame.Games.Story.StoryGame do
   def advance(%GameRoom{} = game_room) do
     case game_room.game.type do
       "alternate_word" ->
-
         change_turn(game_room)
         |> next_input_token()
 
       "alternate_sentence" ->
         change_turn(game_room)
         |> next_sentence_token()
-
 
       "alternate_story" ->
         change_turn(game_room)
@@ -41,8 +39,18 @@ defmodule PartyGame.Games.Story.StoryGame do
         &(&1.id > game_room.game.token_index && &1.type == "input")
       )
 
-    Logger.debug("Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}")
-    %{game_room | game: %{game_room.game | token_index: next_token_index - 1}}
+    Logger.debug(
+      "Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}"
+    )
+
+    %{
+      game_room
+      | game: %{
+          game_room.game
+          | token_index: next_token_index - 1,
+            over?: next_token_index == 0
+        }
+    }
   end
 
   def next_sentence_token(%GameRoom{} = game_room) do
@@ -58,10 +66,23 @@ defmodule PartyGame.Games.Story.StoryGame do
         &(&1.id > next_token_index && &1.type == "text" && String.contains?(&1.value, ". "))
       )
 
-    until_token_index = if until_token_index == 0, do: 999, else: until_token_index
+    until_token_index =
+      if until_token_index == 0,
+        do: 999,
+        else: until_token_index
 
-    Logger.debug("Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}, Until Token is: #{until_token_index}")
-    %{game_room | game: %{game_room.game | token_index: until_token_index - 1}}
+    Logger.debug(
+      "Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}, Until Token is: #{until_token_index}"
+    )
+
+    %{
+      game_room
+      | game: %{
+          game_room.game
+          | token_index: until_token_index - 1,
+            over?: next_token_index == 0
+        }
+    }
   end
 
   def update_token(%GameRoom{} = game_room, %StoryToken{} = new_token) do
@@ -75,6 +96,10 @@ defmodule PartyGame.Games.Story.StoryGame do
       end)
 
     %{game_room | game: %{game_room.game | tokens: updated_tokens, token_index: new_token.id}}
+  end
+
+  def update_tokens(%GameRoom{} = game_room, []) do
+    %{game_room | game: %{game_room.game | token_index: List.last(game_room.game.tokens).id}}
   end
 
   def update_tokens(%GameRoom{} = game_room, new_tokens) do
@@ -97,7 +122,7 @@ defmodule PartyGame.Games.Story.StoryGame do
 
   def change_turn(%GameRoom{} = game_room) do
     player = Lobby.next_turn(game_room, game_room.game.turn)
-     %{game_room | game: %{game_room.game | turn: player.name}}
+    %{game_room | game: %{game_room.game | turn: player.name}}
   end
 
   @doc """
@@ -109,39 +134,44 @@ defmodule PartyGame.Games.Story.StoryGame do
       iex> PartyGame.Games.Story.StoryGame.tokenize("This boy [noun] like an [adjective]...")
       [
         %PartyGame.Game.StoryToken{
+          __meta__: #Ecto.Schema.Metadata<:built, "storytoken">,
           id: 0,
           type: "text",
-          placeholder: nil,
+          placeholder: "",
           value: "This boy ",
-          errors: nil
+          errors: []
         },
         %PartyGame.Game.StoryToken{
+          __meta__: #Ecto.Schema.Metadata<:built, "storytoken">,
           id: 1,
           type: "input",
           placeholder: "noun",
-          value: nil,
-          errors: nil
+          value: "",
+          errors: []
         },
         %PartyGame.Game.StoryToken{
+          __meta__: #Ecto.Schema.Metadata<:built, "storytoken">,
           id: 2,
           type: "text",
-          placeholder: nil,
+          placeholder: "",
           value: " like an ",
-          errors: nil
+          errors: []
         },
         %PartyGame.Game.StoryToken{
+          __meta__: #Ecto.Schema.Metadata<:built, "storytoken">,
           id: 3,
           type: "input",
           placeholder: "adjective",
-          value: nil,
-          errors: nil
+          value: "",
+          errors: []
         },
         %PartyGame.Game.StoryToken{
+          __meta__: #Ecto.Schema.Metadata<:built, "storytoken">,
           id: 4,
           type: "text",
-          placeholder: nil,
+          placeholder: "",
           value: "...",
-          errors: nil
+          errors: []
         }
       ]
   """

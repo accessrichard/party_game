@@ -11,7 +11,8 @@ export default function StoryInputAltForm(props) {
                     return <span key={x.id}>{x.value}</span>
                 } else if (!editableTokens.includes(x.id) && x.updated_by == playerName) {
                     return <span key={x.id} className='bolder'>{x.value}</span>
-                } else if (!editableTokens.includes(x.id) && x.updated_by != playerName) {
+                } else if (!editableTokens.includes(x.id) && x.updated_by != playerName
+                    || editableTokens.includes(x.id) && turn != playerName) {
                     return <span key={x.id} className='bolder'>{x.value == '' ? '__________' : ' ******* '}</span>
                 } else if (turn == playerName) {
                     return <span key={"span-" + x.id} className='inline-flex group'>
