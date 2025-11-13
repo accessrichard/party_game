@@ -55,9 +55,10 @@ function CanvasSettings() {
                 <form className='form' onSubmit={handleSubmit} noValidate>
                     <h3>Settings</h3>
                     <div className="group">
-                        <input required
-                            autoComplete="off"
-                            name={"roundTime"}
+                        <input
+                            name="roundTime"
+                            autoComplete
+                            required
                             type="number"
                             min="5"
                             max="120"
@@ -87,11 +88,11 @@ function CanvasSettings() {
                             <label>Difficulty</label>
                         </div>
                     </div>
-
-                    <div className="btn-box">
-                        <button className="btn btn-submit" type="submit">Save</button>
-                    </div>
                 </form>
+                <div className="btn-box">
+                    <button id="Cancel" className="btn md-5" type="button" onClick={() => dispatch(push('/lobby'))}>Cancel</button>
+                    <button className="btn btn-submit" type="submit">Save</button>
+                </div>
             </div>
         </div>
     );

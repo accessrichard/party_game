@@ -1,10 +1,20 @@
 import InputError from '../common/InputError';
+import { useEffect, useRef } from 'react';
 
 
 export default function StoryInputAltForm(props) {
     const { inputs, handleChanges, handleSubmit, editableTokens, playerName, turn, formId = "story-form" } = props;
+    const firstEditableInputRef = useRef(null);
+
+    useEffect(() => {
+        if (firstEditableInputRef.current) {
+            firstEditableInputRef.current.focus();
+        }
+
+    }, [editableTokens]);
+
     return (
-        <form id={formId} className='form highlight' onSubmit={handleSubmit} noValidate >
+        <form id={formId} className='form highlight' onSubmit={handleSubmit} noValidate>
             {inputs.map((x) => {
 
                 if (x.type === "text") {
@@ -17,6 +27,8 @@ export default function StoryInputAltForm(props) {
                 } else if (turn == playerName) {
                     return <span key={"span-" + x.id} className='inline-flex group'>
                         <input
+                            autoComplete='off'
+                            ref={editableTokens && editableTokens[0] === x.id ? firstEditableInputRef : null}
                             required
                             name="value"
                             key={"input-" + x.id}

@@ -11,9 +11,11 @@ export default function CreativeControls({gameNames = [], onAdd, onDownload, onP
     return (
         <div className='card'>
             <div className="flex-row flex-center">
+                {onAdd && 
                 <div className="btn-box pd-5">
                     <button className="btn btn-submit" type="submit" onClick={onAdd}>Add</button>
                 </div>
+                }
                 <div className="btn-box pd-5">
                     <button className="btn btn-submit" type="submit" onClick={onDownload}>Download Game</button>
                 </div>

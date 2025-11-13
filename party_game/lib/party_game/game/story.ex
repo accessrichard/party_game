@@ -59,6 +59,8 @@ defmodule PartyGame.Game.Story do
   end
 
   def create_changeset(story, params \\ %{}) do
+    tokens = Map.get(params, "tokens", [])
+
     story
     |> Ecto.Changeset.cast(params, [
       :name,
@@ -72,11 +74,7 @@ defmodule PartyGame.Game.Story do
         GenericSettings.cast_changeset(settings, params)
       end
     )
-    |> Ecto.Changeset.cast_embed(:tokens,
-      with: fn tokens, params ->
-        GenericSettings.cast_changeset(tokens, params)
-      end
-    )
+    |> Ecto.Changeset.put_embed(:tokens, tokens)
   end
 
   def new(fields \\ []) do

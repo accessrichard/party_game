@@ -31,7 +31,6 @@ function HangmanSettings() {
         setForm(newForm);
     }
 
-
     return (
         <div className="offset-bottom center-65">
             <Logo logoClass="small-logo bouncy" showSubtitle={false} titleClass="larger-title"></Logo>
@@ -56,6 +55,7 @@ function HangmanSettings() {
                     </div>
 
                     <div className="btn-box">
+                        <button id="Cancel" className="btn md-5" type="button" onClick={() => dispatch(push('/lobby'))}>Cancel</button>
                         <button className="btn btn-submit" type="submit">Save</button>
                     </div>
                 </form>

@@ -21,8 +21,7 @@ export const storySlice = createSlice({
     name: 'story',
     initialState: initialState,
     reducers: {
-        handleNewGame(state, action) {
-            console.log(action)
+        handleNewGame(state, action) {            
             state.tokens = action.payload.tokens;
             state.name = action.payload.name;
             state.turn = action.payload.turn;

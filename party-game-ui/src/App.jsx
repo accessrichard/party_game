@@ -31,6 +31,9 @@ import { history } from './features/store';
 //import HangmanImport from './features/hangman/HangmanImport';
 //import HangmanSettings from './features/hangman/HangmanSettings';
 //import InlineFacesSprite from './features/common/InlineFacesSprite';
+//import StorySettings from './features/story/StorySettings';
+//import StoryCreate from './features/story/StoryCreate';
+//import StoryImport from './features/story/StoryImport';
 
 const MultipleChoiceCreate = lazy(() => import('./features/multipleChoice/creative/MultipleChoiceCreate'));
 const MultipleChoiceImport = lazy(() => import('./features/multipleChoice/creative/MultipleChoiceImport'));
@@ -42,6 +45,9 @@ const CanvasSettings = lazy(() => import('./features/canvas/CanvasSettings'));
 const HangmanCreate = lazy(() => import('./features/hangman/HangmanCreate'));
 const HangmanImport = lazy(() => import('./features/hangman/HangmanImport'));
 const HangmanSettings = lazy(() => import('./features/hangman/HangmanSettings'));
+const StoryCreate = lazy(() => import('./features/story/creative/StoryCreate'));
+const StoryImport = lazy(() => import('./features/story/creative/StoryImport'));
+const StorySettings = lazy(() => import('./features/story/StorySettings'));
 const InlineFacesSprite = lazy(() => import('./features/common/InlineFacesSprite'));
 
 function App() {
@@ -66,6 +72,9 @@ function App() {
               <Route exact path="/multiple_choice/import" element={<MultipleChoiceImport />} />
 
               <Route exact path="/story" element={<StoryGame />} />
+              <Route exact path="/story/settings" element={<StorySettings />} />
+              <Route exact path="/story/create" element={<StoryCreate />} />
+              <Route exact path="/story/import" element={<StoryImport />} />
 
               <Route exact path="/canvas" element={<CanvasGame />} />
               <Route exact path="/canvas/settings" element={<CanvasSettings />} />

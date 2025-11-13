@@ -8,8 +8,15 @@ defmodule PartyGame.Games.Story.StoryGame do
 
   @stories_path "./lib/party_game/games/story/prebuilt"
 
-  def new(%Story{} = story \\ %Story{}, options \\ %{}) do
-    Story.create_story(story, options)
+  def create(%Story{} = story \\ %Story{}, options \\ %{}) do
+    case options["text"] do
+      nil ->
+        story = Story.create_story(story, options)
+        add_story(story)
+      _ ->
+        options = Map.put(options, "tokens", tokenize(options["text"]))
+        Story.create_story(story, options)
+    end
   end
 
   def add_story(%Story{} = story) do

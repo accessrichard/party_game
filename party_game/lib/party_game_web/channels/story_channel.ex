@@ -49,8 +49,7 @@ defmodule PartyGameWeb.StoryChannel do
     settings = Map.put(settings, "round_time", round_time)
     payload = Map.put(payload, "settings", settings)
 
-    story = StoryGame.new(%Story{}, payload)
-    story = if Map.get(payload, "tokens", []) == [], do: StoryGame.add_story(story), else: story
+    story = StoryGame.create(%Story{}, payload)
 
     game_room =
       Lobby.set_game(game_room, story)

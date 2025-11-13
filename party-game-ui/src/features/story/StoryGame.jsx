@@ -44,20 +44,9 @@ const events = (topic) => [
     }
 ]
 
-const story = [
-    { type: "string", value: "once upon a time in a", errors: [], id: 1 },
-    { type: "text", value: "", errors: [], id: 2 },
-    { type: "string", value: " far far away. A man wearing a ", errors: [], id: 3 },
-    { type: "text", value: "", errors: [], id: 4 },
-    { type: "string", value: " strolled down the street. The man went into a ", errors: [], id: 5 },
-    { type: "text", value: "", errors: [], id: 6 },
-    { type: "string", value: " and bought a brand new ", errors: [], id: 7 },
-    { type: "text", value: "", errors: [], id: 8 },
-]
-
 const defaultForm = {
     name: "",
-    inputs: story,
+    inputs: [],
     id: Date.now(),
     type: "Story"
 }
@@ -119,7 +108,7 @@ export default function StoryGame() {
         const matching = games.find(x => x.game.name === selectedGame.name);
         return typeof matching === 'undefined'
             ? { type: selectedGame.type, name: selectedGame.name, settings }
-            : { type: matching.game.type, name: selectedGame.name, tokens: matching.game.tokens, settings };
+            : { type: matching.game.type, name: selectedGame.name, text: matching.game.text, settings };
     }
 
     function handleChanges(e, id) {
@@ -158,17 +147,17 @@ export default function StoryGame() {
     }
 
     function handleSubmit(e) {
-        //  if (e.target.reportValidity()) { ...noValidate...
-        //  }
+        e.preventDefault();
+        if (!e.target.checkValidity()) {
+            return;
+        }
 
         if (type == "alternate_story") {
             onTimerCompleted();
         } else {
             const fields = form.inputs.filter(x => editableTokens.includes(x.id))
             dispatch(channelPush(sendEvent(storyChannel, fields, "update_tokens")));
-        }
-
-        e.preventDefault();
+        }        
     }
 
     function onStartGame() {

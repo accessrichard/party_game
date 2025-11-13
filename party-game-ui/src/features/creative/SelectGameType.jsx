@@ -9,7 +9,7 @@ export default function SelectGameType({ value = "multiple_choice", onSelectGame
     const clientGameMetaList = useSelector(clientGameList);
     
     function onChange(e) {
-        setGame(e.target.value);
+        setGame(e.target.value);        
         const gameMeta = clientGameMetaList.find(x => x.type === e.target.value);
         onSelectGameType && onSelectGameType(gameMeta);
     }

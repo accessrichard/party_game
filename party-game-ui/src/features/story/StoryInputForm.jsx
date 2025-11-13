@@ -5,7 +5,7 @@ export default function StoryInput(props) {
     const { inputs, handleChanges, handleSubmit, formId = "story-form"} = props;
 
     return (
-        <form id={formId} className='form' onSubmit={handleSubmit} noValidate >
+        <form id={formId} className='form' onSubmit={handleSubmit} noValidate>
             {inputs.map((x) => {
 
                 if (x.type === "text") {
@@ -13,6 +13,7 @@ export default function StoryInput(props) {
                 } else if (x.type === "input") {
                     return <span key={"span-" + x.id} className='inline-flex group'>
                         <input
+                            autoComplete='off'
                             required
                             name="value"
                             key={"input-" + x.id}
