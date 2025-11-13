@@ -75,7 +75,7 @@ export default function StoryCreate({ game, initialState }) {
     function toGameMeta(game) {
         return {
             name: game.name,
-            type: game.type,
+            type: game.subType,
             url: '/story',
             location: "client",
             import: true,

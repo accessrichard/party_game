@@ -40,7 +40,6 @@ defmodule PartyGameWeb.StoryChannel do
   def handle_in("new_game", payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
     game_room = Server.get_game(game_code(socket.topic))
-
     payload =
       if game_room.game != nil, do: Map.put(payload, "turn", game_room.game.turn), else: payload
 

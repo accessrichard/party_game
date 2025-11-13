@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { clientGameList } from '../lobby/lobbySlice';
 import { useSelector } from 'react-redux';
 
 
 export default function SelectGameType({ value = "multiple_choice", onSelectGameType }) {
-
     const [game, setGame] = useState(value);
     const clientGameMetaList = useSelector(clientGameList);
+
+    useEffect(() => {
+        if (value) {
+            setGame(value);
+        }
+    }, [value]);
     
     function onChange(e) {
         setGame(e.target.value);        
