@@ -18,7 +18,8 @@ import {
 const defaultState = {
     type: "alternate_sentence",
     name: "",
-    text: "This is a [funny word] example story. [person or animal] went to the [place]. "
+    text: "This is a [funny word] example story. [person or animal] went to the [place]. ",
+    id: Date.now()
 }
 
 const isValidStory = (str) => {
@@ -83,21 +84,22 @@ export default function StoryCreate({ game, initialState }) {
         };
     }
 
-    function onEditGameClick(e, name) {
+    function handleEditGameClick(e, name) {
         e.preventDefault();
         const game = getSessionGame(name)        
         setForm(game);
     }
 
-    function downloadGame(e) {
+    function handleDownloadGame(e) {    
         e.preventDefault();
         if (!formRef.current.reportValidity() || !validate()) {
             return;
         }
 
         const serverSideGame = toServerSideGame(form);
+        const downloadAbleGame = {...serverSideGame, type: 'story', subType: serverSideGame.type}; 
         dispatch(createGame({ game: serverSideGame, redirect: false }));
-        download("Buzztastic Game " + form.name, JSON.stringify(serverSideGame, 2));
+        download("Buzztastic Game " + form.name, JSON.stringify(downloadAbleGame, 2));
     }
 
     function validate() {
@@ -113,7 +115,7 @@ export default function StoryCreate({ game, initialState }) {
 
     
 
-    function play(e) {
+    function handlePlayClick(e) {
         e.preventDefault();
         
         if (!formRef.current.reportValidity() || !validate()) {
@@ -131,17 +133,17 @@ export default function StoryCreate({ game, initialState }) {
     }
 
     function onSelectGameType(e) {
-        dispatch(push(e.url + '/create'))
+        dispatch(push(e.url + '/create'));
+        setForm({ ...form, type: e.type });
     }
-
-    return (
+   return (
         <>
             <div className="wrapper center-65 flex-center flex-grid">
                 <form className='form' ref={formRef}>
 
                     <div className="empty-space">
                         <div className="card">
-                            <SelectGameType value={form.type} onSelectGameType={onSelectGameType} />
+                            <SelectGameType value={form.subType} onSelectGameType={onSelectGameType} />
                         </div>
                     </div>
 
@@ -184,24 +186,18 @@ export default function StoryCreate({ game, initialState }) {
                                 <span className="highlight"></span>
                                 <span className="bar"></span>
                                 <label>{"Type your story here. User brackets [] as placeholders. For example: We went to the [place] to ..."}</label>
-
                                 <InputError className="error shake" errors={[(form.errors && form.errors.text) || ""]} />
-
-
-
                             </div>
                         </div>
                     </div>
 
-
                     <div className="empty-space" />
-
 
                     <CreativeControls
                         gameNames={getGamesNames(defaultState.type)}
-                        onDownload={downloadGame}
-                        onPlay={play}
-                        onEditGameClick={onEditGameClick}
+                        onDownload={handleDownloadGame}
+                        onPlay={handlePlayClick}
+                        handleEditGameClick={handleEditGameClick}
                     />
                 </form>
             </div>
