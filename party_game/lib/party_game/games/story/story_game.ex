@@ -46,10 +46,6 @@ defmodule PartyGame.Games.Story.StoryGame do
         &(&1.id > game_room.game.token_index && &1.type == "input")
       )
 
-    Logger.debug(
-      "Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}"
-    )
-
     %{
       game_room
       | game: %{
@@ -77,10 +73,6 @@ defmodule PartyGame.Games.Story.StoryGame do
       if until_token_index == 0,
         do: 999,
         else: until_token_index
-
-    Logger.debug(
-      "Current Token is #{game_room.game.token_index} New Token is: #{next_token_index}, Until Token is: #{until_token_index}"
-    )
 
     %{
       game_room

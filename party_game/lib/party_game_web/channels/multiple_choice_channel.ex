@@ -110,8 +110,8 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     PartyGameTimer.cancel_timer(socket.topic)
 
     Server.get_game(game_code(socket.topic))
-      |> Lobby.stop_game()
-      |> Server.update_game()
+    |> Lobby.stop_game()
+    |> Server.update_game()
 
     broadcast(socket, "quit_game", %{})
     {:noreply, socket}
@@ -123,20 +123,22 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     answer = Map.get(payload, "answer")
     guid = Map.get(payload, "id")
 
-    case MultipleChoiceGame.buzz(game_room, socket.assigns.name, answer, guid) do
-      {:win, game_room} ->
-        broadcast_correct_answer(game_room, answer, socket)
+    {status, game_room} = MultipleChoiceGame.buzz(game_room, socket.assigns.name, answer, guid)
+    MultipleChoiceGame.touch_expires(game_room)
+    Server.update_game(game_room)
 
-      {:noreply, _} ->
-        :ok
+    case status do
+      :win ->
+        handle_correct_answer(game_room, answer, socket)
+        {:noreply, socket}
+
+      :noreply ->
+        {:noreply, socket}
 
       _ ->
         push(socket, "handle_wrong_answer", %{isCorrect: false})
+        {:noreply, socket}
     end
-
-    MultipleChoiceGame.touch_expires(game_room)
-    Server.update_game(game_room)
-    {:noreply, socket}
   end
 
   @impl true
@@ -164,28 +166,38 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     reply_with_questions(topic, %{is_new?: false, game_room: game_room})
   end
 
-  defp broadcast_correct_answer(game_room, answer, socket) do
+  defp handle_correct_answer(game_room, answer, socket) do
     cancel_timer(game_room)
 
-    case start_timer(game_room, game_room.game.settings.next_question_time, :next_question) do
-      {:ok, time} ->
-        broadcast(
-          socket,
-          "handle_correct_answer",
-          %{
-            startRoundTimeSync: time,
-            data: %{
-              rounds: if(game_room.over?, do: game_room.game.rounds, else: []),
-              answer: answer,
-              winner: socket.assigns.name,
-              isOver: game_room.over?
-            }
-          }
-        )
+    cond do
+      game_room.over? ->
+        broadcast_correct_answer(game_room, answer, DateTime.utc_now(), socket)
 
-      {:timeout, nil} ->
-        kill_game(game_code(socket.topic))
+      true ->
+        case start_timer(game_room, game_room.game.settings.next_question_time, :start_round) do
+          {:ok, time} ->
+            broadcast_correct_answer(game_room, answer, time, socket)
+
+          {:timeout, nil} ->
+            kill_game(game_code(socket.topic))
+        end
     end
+  end
+
+  defp broadcast_correct_answer(game_room, answer, time, socket) do
+    broadcast(
+      socket,
+      "handle_correct_answer",
+      %{
+        startRoundTimeSync: time,
+        data: %{
+          rounds: if(game_room.over?, do: game_room.game.rounds, else: []),
+          answer: answer,
+          winner: socket.assigns.name,
+          isOver: game_room.over?
+        }
+      }
+    )
   end
 
   defp kill_game(game_code) do
@@ -226,9 +238,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     game_room =
       if from_handle_in?, do: MultipleChoiceGame.touch_expires(game_room), else: game_room
 
-    Server.update_game(game_room)
-
-    question = get_next_question(game_room)
+    question = get_next_question(game_room, game_room.game.questions)
 
     resp = %{
       data: %{
@@ -239,7 +249,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
       }
     }
 
-    broadcast_next_question(topic, game_room, resp)
+    broadcast_next_question(topic, Server.update_game(game_room), resp)
   end
 
   defp reply_with_questions(topic, %{is_new?: isNew, game_room: game_room}) do
@@ -247,7 +257,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     resp = %{"data" => question, "isNew" => isNew}
 
     resp = if isNew, do: add_settings(game_room, resp), else: resp
-
     broadcast_next_question(topic, game_room, resp)
   end
 
@@ -261,8 +270,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     case start_timer(game_room, seconds, :next_question) do
       {:ok, time} ->
-        Map.put(resp, :startRoundTimeSync, time)
-
+        resp = Map.put(resp, :startRoundTimeSync, time)
         PartyGameWeb.Endpoint.broadcast(topic, "handle_next_question", resp)
 
       {:timeout, nil} ->
@@ -270,11 +278,11 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     end
   end
 
-  defp get_next_question(%GameRoom{} = game_room) when game_room.game.questions == [] do
+  defp get_next_question(%GameRoom{} = _game_room, []) do
     %{question: "", answers: [], id: Ecto.UUID.autogenerate()}
   end
 
-  defp get_next_question(%GameRoom{} = game_room) do
+  defp get_next_question(%GameRoom{} = game_room, _) do
     [question | _] = game_room.game.questions
     question
   end
@@ -285,18 +293,20 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
 
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
 
-    unless MultipleChoiceGame.expired?(game_room, config[:idle_game_timeout]) do
-      PartyGameTimer.start_timer(game_code, seconds * 1000, %{
-        module: __MODULE__,
-        function: func,
-        args: [game_code]
-      })
-    else
-      Logger.debug(
-        "Timer expired. #{game_room.game.expires_at} Skipping on multiple choice: #{game_code}"
-      )
+    cond do
+      MultipleChoiceGame.expired?(game_room, config[:idle_game_timeout]) ->
+        Logger.debug(
+          "Timer expired. #{game_room.game.expires_at} Skipping on multiple choice: #{game_code}"
+        )
 
-      {:timeout, nil}
+        {:timeout, nil}
+
+      true ->
+        PartyGameTimer.start_timer(game_code, seconds * 1000, %{
+          module: __MODULE__,
+          function: func,
+          args: [game_code]
+        })
     end
   end
 

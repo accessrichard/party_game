@@ -53,7 +53,7 @@ defmodule PartyGame.MultipleChoice.MultipleChoiceGame do
   the game already advanced rounds, tracking questions
   via guid.
   """
-  def buzz(%GameRoom{} = game_room, _, _, _) when game_room.game.questions == [] do
+  def buzz(%GameRoom{} = game_room, _, _, _) when length(game_room.game.questions) == 0 do
     {:noreply, game_room}
   end
 
