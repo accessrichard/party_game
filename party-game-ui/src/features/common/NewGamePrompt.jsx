@@ -8,8 +8,8 @@ export default function NewGamePrompt(props) {
     const {
         onStartGame,
         isNewGamePrompt,
-        seconds = 15,
-        text = "Game Starts In: ",
+        seconds = 10,
+        text = "Waiting For Players: ",
         header = "" } = props;
 
     const [isTimerActive, setIsTimerActive] = useState(false);
@@ -39,16 +39,24 @@ export default function NewGamePrompt(props) {
     }, [isTimerActive, onStartGame]);
 
     useEffect(() => {
-        if (getMissingPlayers().length === 0) {
-            setCountDownMessage("All Players Joined... Starting. ")
-            setIsCountdownVisible(false);
-            setCountDownSeconds(0)           
-        } else {
-            setIsCountdownVisible(true);
-
+        if (presenceList.length === 1) {
+            onTimerCompleted();
+            return;
         }
 
-    }, [getMissingPlayers, onTimerCompleted]);
+        //// Sometimes events are lost if they are sent right after channelJoin.
+        if (getMissingPlayers().length === 0) {
+
+            setCountDownSeconds(3)
+            setCountDownMessage("Players Ready... ")
+
+            const timer = setTimeout(() => {
+                setCountDownMessage("Initializing Game... ")
+            }, 1000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [getMissingPlayers, onTimerCompleted, presenceList]);
 
 
     return (
@@ -70,7 +78,7 @@ export default function NewGamePrompt(props) {
                                     onTimerCompleted={onTimerCompleted}
                                 />
                             </h2>
-                        </div>{isCountdownVisible && <div><span>Waiting for players to connect:</span>
+                        </div>{isCountdownVisible && <div>
 
                             <ul className="ul-nostyle">
                                 {presenceList.map((x, i) => <li key={i}>{x.name} - {x.location}</li>)}
