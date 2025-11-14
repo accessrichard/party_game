@@ -16,7 +16,7 @@ export default function useVisibilityChangeTracking() {
 
 
     const dispatch = useDispatch();
-    const { gameCode } = useSelector(state => state.lobby);
+    const  gameCode  = useSelector(state => state.lobby.gameCode);
     const isGameOwner = useSelector(selectGameOwner);
 
 

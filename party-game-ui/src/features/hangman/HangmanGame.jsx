@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleGuess, handleNewGame, introSceneReset, returnToLobby, reset } from './hangmanSlice';
-import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
-import useLobbyEvents from '../lobby/useLobbyEvents';
+import { usePhoenixChannel, usePhoenixEvents, sendEvent } from '../phoenix/usePhoenix';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { Navigate } from 'react-router-dom';
 import { HangmanView } from './hangmanCanvas';
@@ -42,18 +41,18 @@ export default function HangmanGame() {
     const dispatch = useDispatch();
     const canvasRef = useRef(null);    
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
-    const { games } = useSelector(state => state.creative);
-    const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
-    const {
-        word,
-        guesses,
-        isWinner,
-        startIntroScene,
-        winningWord,
-        settings,
-        isOver,
-        forceQuit
-    } = useSelector(state => state.hangman);
+    const games = useSelector(state => state.creative.games);
+    const playerName = useSelector(state => state.lobby.playerName);
+    const gameCode = useSelector(state => state.lobby.gameCode);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
+    const word = useSelector(state => state.hangman.word);
+    const guesses = useSelector(state => state.hangman.guesses);
+    const isWinner = useSelector(state => state.hangman.isWinner);
+    const startIntroScene = useSelector(state => state.hangman.startIntroScene);
+    const winningWord = useSelector(state => state.hangman.winningWord);
+    const settings = useSelector(state => state.hangman.settings);
+    const isOver = useSelector(state => state.hangman.isOver);
+    const forceQuit = useSelector(state => state.hangman.forceQuit);
     const isGameOwner = useSelector(selectGameOwner);
 
     const prevWord = usePrevious(word);
@@ -62,10 +61,8 @@ export default function HangmanGame() {
     const hangmanChannel = `hangman:${gameCode}`;
 
     useBackButtonBlock(isBackButtonBlocked);
-    usePhoenixSocket();
     usePhoenixChannel(hangmanChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(hangmanChannel, events);
-    useLobbyEvents();
 
     useEffect(() => {
         setIsStartGamePrompt(true);

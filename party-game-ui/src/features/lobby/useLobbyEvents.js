@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import {    
+import {
     handleServerError,
     handleJoin,
     handleReconnect,
@@ -10,6 +10,8 @@ import { channelPush } from '../phoenix/phoenixMiddleware';
 import { syncPresenceDiff, syncPresenceState } from '../presence/presenceSlice';
 import { usePhoenixEvents } from '../phoenix/usePhoenix';
 import { useDispatch, useSelector } from 'react-redux';
+import { message } from './../chat/chatSlice';
+
 
 
 const events = (topic) => [
@@ -47,10 +49,15 @@ const events = (topic) => [
         event: 'presence_diff',
         dispatcher: syncPresenceDiff(),
         topic
-    },    
+    },
     {
         event: 'handle_join',
         dispatcher: handleJoin(),
+        topic,
+    },
+    {
+        event: 'chat',
+        dispatcher: message(),
         topic,
     }
 ]
@@ -58,9 +65,8 @@ export default function useLobbyEvents() {
     const dispatch = useDispatch();
     const gameCode = useSelector(state => state.lobby.gameCode);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
-    usePhoenixEvents(`lobby:${gameCode}`, events);
+    usePhoenixEvents(`lobby:${gameCode}`, events, { isPersisted: true });
     const [isDisconnected, setIsDisconnected] = useState(false);
-
     /**
      * If the client goes offline, we need to elect a new game owner.
      * If the client comes back online, sync the new game owner.

@@ -20,15 +20,15 @@ export const presenceSlice = createSlice({
     }
 });
 
-const getPresencesList = (p) => {
-    return Presence.list(p.presence, (id, { metas: [user, ..._rest] }) => {
+const getPresencesList = (presence) => {
+    return Presence.list(presence, (id, { metas: [user, ..._rest] }) => {
         return { name: id, online_at: user.online_at, isTyping: user.typing, location: user.location };
     });
 };
 
 
-export const getPresences = createSelector(state => state.presence, getPresencesList);
-export const getPresenceUsers = createSelector(state => state.presence, (p) => Object.keys(p.presence));
+export const getPresences = createSelector(state => state.presence.presence, getPresencesList);
+export const getPresenceUsers = createSelector(state => state.presence.presence, (presence) => Object.keys(presence));
  
 
 export const {

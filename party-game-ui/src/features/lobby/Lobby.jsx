@@ -1,5 +1,4 @@
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { usePhoenixChannel, usePhoenixSocket } from '../phoenix/usePhoenix';
 import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import {
@@ -10,7 +9,6 @@ import {
     selectGameOwner,
     serverGameList
 } from './lobbySlice';
-import useLobbyEvents from '../lobby/useLobbyEvents';
 import { useDispatch, useSelector } from 'react-redux';
 import Chat from '../chat/Chat';
 import GameCodeLink from '../common/GameCodeLink';
@@ -24,14 +22,10 @@ export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
-    const {
-        playerName,
-        gameCode,
-        gameOwner,
-        isGameStarted,
-        selectedGame
-    } = useSelector(state => state.lobby);
-
+    const gameCode = useSelector(state => state.lobby.gameCode);
+    const gameOwner = useSelector(state => state.lobby.gameOwner);
+    const isGameStarted = useSelector(state => state.lobby.isGameStarted);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(serverGameList);
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
@@ -43,9 +37,7 @@ export default function Lobby() {
         }
     }, [gameCode]);
 
-    usePhoenixSocket();
-    usePhoenixChannel(`lobby:${gameCode}`, { name: playerName }, { persisted: true });
-    useLobbyEvents();
+    
     useVisibilityChangeTracking();
 
     useEffect(() => {

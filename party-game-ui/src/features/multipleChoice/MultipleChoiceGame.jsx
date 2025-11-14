@@ -6,7 +6,6 @@ import Timer from '../common/Timer';
 import usePrevious from '../usePrevious';
 import useBackButtonBlock from '../useBackButtonBlock';
 import NewGamePrompt from '../common/NewGamePrompt';
-import useLobbyEvents from '../lobby/useLobbyEvents';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -63,34 +62,30 @@ const events = (topic) => [
 export default function MultipleChoiceGame() {
 
     const dispatch = useDispatch();
-    const {
-        isRoundStarted,
-        question,
-        id,
-        answers,
-        isWrong,
-        round,
-        correct,
-        flash,
-        roundWinner,
-        settings,
-        startCountdown,
-        isOver,
-        isNewGameTimeout,
-        startRoundTimeSync,
-        isQuit
-    } = useSelector(state => state.multipleChoice);
+    const isRoundStarted = useSelector(state => state.multipleChoice.isRoundStarted);
+    const question = useSelector(state => state.multipleChoice.question);
+    const id = useSelector(state => state.multipleChoice.id);
+    const answers = useSelector(state => state.multipleChoice.answers);
+    const isWrong = useSelector(state => state.multipleChoice.isWrong);
+    const round = useSelector(state => state.multipleChoice.round);
+    const correct = useSelector(state => state.multipleChoice.correct);
+    const flash = useSelector(state => state.multipleChoice.flash);
+    const roundWinner = useSelector(state => state.multipleChoice.roundWinner);
+    const settings = useSelector(state => state.multipleChoice.settings);
+    const startCountdown = useSelector(state => state.multipleChoice.startCountdown);
+    const isOver = useSelector(state => state.multipleChoice.isOver);
+    const isNewGameTimeout = useSelector(state => state.multipleChoice.isNewGameTimeout);
+    const startRoundTimeSync = useSelector(state => state.multipleChoice.startRoundTimeSync);
+    const isQuit = useSelector(state => state.multipleChoice.isQuit);
 
-    const {
-        playerName,
-        selectedGame,
-        gameCode
-    } = useSelector(state => state.lobby);
+    const playerName = useSelector(state => state.lobby.playerName);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
+    const gameCode = useSelector(state => state.lobby.gameCode);
 
     const isGameOwner = useSelector(selectGameOwner);
     const creativeGames = useSelector(state => state.creative.games);
     const serverGames = useSelector(state => state.lobby.api.list.data);
-    const { newGamePromtTime } = useSelector(state => state.lobby.settings);
+    const newGamePromtTime = useSelector(state => state.lobby.settings.newGamePromtTime);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
@@ -104,7 +99,6 @@ export default function MultipleChoiceGame() {
 
     usePhoenixChannel(gameChannel, { name: playerName });
     usePhoenixEvents(gameChannel, events);
-    useLobbyEvents();
     useBackButtonBlock(true);
 
     useEffect(() => {

@@ -4,6 +4,8 @@ import {
   Route,
   Routes
 } from "react-router";
+import { useSelector } from 'react-redux';
+
 import { lazy } from 'react';
 import AppBody from './features/common/AppBody';
 import ExceptionPopup from './features/common/ExceptionPopup';
@@ -11,6 +13,8 @@ import GoogleAnalytics from './features/common/GoogleAnalytics';
 import Join from './features/start/Join';
 import Landing from './features/start/Landing';
 import Lobby from './features/lobby/Lobby';
+import LobbyEvents from './features/lobby/LobbyEvents';
+
 import MultipleChoiceGame from './features/multipleChoice/MultipleChoiceGame';
 import CanvasGame from './features/canvas/CanvasGame';
 import CanvasAlternateGame from './features/canvas/CanvaAlternateGame';
@@ -52,49 +56,53 @@ const InlineFacesSprite = lazy(() => import('./features/common/InlineFacesSprite
 
 function App() {
   return (
-    <Router history={history}>
-      <Routes>
-        <Route element={<GoogleAnalytics />}>
-          <Route path="/" element={<AppBody />}>
-            <Route exact path="/start" element={<Start />} />
-            <Route path="/join" element={<Join />}>
-              <Route path="/join/:id" element={<Join />} />
-            </Route>
-            <Route index element={<Landing />} />
-            <Route element={<ExceptionPopup />}>
-              <Route exact path="/lobby" element={<Lobby />} />
-              <Route element={<InlineFacesSprite />}>
-                <Route exact path="/multiple_choice" element={<MultipleChoiceGame />} />
-                <Route exact path="/multiple_choice/score" element={<MultipleChoiceScore />} />
+    <>
+      <Router history={history}>
+
+        <Routes>
+          <Route element={<GoogleAnalytics />}>
+            <Route path="/" element={<AppBody />}>
+              <Route exact path="/start" element={<Start />} />
+              <Route path="/join" element={<Join />}>
+                <Route path="/join/:id" element={<Join />} />
               </Route>
-              <Route exact path="/multiple_choice/settings" element={<MultipleChoiceSettings />} />
-              <Route exact path="/multiple_choice/create" element={<MultipleChoiceCreate />} />
-              <Route exact path="/multiple_choice/import" element={<MultipleChoiceImport />} />
+              <Route index element={<Landing />} />
+              <Route element={<ExceptionPopup />}>
+                <Route element={<LobbyEvents />}>
+                  <Route exact path="/lobby" element={<Lobby />} />
+                  <Route element={<InlineFacesSprite />}>
+                    <Route exact path="/multiple_choice" element={<MultipleChoiceGame />} />
+                    <Route exact path="/multiple_choice/score" element={<MultipleChoiceScore />} />
+                  </Route>
+                  <Route exact path="/multiple_choice/settings" element={<MultipleChoiceSettings />} />
+                  <Route exact path="/multiple_choice/create" element={<MultipleChoiceCreate />} />
+                  <Route exact path="/multiple_choice/import" element={<MultipleChoiceImport />} />
 
-              <Route exact path="/story" element={<StoryGame />} />
-              <Route exact path="/story/settings" element={<StorySettings />} />
-              <Route exact path="/story/create" element={<StoryCreate />} />
-              <Route exact path="/story/import" element={<StoryImport />} />
+                  <Route exact path="/story" element={<StoryGame />} />
+                  <Route exact path="/story/settings" element={<StorySettings />} />
+                  <Route exact path="/story/create" element={<StoryCreate />} />
+                  <Route exact path="/story/import" element={<StoryImport />} />
 
-              <Route exact path="/canvas" element={<CanvasGame />} />
-              <Route exact path="/canvas/settings" element={<CanvasSettings />} />
-              <Route exact path="/canvas/create" element={<CanvasCreate />} />
-              <Route exact path="/canvas/import" element={<CanvasImport />} />
-              <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />
-              <Route exact path="/canvas_alternate/settings" element={<CanvasSettings />} />
-              <Route exact path="/canvas_alternate/create" element={<CanvasCreate defaults={{type: "canvas_alternate"}}/>}/> 
-              <Route exact path="/canvas_alternate/import" element={<CanvasImport />} />
+                  <Route exact path="/canvas" element={<CanvasGame />} />
+                  <Route exact path="/canvas/settings" element={<CanvasSettings />} />
+                  <Route exact path="/canvas/create" element={<CanvasCreate />} />
+                  <Route exact path="/canvas/import" element={<CanvasImport />} />
+                  <Route exact path="/canvas_alternate" element={<CanvasAlternateGame />} />
+                  <Route exact path="/canvas_alternate/settings" element={<CanvasSettings />} />
+                  <Route exact path="/canvas_alternate/create" element={<CanvasCreate defaults={{ type: "canvas_alternate" }} />} />
+                  <Route exact path="/canvas_alternate/import" element={<CanvasImport />} />
 
-              <Route exact path="/hangman" element={<HangmanGame />} />
-              <Route exact path="/hangman/create" element={<HangmanCreate />} />
-              <Route exact path="/hangman/import" element={<HangmanImport />} />
-              <Route exact path="/hangman/settings" element={<HangmanSettings />} />
-
+                  <Route exact path="/hangman" element={<HangmanGame />} />
+                  <Route exact path="/hangman/create" element={<HangmanCreate />} />
+                  <Route exact path="/hangman/import" element={<HangmanImport />} />
+                  <Route exact path="/hangman/settings" element={<HangmanSettings />} />
+                </Route>
+              </Route>
             </Route>
           </Route>
-        </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </>
   );
 }
 

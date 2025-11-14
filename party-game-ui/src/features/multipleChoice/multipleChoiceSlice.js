@@ -87,7 +87,6 @@ export const multipleChoiceSlice = createSlice({
         },
         handleNewGameCreated(state, action) {
             _resetGame(state);
-
             const settings = Object.assign(state.settings, toClientSettings(action.payload.settings));
             if (settings.isNewGamePrompt) {
                 state.isNewGamePrompt = true

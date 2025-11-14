@@ -6,7 +6,6 @@ import Scores from '../common/Scores';
 import { getScores, resetGame } from './multipleChoiceSlice';
 import { push } from "redux-first-history";
 import { Confetti } from '@neoconfetti/react';
-import useLobbyEvents from '../lobby/useLobbyEvents';
 import { clientGameList } from '../lobby/lobbySlice';
 
 
@@ -30,13 +29,10 @@ function MultipleChoiceScore() {
     const scores = useSelector(getScores);
     const [confetti, setConfetti] = useState(new Date().toISOString())
     const clientGameMetaList = useSelector(clientGameList);
-
-    useLobbyEvents();
-
-    const { isGameStarted, gameCode, selectedGame } = useSelector(state => state.lobby);
-
-    const { round } = useSelector(state => state.multipleChoice);
-
+    const isGameStarted = useSelector(state => state.lobby.isGameStarted);
+    const gameCode = useSelector(state => state.lobby.gameCode);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
+    const round = useSelector(state => state.multipleChoice.round);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {

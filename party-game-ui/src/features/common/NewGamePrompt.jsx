@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Timer from '../common/Timer';
 import { getPresences } from '../presence/presenceSlice';
 import { useSelector } from 'react-redux';
@@ -13,30 +13,42 @@ export default function NewGamePrompt(props) {
         header = "" } = props;
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const presenceList = useSelector(getPresences);    
-
-    
+    const [isCountdownVisible, setIsCountdownVisible] = useState(true);
+    const [countDownMessage, setCountDownMessage] = useState(text);
+    const [countDownSeconds, setCountDownSeconds] = useState(seconds);
+    const presenceList = useSelector(getPresences);
 
     useEffect(() => {
         setIsTimerActive(isNewGamePrompt);
     }, [isNewGamePrompt]);
 
     useEffect(() => {
-        if (getMissingPlayers().length === 0) {
-            onTimerCompleted();
-        }
-    }, [presenceList])
+        setCountDownMessage(text);
+    }, [text]);
 
-    function getMissingPlayers() {
+    const getMissingPlayers = useCallback(() => {
         return presenceList.filter(presence => presence.location != "game").map(x => x.name)
-    }
+    }, [presenceList]);
 
-    function onTimerCompleted() {
-        if (isTimerActive){
-            setIsTimerActive(false);
+    const onTimerCompleted = useCallback(() => {
+        if (isTimerActive) {
             onStartGame && onStartGame();
+            setIsTimerActive(false);
+
         }
-    }
+    }, [isTimerActive, onStartGame]);
+
+    useEffect(() => {
+        if (getMissingPlayers().length === 0) {
+            setCountDownMessage("All Players Joined... Starting. ")
+            setIsCountdownVisible(false);
+            setCountDownSeconds(0)           
+        } else {
+            setIsCountdownVisible(true);
+
+        }
+
+    }, [getMissingPlayers, onTimerCompleted]);
 
 
     return (
@@ -49,21 +61,24 @@ export default function NewGamePrompt(props) {
                             <h2 className=''>{header}</h2>
                         </div>
                         <div className='flex-row flex-center'>
-                            <h2>{text}
-                                <Timer numberSeconds={seconds}
+                            <h2>{countDownMessage}
+                                <Timer numberSeconds={countDownSeconds}
                                     isIncrement={false}
-                                    isVisible={true}
+                                    isVisible={isCountdownVisible}
                                     isActive={isTimerActive}
                                     timeFormat="seconds"
                                     onTimerCompleted={onTimerCompleted}
                                 />
                             </h2>
+                        </div>{isCountdownVisible && <div><span>Waiting for players to connect:</span>
+
+                            <ul className="ul-nostyle">
+                                {presenceList.map((x, i) => <li key={i}>{x.name} - {x.location}</li>)}
+                            </ul>
                         </div>
-                        Waiting for players to connect:
-                        <ul className="ul-nostyle">
-                            {presenceList.map((x, i) => <li key={i}>{x.name} - {x.location}</li>)}
-                        </ul>
+                        }
                     </div>
+
                 </div>
             }
 

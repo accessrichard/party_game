@@ -32,7 +32,7 @@ export function usePhoenixSocket() {
 
 
 export function usePhoenixChannel(topic, channelJoinData, opts = {}) {
-    const { persisted } = opts;
+    const { isPersisted } = Object.assign({ isPersisted: false }, opts);
     const dispatch = useDispatch();
     const channels = useSelector(state => state.phoenix.channels);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
@@ -64,14 +64,15 @@ export function usePhoenixChannel(topic, channelJoinData, opts = {}) {
 
     useEffect(() => {
         return () => {
-            if (!persisted) {
+            if (!isPersisted) {
                 dispatch(channelLeave({ topic }));
             }
         }
     }, []);
 }
 
-export function usePhoenixEvents(topic, channelOnEvents) {
+export function usePhoenixEvents(topic, channelOnEvents, opts) {
+    const { isPersisted } = Object.assign({ isPersisted: false }, opts);
     const dispatch = useDispatch();
     const channels = useSelector(state => state.phoenix.channels);
     const socketStatus = useSelector(state => state.phoenix.socket.status);
@@ -88,10 +89,15 @@ export function usePhoenixEvents(topic, channelOnEvents) {
             || !hasConnectedChannel(channels, topic)) {
             return
         }
-        
+
         channelOnEvents(topic).forEach((e) => dispatch(channelOn(e)))
 
-        return () => { channelOnEvents(topic).forEach((e) => dispatch(channelOff(e))) }
+        return () => {
+            if (!isPersisted) {
+                channelOnEvents(topic).forEach((e) => dispatch(channelOff(e)));
+            }
+
+        }
     }, [topic, channels, socketStatus, channelOnEvents]);
 }
 

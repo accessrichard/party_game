@@ -121,6 +121,12 @@ defmodule PartyGameWeb.LobbyChannel do
     {:noreply, socket}
   end
 
+   @impl true
+  def handle_in(@channel_name <> _room_name, payload, socket) do
+    broadcast(socket, "chat", payload)
+    {:noreply, socket}
+  end
+
   # Called after ChannelWatcher leave triggers to set the new game owner.
   #
   # 1. The client socket is disconnected

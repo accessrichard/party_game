@@ -8,7 +8,6 @@ import usePrevious from '../usePrevious';
 import NewGamePrompt from '../common/NewGamePrompt';
 import WinnerList from './WinnerList';
 import useBackButtonBlock from '../useBackButtonBlock'
-import useLobbyEvents from '../lobby/useLobbyEvents';
 import { Navigate } from 'react-router-dom';
 import { push } from "redux-first-history";
 import { channelPush } from '../phoenix/phoenixMiddleware';
@@ -16,7 +15,7 @@ import { endGame, selectGameOwner } from '../lobby/lobbySlice';
 import { canvasWidth, canvasHeight, clearCanvas, saveCanvas, clearCommand } from './canvasUtils';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateWord, commands, reset, handleNewGame, handleGuess } from './canvasSlice'
-import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
+import { usePhoenixChannel, usePhoenixEvents, sendEvent } from '../phoenix/usePhoenix';
 
 const events = (topic) => [
     {
@@ -68,22 +67,20 @@ export default function CanvasUI({
 }) {
 
     const dispatch = useDispatch();
-    const { playerName, gameCode, isGameStarted } = useSelector(state => state.lobby);
+    const playerName = useSelector(state => state.lobby.playerName);
+    const gameCode = useSelector(state => state.lobby.gameCode);
+    const isGameStarted = useSelector(state => state.lobby.isGameStarted);
     const isGameOwner = useSelector(selectGameOwner);
     const canvasChannel = `canvas:${gameCode}`;
 
-    usePhoenixSocket();
     usePhoenixChannel(canvasChannel, { name: playerName, size: [canvasWidth(), canvasHeight()] }, { persisted: false });
     usePhoenixEvents(canvasChannel, events);
-    useLobbyEvents();
 
-    const {
-        commands,
-        startTimerTime,
-        minSize,
-        guesses,
-        winners
-    } = useSelector(state => state.canvas);
+    const commands = useSelector(state => state.canvas.commands);
+    const startTimerTime = useSelector(state => state.canvas.startTimerTime);
+    const minSize = useSelector(state => state.canvas.minSize);
+    const guesses = useSelector(state => state.canvas.guesses);
+    const winners = useSelector(state => state.canvas.winners);
 
     const [isBackButtonBlocked, setIsBackButtonBlocked] = useState(true);
     const [height, setHeight] = useState(0);

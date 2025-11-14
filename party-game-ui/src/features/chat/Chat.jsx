@@ -1,17 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Players from './Players';
-import { message } from './chatSlice';
 import { channelPush } from '../phoenix/phoenixMiddleware';
-import { usePhoenixChannel, usePhoenixEvents } from '../phoenix/usePhoenix';
-
-const onEvents = (topic) => [
-  {
-    event: 'chat',
-    dispatcher: message(),
-    topic,
-  }
-]
 
 const typingEvent = (topic, isTyping) => {
   return {
@@ -30,10 +20,7 @@ const Chat = () => {
   const [text, setText] = useState("");
   const [isUserTyping, setIsUserTyping] = useState(false);
 
-  const topic = `chat:${gameCode}`
-
-  usePhoenixChannel(topic, { name: player });
-  usePhoenixEvents(topic, onEvents);
+  const topic = `lobby:${gameCode}`  
 
   useEffect(() => {
     chatBottomRef.current.scrollTop = chatBottomRef.current.scrollHeight + window.innerHeight;
@@ -59,13 +46,12 @@ const Chat = () => {
     if (isUserTyping) {
       return;
     }
-
-    const lobbyChannel = `lobby:${gameCode}`;
+    
     setIsUserTyping(true);
-    dispatch(channelPush(typingEvent(lobbyChannel, true)));
+    dispatch(channelPush(typingEvent(topic, true)));
 
     setTimeout(() => {
-      dispatch(channelPush(typingEvent(lobbyChannel, false)));
+      dispatch(channelPush(typingEvent(topic, false)));
       setIsUserTyping(false);
     }, 1000 * 2);
   }

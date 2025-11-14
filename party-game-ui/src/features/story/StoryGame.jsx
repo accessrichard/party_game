@@ -5,9 +5,8 @@ import {
 import StoryInputForm from './StoryInputForm';
 import StoryInputAltForm from './StoryInputAltForm';
 import StoryDisplayForm from './StoryDisplayForm';
-import { usePhoenixChannel, usePhoenixEvents, usePhoenixSocket, sendEvent } from '../phoenix/usePhoenix';
+import { usePhoenixChannel, usePhoenixEvents, sendEvent } from '../phoenix/usePhoenix';
 import { useDispatch, useSelector } from 'react-redux';
-import useLobbyEvents from '../lobby/useLobbyEvents';
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { handleNewGame, handleUpdateTokens, returnToLobby, handleSubmitForm, reset } from './storySlice';
 import { endGame, selectGameOwner } from '../lobby/lobbySlice';
@@ -65,10 +64,8 @@ export default function StoryGame() {
     const storyChannel = `story:${gameCode}`;
     const [form, setForm] = useState(defaultForm);
 
-    usePhoenixSocket();
     usePhoenixChannel(storyChannel, { name: playerName }, { persisted: false });
     usePhoenixEvents(storyChannel, events);
-    useLobbyEvents();
     useBackButtonBlock(isBackButtonBlocked);
 
     useEffect(() => {
