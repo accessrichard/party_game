@@ -93,4 +93,5 @@ defmodule PartyGame.Games.Hangman.HangmanGame do
   def word(count, difficulty \\ "easy") do
     PartyGame.Games.Canvas.CanvasGame.word(count, difficulty)
   end
+
 end

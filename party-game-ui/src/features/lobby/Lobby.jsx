@@ -1,6 +1,6 @@
 import { channelPush } from '../phoenix/phoenixMiddleware';
 import { NavLink } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     changeGame,
     handleServerError,
@@ -20,7 +20,6 @@ import useVisibilityChangeTracking from '../useVisibilityChangeTracking';
 
 export default function Lobby() {
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [gameList, setGameList] = useState([]);
     const dispatch = useDispatch();
     const gameCode = useSelector(state => state.lobby.gameCode);
     const gameOwner = useSelector(state => state.lobby.gameOwner);
@@ -30,6 +29,8 @@ export default function Lobby() {
     const serverGames = useSelector(serverGameList);
     const serverGamesLoading = useSelector(state => state.lobby.api.list.loading);
     const isGameOwner = useSelector(selectGameOwner);
+
+    const gameList = useMemo(() => mergeGameList(serverGames, creativeGames), [serverGames, creativeGames]);
 
     useEffect(() => {
         if (!gameCode) {
@@ -60,13 +61,12 @@ export default function Lobby() {
 
     }, [serverGames, serverGamesLoading]);
 
-    /**
-     * Merge the user created games with the server game list.
-     */
-    useEffect(() => {
-        const list = mergeGameList(serverGames, creativeGames);
-        setGameList(list);
-    }, [creativeGames, serverGames, setGameList]);
+    const selectGame = useCallback((name) => {
+        const game = gameList.find(x => x.name === name);
+        if (game) {
+            dispatch(changeGame({ selectedGame: game }));
+        }
+    }, [gameList, dispatch]);
 
     /**
      * Default the selected game on first page visit.
@@ -74,20 +74,15 @@ export default function Lobby() {
      * When elected new game owner, sync the type and game.
      */
     useEffect(() => {
-        if (!gameList || gameList.length === 0) {
+        if (gameList.length === 0) {
             return;
         }
 
-        if (!selectedGame || !selectedGame.name) {
+        const isSelectedGameInList = gameList.some(game => game.name === selectedGame?.name && game.type === selectedGame?.type);
+        if (!isSelectedGameInList) {
             selectGame(gameList[0].name);
-            return;
         }
-
-        if (!gameList.find(game => game.name == selectedGame.name && game.type == selectedGame.type)) {
-            selectGame(gameList[0].name);
-            return;
-        }
-    }, [gameList, selectedGame.name]);
+    }, [gameList, selectedGame, selectGame]);
 
     useEffect(() => {
         if (selectedGame.url && isGameStarted) {
@@ -112,13 +107,6 @@ export default function Lobby() {
 
     function onGameChange(e) {
         selectGame(e.target.value)
-    }
-
-    function selectGame(name) {
-        const game = gameList.find(x => x.name == name);
-        if (game) {
-            dispatch(changeGame({ selectedGame: game }));
-        }
     }
 
     function onLobbyTimeout() {

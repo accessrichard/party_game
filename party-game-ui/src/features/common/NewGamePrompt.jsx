@@ -9,13 +9,14 @@ export default function NewGamePrompt(props) {
         onStartGame,
         isNewGamePrompt,
         seconds = 10,
-        text = "Waiting For Players: ",
+        text = "Waiting For Players ",
         header = "" } = props;
 
     const [isTimerActive, setIsTimerActive] = useState(false);
-    const [isCountdownVisible, setIsCountdownVisible] = useState(true);
+    const [isTimerVisible, setIsTimerVisible] = useState(false);
     const [countDownMessage, setCountDownMessage] = useState(text);
     const [countDownSeconds, setCountDownSeconds] = useState(seconds);
+
     const presenceList = useSelector(getPresences);
 
     useEffect(() => {
@@ -47,11 +48,19 @@ export default function NewGamePrompt(props) {
         //// Sometimes events are lost if they are sent right after channelJoin.
         if (getMissingPlayers().length === 0) {
 
-            setCountDownSeconds(3)
-            setCountDownMessage("Players Ready... ")
+            setCountDownSeconds(2)
+            setCountDownMessage("Waiting For Players ")
 
             const timer = setTimeout(() => {
-                setCountDownMessage("Initializing Game... ")
+                setCountDownMessage("Done")
+                setIsTimerVisible(false);
+            }, 1000);
+
+            return () => clearTimeout(timer);
+        } else {
+            const timer = setTimeout(() => {
+                setCountDownMessage("Waiting For Players: ")
+                setIsTimerVisible(true);
             }, 1000);
 
             return () => clearTimeout(timer);
@@ -72,21 +81,19 @@ export default function NewGamePrompt(props) {
                             <h2>{countDownMessage}
                                 <Timer numberSeconds={countDownSeconds}
                                     isIncrement={false}
-                                    isVisible={isCountdownVisible}
+                                    isVisible={isTimerVisible}
                                     isActive={isTimerActive}
                                     timeFormat="seconds"
                                     onTimerCompleted={onTimerCompleted}
                                 />
                             </h2>
-                        </div>{isCountdownVisible && <div>
-
+                        </div>
+                        <div>
                             <ul className="ul-nostyle">
-                                {presenceList.map((x, i) => <li key={i}>{x.name} - {x.location}</li>)}
+                                {presenceList.map((x, i) => <li key={i}>{x.name}</li>)}
                             </ul>
                         </div>
-                        }
                     </div>
-
                 </div>
             }
 

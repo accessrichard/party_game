@@ -284,6 +284,10 @@ const phoenixMiddleware = () => {
 
         const channel = getChannel(action.payload.topic);
 
+        if (channel.bindings.find(b => b.event === action.payload.event)) {
+            return;
+        }
+
         channel.on(action.payload.event, e => {
             if (action.payload.dispatcher) {
                 //// On events are dispatched to the action.payload.dispatcher action

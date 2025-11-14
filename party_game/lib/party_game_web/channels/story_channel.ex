@@ -18,21 +18,27 @@ defmodule PartyGameWeb.StoryChannel do
 
     case Server.lookup(room_name) do
       {:ok, _} ->
-        name = Map.get(payload, "name")
-        socket = assign(socket, :game, Server.get_game(room_name))
-        socket = assign(socket, :name, name)
-        send(self(), {:after_join})
+        socket =
+          socket
+          |> assign(:name, Map.get(payload, "name"))
+
+        send(self(), :after_join)
         {:ok, socket}
 
       _ ->
-        send(self(), {:after_join, :game_not_found})
-        {:ok, socket}
+        {:error, %{reason: "game_not_found"}}
     end
   end
 
   @impl true
-  def handle_info({:after_join}, socket) do
+  def handle_info(:after_join, socket) do
     Logger.debug("After Join #{socket.topic} for: #{socket.assigns.name}")
+
+    Server.get_game(game_code(socket.topic))
+      |> Lobby.update_player_location(socket.assigns.name, "story")
+      |> Server.update_game()
+
+
     {:noreply, socket}
   end
 
@@ -40,8 +46,11 @@ defmodule PartyGameWeb.StoryChannel do
   def handle_in("new_game", payload, socket) do
     Logger.debug("New Story Game #{socket.topic} from #{socket.assigns.name}")
     game_room = Server.get_game(game_code(socket.topic))
+
     payload =
-      if game_room.game != nil, do: Map.put(payload, "turn", game_room.game.turn), else: payload
+      if game_room.game != nil and Map.has_key?(payload, "turn") and game_room.game.turn != nil,
+        do: Map.put(payload, "turn", game_room.game.turn),
+        else: payload
 
     settings = Map.get(payload, "settings", %{})
     round_time = Map.get(settings, "roundTime", 60)
@@ -149,8 +158,8 @@ defmodule PartyGameWeb.StoryChannel do
     {:noreply, socket}
   end
 
-  defp updated?(%Story{} = story, new_token) do
+  def updated?(%Story{} = story, new_token) do
     token = Enum.find(story.tokens, fn x -> x.id == new_token["id"] end)
-    token.value !== new_token["value"]
+    token && token.value !== new_token["value"]
   end
 end

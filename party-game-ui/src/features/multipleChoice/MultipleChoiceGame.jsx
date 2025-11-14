@@ -89,11 +89,9 @@ export default function MultipleChoiceGame() {
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [timerSeconds, setTimerSeconds] = useState(settings.nextQuestionTime);
     const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
-    const [timerStartDate, setTimerStartDate] = useState(null);
-    const [isDisabled, setIsDisabled] = useState(false);
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
-    const [canRetryWrongAnswer, setCanRetryWrongAnswer] = useState(true);
 
+    const isDisabled = isQuestionAnswered || !isRoundStarted || correct !== "" || isWrong;
     const prevRound = usePrevious(round);
     const gameChannel = `game:${gameCode}`;
 
@@ -104,29 +102,13 @@ export default function MultipleChoiceGame() {
     useEffect(() => {
         dispatch(resetGame());
         setIsStartGamePrompt(true);
-
+        
         dispatch(channelPush({
             topic: `lobby:${gameCode}`,
             event: "presence_location",
             data: { location: "game" }
         }));
-    }, []);
-
-    /**
-     * Sets a delay timeout on wrong answers as configured in the settings.
-     * 
-     * Synchronizes with the round timer so the wrong answer timeout doesn't
-     * override the round timer. 
-     */
-    useEffect(() => {
-        if (timerStartDate === null) {
-            setCanRetryWrongAnswer(true);
-            return;
-        }
-
-        const countDownSeconds = Math.round((new Date() - timerStartDate) / 1000);
-        setCanRetryWrongAnswer(countDownSeconds - settings.wrongAnswerTimeout > 0);
-    }, [timerStartDate, isWrong, settings.wrongAnswerTimeout]);
+    }, [dispatch, gameCode]);
 
     /**
      * Sets a countdown timer after a question is answered
@@ -138,9 +120,7 @@ export default function MultipleChoiceGame() {
             setTimerSeconds(settings.nextQuestionTime);
             setIsTimerActive(true);
         }
-
-        return () => { setIsTimerActive(false); };
-    }, [startCountdown, isTimerActive, settings.nextQuestionTime]);
+    }, [startCountdown, settings.nextQuestionTime]);
 
 
     /**
@@ -152,20 +132,23 @@ export default function MultipleChoiceGame() {
             setIsStartGamePrompt(false);
         }
 
+
         if (isRoundStarted && round === prevRound) {
             setTimerSeconds(settings.questionTime);
             setIsTimerActive(true);
-            setIsDisabled(false);
         } else if (round !== prevRound && isRoundStarted) {
             /// Force reset of timer when round changes
             /// since timers can go out of sync across players.
-            setIsStartGamePrompt(false);
             setIsTimerActive(new Date());
             setIsQuestionAnswered(false);
         }
+    }, [isRoundStarted, settings.questionTime, round, prevRound]);
 
-        return () => { setIsTimerActive(false); };
-    }, [isRoundStarted, isTimerActive, settings.questionTime, round, prevRound]);
+     useEffect(() => {
+        if (!isRoundStarted) {
+            setIsTimerActive(false);
+        }
+    }, [isRoundStarted]);
 
     useEffect(() => {
         if (isQuit) {
@@ -173,7 +156,7 @@ export default function MultipleChoiceGame() {
             dispatch(resetGame());
             dispatch(push('/lobby'))
         }
-    }, [isQuit]);
+    }, [isQuit, dispatch]);
 
     function startClick(e) {
         e && e.preventDefault();
@@ -186,8 +169,6 @@ export default function MultipleChoiceGame() {
     }
 
     function onTimerCompleted() {
-        setIsDisabled(true);
-
         setIsTimerActive(false);
         if (!isQuestionAnswered && isRoundStarted) {
             dispatch(unansweredTimeout());
@@ -219,10 +200,6 @@ export default function MultipleChoiceGame() {
     }
 
     useEffect(() => {
-        setIsDisabled(isQuestionAnswered || !isRoundStarted || (correct !== "" || isWrong))
-    }, [isQuestionAnswered, isRoundStarted, correct, isWrong]);
-
-    useEffect(() => {
         let timeout;
         if (isOver) {
 
@@ -236,7 +213,7 @@ export default function MultipleChoiceGame() {
         return () => {
             timeout && clearTimeout(timeout);
         }
-    }, [isOver, settings.nextQuestionTime]);
+    }, [isOver, dispatch]);
 
     /**
      * If not all clients have connected after NewGamePrompt timeout expires,
@@ -255,7 +232,7 @@ export default function MultipleChoiceGame() {
             dispatch(push("/lobby"))
         }
 
-    }, [isNewGameTimeout]);
+    }, [isNewGameTimeout, dispatch]);
 
     function isHappy() {
         return roundWinner === playerName && correct !== "";
@@ -297,17 +274,17 @@ export default function MultipleChoiceGame() {
                         <Flash flash={flash}></Flash>
 
                         {isWrong &&
-                            <span>Wrong{!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1 && <span>, Try again in&nbsp;</span>}
+                            <span>Wrong, Try again in&nbsp;
 
                                 <Timer key={"wrongAnswer" + isWrong + settings.wrongAnswerTimeout}
                                     isActive={isWrong}
-                                    isVisible={!canRetryWrongAnswer && settings.wrongAnswerTimeout > 1}
+                                    isVisible={true}
                                     timeFormat={"seconds"}
                                     onTimerCompleted={onWrongAnswerTimerCompleted}
                                     isIncrement={false}
                                     numberSeconds={settings.wrongAnswerTimeout}>
                                 </Timer>
-                                {!canRetryWrongAnswer && isWrong && settings.wrongAnswerTimeout > 1 && <span>&nbsp;seconds</span>}
+                                &nbsp;seconds
                             </span>
                         }
                         <div className={(question || "").length < 40 ? "question question-big" : "question question-small"}>
@@ -321,7 +298,6 @@ export default function MultipleChoiceGame() {
                                 {!isOver && <Timer key={"onTimerCompleted" + isTimerActive + timerSeconds}
                                     isActive={isTimerActive}
                                     timeIncrement={-1}
-                                    onStartDateSet={setTimerStartDate}
                                     startDate={startRoundTimeSync}
                                     isIncrement={false}
                                     onTimerCompleted={onTimerCompleted}

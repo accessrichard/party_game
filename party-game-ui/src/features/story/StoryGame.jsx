@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     toFieldObject
 } from '../creative/creative';
@@ -54,9 +54,19 @@ export default function StoryGame() {
 
     const dispatch = useDispatch();
 
-    const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
-    const { games } = useSelector(state => state.creative);
-    const { tokens, name, turn, type, isOver, forceQuit, startTimerTime, editableTokens, settings } = useSelector(state => state.story);
+    const playerName = useSelector(state => state.lobby.playerName);
+    const gameCode = useSelector(state => state.lobby.gameCode);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
+    const games = useSelector(state => state.creative.games);
+    const tokens = useSelector(state => state.story.tokens);
+    const name = useSelector(state => state.story.name);
+    const turn = useSelector(state => state.story.turn);
+    const type = useSelector(state => state.story.type);
+    const isOver = useSelector(state => state.story.isOver);
+    const forceQuit = useSelector(state => state.story.forceQuit);
+    const startTimerTime = useSelector(state => state.story.startTimerTime);
+    const editableTokens = useSelector(state => state.story.editableTokens);
+    const settings = useSelector(state => state.story.settings);
     const isGameOwner = useSelector(selectGameOwner);
 
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
@@ -118,36 +128,33 @@ export default function StoryGame() {
             setForm(newForm);
         }
     }
-
-    function notifyLeave() {
-        dispatch(channelPush(sendEvent(storyChannel, {}, "end_game")))
-    }
-
-    function onQuitClick(e) {
+    
+    const onQuitClick = useCallback((e) => {
         if (e) {
-            notifyLeave();
+            dispatch(channelPush(sendEvent(storyChannel, {}, "end_game")));
         }
 
         dispatch(endGame());
         setIsBackButtonBlocked(false);
         dispatch(reset());
         dispatch(push('/lobby'));
-    }
-
-    function onTimerCompleted() {
+    }, [dispatch, storyChannel]);
+     const onTimerCompleted = useCallback(() => {
         if (!isOver) {
             dispatch(channelPush(sendEvent(storyChannel, {
                 tokens: form.inputs,
             }, "submit_form")));
             return;
         }
-    }
+    }, [isOver, dispatch, storyChannel, form.inputs]);
 
-    function handleSubmit(e) {
+
+    const handleSubmit = useCallback((e) => {
         e.preventDefault();
         if (!e.target.checkValidity()) {
             return;
         }
+        
 
         if (type == "alternate_story") {
             onTimerCompleted();
@@ -155,17 +162,18 @@ export default function StoryGame() {
             const fields = form.inputs.filter(x => editableTokens.includes(x.id))
             dispatch(channelPush(sendEvent(storyChannel, fields, "update_tokens")));
         }        
-    }
+    }, [type, onTimerCompleted, form.inputs, editableTokens, dispatch, storyChannel]);
 
-    function onStartGame() {
+    const onStartGame = useCallback(() => {
         if (isGameOwner) {
             dispatch(channelPush(sendEvent(storyChannel, getGame(), "new_game")))
         }
-    }
+    }, [isGameOwner, dispatch, storyChannel, getGame]);
+
 
     return (
         <NewGamePrompt isNewGamePrompt={isStartGamePrompt} onStartGame={() => onStartGame()} >
-            <h3>Story Time - {name}</h3>
+            <h3>Story Time - {name || selectedGame.name}</h3>
             {!isOver && <div className='reset-pm smallest-font'>{turn == playerName ? "Your Turn " : `${turn}'s turn`} to fill out form.</div>}
             <div>{!isOver &&
                 <Timer key={startTimerTime}

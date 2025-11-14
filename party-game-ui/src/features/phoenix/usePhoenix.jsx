@@ -89,7 +89,7 @@ export function usePhoenixEvents(topic, channelOnEvents, opts) {
             || !hasConnectedChannel(channels, topic)) {
             return
         }
-
+        
         channelOnEvents(topic).forEach((e) => dispatch(channelOn(e)))
 
         return () => {

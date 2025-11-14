@@ -100,11 +100,16 @@ export const multipleChoiceSlice = createSlice({
             if (action.payload.isNewGameTimeout) {
                 state.isNewGameTimeout = true;
             }
-        },       
+        },
         handleCorrectAnswer(state, action) {
             state.isRoundStarted = false;
             state.isWrong = false;
-            state.rounds = action.payload.data.rounds;
+            if (action.payload.data.rounds) {
+                state.rounds = action.payload.data.rounds;
+            } else {
+                console.log("UPDATE WIHTOU ROUND")
+            }
+
             state.flash = {
                 text: `${action.payload.data.winner} answered correct!`,
                 answer: action.payload.data.answer,
@@ -123,7 +128,7 @@ export const multipleChoiceSlice = createSlice({
         updateSettings(state, action) {
             state.settings = Object.assign(state.settings, action.payload);
         },
-        quitGame(state, _action){
+        quitGame(state, _action) {
             state.isQuit = true;
         }
     }
@@ -170,7 +175,7 @@ export const {
     handleCorrectAnswer,
     handleWrongAnswer,
     handleNewGameCreated,
-    newGameTimeout,    
+    newGameTimeout,
     onRouteToGame,
     handleJoin,
     updateGameList,

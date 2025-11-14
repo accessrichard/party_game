@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { handleGuess, handleNewGame, introSceneReset, returnToLobby, reset } from './hangmanSlice';
 import { usePhoenixChannel, usePhoenixEvents, sendEvent } from '../phoenix/usePhoenix';
@@ -28,18 +28,12 @@ const events = (topic) => [
         event: 'handle_quit',
         dispatcher: returnToLobby(),
         topic
-    },
-    {
-        event: 'handle_quit',
-        dispatcher: endGame(),
-        topic
     }
 ]
 
 export default function HangmanGame() {
 
     const dispatch = useDispatch();
-    const canvasRef = useRef(null);    
     const [isStartGamePrompt, setIsStartGamePrompt] = useState(true);
     const games = useSelector(state => state.creative.games);
     const playerName = useSelector(state => state.lobby.playerName);
@@ -71,30 +65,28 @@ export default function HangmanGame() {
             event: "presence_location",
             data: { location: "game" }
         }));
-    }, []);
+    }, [dispatch, gameCode]);
 
-    useEffect(() => {
-        if (!canvasRef.current) {
+    const canvasRef = useCallback(node => {
+        if (node === null) {
             return;
         }
-
-        const event = (e) => setIsAnimating(e.detail.isRunning);
-        canvasRef.current.addEventListener("hangmanAnimation", event, true);
-        return () => {
-            if (!canvasRef.current) {
-                return;
-            }
-
-            canvasRef.current.removeEventListener("hangmanAnimation", event);
+        const animationEvent = (e) => {
+            setIsAnimating(e.detail.isRunning);
         };
-    }, [canvasRef.current])
+        node.addEventListener("hangmanAnimation", animationEvent, true);
+
+        return () => {
+            node.removeEventListener("hangmanAnimation", animationEvent);
+        };
+    }, []);
 
     useEffect(() => {
         if (!startIntroScene) {
             return;
         }
 
-        const canvas = canvasRef.current;
+        const canvas = document.getElementById('hangman-canvas');
         if (!canvas || word === 'undefined' || word === '') {
             return;
         }
@@ -106,7 +98,7 @@ export default function HangmanGame() {
         HangmanView.initialize(canvas, 0, canvas.height / 2, radius);
         HangmanView.animations.startGameScene(canvas.width / 4, canvas.width / 2, word, []);
         dispatch(introSceneReset());
-    }, [word, prevWord, startIntroScene])
+    }, [word, prevWord, startIntroScene, dispatch])
 
     useEffect(() => {
         if (!HangmanView.stickMan) {
@@ -120,7 +112,7 @@ export default function HangmanGame() {
         }
 
         HangmanView.animations.drawGame(word, guesses);
-    }, [word, guesses, winningWord, settings.difficulty]);
+    }, [word, guesses, winningWord, settings.difficulty, isOver]);
 
     useEffect(() => {
         if (isWinner) {
@@ -134,54 +126,56 @@ export default function HangmanGame() {
         }
     }, [isOver, winningWord, word, guesses, settings.difficulty])
 
-    function notifyLeave() {
-        dispatch(channelPush(sendEvent(hangmanChannel, {}, "end_game")))
-    }
+    const getGame = useCallback(() => {
+        const matching = games.find(x => x.game.name === selectedGame.name);
+        return typeof matching === 'undefined'
+            ? { settings: { difficulty: settings.difficulty } }
+            : { type: matching.game.type, name: selectedGame.name, words: matching.game.words, settings }
+    }, [games, selectedGame, settings]);
 
-    function onGuessSubmit(guess) {
+    const onGuessSubmit = useCallback((guess) => {
+        if (!HangmanView.stickMan) {
+            return;
+        }
+
         if (isWinner || isOver) {
             return;
         }
 
-        if (guesses.some(x => x.toLowerCase().trim() == guess.toLowerCase().trim())) {
+        if (guesses.some(x => x.toLowerCase().trim() === guess.toLowerCase().trim())) {
             return;
         }
 
         const bodyPartsLength = HangmanView.stickMan.getBodyParts(settings.difficulty).length;
         dispatch(channelPush(sendEvent(hangmanChannel, { guess, isOver: guesses.length >= bodyPartsLength - 1 }, "guess")));
-    }
+    }, [isWinner, isOver, guesses, settings.difficulty, dispatch, hangmanChannel]);
 
-    function onRestartClick() {
+    const onRestartClick = useCallback(() => {
         dispatch(channelPush(sendEvent(hangmanChannel, {}, "new_game")));
-    }
+    }, [dispatch, hangmanChannel]);
 
-    function onQuitClick() {
-        notifyLeave();
+    const onQuitClick = useCallback(() => {
+        dispatch(channelPush(sendEvent(hangmanChannel, {}, "end_game")));
         dispatch(endGame());
         setIsBackButtonBlocked(false);
-        dispatch(push('/lobby'))
-    }
+        dispatch(push('/lobby'));
+    }, [dispatch, hangmanChannel]);
 
-    function getGame() {
-        const matching = games.find(x => x.game.name === selectedGame.name);
-        return typeof matching === 'undefined'
-            ? { settings: { difficulty: settings.difficulty } }
-            : { type: matching.game.type, name: selectedGame.name, words: matching.game.words, settings }
-    }
+    const onStartGame = useCallback(() => {
+        if (isGameOwner) {
+            dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
+        }
+    }, [isGameOwner, dispatch, hangmanChannel, getGame]);
 
     if (forceQuit) {
         dispatch(reset());
+        dispatch(endGame());
+        setIsBackButtonBlocked(false);        
         dispatch(push('/lobby'));
     }
 
     if (!gameCode) {
         return <Navigate to="/" />
-    }
-
-    function onStartGame() {
-        if (isGameOwner) {
-            dispatch(channelPush(sendEvent(hangmanChannel, getGame(), "new_game")))
-        }
     }
 
     return (

@@ -20,7 +20,6 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
     case Server.lookup(room_name) do
       {:ok, _} ->
         name = Map.get(payload, "name")
-        socket = assign(socket, :game, Server.get_game(room_name))
         socket = assign(socket, :name, name)
         send(self(), {:after_join})
         {:ok, socket}
@@ -191,7 +190,7 @@ defmodule PartyGameWeb.MultipleChoiceChannel do
       %{
         startRoundTimeSync: time,
         data: %{
-          rounds: if(game_room.over?, do: game_room.game.rounds, else: []),
+          rounds: game_room.game.rounds,
           answer: answer,
           winner: socket.assigns.name,
           isOver: game_room.over?

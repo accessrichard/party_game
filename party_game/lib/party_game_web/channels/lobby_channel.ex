@@ -22,15 +22,16 @@ defmodule PartyGameWeb.LobbyChannel do
 
     case Server.lookup(room_name) do
       {:ok, _} ->
-        name = Map.get(payload, "name")
-        socket = assign(socket, :game, Server.get_game(room_name))
-        socket = assign(socket, :name, name)
+        socket =
+          socket
+          |> assign(:name, Map.get(payload, "name"))
+          |> assign(:game, Server.get_game(room_name))
+
         send(self(), {:after_join})
         {:ok, socket}
 
       _ ->
-        send(self(), {:after_join, :game_not_found})
-        {:ok, socket}
+        {:error, %{reason: "game_not_found"}}
     end
   end
 
@@ -41,9 +42,7 @@ defmodule PartyGameWeb.LobbyChannel do
     :ok =
       ChannelWatcher.monitor(self(), {__MODULE__, :leave, [socket.topic, socket.assigns.name]})
     Logger.debug("After Join ChannelWatcher #{socket.topic} for: #{socket.assigns.name}")
-
     location = if socket.assigns.game == nil, do: "lobby", else: "game"
-
     {:ok, _} =
       Presence.track(socket, socket.assigns.name, %{
         online_at: DateTime.utc_now() |> DateTime.to_unix(:second),
@@ -70,24 +69,26 @@ defmodule PartyGameWeb.LobbyChannel do
 
   @impl true
   def handle_in("presence_location", payload, socket) do
-    metas =
-      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
-      |> List.first()
-      |> Map.merge(%{location: Map.get(payload, "location")})
+    case Presence.get_by_key(socket.topic, socket.assigns.name) do
+      %{metas: [meta | _]} ->
+        new_meta = Map.merge(meta, %{location: Map.get(payload, "location")})
+        Presence.update(socket, socket.assigns.name, new_meta)
 
-    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
-
+      _ ->
+        :ok
+    end
     {:noreply, socket}
   end
 
   @impl true
   def handle_in("user:typing", payload, socket) do
-    metas =
-      Presence.get_by_key(socket.topic, socket.assigns.name)[:metas]
-      |> List.first()
-      |> Map.merge(%{typing: Map.get(payload, "typing")})
-
-    {:ok, _} = Presence.update(socket, socket.assigns.name, metas)
+    case Presence.get_by_key(socket.topic, socket.assigns.name) do
+      %{metas: [meta | _]} ->
+        new_meta = Map.merge(meta, %{typing: Map.get(payload, "typing")})
+        Presence.update(socket, socket.assigns.name, new_meta)
+      _ ->
+        :ok
+    end
 
     {:noreply, socket}
   end
@@ -107,14 +108,11 @@ defmodule PartyGameWeb.LobbyChannel do
   def handle_in("visiblity_change", payload, socket) do
     visible? = Map.get(payload, "isVisible")
 
-    Logger.debug("visibilty_change: #{visible?} on #{socket.topic} for: #{socket.assigns.name}")
-
-    multiplayer? = unless visible?, do: multiplayer?(socket.topic), else: false
+    Logger.debug("visibility_change: #{visible?} on #{socket.topic} for: #{socket.assigns.name}")
 
     visibility_change(%{
       visible?: visible?,
-      multiplayer?: multiplayer?,
-      payload: payload,
+      multiplayer?: !visible? && multiplayer?(socket.topic),
       socket: socket
     })
 
@@ -163,7 +161,7 @@ defmodule PartyGameWeb.LobbyChannel do
 
   defp visibility_change(%{multiplayer?: false}), do: :ok
 
-  defp visibility_change(%{visible?: true, payload: _, socket: socket}) do
+  defp visibility_change(%{visible?: true, socket: socket}) do
     topic = "#{@visibility_timer_name}:#{game_code(socket.topic)}"
     Logger.debug("Cancel Timer #{topic}")
     PartyGameTimer.cancel_timer(topic)
@@ -172,7 +170,6 @@ defmodule PartyGameWeb.LobbyChannel do
   defp visibility_change(%{
          visible?: false,
          multiplayer?: true,
-         payload: _payload,
          socket: socket
        }) do
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
@@ -191,7 +188,7 @@ defmodule PartyGameWeb.LobbyChannel do
   end
 
   defp multiplayer?(topic) do
-    Enum.at(Map.keys(Presence.list(topic)), 1) != nil
+    map_size(Presence.list(topic)) > 1
   end
 
   defp remove_player({:error, _}, _), do: :ok
@@ -210,37 +207,24 @@ defmodule PartyGameWeb.LobbyChannel do
 
   def leave(topic, name) do
     Logger.debug("ChannelWatcher Leave called: #{topic} name: #{name}")
-    players = Map.keys(Presence.list(topic))
 
-    if players == [] do
-      # Since the ChannelWatcher may trigger off network disconnects
-      # leave the server for now...
-      #
-      # Server.stop(game_code(topic))
-    else
-      player_leave(Server.lookup(game_code(topic)), name, players, topic)
+    case Server.lookup(game_code(topic)) do
+      {:ok, _pid} ->
+        game_room = Server.get_game(game_code(topic))
+        remaining_players = Map.keys(Presence.list(topic))
+
+        new_game_room =
+          if game_room.room_owner == name and remaining_players != [] do
+            elect_new_game_owner(remaining_players, topic, game_room)
+          else
+            game_room
+          end
+
+        Server.update_game(new_game_room)
+
+      {:error, _} ->
+        :ok
     end
-  end
-
-  defp player_leave({:error, _}, _, _, _), do: :ok
-
-  defp player_leave({:ok, _}, name, players, topic) do
-    Logger.debug("player_leave #{topic} name: #{name}")
-    game_room = Server.get_game(game_code(topic))
-
-    # The ChannelWatcher may be called after :after_join is re-called which adds the
-    # player back into the lobby causing sequencing errors.
-    #
-    # game_room = Lobby.remove_player(game_room, name)
-
-    game_room =
-      if name == game_room.room_owner and players !== [] do
-        elect_new_game_owner(players, topic, game_room)
-      else
-        game_room
-      end
-
-    Server.update_game(game_room)
   end
 
   defp elect_new_game_owner(players, topic, game_room) do
@@ -263,31 +247,22 @@ defmodule PartyGameWeb.LobbyChannel do
     game_code = game_code(topic)
     game = Server.get_game(game_code)
 
-    # player = Enum.find(game.players, &(&1.name == name))
+    case get_new_owner(game.players, name) do
+      nil ->
+        :ok
 
-    # unless player == nil and PartyGame.Game.Player.inactive?(player, inactive_time) and
-    #         Enum.at(game.players, 1) == nil do
-    new_owner = get_new_owner(game.players, name)
-    Logger.debug("Electing new game owner on #{topic} from #{name} to #{new_owner.name}")
-    game = Lobby.update_room_owner(game, new_owner.name)
-    Server.update_game(game)
+      %Player{name: new_owner_name} ->
+        Logger.debug("Electing new game owner on #{topic} from #{name} to #{new_owner_name}")
+        game = Lobby.update_room_owner(game, new_owner_name)
+        Server.update_game(game)
 
-    PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{
-      room_owner: game.room_owner
-    })
-  end
-
-  defp get_new_owner(players, name) when players == [] do
-    %PartyGame.Game.Player{name: name}
-  end
-
-  defp get_new_owner(players, name) do
-    [player | p] = players
-
-    if player.name == name do
-      get_new_owner(p, name)
-    else
-      player
+        PartyGameWeb.Endpoint.broadcast!(topic, "handle_room_owner_change", %{
+          room_owner: game.room_owner
+        })
     end
+  end
+
+  defp get_new_owner(players, name_to_skip) do
+    Enum.find(players, &(&1.name != name_to_skip))
   end
 end
