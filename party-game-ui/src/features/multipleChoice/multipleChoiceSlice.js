@@ -106,8 +106,6 @@ export const multipleChoiceSlice = createSlice({
             state.isWrong = false;
             if (action.payload.data.rounds) {
                 state.rounds = action.payload.data.rounds;
-            } else {
-                console.log("UPDATE WIHTOU ROUND")
             }
 
             state.flash = {
