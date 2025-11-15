@@ -39,7 +39,8 @@ export default function MultipleChoiceCreate(props) {
 
     const [form, setForm] = useState(defaultState);
     const [isGenServerDebounced, setIsGenServerDebounced] = useState(false);
-    const { gameCode, selectedGame } = useSelector(state => state.lobby);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
+    const gameCode = useSelector(state => state.lobby.gameCode);
     const gameChannel = `game:${gameCode}`;
 
     useEffect(() => {
@@ -132,8 +133,8 @@ export default function MultipleChoiceCreate(props) {
         saveSessionStorage(serverSideGame);
 
         const gameMeta = {
-            name: serverSideGame.name, 
-            type: "multiple_choice", 
+            name: serverSideGame.name,
+            type: "multiple_choice",
             url: "/multiple_choice",
             location: "client",
             import: true,

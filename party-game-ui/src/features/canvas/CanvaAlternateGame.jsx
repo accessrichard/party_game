@@ -10,16 +10,16 @@ import { selectGameOwner } from '../lobby/lobbySlice';
 export default function CanvasDrawGame() {
 
     const dispatch = useDispatch();
-    const { playerName, gameCode, selectedGame } = useSelector(state => state.lobby);
-    const { games } = useSelector(state => state.creative);
+    const playerName = useSelector(state => state.lobby.playerName);
+    const gameCode = useSelector(state => state.lobby.gameCode);
+    const selectedGame = useSelector(state => state.lobby.selectedGame);
+    const games = useSelector(state => state.creative.games);
     const isGameOwner = useSelector(selectGameOwner);
     const canvasChannel = `canvas:${gameCode}`;
-    const {
-        turn,
-        winner,
-        word,
-        settings
-    } = useSelector(state => state.canvas);
+    const turn = useSelector(state => state.canvas.turn);
+    const winner = useSelector(state => state.canvas.winner);
+    const word = useSelector(state => state.canvas.word);
+    const settings = useSelector(state => state.canvas.settings);
     const players = useSelector(getPresenceUsers);
     const [isTimerActive, setIsTimerActive] = useState(false);
     const [isNewGamePrompt, setIsNewGamePrompt] = useState(true);

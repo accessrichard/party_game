@@ -7,7 +7,7 @@ import { push } from "redux-first-history";
 function HangmanSettings() {
 
     const dispatch = useDispatch();
-    const { settings } = useSelector(state => state.hangman);
+    const settings  = useSelector(state => state.hangman.settings);
     const [form, setForm] = useState({ ...settings, errors: { difficulty: "easy" } });
 
     function handleSubmit(e) {

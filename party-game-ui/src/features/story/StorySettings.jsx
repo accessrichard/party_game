@@ -6,7 +6,7 @@ import Logo from '../common/Logo';
 
 export default function StorySettings() {
     const dispatch = useDispatch();
-    const { settings } = useSelector(state => state.story);
+    const settings  = useSelector(state => state.story.settings);
     const [form, setForm] = useState({ roundTime: settings.roundTime });    
 
     function handleChanges(e) {

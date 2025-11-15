@@ -9,7 +9,7 @@ import { updateSettings } from './multipleChoiceSlice';
 function MultipleChoiceSettings() {
 
     const dispatch = useDispatch();
-    const { settings } = useSelector(state => state.multipleChoice);
+    const settings  = useSelector(state => state.multipleChoice.settings);
     const [form, setForm] = useState({
         ...settings, errors: {
             rounds: "",

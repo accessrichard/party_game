@@ -10,7 +10,7 @@ import { push } from "redux-first-history";
 function CanvasSettings() {
 
     const dispatch = useDispatch();
-    const { settings } = useSelector(state => state.canvas);
+    const settings  = useSelector(state => state.canvas.settings);
     const [form, setForm] = useState({ ...settings, errors: { roundTime: 45, difficulty: "easy" } });
 
     function handleSubmit(e) {
