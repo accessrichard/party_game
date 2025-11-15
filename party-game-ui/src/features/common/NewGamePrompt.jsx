@@ -45,14 +45,14 @@ export default function NewGamePrompt(props) {
             return;
         }
 
-        //// Sometimes events are lost if they are sent right after channelJoin.
+        //// Sometimes events are lost if they are sent right after channelJoin.        
         if (getMissingPlayers().length === 0) {
 
             setCountDownSeconds(2)
             setCountDownMessage("Waiting For Players ")
 
             const timer = setTimeout(() => {
-                setCountDownMessage("Done")
+                setCountDownMessage("Ready")
                 setIsTimerVisible(false);
             }, 1000);
 

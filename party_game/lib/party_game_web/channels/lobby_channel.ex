@@ -51,6 +51,7 @@ defmodule PartyGameWeb.LobbyChannel do
       })
 
     push(socket, "presence_state", Presence.list(socket))
+    IO.inspect(Presence.list(socket), label: "presence_state")
     player = Player.add_player(socket.assigns.name)
 
     config = Application.get_env(:party_game, PartyGameWeb.LobbyChannel)
@@ -72,6 +73,7 @@ defmodule PartyGameWeb.LobbyChannel do
     case Presence.get_by_key(socket.topic, socket.assigns.name) do
       %{metas: [meta | _]} ->
         new_meta = Map.merge(meta, %{location: Map.get(payload, "location")})
+        IO.inspect(new_meta, label: "presence_location")
         Presence.update(socket, socket.assigns.name, new_meta)
 
       _ ->
