@@ -1,13 +1,14 @@
 defmodule PartyGame.Server do
   use GenServer, restart: :transient
   alias PartyGame.Game.GameRoom
-  alias PartyGame.MultipleChoice.MultipleChoiceGame
 
   @registry PartyGame.Game.Registry
 
   @supervisor PartyGame.Game.Supervisor
 
-  @timeout 900_000
+  @fifteen_minute_timeout 900_000
+
+  @five_minutes_in_ms 300_000
 
   def start(%GameRoom{} = game) do
     opts = [
@@ -39,11 +40,6 @@ defmodule PartyGame.Server do
     GenServer.start_link(__MODULE__, game, name: name)
   end
 
-  @impl true
-  def init(state) do
-    {:ok, state, @timeout}
-  end
-
   def get_game(room_name) do
     GenServer.call(via_tuple(room_name), :game)
   end
@@ -54,10 +50,6 @@ defmodule PartyGame.Server do
 
   def update_game(room_name, %GameRoom{} = game) do
     GenServer.call(via_tuple(room_name), {:update, game})
-  end
-
-  def buzz(room_name, player_name, answer) do
-    GenServer.call(via_tuple(room_name), {:buzz, player_name, answer})
   end
 
   def ping(room_name) do
@@ -90,38 +82,57 @@ defmodule PartyGame.Server do
     :crypto.strong_rand_bytes(length) |> Base.encode32() |> binary_part(0, length)
   end
 
+  @impl true
+  def init(state) do
+    {:ok, {state, :active}, @fifteen_minute_timeout}
+  end
+
   # Server (callbacks)
   @impl true
   def handle_call({:update, %GameRoom{} = game}, _from, _game) do
-    {:reply, game, game, @timeout}
+    {:reply, game, {game, :active}, @fifteen_minute_timeout}
   end
 
   @impl true
-  def handle_call(:game, _from, game) do
-    {:reply, game, game, @timeout}
+  def handle_call(:game, _from, {game, _status}) do
+    {:reply, game, {game, :active}, @fifteen_minute_timeout}
   end
 
   @impl true
-  def handle_call(:ping, _from, game) do
-    {:reply, :ok, game, @timeout}
+  def handle_call(:ping, _from, {game, _status}) do
+    {:reply, :ok, {game, :active}, @fifteen_minute_timeout}
   end
 
   @impl true
-  def handle_call({:buzz, name, answer}, _from, game_room) do
-    with {:win, game_room} <- MultipleChoiceGame.buzz(game_room, name, answer) do
-      {:reply, {:win, game_room}, game_room, @timeout}
-    else
-      {:lose, game_room} -> {:reply, {:lose, game_room}, game_room, @timeout}
-    end
-  end
+  def handle_info(:timeout, {game, :active}) do
+    lobby = PartyGameWeb.LobbyChannel.channel_name()
+    IO.inspect("Timeout")
 
-  @impl true
-  def handle_info(:timeout, game) do
-    lobby = PartyGameWeb.LobbyChannel.channel_name
     PartyGameWeb.Endpoint.broadcast!(
       "#{lobby}#{game.room_name}",
-      "handle_game_server_error",
-      %{"reason" => "Game inactive over #{trunc(@timeout / 60 / 1000)} minutes"}
+      "handle_game_server_message",
+      %{
+        action: "idle_timeout",
+        title: "Game inactive",
+        message: "Game will restart in #{trunc(@five_minutes_in_ms / 60 / 1000)} minutes."
+      }
+    )
+
+    {:noreply, {game, :pending_shutdown}, @five_minutes_in_ms}
+  end
+
+  @impl true
+  def handle_info(:timeout, {game, :pending_shutdown}) do
+    lobby = PartyGameWeb.LobbyChannel.channel_name()
+
+    PartyGameWeb.Endpoint.broadcast!(
+      "#{lobby}#{game.room_name}",
+      "handle_game_server_message",
+      %{
+        action: "shutdown",
+        title: "Game Over",
+        message: "Inactive Too Long"
+      }
     )
 
     {:stop, :normal, game}

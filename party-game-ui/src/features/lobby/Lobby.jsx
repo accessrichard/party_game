@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     changeGame,
-    handleServerError,
+    handlePopupMessage,
     listGames,
     mergeGameList,
     selectGameOwner,
@@ -110,7 +110,7 @@ export default function Lobby() {
     }
 
     function onLobbyTimeout() {
-        dispatch(handleServerError({ reason: "Game Lobby Timeout" }));
+        dispatch(handlePopupMessage({ action: "shutdown", title: "Lobby Timeout", message: "Inactive too long." }));
     }
 
     return (

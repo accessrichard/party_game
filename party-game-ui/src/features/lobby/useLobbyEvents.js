@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-    handleServerError,
+    handlePopupMessage,
     handleJoin,
     handleReconnect,
     onRouteToGame
@@ -16,8 +16,8 @@ import { message } from './../chat/chatSlice';
 
 const events = (topic) => [
     {
-        event: 'handle_game_server_error',
-        dispatcher: handleServerError(),
+        event: 'handle_game_server_message',
+        dispatcher: handlePopupMessage(),
         topic,
     },
     {

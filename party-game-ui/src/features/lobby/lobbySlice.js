@@ -65,13 +65,12 @@ export const serverGameList = createSelector(state => state.lobby.api.list.data,
 const initialState = {
     isGameStarted: false,
     isPaused: false,
-    flash: {},
     playerName: null,
     selectedGame: { name: '', type: '', url: '' },
     gameCode: null,
     players: [],
     gameOwner: '',
-    genServerTimeout: {},
+    popupMessage: {},
     playerCount: 0,
     api: {
         start: { ...apiState },
@@ -115,8 +114,15 @@ export const lobbySlice = createSlice({
         endGame: (state) => {
             state.isGameStarted = false;
         },
-        handleServerError(state, action) {
-            state.genServerTimeout = { timeout: true, reason: action.payload.reason };
+        handlePopupMessage(state, action) {
+            console.log(action.payload)
+            state.popupMessage = action.payload;
+        },
+        clearPopupMessage(state, _action) {
+            state.popupMessage = {action: "", title: "", message: ""};
+        },
+        updateGameList(state, action) {
+            state.gameList = action.payload;
         },
         handleReconnect(state, action) {
             state.gameOwner = action.payload.room_owner;
@@ -186,7 +192,8 @@ export const mergeGameList = (serverGames, clientGames) => {
 
 export const {
     redirect,
-    handleServerError,
+    handlePopupMessage,
+    clearPopupMessage,
     handleNewGameCreated,
     handleReconnect,
     handleVisiblityChange,
@@ -198,6 +205,6 @@ export const {
     syncGameState,
     endGame,
     clearJoinError,
-    setFlash } = lobbySlice.actions;
+} = lobbySlice.actions;
 
 export default lobbySlice.reducer;

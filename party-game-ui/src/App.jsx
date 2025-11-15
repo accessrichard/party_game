@@ -4,7 +4,6 @@ import {
   Route,
   Routes
 } from "react-router";
-import { useSelector } from 'react-redux';
 
 import { lazy } from 'react';
 import AppBody from './features/common/AppBody';

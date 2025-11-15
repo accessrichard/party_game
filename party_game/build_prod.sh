@@ -30,6 +30,6 @@ npm run build --prefix ./../party-game-ui/
 mix compile 
 mix phx.digest
 mix phx.gen.release
-mix release --overwrite
+mix release --overwrite --force
 #_build/prod/rel/party_game/bin/party_game start
 sudo systemctl restart buzzgames.service

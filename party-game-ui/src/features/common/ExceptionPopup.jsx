@@ -1,15 +1,11 @@
-import GenServerTimeout from "./GenServerTimeout";
+import PopupMessage from "./PopupMessage";
 import { Outlet } from 'react-router';
 
 export default function ExceptionPopup() {
-
-    function ongenServerTimeout() {
-    }
-
     return (
-        <>            
-            <GenServerTimeout ongenServerTimeout={ongenServerTimeout} />
-            <Outlet/>
+        <>
+            <PopupMessage />
+            <Outlet />
         </>
     )
 }
