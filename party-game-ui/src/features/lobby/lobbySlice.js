@@ -114,8 +114,7 @@ export const lobbySlice = createSlice({
         endGame: (state) => {
             state.isGameStarted = false;
         },
-        handlePopupMessage(state, action) {
-            console.log(action.payload)
+        handlePopupMessage(state, action) {            
             state.popupMessage = action.payload;
         },
         clearPopupMessage(state, _action) {
