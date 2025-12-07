@@ -9,20 +9,19 @@ import {
 export default function GoogleAnalytics() {
 
     const location = useLocation();
-    const [isEnabled, setIsEnabled] = useState(import.meta.env.PROD);
-
-    useEffect(() => {       
-        if (!isEnabled) {
+    const [isEnabled, setIsEnabled] = useState(false);
+    
+    useEffect(() => {      
+        if (!import.meta.env.PROD) {
             return;
         }
 
-        if (document.location.hostname.includes('localhost') || !!import.meta.env.VITE_GA4_MEASUREMENT_ID) {
-            setIsEnabled(false);
+        if (!import.meta.env.VITE_GA4_MEASUREMENT_ID) {
             return;
         }
-
+        setIsEnabled(true);
         ReactGA4.initialize(import.meta.env.VITE_GA4_MEASUREMENT_ID)
-    }, [isEnabled]);
+    }, []);
 
     useEffect(() => {
         if (!isEnabled) {
