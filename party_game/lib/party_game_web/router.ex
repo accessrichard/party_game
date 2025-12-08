@@ -51,7 +51,7 @@ defmodule PartyGameWeb.Router do
     # Use the default browser stack
     pipe_through :browser
 
-    get "/seo", HomeController, :index
+    get "/", HomeController, :index
 
     # This route declaration MUST be below everything else! Else, it will
     # override the rest of the routes, even the `/api` routes we've set above.
