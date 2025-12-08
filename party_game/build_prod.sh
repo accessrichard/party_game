@@ -6,7 +6,6 @@ if [ $# -eq 0 ]; then
     git reset --hard HEAD
     git pull
 fi
-
 export VITE_API_URL=
 export VITE_SOCKET_URL=
 export VITE_API_TIMEOUT=5000
@@ -18,12 +17,6 @@ export REACT_APP_SOCKET_URL=/socket
 export REACT_APP_API_TIMEOUT=5000
 
 export MIX_ENV=prod
-export PHX_HOST=buzzgames.org
-export PORT=4000
-export GA_MEASUREID=G-YSXHFW8BVQ
-
-#secret key should not be regenerated here....
-export SECRET_KEY_BASE=`mix phx.gen.secret`
 
 npm i --prefix ./../party-game-ui/
 npm run build --prefix ./../party-game-ui/
