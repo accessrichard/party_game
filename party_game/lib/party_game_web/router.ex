@@ -1,11 +1,12 @@
 defmodule PartyGameWeb.Router do
   use PartyGameWeb, :router
+  use Plug.ErrorHandler
+  require Logger
 
   alias PartyGameWeb.{
     GameController,
     JavaScriptSpaController,
-    HomeController,
-    CanvasController
+    HomeController
   }
 
   pipeline :browser do
@@ -49,11 +50,17 @@ defmodule PartyGameWeb.Router do
   scope "/" do
     # Use the default browser stack
     pipe_through :browser
+
     get "/seo", HomeController, :index
-    get "/canvas", CanvasController, :index
 
     # This route declaration MUST be below everything else! Else, it will
     # override the rest of the routes, even the `/api` routes we've set above.
     get "/*path", JavaScriptSpaController, :index
   end
+
+  def handle_errors(conn, %{kind: kind, reason: reason, stack: stack} = _) do
+    Logger.error("Kind: #{inspect(kind)}, Reason: #{inspect(reason)}, Stack: #{inspect(stack)}")
+    conn
+  end
+
 end

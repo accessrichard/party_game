@@ -11,7 +11,7 @@ import Config
 config :party_game, PartyGameWeb.Endpoint,
   adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
-  render_errors: [view: PartyGameWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [view: PartyGameWeb.ErrorHTML, accepts: ~w(html json), layout: false],
   pubsub_server: PartyGame.PubSub,
   live_view: [signing_salt: "vKHRzMqh"]
 

@@ -19,6 +19,7 @@ export default function GoogleAnalytics() {
         if (!import.meta.env.VITE_GA4_MEASUREMENT_ID) {
             return;
         }
+        
         setIsEnabled(true);
         ReactGA4.initialize(import.meta.env.VITE_GA4_MEASUREMENT_ID)
     }, []);
